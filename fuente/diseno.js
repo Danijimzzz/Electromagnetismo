@@ -13,7 +13,7 @@
    (fenómenos también) el de «Herramientas relacionadas» (o «Más fenómenos»):
      node diseno.js ASIGNATURA HERRAMIENTA < pagina.html
    ===================================================================== */
-const Limites = require('./limites.js'), Catalogo = require('./catalogo.js'), Tema = require('./tema.js'), Accesibilidad = require('./accesibilidad.js'), Buscador = require('./buscador.js'), Llama = require('./llama.js'), Anuncios = require('./anuncios.js'), Pwa = require('./pwa.js'), Preguntas = require('./preguntas.js');
+const Limites = require('./limites.js'), Catalogo = require('./catalogo.js'), Tema = require('./tema.js'), Idiomas = require('./idiomas.js'), Accesibilidad = require('./accesibilidad.js'), Buscador = require('./buscador.js'), Llama = require('./llama.js'), Anuncios = require('./anuncios.js'), Pwa = require('./pwa.js'), Preguntas = require('./preguntas.js');
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
 // Hoja común de las herramientas (estilos.css) y la cabecera del portal, que comparten con el simulador de
@@ -75,11 +75,11 @@ h1 { font:600 24px/1.25 var(--f-ui) }
 // «Informar de un error»: enlace de correo con la herramienta en el asunto y su ruta en el cuerpo (el pie de todas las herramientas)
 const enlaceError = (nombre, clave, herramienta) => `<a href="mailto:${Catalogo.correo}?subject=${encodeURIComponent('Error en ' + nombre)}&amp;body=${encodeURIComponent('Herramienta: ' + nombre + ' (' + clave + '/' + herramienta + ')\n\nQué esperaba y qué ha pasado:\n')}">Informar de un error</a>`;
 
-function piezas(a, nombre) {
+function piezas(a, nombre, ruta) {
   const [m1, m2] = Catalogo.marca;
   const nav = [...Catalogo.asignaturas, V].map((x) => `<a href="../../${x.clave}/"${x === a ? ' aria-current="page"' : ''}>${esc(x.corto || x.nombre)}</a>`).join('');
   const cab = `<header class="top"><a class="logo" href="../../">${m1}<i>${m2}</i></a><nav aria-label="Asignaturas"><a href="../../">Inicio</a>${nav}</nav>`
-    + `<a class="foro" href="../../foro/"><span aria-hidden="true">💬</span>Foro</a><form action="../../" role="search"><input class="buscar" type="search" name="q" placeholder="Buscar: Biot-Savart, molaridad…" aria-label="Buscar herramientas (atajo: barra /)" title="Atajo: / o Ctrl+K"></form>${Tema.BOTON}</header>`;
+    + `<a class="foro" href="../../foro/"><span aria-hidden="true">💬</span>Foro</a><form action="../../" role="search"><input class="buscar" type="search" name="q" placeholder="Buscar: Biot-Savart, molaridad…" aria-label="Buscar herramientas (atajo: barra /)" title="Atajo: / o Ctrl+K"></form>${Idiomas.BOTON({ raiz: '../../', ruta })}${Tema.BOTON}</header>`;
   const miga = `<nav class="miga" aria-label="Estás en"><span class="miga-izq"></span><span class="miga-ico" aria-hidden="true">${esc(a.icono)}</span><a href="../">${esc(a.nombre)}</a><span aria-hidden="true">›</span><span>${esc(nombre)}</span><span class="miga-der"></span></nav>`;
   return { cab, miga };
 }
@@ -117,7 +117,7 @@ const TEORIA_ELECTRO = require('fs').readFileSync(require('path').join(__dirname
 // y «Modo práctica» a la derecha, y el título encima de los botones. La versión privada (artifact) no pasa por aquí.
 function aplicaElectrostatica(html) {
   const a = Catalogo.asignaturas.find((x) => x.clave === 'electromagnetismo');
-  const { cab, miga } = piezas(a, 'Electrostática');
+  const { cab, miga } = piezas(a, 'Electrostática', 'electromagnetismo/electrostatica/');
   const extra = `
 .main, .app:not(.closed) .main { padding:0 }
 .app, .app.closed { display:block !important }
@@ -169,7 +169,7 @@ function aplicaHerramienta(html, clave, herramienta) {
   if (!m) throw new Error('diseno.js: la página no tiene <header class="top">');
   // el nombre corto de la herramienta es el último tramo de la miga de antes
   const nombre = m[0].replace(/<\/span><\/header>$/, '').split(' / ').pop().replace(/<[^>]*>/g, '').trim();
-  const { cab, miga } = piezas(a, nombre);
+  const { cab, miga } = piezas(a, nombre, `${clave}/${herramienta}/`);
   // la hoja común va antes del <style> de la página, para que la página pueda ajustar sus variables
   if (!/^<style>/m.test(html)) throw new Error('diseno.js: la página no tiene <style>');
   const propios = a === V ? ESTILOS_FENOMENOS : '', vida = (a === V ? '' : Limites.html(herramienta) + Preguntas.html(herramienta) + vidaReal(`${clave}/${herramienta}`)) + relacionadas(clave, herramienta);

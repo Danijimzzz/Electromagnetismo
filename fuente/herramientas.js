@@ -82,7 +82,7 @@ function pagina(h) {
     + `<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,${icono}">\n`
     + '<link rel="apple-touch-icon" href="../../apple-touch-icon.png">\n'
     + `<meta property="og:title" content="${h.titulo}">\n<meta property="og:description" content="${h.descripcion}">\n`
-    + `<link rel="canonical" href="${Catalogo.web}/${h.asignatura}/${h.clave}/">\n`
+    + `<link rel="canonical" href="${Catalogo.web}/${h.asignatura}/${h.clave}/">\n${require('./idiomas.js').HREFLANG(`${h.asignatura}/${h.clave}/`, Catalogo.web) ? require('./idiomas.js').HREFLANG(`${h.asignatura}/${h.clave}/`, Catalogo.web) + '\n' : ''}`
     + `<meta property="og:image" content="${Catalogo.web}/og.png">\n<meta name="twitter:card" content="summary_large_image">\n`;
   const fuente = fs.readFileSync(path.join(__dirname, h.carpeta, 'pagina.html'));
   // datos estructurados para los buscadores (seo.js)

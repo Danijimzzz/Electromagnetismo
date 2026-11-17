@@ -1,0 +1,645 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTQiIGZpbGw9IiMwZDZiNjYiLz48ZyBmaWxsPSJub25lIiBzdHJva2U9IiNlNmE2NDAiIHN0cm9rZS13aWR0aD0iMi40IiBzdHJva2UtZGFzaGFycmF5PSI0IDYuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIj48cGF0aCBkPSJNMjAgMzJINDQiLz48cGF0aCBkPSJNMjEgMjdDMjcgMTQgMzcgMTQgNDMgMjciLz48cGF0aCBkPSJNMjEgMzdDMjcgNTAgMzcgNTAgNDMgMzciLz48cGF0aCBkPSJNMTcgMjRDMjIgNCA0MiA0IDQ3IDI0Ii8+PHBhdGggZD0iTTE3IDQwQzIyIDYwIDQyIDYwIDQ3IDQwIi8+PC9nPjxjaXJjbGUgY3g9IjE3IiBjeT0iMzIiIHI9IjgiIGZpbGw9IiNlZjdhNjIiLz48Y2lyY2xlIGN4PSI0NyIgY3k9IjMyIiByPSI4IiBmaWxsPSIjNzRhMmYyIi8+PHBhdGggZD0iTTEzIDMyaDhNMTcgMjh2OE00MyAzMmg4IiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iMi42IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48L3N2Zz4K">
+<link rel="apple-touch-icon" href="../../../apple-touch-icon.png">
+<meta property="og:title" content="Waveguide calculator: TE and TM modes">
+<meta property="og:description" content="Rectangular waveguide calculator: TE and TM modes, cutoff frequency and wavelength, phase constant, phase and group velocities, wave impedance and single-mode band, step by step and with the mode field">
+<link rel="canonical" href="https://simulaciencia.vercel.app/en/electromagnetismo/guias-onda/">
+<link rel="alternate" hreflang="es" href="https://simulaciencia.vercel.app/electromagnetismo/guias-onda/">
+<link rel="alternate" hreflang="en" href="https://simulaciencia.vercel.app/en/electromagnetismo/guias-onda/">
+<link rel="alternate" hreflang="x-default" href="https://simulaciencia.vercel.app/electromagnetismo/guias-onda/">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="https://simulaciencia.vercel.app/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebApplication","name":"Waveguides","description":"Rectangular waveguide calculator: TE and TM modes, cutoff frequency and wavelength, phase constant, phase and group velocities, impedance and single-mode band, with the mode field.","url":"https://simulaciencia.vercel.app/electromagnetismo/guias-onda/","inLanguage":"es","isAccessibleForFree":true,"applicationCategory":"EducationalApplication","operatingSystem":"Web browser","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://simulaciencia.vercel.app/"},{"@type":"ListItem","position":2,"name":"Electromagnetismo","item":"https://simulaciencia.vercel.app/electromagnetismo/"},{"@type":"ListItem","position":3,"name":"Waveguides","item":"https://simulaciencia.vercel.app/electromagnetismo/guias-onda/"}]},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How is the cutoff frequency of a rectangular waveguide calculated?","acceptedAnswer":{"@type":"Answer","text":"For the TE_mn mode, f_c = (c/2)·√((m/a)² + (n/b)²). For the fundamental TE₁₀ mode of a WR-90 guide with a = 22.86 mm, f_c = c/(2a) ≈ 6.56 GHz."}},{"@type":"Question","name":"How is the wavelength in the guide calculated?","acceptedAnswer":{"@type":"Answer","text":"It only propagates if f > f_c, and then λ_g = λ/√(1 − (f_c/f)²). At 10 GHz, λ = 3 cm and f_c = 6.56 GHz: λ_g = 3 / √(1 − 0.43) ≈ 3.97 cm."}}]}]}</script>
+<link rel="manifest" href="../../manifest.webmanifest">
+<meta name="theme-color" content="#0d6b66">
+<script src="../../pwa.js" defer></script>
+<meta name="google-adsense-account" content="ca-pub-6407501780492688">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6407501780492688" crossorigin="anonymous"></script>
+<script>window.googlefc = window.googlefc || {}; googlefc.callbackQueue = googlefc.callbackQueue || [];
+document.addEventListener('click', (e) => { if (!e.target.closest('.pref-cookies')) return; e.preventDefault(); googlefc.callbackQueue.push(() => googlefc.showRevocationMessage()); });</script>
+<style>.anuncio { max-width:860px; margin:28px 0 0; text-align:center; min-height:120px } .anuncio > span { display:block; font:11px/1.6 system-ui, sans-serif; letter-spacing:.06em; text-transform:uppercase; color:var(--muted, #5b6670) } .anuncio ins { display:block }</style>
+<style>.anuncio-lado { display:none } @media (min-width: 901px) { .anuncio-lado { display:block; grid-column:1; grid-row:2; position:sticky; top:96px; margin:8px 0 0; max-width:none; min-height:250px; min-width:0; overflow:hidden } main .layout.con-lado > :nth-child(2) { grid-row:1 / span 2 } }</style>
+<script>document.addEventListener('DOMContentLoaded', () => {
+  const l = document.querySelector('main .layout');
+  if (!l || l.classList.contains('invertido') || l.children.length !== 2 || !l.offsetParent || !matchMedia('(min-width: 901px)').matches) return;
+  l.classList.add('con-lado');
+  const a = document.createElement('div'); a.className = 'anuncio anuncio-lado';
+  a.innerHTML = '<span>Publicidad</span><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-6407501780492688" data-ad-slot="9800921596" data-ad-format="auto" data-full-width-responsive="true"></ins>';
+  l.appendChild(a); (window.adsbygoogle = window.adsbygoogle || []).push({});
+});</script>
+<script>(() => {
+  const raiz = document.documentElement, mq = matchMedia('(prefers-color-scheme: dark)'), oyentes = [];
+  try { const t = localStorage.getItem('simu-tema'); if (t === 'dark' || t === 'light') raiz.dataset.theme = t; } catch (e) { /* sin almacenamiento */ }
+  const orig = MediaQueryList.prototype.addEventListener;
+  MediaQueryList.prototype.addEventListener = function (tipo, f, ...r) { if (tipo === 'change' && /prefers-color-scheme/.test(this.media)) oyentes.push(f); return orig.call(this, tipo, f, ...r); };
+  const oscuro = () => (raiz.dataset.theme ? raiz.dataset.theme === 'dark' : mq.matches);
+  const rotula = () => document.querySelectorAll('.tema').forEach((b) => { const t = oscuro() ? 'Switch to light mode' : 'Switch to dark mode'; b.title = t; b.setAttribute('aria-label', t); });
+  document.addEventListener('DOMContentLoaded', rotula);
+  mq.addEventListener('change', rotula);
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.tema')) return;
+    raiz.dataset.theme = oscuro() ? 'light' : 'dark';
+    try { localStorage.setItem('simu-tema', raiz.dataset.theme); } catch (e) { /* sin almacenamiento */ }
+    rotula();
+    for (const f of oyentes) { try { f.call(mq, { matches: oscuro(), media: mq.media }); } catch (err) { console.error(err); } }
+  });
+})();</script>
+<script>(() => {
+  const ENFOCABLE = 'a[href],button,input,select,textarea,summary,[tabindex]';
+  let espera = 0;
+  const revisa = () => {
+    espera = 0;
+    for (const e of document.querySelectorAll('main *')) {
+      const desborda = e.scrollWidth > e.clientWidth || e.scrollHeight > e.clientHeight;
+      if (e.dataset.sf) { if (!desborda || e.querySelector(ENFOCABLE)) { e.removeAttribute('tabindex'); delete e.dataset.sf; } continue; }
+      if (!desborda || e.hasAttribute('tabindex') || e.matches('svg,svg *,canvas') || e.querySelector(ENFOCABLE)) continue;
+      const o = getComputedStyle(e);
+      if (/auto|scroll/.test(o.overflowX + o.overflowY)) { e.tabIndex = 0; e.dataset.sf = '1'; }
+    }
+  };
+  window.revisaScroll = revisa; // también lo llama pruebas/accesibilidad.js antes de pasar axe
+  const pide = () => { if (!espera) espera = setTimeout(revisa, 400); };
+  addEventListener('load', () => { revisa(); const m = document.querySelector('main'); if (m) new MutationObserver(pide).observe(m, { childList: true, subtree: true, characterData: true }); });
+  addEventListener('resize', pide);
+})();</script>
+<script src="../../buscador.js" defer></script>
+<script src="../../llama.js" defer></script>
+<title>Waveguide calculator: TE and TM modes · Ciencify</title>
+<meta name="description" content="Rectangular waveguide calculator: TE and TM modes, cutoff frequency and wavelength, phase constant, phase and group velocities, impedance and single-mode band, with the mode field.">
+<style>/* =====================================================================
+   Hoja de estilos común de todas las herramientas (fuente/<herramienta>/pagina.html).
+   diseno.js la mete en cada página, antes de su propio <style>, junto con el color
+   de la asignatura (--accent, --accent-soft) y la cabecera del portal. La guía de uso
+   de cada componente, con su HTML, está en DISENO.md.
+   Una herramienta no vuelve a definir estas reglas: ajusta las variables de medida
+   (--col-datos, --ancho-valor, --alto-grafica) o añade una clase propia.
+   ===================================================================== */
+
+/* ---------- Colores y letras (claro y oscuro) ---------- */
+:root {
+  --bg: #eef1ee; --panel: #fff; --ink: #1a2128; --muted: #5b6670; --line: #d5dbd5; --error: #c0392b;
+  --f-ui: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-math: "STIX Two Text", "Cambria Math", Cambria, Georgia, serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+  --vidrio: rgba(255,255,255,.55); --vidrio-fuerte: rgba(255,255,255,.72); --vidrio-borde: rgba(255,255,255,.7); --vidrio-brillo: inset 0 1px 0 rgba(255,255,255,.8);
+  --vidrio-sombra: 0 1px 2px rgba(20,40,60,.06), 0 8px 28px rgba(20,40,60,.10); --blur: blur(22px) saturate(1.7); --halo1: rgba(13,107,102,.22); --halo2: rgba(42,93,181,.20); --halo3: rgba(107,63,160,.14);
+  /* medidas que cada herramienta puede ajustar */
+  --col-datos: 360px; --ancho-etiqueta: minmax(0, 1fr); --ancho-valor: 150px; --letra-campo: 13px var(--f-ui); --ancho-dato: 190px; --alto-grafica: clamp(260px, 36vw, 380px); --margen-grafica: 10px;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #111619; --panel: #182025; --ink: #e3e8ea; --muted: #a3aeb5; --line: #2a343b; --error: #f08a80; --vidrio: rgba(34,46,54,.50); --vidrio-fuerte: rgba(26,36,42,.70); --vidrio-borde: rgba(255,255,255,.12); --vidrio-brillo: inset 0 1px 0 rgba(255,255,255,.10); --vidrio-sombra: 0 1px 2px rgba(0,0,0,.3), 0 10px 32px rgba(0,0,0,.35); --halo1: rgba(77,188,176,.20); --halo2: rgba(116,162,242,.18); --halo3: rgba(170,120,230,.14); color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #111619; --panel: #182025; --ink: #e3e8ea; --muted: #a3aeb5; --line: #2a343b; --error: #f08a80; --vidrio: rgba(34,46,54,.50); --vidrio-fuerte: rgba(26,36,42,.70); --vidrio-borde: rgba(255,255,255,.12); --vidrio-brillo: inset 0 1px 0 rgba(255,255,255,.10); --vidrio-sombra: 0 1px 2px rgba(0,0,0,.3), 0 10px 32px rgba(0,0,0,.35); --halo1: rgba(77,188,176,.20); --halo2: rgba(116,162,242,.18); --halo3: rgba(170,120,230,.14); color-scheme: dark }
+/* fin de los colores */
+
+/* ---------- Base ---------- */
+* { box-sizing: border-box }
+[hidden] { display: none !important }
+html, body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.45 var(--f-ui) }
+a { color: var(--accent) }
+.wrap { max-width: 1300px; margin: 0 auto; padding: 16px clamp(16px, 3vw, 24px) 32px }
+h1 { font: 600 24px/1.25 var(--f-ui); margin: 0 0 4px }
+.lead { color: var(--muted); margin: 0 0 12px; max-width: 760px }
+/* texto solo para lectores de pantalla; sin position:absolute para que no ensanche las tablas con scroll */
+.solo-lector { display: inline-block; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; vertical-align: top }
+footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 8px 16px 24px }
+footer a { color: var(--muted); margin: 0 6px; white-space: nowrap; display: inline-block }
+
+/* ---------- Diseño A: datos a la izquierda, resultados a la derecha ---------- */
+.layout { display: grid; grid-template-columns: var(--col-datos) minmax(0, 1fr); gap: 16px; align-items: start }
+.layout.invertido { grid-template-columns: minmax(0, 1fr) var(--col-datos) }
+@media (max-width: 900px) { .layout, .layout.invertido { grid-template-columns: minmax(0, 1fr) } }
+
+/* ---------- Tarjetas ---------- */
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 14px; margin-bottom: 14px }
+.card h2 { font: 600 12px/1.4 var(--f-ui); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 0 0 10px }
+.destacado { border-color: var(--line); border-top: 3px solid var(--accent) }
+.destacado h2 { color: var(--accent) }
+
+/* ---------- Datos: campos, separadores, botones y pestañas ---------- */
+.campos { display: grid; grid-template-columns: var(--ancho-etiqueta) var(--ancho-valor); gap: 7px 10px; align-items: center }
+.campos label { font-size: 13.5px }
+.campos label small { color: var(--muted) }
+.campos .ancho { grid-column: 1 / -1 }
+.sep { grid-column: 1 / -1; font: 600 12px var(--f-ui); color: var(--accent); text-transform: uppercase; letter-spacing: .04em; margin-top: 8px }
+.in { font: var(--letra-campo); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; width: 100%; font-variant-numeric: tabular-nums }
+.btn { font: 500 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 5px 10px; cursor: pointer; white-space: nowrap }
+.btn:hover { border-color: var(--accent) }
+/* foco del teclado en todo lo que se pulsa o se escribe (sin especificidad: una herramienta puede ajustarlo) */
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible { outline: 2px solid var(--accent); outline-offset: 1px }
+.controles { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 8px }
+.controles > .nota, .controles > .leyenda { flex: 1 1 220px; margin: 0 }
+.exportar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 8px 0 }
+.exportar-aviso { color: var(--muted); font-size: 12.5px }
+.tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px }
+.tools label { color: var(--muted); font-size: 13px; display: inline-flex; gap: 6px; align-items: center }
+.modos { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; margin-bottom: 14px }
+.modos button { font: 500 13.5px var(--f-ui); border: 0; background: var(--panel); color: var(--muted); padding: 7px 14px; cursor: pointer }
+.modos button[aria-selected=true] { background: var(--accent); color: var(--panel) }
+.error { color: var(--error); font-size: 13px; margin: 10px 0 0 }
+.nota { color: var(--muted); font-size: 12.5px; margin: 8px 0 0 }
+
+/* ---------- Resultados ---------- */
+.res { display: grid; grid-template-columns: repeat(auto-fill, minmax(var(--ancho-dato), 1fr)); gap: 6px 14px; font: 16px var(--f-math) }
+.res div { overflow-x: auto; overflow-y: hidden }
+.res span { display: block; font: 12px var(--f-ui); color: var(--muted) }
+.res div.ancho { grid-column: 1 / -1 }
+.resumen { display: grid; grid-template-columns: repeat(auto-fill, minmax(var(--ancho-dato), 1fr)); gap: 8px; margin: 0 }
+.resumen div { background: var(--accent-soft); border-radius: 8px; padding: 8px 10px; overflow-x: auto; overflow-y: hidden }
+.resumen div span { display: block; font-size: 12px; color: var(--muted) }
+.resumen div b { font: 600 17px var(--f-math) }
+.resumen div.ancho { grid-column: 1 / -1 }
+
+/* ---------- Gráficas ---------- */
+canvas { display: block; width: 100%; height: var(--alto-grafica); border-radius: 8px; background: var(--bg); margin-top: var(--margen-grafica) }
+.leyenda { font-size: 12.5px; color: var(--muted); margin: 6px 0 0 }
+.leyenda b { font-weight: 600 }
+
+/* ---------- Desarrollo paso a paso ---------- */
+/* el número va dentro del paso para que no lo corte el desplazamiento de las fórmulas largas */
+.pasos ol { margin: 0; padding: 0; list-style: none; counter-reset: paso }
+.pasos li { position: relative; margin: 0 0 12px; padding-left: 22px; font-family: var(--f-math); font-size: 15.5px; overflow-x: auto; counter-increment: paso; overflow-y: hidden }
+.pasos li::before { content: counter(paso) "."; position: absolute; left: 0; top: 0; font: 13.5px/1.45 var(--f-ui); color: var(--muted) }
+.pasos li strong { font: 600 13.5px var(--f-ui); display: block; margin-bottom: 2px }
+.pasos table.tabla { border-collapse: collapse; margin: 6px 0; font: 13px var(--f-ui); font-variant-numeric: tabular-nums }
+.pasos table.tabla th, .pasos table.tabla td { border: 1px solid var(--line); padding: 3px 9px; text-align: right }
+.pasos table.tabla th { background: var(--accent-soft); font-weight: 600 }
+.tabla-scroll { overflow-x: auto }
+
+/* matrices con corchetes, dentro de una fórmula */
+.mat { position: relative; display: inline-block; vertical-align: middle; padding: 0 7px; margin: 2px 2px }
+.mat::before, .mat::after { content: ""; position: absolute; top: 0; bottom: 0; width: 5px; border: 1.4px solid currentColor }
+.mat::before { left: 0; border-right: 0 }
+.mat::after { right: 0; border-left: 0 }
+.mat table { border-collapse: collapse }
+.mat td { padding: 2px 7px; text-align: center; white-space: nowrap; font-variant-numeric: tabular-nums }
+
+/* ---------- Teoría ---------- */
+.teoria, .preguntas { margin-top: 28px; max-width: 860px; font-size: 15px; line-height: 1.6 }
+.preguntas h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
+.preguntas h3 { font: 600 15px var(--f-ui); margin: 14px 0 2px }
+.preguntas p { margin: 0 }
+.teoria h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
+.teoria .f { max-width: 100%; overflow-x: auto; overflow-y: hidden; font-family: var(--f-math); font-size: 16.5px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; display: inline-block }
+.teoria ul { padding-left: 20px }
+.teoria li { margin-bottom: 4px }
+.teoria li, .teoria p { overflow-x: auto; overflow-y: hidden }
+
+/* ---------- Liquid Glass ---------- */
+/* Vidrio solo en el marco (tarjetas, controles, barras); el lienzo de las gráficas y las fórmulas no se tocan. */
+body { display: flow-root; background: radial-gradient(60% 50% at 8% 0%, var(--halo1), transparent 70%), radial-gradient(50% 45% at 95% 10%, var(--halo2), transparent 70%), radial-gradient(55% 50% at 60% 100%, var(--halo3), transparent 70%), var(--bg); background-attachment: fixed }
+.card { background: var(--vidrio); border-color: var(--vidrio-borde); border-radius: 18px; box-shadow: var(--vidrio-brillo), var(--vidrio-sombra); -webkit-backdrop-filter: var(--blur); backdrop-filter: var(--blur) }
+.destacado { border-top: 3px solid var(--accent) }
+.in { background: var(--vidrio); border-color: var(--vidrio-borde); border-radius: 10px; box-shadow: var(--vidrio-brillo) }
+.btn { background: var(--vidrio-fuerte); border-color: var(--vidrio-borde); border-radius: 99px; padding: 5px 14px; box-shadow: var(--vidrio-brillo) }
+.modos { border-color: var(--vidrio-borde); border-radius: 99px; background: var(--vidrio); box-shadow: var(--vidrio-brillo); -webkit-backdrop-filter: var(--blur); backdrop-filter: var(--blur) }
+.modos button { background: transparent; border-radius: 99px }
+.modos button[aria-selected=true] { box-shadow: 0 1px 6px rgba(0,0,0,.18) }
+.resumen div { border-radius: 14px }
+.teoria .f { background: var(--vidrio); border-color: var(--vidrio-borde); border-radius: 12px }
+canvas { border-radius: 14px }
+@media (max-width: 900px) { .card, .modos { -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px) } }
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) { .card, .modos, header.top { background: var(--panel); -webkit-backdrop-filter: none; backdrop-filter: none } .in, .btn, .teoria .f { background: var(--panel) } }
+
+:root { --accent:#b83c26; --accent-soft:color-mix(in srgb, #b83c26 12%, #fff); --marca:#0d6b66 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --accent:#ef7a62; --accent-soft:color-mix(in srgb, #ef7a62 16%, #182025); --marca:#4dbcb0 } }
+:root[data-theme="dark"] { --accent:#ef7a62; --accent-soft:color-mix(in srgb, #ef7a62 16%, #182025); --marca:#4dbcb0 }
+header.top { display:flex; align-items:center; gap:8px 20px; flex-wrap:wrap; padding:12px clamp(16px,3vw,28px); position:sticky; top:10px; z-index:10; margin:10px clamp(10px,2vw,20px) 0; border:1px solid var(--vidrio-borde); border-radius:22px; background:var(--vidrio-fuerte); box-shadow:var(--vidrio-brillo),var(--vidrio-sombra); -webkit-backdrop-filter:var(--blur); backdrop-filter:var(--blur) }
+header.top .logo { font:600 18px var(--f-math); margin:0; white-space:nowrap; color:var(--ink); text-decoration:none } header.top .logo i { color:var(--marca) }
+header.top nav { display:flex; gap:4px 14px; font-size:14px; overflow-x:auto; max-width:100%; scrollbar-width:none }
+header.top nav a { white-space:nowrap; padding:2px 0; color:var(--muted); text-decoration:none } header.top nav a:hover { color:var(--ink) }
+header.top nav a[aria-current] { color:var(--ink); font-weight:600; box-shadow:inset 0 -2px 0 var(--accent) }
+header.top form { margin-left:auto; flex:0 1 170px; min-width:130px }
+header.top .foro { margin-left:auto; display:inline-flex; align-items:center; gap:6px; white-space:nowrap; font:600 14px var(--f-ui); color:var(--ink); text-decoration:none; border:1px solid var(--vidrio-borde); background:var(--vidrio); border-radius:99px; padding:6px 12px } header.top .foro:hover, header.top .foro[aria-current] { border-color:var(--accent); color:var(--accent) } header.top .foro + form { margin-left:0 } header.top > .foro ~ .tema { margin-left:0 }
+@media (min-width:701px) { header.top { flex-wrap:nowrap } header.top nav { min-width:0 } }
+header.top .buscar { font:14px var(--f-ui); color:var(--ink); border:1px solid var(--vidrio-borde); border-radius:99px; padding:7px 14px; width:100%; background:var(--vidrio) }
+header.top .buscar:focus-visible, header.top a:focus-visible { outline:2px solid var(--accent); outline-offset:1px }
+.miga { display:flex; align-items:center; flex-wrap:wrap; gap:8px; font-size:13.5px; color:var(--muted); margin:0 0 10px }
+.miga a { color:var(--accent); font-weight:600; text-decoration:none } .miga a:hover { text-decoration:underline }
+.miga-ico { display:inline-grid; place-items:center; width:22px; height:22px; border-radius:6px; background:var(--accent-soft); color:var(--accent); font:italic 600 13px var(--f-math) }
+.miga-der { margin-left:auto; display:flex; gap:8px } .miga-izq:empty, .miga-der:empty { display:none }
+.bib-btn, .prac-btn { border-radius:8px !important; padding:6px 12px !important }
+body.bib-ejemplos select[id^="ejemplo"] { display:none }
+@media print { header.top, .miga, .prac-btn { display:none !important } }
+:root { --vida:#6a4fc2 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --vida:#b39ff7 } }
+:root[data-theme="dark"] { --vida:#b39ff7 }
+.relacionadas { max-width:860px; margin:16px 0 0; background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--accent); border-radius:4px 12px 12px 4px; padding:12px 16px }
+.relacionadas h2 { font:600 12px/1.4 var(--f-ui); text-transform:uppercase; letter-spacing:.06em; color:var(--accent); margin:0 0 4px }
+.relacionadas a { display:flex; gap:10px; align-items:baseline; padding:5px 0; color:var(--ink); text-decoration:none; font-size:14px }
+.relacionadas a b { font-weight:600; white-space:nowrap } .relacionadas a span { color:var(--muted) } .relacionadas a:hover b { color:var(--accent); text-decoration:underline }
+.vida-real { max-width:860px; margin:28px 0 0; background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--vida); border-radius:4px 12px 12px 4px; padding:12px 16px }
+.vida-real h2 { font:600 12px/1.4 var(--f-ui); text-transform:uppercase; letter-spacing:.06em; color:var(--vida); margin:0 0 4px }
+.vida-real a { display:flex; gap:10px; align-items:baseline; padding:5px 0; color:var(--ink); text-decoration:none; font-size:14px }
+.vida-real a b { font-weight:600; white-space:nowrap } .vida-real a span { color:var(--muted) } .vida-real a:hover b { color:var(--vida); text-decoration:underline }
+@media (max-width:600px) { .vida-real a, .relacionadas a { display:block } .vida-real a b, .relacionadas a b { display:block; white-space:normal } }
+@media (max-width:700px) { header.top form { display:none } h1 { font-size:21px }
+  .miga-izq, .miga-der, .miga::after { order:-1 } .miga::after { content:''; flex-basis:100%; height:0 } }
+
+.tema { flex:0 0 auto; margin-left:auto; width:36px; height:36px; display:grid; place-items:center; padding:0; border:1px solid var(--vidrio-borde, var(--line)); border-radius:99px; background:var(--vidrio, var(--bg)); color:var(--ink); cursor:pointer }
+.buscar ~ .tema, form ~ .tema { margin-left:0 }
+.tema:hover { border-color:var(--accent); color:var(--accent) }
+.tema:focus-visible { outline:2px solid var(--accent); outline-offset:1px }
+.tema .sol { display:none }
+:root[data-theme="dark"] .tema .sol { display:block } :root[data-theme="dark"] .tema .luna { display:none }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .tema .sol { display:block } :root:not([data-theme="light"]) .tema .luna { display:none } }
+@media (max-width:700px) { .top > .tema { margin-left:auto } .top > nav { order:1 } }
+</style>
+<style>
+#resumen .est { grid-column: 1 / -1 }
+/* la sección es ancha y baja: no necesita tanta altura */
+:root { --alto-grafica: clamp(220px, 28vw, 300px) }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../../">Cienci<i>fy</i></a><nav aria-label="Subjects"><a href="../../../">Home</a><a href="../" aria-current="page">Electromagnetism</a><a href="../../fisica/">General physics</a><a href="../../quimica/">Chemistry</a><a href="../../matematicas/">Mathematics</a><a href="../../estadistica/">Statistics</a><a href="../../circuitos/">Circuits</a><a href="../../economia/">Economics</a><a href="../../fenomenos/">Real life</a></nav><a class="foro" href="../../foro/"><span aria-hidden="true">💬</span>Forum</a><form action="../../../" role="search"><input class="buscar" type="search" name="q" placeholder="Search: Biot-Savart, molarity…" aria-label="Search tools (shortcut: / key)" title="Shortcut: / or Ctrl+K"></form><style>
+.lg { position:relative; flex:0 0 auto }
+.lg-btn { display:inline-flex; align-items:center; gap:6px; height:36px; padding:0 12px; border:1px solid var(--vidrio-borde, var(--line)); border-radius:99px; background:var(--vidrio, var(--bg)); color:var(--ink); font:600 13px var(--f-ui, system-ui, sans-serif); cursor:pointer }
+.lg-btn:hover { border-color:var(--accent); color:var(--accent) }
+.lg-btn:focus-visible, .lg-pop a:focus-visible, .lg-ban button:focus-visible { outline:2px solid var(--accent); outline-offset:1px }
+.lg-pop { position:absolute; top:44px; right:0; z-index:50; min-width:210px; margin:0; padding:6px; list-style:none; border:1px solid var(--vidrio-borde, var(--line)); border-radius:16px; background:rgba(255,255,255,.98); color:var(--ink); box-shadow:0 12px 36px rgba(0,0,0,.22) }
+.lg-pop[hidden] { display:none }
+:root[data-theme="dark"] .lg-pop, :root[data-theme="dark"] .lg-ban { background:rgba(28,34,38,.98) }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .lg-pop, :root:not([data-theme="light"]) .lg-ban { background:rgba(28,34,38,.98) } }
+.lg-t { font:600 11px var(--f-ui, system-ui, sans-serif); text-transform:uppercase; letter-spacing:.06em; color:var(--muted); padding:6px 10px 4px }
+.lg-pop a { display:flex; justify-content:space-between; align-items:center; gap:14px; padding:8px 10px; border-radius:10px; color:var(--ink); text-decoration:none; font:500 14px var(--f-ui, system-ui, sans-serif) }
+.lg-pop a:hover { background:var(--accent-soft) }
+.lg-pop a > span { display:flex; align-items:center; gap:10px }
+.lg-pop a small { color:var(--muted); font-size:12px }
+.lg-pop a[aria-current="true"] { background:var(--accent-soft); font-weight:700 }
+.lg-pop a[aria-current="true"] small::after { content:' ✓'; color:var(--accent) }
+.lg-fl { flex:none; border-radius:50%; box-shadow:0 0 0 1px rgba(0,0,0,.18) }
+.lg-ban { position:fixed; left:50%; bottom:18px; z-index:60; transform:translateX(-50%); width:min(560px, calc(100vw - 24px)); box-sizing:border-box; display:flex; flex-wrap:wrap; align-items:center; gap:10px 12px; padding:12px 16px; border:1px solid var(--vidrio-borde, var(--line)); border-radius:18px; background:rgba(255,255,255,.98); color:var(--ink); box-shadow:0 12px 36px rgba(0,0,0,.25); font:14px var(--f-ui, system-ui, sans-serif) }
+.lg-ban p { flex:1 1 220px; margin:0 }
+.lg-ban button { font:600 13px var(--f-ui, system-ui, sans-serif); padding:7px 14px; border-radius:99px; border:1px solid var(--vidrio-borde, var(--line)); background:var(--vidrio, var(--bg)); color:var(--ink); cursor:pointer }
+.lg-ban button.lg-si { background:var(--accent); border-color:var(--accent); color:#fff }
+:root[data-theme="dark"] .lg-ban button.lg-si { color:#0d141a }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .lg-ban button.lg-si { color:#0d141a } }
+@media (max-width:700px) { .top > .lg { margin-left:auto } .top > .lg + .tema { margin-left:0 } }
+@media print { .lg, .lg-ban { display:none !important } }
+</style><div class="lg"><button class="lg-btn" type="button" aria-expanded="false" aria-controls="lg-lista" aria-label="Language: English" title="Language"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.8 3 2.8 15 0 18M12 3c-2.8 3-2.8 15 0 18"/></svg><span>EN</span><span aria-hidden="true">▾</span></button><ul class="lg-pop" id="lg-lista" hidden><li class="lg-t" aria-hidden="true">Language · Idioma</li><li><a href="../../../" hreflang="es" lang="es"><span><svg class="lg-fl" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false"><rect width="24" height="24" fill="#c60b1e"/><rect y="6" width="24" height="12" fill="#ffc400"/></svg>Español</span><small>ES</small></a></li><li><a href="../../../en/" hreflang="en" lang="en" aria-current="true"><span><svg class="lg-fl" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false"><rect width="24" height="24" fill="#012169"/><path d="M0 0L24 24M24 0L0 24" stroke="#fff" stroke-width="5"/><path d="M0 0L24 24M24 0L0 24" stroke="#c8102e" stroke-width="2"/><path d="M12 0V24M0 12H24" stroke="#fff" stroke-width="8"/><path d="M12 0V24M0 12H24" stroke="#c8102e" stroke-width="4.5"/></svg>English</span><small>EN</small></a></li></ul></div><script>(() => {
+  const L = [{"c":"es","d":"","n":"Español","a":["Esta página está disponible en español.","Cambiar a español","Seguir aquí"]},{"c":"en","d":"en/","n":"English","a":["This page is available in English.","Switch to English","Stay here"]}], ACTUAL = "en", K = 'simu-idioma';
+  const guarda = (c) => { try { localStorage.setItem(K, c); } catch (e) { /* sin almacenamiento */ } };
+  const lee = () => { try { return localStorage.getItem(K); } catch (e) { return null; } };
+  const resto = () => { let p = location.pathname; for (const i of L) if (i.d && p.startsWith('/' + i.d)) { p = '/' + p.slice(i.d.length + 1); break; } return p + location.search + location.hash; };
+  const destino = (i) => '/' + i.d + resto().replace(/^\//, '');
+  const btn = document.querySelector('.lg-btn'), pop = document.querySelector('.lg-pop');
+  if (!btn || !pop) return;
+  pop.querySelectorAll('a[hreflang]').forEach((a) => { const i = L.find((x) => x.c === a.hreflang); if (i && /^https?:$/.test(location.protocol)) a.href = destino(i); a.addEventListener('click', () => guarda(a.hreflang)); });
+  const abre = (v) => { pop.hidden = !v; btn.setAttribute('aria-expanded', String(v)); };
+  btn.addEventListener('click', (e) => { e.stopPropagation(); abre(pop.hidden); });
+  document.addEventListener('click', (e) => { if (!pop.hidden && !e.target.closest('.lg')) abre(false); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !pop.hidden) { abre(false); btn.focus(); } });
+  pop.addEventListener('focusout', (e) => { if (!pop.hidden && !e.relatedTarget?.closest?.('.lg')) abre(false); });
+  // aviso: una vez, sin elección guardada, con el idioma del navegador publicado y distinto del de la página
+  if (lee() || window.__sinAviso) return;
+  const pref = (navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language || '']).map((s) => String(s).toLowerCase().slice(0, 2));
+  const i = pref.map((c) => L.find((x) => x.c === c)).find(Boolean);
+  if (!i || i.c === ACTUAL) { return; }
+  const b = document.createElement('div'); b.className = 'lg-ban'; b.setAttribute('role', 'region'); b.setAttribute('aria-label', "Language"); b.lang = i.c;
+  const t = document.createElement('p'); t.textContent = i.a[0];
+  const si = document.createElement('button'); si.type = 'button'; si.className = 'lg-si'; si.textContent = i.a[1];
+  const no = document.createElement('button'); no.type = 'button'; no.textContent = i.a[2];
+  si.addEventListener('click', () => { guarda(i.c); const a = [...pop.querySelectorAll('a[hreflang]')].find((x) => x.hreflang === i.c); location.href = a ? a.href : destino(i); });
+  no.addEventListener('click', () => { guarda(ACTUAL); b.remove(); });
+  b.append(t, si, no); document.body.append(b);
+})();</script><button class="tema" type="button" title="Switch between light and dark mode" aria-label="Switch between light and dark mode"><svg class="luna" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.5A8.5 8.5 0 1 1 9.5 3.5a7 7 0 0 0 11 11z"/></svg><svg class="sol" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button></header>
+<main class="wrap">
+<nav class="miga" aria-label="You are here"><span class="miga-izq"></span><span class="miga-ico" aria-hidden="true">E</span><a href="../">Electromagnetism</a><span aria-hidden="true">›</span><span>Waveguides</span><span class="miga-der"></span></nav>
+<h1>Waveguides</h1>
+<p class="lead">TE and TM modes of a rectangular waveguide: cutoff frequency, wavelength in the guide, velocities, impedance and the mode field.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Data</h2>
+    <select id="ejemplos" class="in" aria-label="Examples" style="margin-bottom:12px"></select>
+    <div class="campos" id="campos"></div>
+    <p class="nota" id="nota"></p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card destacado"><h2>Results</h2><div class="resumen" id="resumen"></div>
+      <p class="controles"><button type="button" class="btn" id="abrir-cav" data-usar="cavidades" hidden>Open in Cavities</button></p></div>
+    <div class="card"><h2>Chart</h2>
+      <canvas id="grafica" aria-label="Chart"></canvas>
+      <p class="leyenda" id="leyenda"></p>
+    </div>
+    <div class="card pasos"><h2>Working</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<div class="anuncio"><span>Advertising</span><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-6407501780492688" data-ad-slot="4415753033" data-ad-format="auto" data-full-width-responsive="true"></ins><script>(window.adsbygoogle = window.adsbygoogle || []).push({});</script></div>
+<section class="teoria">
+  <h2>What a waveguide is</h2>
+  <p class="m">A hollow metal tube (or one filled with dielectric) of rectangular cross-section $a × b$, with $a ≥ b$, that carries microwave electromagnetic waves with little loss. The walls are treated as a perfect conductor: the tangential E field vanishes on them, and so only certain <em>modes</em> fit, with $m$ and $n$ half-cycles along $a$ and $b$.</p>
+  <h2>TE and TM modes</h2>
+  <p class="m">In TE modes the electric field is transverse to the propagation ($E_z = 0$) and in TM modes the magnetic field is ($H_z = 0$). For TE, $m, n ≥ 0$ (not both zero at once) and for TM $m, n ≥ 1$. The mode with the lowest cutoff frequency, the dominant one, is $"TE"_{10}$.</p>
+  <div class="anuncio"><span>Advertising</span><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-6407501780492688" data-ad-slot="4415753033" data-ad-format="auto" data-full-width-responsive="true"></ins><script>(window.adsbygoogle = window.adsbygoogle || []).push({});</script></div>
+<h2>Cutoff frequency</h2>
+  <p class="f m">$f_c = v/2 √({(m/a)^2 + (n/b)^2})$, &ensp; $λ_c = v/f_c$, &ensp; $v = c/√(ε_r)$</p>
+  <p class="m">Below $f_c$ the mode does not propagate: its field decays with $α = k_c √(1 − (f/f_c)^2)$ and carries no power. Above it, it propagates with</p>
+  <p class="f m">$β = k √(1 − (f_c/f)^2)$, &ensp; $λ_g = {2π}/β > λ$, &ensp; $v_f = v/√(1 − (f_c/f)^2) > v$, &ensp; $v_g = v √(1 − (f_c/f)^2) < v$</p>
+  <p class="m">The phase velocity exceeds that of the medium, but the energy travels at the group velocity, and $v_f v_g = v^2$. The wave impedances are $Z_{"TE"} = η/√(1 − (f_c/f)^2)$ and $Z_{"TM"} = η √(1 − (f_c/f)^2)$, with $η = η_0/√(ε_r)$.</p>
+  <h2>Single-mode band</h2>
+  <p class="m">Between the cutoff frequency of the dominant mode and that of the next one, only one mode propagates, which is how it is used in practice. In a WR-90 guide (22.86 × 10.16 mm) the $"TE"_{10}$ cuts off at 6.557 GHz and the next mode at 13.114 GHz ($"TE"_{20}$): the X band (8 to 12 GHz) falls inside the single-mode band.</p>
+</section>
+<section class="preguntas" aria-label="Frequently asked questions">
+<h2>Frequently asked questions</h2>
+<h3>How is the cutoff frequency of a rectangular waveguide calculated?</h3>
+<p>For the TE_mn mode, f_c = (c/2)·√((m/a)² + (n/b)²). For the fundamental TE₁₀ mode of a WR-90 guide with a = 22.86 mm, f_c = c/(2a) ≈ 6.56 GHz.</p>
+<h3>How is the wavelength in the guide calculated?</h3>
+<p>It only propagates if f &gt; f_c, and then λ_g = λ/√(1 − (f_c/f)²). At 10 GHz, λ = 3 cm and f_c = 6.56 GHz: λ_g = 3 / √(1 − 0.43) ≈ 3.97 cm.</p>
+</section>
+<div class="anuncio"><span>Advertising</span><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-6407501780492688" data-ad-slot="4415753033" data-ad-format="auto" data-full-width-responsive="true"></ins><script>(window.adsbygoogle = window.adsbygoogle || []).push({});</script></div>
+<section class="relacionadas" aria-label="Related tools"><h2>Related tools</h2>
+<a href="../../fisica/ondas/"><b>Mechanical waves →</b><span>Wave equation, standing waves in strings and tubes, beats and interference, energy, reflection and transmission, Doppler and sound level, with animation.</span></a>
+<a href="../maxwell/"><b>Maxwell's equations →</b><span>The four equations in integral and differential form, with a calculator for each one (Gauss, Faraday, Ampère–Maxwell, continuity and the speed of light) and links to the simulators.</span></a>
+<a href="../antena/"><b>Dipole antenna and radiation →</b><span>Polar radiation pattern, radiated power, radiation resistance, directivity and field of a short dipole, a half-wave dipole or any length.</span></a>
+<a href="../lineas-transmision/"><b>Transmission lines and Smith chart →</b><span>Reflection coefficient, VSWR and standing waves of a loaded line, the Smith chart drawn and matching with a stub or a λ/4 transformer.</span></a>
+</section>
+</main>
+<footer><a href="../../../">Home</a>·<a href="../../contacto.html">Contact</a>·<a href="mailto:danijimzzz30@gmail.com?subject=Error%20en%20Gu%C3%ADas%20de%20onda&amp;body=Herramienta%3A%20Gu%C3%ADas%20de%20onda%20(electromagnetismo%2Fguias-onda)%0A%0AQu%C3%A9%20esperaba%20y%20qu%C3%A9%20ha%20pasado%3A%0A">Report an error</a>·<a href="../../aviso-legal.html">Legal notice</a>·<a href="../../privacidad.html">Privacy</a>·<a href="../../cookies.html">Cookies</a> · <a href="#" class="pref-cookies">Cookie preferences</a>· Waveguides <span id="ver"></span> (beta)</footer>
+</body>
+<script>
+const Pagina = { carpeta: 'guias-onda', guarda: 'guias-onda-v1' };
+const Version = (() => { const registros = {"web":[{"v":"1.21"}],"control":[{"v":"0.2"}],"termo-estadistica":[{"v":"0.2"}],"markowitz":[{"v":"0.3"}],"cavidades":[{"v":"0.2"}],"organica":[{"v":"0.3"}],"transformada-z":[{"v":"0.2"}],"semiconductores":[{"v":"0.2"}],"relatividad":[{"v":"0.2"}],"osc-acopladas":[{"v":"0.2"}],"solubilidad":[{"v":"0.2"}],"lagrange":[{"v":"0.2"}],"series":[{"v":"0.3"}],"no-parametricos":[{"v":"0.3"}],"regresion-multiple":[{"v":"0.2"}],"anova":[{"v":"0.3"}],"black-scholes":[{"v":"0.3"}],"bonos":[{"v":"0.3"}],"solow":[{"v":"0.3"}],"integrales-multiples":[{"v":"0.1"}],"formulacion":[{"v":"0.2"}],"balance":[{"v":"0.2"}],"redox":[{"v":"0.2"}],"lineas-transmision":[{"v":"0.3"}],"superficies":[{"v":"0.2"}],"vsepr":[{"v":"0.2"}],"maxwell":[{"v":"0.3"}],"fresnel":[{"v":"0.2"}],"gravitacion":[{"v":"0.2"}],"convolucion":[{"v":"0.2"}],"laplace-numerica":[{"v":"0.2"}],"imagenes":[{"v":"0.2.1"}],"guias-onda":[{"v":"0.2"}],"antena":[{"v":"0.2"}],"bode":[{"v":"0.3"}],"optica":[{"v":"0.2"}],"simulador":[{"v":"0.4"}],"teoria-juegos":[{"v":"0.2"}],"puertas-logicas":[{"v":"0.4"}],"multiplicador":[{"v":"0.3"}],"is-lm":[{"v":"0.3"}],"choques":[{"v":"0.1"}],"termoquimica":[{"v":"0.3"}],"probabilidad":[{"v":"0.2"}],"unidades":[{"v":"0.2"}],"equilibrio":[{"v":"0.2"}],"oscilaciones":[{"v":"0.1"}],"beneficio":[{"v":"0.3"}],"costes":[{"v":"0.3"}],"sistemas-numericos":[{"v":"0.2"}],"excedentes":[{"v":"0.2"}],"oferta-demanda":[{"v":"0.2"}],"chi2-bondad":[{"v":"0.2"}],"contrastes":[{"v":"0.2"}],"errores":[{"v":"0.2"}],"graficador":[{"v":"0.2"}],"metodos-numericos":[{"v":"0.2"}],"fisica-moderna":[{"v":"0.2"}],"lorenz-gini":[{"v":"0.2"}],"phillips-okun":[{"v":"0.3"}],"tipos-cambio":[{"v":"0.3"}],"elasticidades":[{"v":"0.3"}],"pib-ipc":[{"v":"0.2"}],"numeros-indice":[{"v":"0.2"}],"ratios":[{"v":"0.2"}],"punto-muerto":[{"v":"0.2"}],"ahorro":[{"v":"0.3"}],"van-tir":[{"v":"0.3"}],"amortizacion-inmovilizado":[{"v":"0.2"}],"prestamos":[{"v":"0.3"}],"rentas":[{"v":"0.3"}],"interes":[{"v":"0.3"}],"descriptiva":[{"v":"0.2"}],"regresion-economia":[{"v":"0.2"}],"ajustador":[{"v":"0.2.1"}],"electrostatica":[{"v":"0.11"}],"magnetostatica":[{"v":"0.4"}],"tabla-periodica":[{"v":"0.2"}],"trabajo-y-energia":[{"v":"0.3"}],"masa-molar":[{"v":"0.2"}],"configuracion-electronica":[{"v":"0.2"}],"condensadores":[{"v":"0.4"}],"tiro-parabolico":[{"v":"0.4"}],"disoluciones":[{"v":"0.2"}],"calorimetria":[{"v":"0.2"}],"induccion":[{"v":"0.4"}],"matrices":[{"v":"0.3"}],"derivadas":[{"v":"0.3"}],"laplace":[{"v":"0.2"}],"interferencia":[{"v":"0.2"}],"ondas-em":[{"v":"0.4"}],"intervalos":[{"v":"0.3"}],"fuerza":[{"v":"0.3"}],"campos":[{"v":"0.2.1"}],"cinetica":[{"v":"0.2"}],"edos":[{"v":"0.2"}],"fourier":[{"v":"0.2"}],"taylor":[{"v":"0.3"}],"complejos":[{"v":"0.3"}],"sistemas":[{"v":"0.3"}],"regresion":[{"v":"0.3"}],"estadistica":[{"v":"0.3"}],"dinamica":[{"v":"0.3"}],"solido-rigido":[{"v":"0.3"}],"ondas":[{"v":"0.3"}],"gases":[{"v":"0.6"}],"ciclos":[{"v":"0.2"}],"ph":[{"v":"0.4"}],"fluidos":[{"v":"0.3"}],"doppler":[{"v":"0.2"}],"resistencias":[{"v":"0.3"}],"faraday":[{"v":"0.4"}],"fenomenos":[{"v":"0.9"}]}; const de = (h) => ({ current: registros[h][0].v, log: registros[h] }); return { registros, de }; })();
+
+</script>
+<script src="../../../js/en/herramienta.en.e2425303.js"></script>
+<script src="../../../js/en/enunciado.en.73e3a542.js"></script>
+<script src="../../../js/en/fisica-constantes.en.58567bee.js"></script>
+<script src="../../../js/en/mates.en.fbd66204.js"></script>
+<script src="../../../js/en/cavidades-calculo.en.e2f3b3ab.js"></script>
+<script>
+const GuiasOnda = (() => {
+  const Cav = typeof Cavidades !== 'undefined' ? Cavidades : require('../cavidades/calculo.js');
+  const SI = typeof Constantes !== 'undefined' ? Constantes.SI : require('../fisica/constantes.js').SI;
+  const C0 = SI.c, ETA0 = 376.730313;
+  const f = (x, d = 4) => {
+    if (!isFinite(x)) return '—';
+    if (Math.abs(x) < 1e-12) return '0';
+    const a = Math.abs(x);
+    const s = a >= 1e6 || a < 1e-3 ? x.toExponential(d - 1).replace(/\.?0+e/, 'e').replace('e', '·10^').replace(/\^([+-]?)(\d+)/, (_, sg, e) => `<sup>${sg === '-' ? '−' : ''}${+e}</sup>`) : String(+x.toPrecision(d));
+    return s.replace('.', '.').replace('-', '−');
+  };
+  const leeNum0 = (s) => +String(s ?? '').trim().replace(/\s/g, '').replace(',', '.').replace(/[−–]/g, '-').replace(/[·x×*]10\^?([+\-]?\d+)/i, 'e$1');
+  const leeNum = (s) => { const u = typeof Herramienta !== 'undefined' ? Herramienta.leeUn(s) : undefined; return u !== undefined ? u : leeNum0(s); }; // admite «4 mm», «2,4 GHz», «10 pF»
+  const vacio = (v) => v === undefined || v === null || String(v).trim() === '';
+  const may = (s) => s[0].toUpperCase() + s.slice(1);
+  function lee(sc, k, nom, min = 0) {
+    if (vacio(sc[k])) throw new Error(`Missing ${nom}`);
+    const v = leeNum(sc[k]);
+    if (!isFinite(v)) throw new Error(`${may(nom)} must be a number`);
+    if (v <= min) throw new Error(`${may(nom)} must be greater than ${min}`);
+    return v;
+  }
+  const entero = (sc, k, nom) => {
+    if (vacio(sc[k])) throw new Error(`Missing ${nom}`);
+    const v = leeNum(sc[k]);
+    if (!Number.isInteger(v) || v < 0 || v > 20) throw new Error(`${may(nom)} must be an integer between 0 and 20`);
+    return v;
+  };
+
+  const fcorte = (a, b, v, m, n) => (v / 2) * Math.hypot(m / a, n / b);
+  function modos(a, b, v) {
+    const l = [];
+    for (let m = 0; m <= 8; m++) for (let n = 0; n <= 8; n++) {
+      if (m || n) l.push({ tipo: 'TE', m, n, fc: fcorte(a, b, v, m, n) });
+      if (m && n) l.push({ tipo: 'TM', m, n, fc: fcorte(a, b, v, m, n) });
+    }
+    return l.sort((p, q) => p.fc - q.fc || p.m + p.n - q.m - q.n || (p.tipo < q.tipo ? -1 : 1));
+  }
+  function campo(tipo, m, n, a, b, x, y) {
+    const cx = Math.cos(m * Math.PI * x / a), sx = Math.sin(m * Math.PI * x / a), cy = Math.cos(n * Math.PI * y / b), sy = Math.sin(n * Math.PI * y / b);
+    return tipo === 'TE' ? [(n / b) * cx * sy, -(m / a) * sx * cy] : [-(m / a) * cx * sy, -(n / b) * sx * cy];
+  }
+  const nom = (t, m, n) => `<b>${t}<sub>${m}${n}</sub></b>`;
+  const nomMates = (t, m, n) => `"${t}"_{${m}${n}}`;
+
+
+  const xCirc = (tipo, n, m) => (tipo === 'TM' ? Cav.cerosJ(n, m) : Cav.cerosJp(n, m));
+  function modosCirc(R, v) {
+    const l = [];
+    for (let n = 0; n <= 6; n++) for (let m = 1; m <= 4; m++) for (const t of ['TE', 'TM']) { const x = xCirc(t, n, m); l.push({ tipo: t, m: n, n: m, x, fc: (x * v) / (2 * Math.PI * R) }); } // m = índice azimutal n del modo, n = radial (se guardan con los nombres de la rectangular: «m» primero)
+    return l.sort((p, q) => p.fc - q.fc || (p.tipo < q.tipo ? -1 : 1));
+  }
+  function campoCirc(tipo, n, m, R, x, y) {
+    const rho = Math.max(Math.hypot(x, y), 1e-9), ph = Math.atan2(y, x), kc = xCirc(tipo, n, m) / R, u = kc * rho;
+    const J = Cav.Jn(n, u), Jp = (Cav.Jn(n - 1, u) - Cav.Jn(n + 1, u)) / 2, c = Math.cos(n * ph), s2 = Math.sin(n * ph);
+    const nJ = n === 0 ? 0 : (n * J) / rho;
+    const [er, ef] = tipo === 'TE' ? [nJ * s2, kc * Jp * c] : [kc * Jp * c, -nJ * s2];
+    return [er * Math.cos(ph) - ef * Math.sin(ph), er * Math.sin(ph) + ef * Math.cos(ph)];
+  }
+  const nomC = (t, n, m) => `<b>${t}<sub>${n}${m}</sub></b>`;
+
+  function resolver(sc) {
+    const circ = sc.forma === 'circ', er = lee(sc, 'er', 'εr'), F = lee(sc, 'f', 'the frequency') * 1e9;
+    const a = circ ? 0 : lee(sc, 'a', 'the side a') / 1000, b = circ ? 0 : lee(sc, 'b', 'the side b') / 1000, R = circ ? lee(sc, 'R', 'the radius R') / 1000 : 0;
+    const tipo = sc.tipo === 'TM' ? 'TM' : 'TE', m = entero(sc, 'm', circ ? 'n (azimutal)' : 'm'), n = circ ? entero(sc, 'n', 'm (radial)') : entero(sc, 'n', 'n');
+    if (circ) { if (n < 1) throw new Error('In the circular guide the radial index m must be at least 1'); if (m > 6 || n > 4) throw new Error('The allowed indices are n from 0 to 6 and m from 1 to 4'); }
+    else if (!m && !n) throw new Error('m and n cannot both be 0');
+    if (!circ && tipo === 'TM' && (!m || !n)) throw new Error('In TM modes, m and n must be at least 1');
+    const v = C0 / Math.sqrt(er), eta = ETA0 / Math.sqrt(er), lam = v / F, k = 2 * Math.PI / lam;
+    const xr = circ ? xCirc(tipo, m, n) : 0, fc = circ ? (xr * v) / (2 * Math.PI * R) : fcorte(a, b, v, m, n), kc = 2 * Math.PI * fc / v, lc = v / fc, ratio = fc / F, propaga = F > fc;
+    const lista = circ ? modosCirc(R, v) : modos(a, b, v), prop = lista.filter((q) => q.fc < F), fc1 = lista[0], seg = lista.find((q) => q.fc > fc1.fc * (1 + 1e-9));
+    const r = { forma: circ ? 'circ' : 'rect', R, x: xr, a, b, er, F, tipo, m, n, v, eta, lam, k, fc, kc, lc, propaga, modos: prop, dominante: fc1, banda: [fc1.fc, seg.fc], lista };
+    const nomMo = (t, i, j) => (circ ? `"${t}"_{${i}${j}}` : nomMates(t, i, j));
+    const pasos = [
+      { t: 'Data', html: (circ ? `Circular waveguide of radius $R = ${f(R * 1000)} "mm"$` : `$a = ${f(a * 1000)} "mm"$, $b = ${f(b * 1000)} "mm"$`) + `, $ε_r = ${f(er)}$, $f = ${f(F / 1e9)} "GHz"$. Mode ${nomMo(tipo, m, n)}.` },
+      { t: 'Speed and wavelength in the filling', html: `$v = c/√(ε_r) = ${f(v)} "m/s"$, $λ = v/f = ${f(lam * 1000)} "mm"$, $η = {η_0}/√(ε_r) = ${f(eta)} "Ω"$` },
+      { t: 'Cutoff frequency', html: circ ? `With ${tipo === 'TE' ? "the zero of the derivative $x'_{" + m + n + "}$ of $J_" + m + "'$" : 'the zero $x_{' + m + n + '}$ of $J_' + m + '$'} $= ${f(xr)}$: $f_c = {x v}/{2π R} = {${f(xr)} · ${f(v)}}/{2π · ${f(R)}} = ${f(fc / 1e9)} "GHz"$, and $λ_c = v/f_c = ${f(lc * 1000)} "mm"$ (= $2π R/x = ${f(2 * Math.PI * R * 1000 / (xr || 1))} "mm"$)` : `$f_c = v/2 √({(m/a)^2 + (n/b)^2}) = ${f(v / 2)}·√({(${m}/${f(a)})^2 + (${n}/${f(b)})^2}) = ${f(fc / 1e9)} "GHz"$, and $λ_c = v/f_c = ${f(lc * 1000)} "mm"$` },
+    ];
+    if (propaga) {
+      const s = Math.sqrt(1 - ratio * ratio);
+      r.beta = k * s; r.lg = 2 * Math.PI / r.beta; r.vf = v / s; r.vg = v * s; r.Z = tipo === 'TE' ? eta / s : eta * s;
+      pasos.push(
+        { t: `Since f = ${f(F / 1e9)} GHz > f_c = ${f(fc / 1e9)} GHz, the mode propagates`, html: `$f_c/f = ${f(ratio)}$, $√(1 − (f_c/f)^2) = ${f(s)}$` },
+        { t: 'Phase constant and wavelength in the guide', html: `$β = k √(1 − (f_c/f)^2) = ${f(k)}·${f(s)} = ${f(r.beta)} "rad/m"$, $λ_g = {2π}/β = ${f(r.lg * 1000)} "mm"$` },
+        { t: 'Phase and group velocities', html: `$v_f = v/√(1 − (f_c/f)^2) = ${f(r.vf)} "m/s"$, $v_g = v √(1 − (f_c/f)^2) = ${f(r.vg)} "m/s"$ (cumplen $v_f v_g = v^2$)` },
+        { t: `Wave impedance of the ${tipo} mode`, html: tipo === 'TE' ? `$Z_{"TE"} = η/√(1 − (f_c/f)^2) = ${f(r.Z)} "Ω"$` : `$Z_{"TM"} = η √(1 − (f_c/f)^2) = ${f(r.Z)} "Ω"$` });
+    } else {
+      r.alfa = (2 * Math.PI / lc) * Math.sqrt(1 - (F / fc) ** 2);
+      r.dB = 8.685889638 * r.alfa;
+      pasos.push(
+        { t: `Since f = ${f(F / 1e9)} GHz < f_c = ${f(fc / 1e9)} GHz, the mode does not propagate (evanescent)`, html: `$f_c/f = ${f(ratio)}$: the field decays as $e^{−α z}$ without propagating` },
+        { t: 'Attenuation', html: `$α = k_c √(1 − (f/f_c)^2) = ${f(r.kc)}·${f(Math.sqrt(1 - (F / fc) ** 2))} = ${f(r.alfa)} "Np/m" = ${f(r.dB)} "dB/m"$` });
+    }
+    const f1 = fc1.fc, f2 = seg.fc;
+    pasos.push(
+      { t: 'Dominant mode and single-mode band', html: `The mode with the lowest $f_c$ is ${nomMo(fc1.tipo, fc1.m, fc1.n)}, with $f_c = ${f(f1 / 1e9)} "GHz"$; the next one is ${nomMo(seg.tipo, seg.m, seg.n)}, with ${f(f2 / 1e9)} GHz. Only the dominant mode propagates between ${f(f1 / 1e9)} and ${f(f2 / 1e9)} GHz.` },
+      { t: `At ${f(F / 1e9)} GHz ${prop.length ? prop.length : 'no'} mode${prop.length === 1 ? '' : 's'} propagate(s)`, html: prop.length ? prop.slice(0, 8).map((q) => `$${nomMo(q.tipo, q.m, q.n)}$ (${f(q.fc / 1e9)} GHz)`).join(', ') + (prop.length > 8 ? ', …' : '') : 'The frequency is below the cutoff of the dominant mode.' });
+    const dC = vacio(sc.lc) ? (propaga ? r.lg / 2 : null) : lee(sc, 'lc', 'the cavity length (mm)') / 1000;
+    if (dC) {
+      const res = [1, 2, 3].map((p) => ({ p, f: (v / 2) * Math.sqrt((kc / Math.PI) ** 2 + (p / dC) ** 2) }));
+      if (tipo === 'TM' && !circ) res.unshift({ p: 0, f: (v / 2) * (kc / Math.PI) });
+      r.cavidad = { d: dC, res, geo: circ ? 'cil' : 'rect' };
+      pasos.push({ t: 'From the guide to the cavity', html: `Closing the guide with two conducting plates a distance $d = ${f(dC * 1000)} "mm"$${vacio(sc.lc) ? ' ($λ_g/2$)' : ''} apart gives a cavity: the waves going back and forth form a standing wave when $d = p λ_g/2$, that is $f = v/2 √((k_c/π)^2 + (p/d)^2)$. It resonates at ` + res.map((q) => `$${f(q.f / 1e9)} "GHz"$ ($"${tipo}"_{${m}${n}${q.p}}$)`).join(', ') + '. With «Open in Cavities» these data are carried to that tool.' });
+    }
+    r.pasos = pasos;
+    return r;
+  }
+
+  const ejemplos = [
+    { clave: 'wr90', nombre: 'WR-90 at 10 GHz: TE10 mode', sc: { a: '22,86', b: '10,16', er: '1', f: '10', tipo: 'TE', m: '1', n: '0' } },
+    { clave: 'wr90-te20', nombre: 'WR-90 at 10 GHz: TE20 mode (does not propagate)', sc: { a: '22,86', b: '10,16', er: '1', f: '10', tipo: 'TE', m: '2', n: '0' } },
+    { clave: 'wr90-tm11', nombre: 'WR-90 at 18 GHz: TM11 mode', sc: { a: '22,86', b: '10,16', er: '1', f: '18', tipo: 'TM', m: '1', n: '1' } },
+    { clave: 'teflon', nombre: '15 × 7 mm guide filled with Teflon (εr = 2.1)', sc: { a: '15', b: '7', er: '2,1', f: '8', tipo: 'TE', m: '1', n: '0' } },
+    { clave: 'microondas', nombre: 'Microwave oven cavity: 86 × 43 mm guide at 2.45 GHz', sc: { a: '86', b: '43', er: '1', f: '2,45', tipo: 'TE', m: '1', n: '0' } },
+    { clave: 'circular-te11', nombre: 'Circular guide with R = 10 mm at 10 GHz: TE11 mode (dominant)', sc: { forma: 'circ', R: '10', er: '1', f: '10', tipo: 'TE', m: '1', n: '1', lc: '' } },
+    { clave: 'circular-tm01', nombre: 'Circular guide with R = 10 mm at 15 GHz: TM01 mode', sc: { forma: 'circ', R: '10', er: '1', f: '15', tipo: 'TM', m: '0', n: '1', lc: '' } },
+    { clave: 'cerrar-cavidad', nombre: 'WR-90 closed at a length of 30 mm: cavity (GU-3)', sc: { forma: 'rect', a: '22,86', b: '10,16', er: '1', f: '10', tipo: 'TE', m: '1', n: '0', lc: '30' } },
+  ];
+
+  return { resolver, ejemplos, modos, campo, campoCirc, modosCirc, xCirc, f, nom, nomC };
+})();
+
+</script>
+<script src="../../../js/en/compartir.en.08e9415d.js"></script>
+<script>
+(() => {
+  const { $, esc, copia, txt, lienzo } = Herramienta;
+  const G = GuiasOnda, f = G.f, CLAVE = 'guias-onda-v1';
+
+  let sc = copia(G.ejemplos[0].sc);
+  try { const g = JSON.parse(localStorage.getItem(CLAVE)); if (g && typeof g === 'object') sc = g; } catch (e) { /* sin almacenamiento */ }
+  const guarda = () => { try { localStorage.setItem(CLAVE, JSON.stringify(sc)); } catch (e) { /* sin almacenamiento */ } };
+  let sol = null, col = {};
+
+  const fila = (k, nom, un) => `<label for="f-${k}">${nom}${un ? ` <small>(${un})</small>` : ''}</label><input id="f-${k}" class="in" data-k="${k}" value="${esc(sc[k] ?? '')}" inputmode="decimal" autocomplete="off">`;
+  const elige = (k, nom, lista) => `<label for="f-${k}">${nom}</label><select id="f-${k}" class="in" data-k="${k}">${lista.map(([v, t]) => `<option value="${v}"${String(sc[k]) === v ? ' selected' : ''}>${t}</option>`).join('')}</select>`;
+  function formulario() {
+    const circ = sc.forma === 'circ';
+    $('#campos').innerHTML = '<div class="sep">Guide</div>' + elige('forma', 'Cross-section', [['rect', 'Rectangular'], ['circ', 'Circular']]) +
+      (circ ? fila('R', 'Radius R', 'mm') : fila('a', 'Longer side a', 'mm') + fila('b', 'Shorter side b', 'mm')) + fila('er', 'Filling εr') +
+      '<div class="sep">Signal and mode</div>' + fila('f', 'Frequency', 'GHz') + elige('tipo', 'Mode type', [['TE', 'TE (Ez = 0)'], ['TM', 'TM (Hz = 0)']]) +
+      (circ ? fila('m', 'Index n (azimuthal, from 0)') + fila('n', 'Index m (radial, from 1)') : fila('m', 'Index m') + fila('n', 'Index n')) +
+      '<div class="sep">Close the guide (cavity)</div>' + fila('lc', 'Cavity length', 'mm, empty = λg/2');
+    $('#nota').textContent = circ ? 'Empty: εr = 1. A decimal point or comma and units (10 GHz, 2 cm) are accepted. In the circular guide n counts the field variations around the axis and m the radial zeros; the dominant mode is TE11.' : 'Empty: εr = 1. A decimal point or comma and units (10 GHz, 22.86 mm) are accepted. m and n count the half-cycles of the field along a and b.';
+  }
+  $('#campos').addEventListener('change', (e) => {
+    const t = e.target; if (t.tagName !== 'SELECT' || !t.dataset.k) return;
+    sc[t.dataset.k] = t.value; $('#ejemplos').value = '';
+    if (t.dataset.k === 'forma') { // al cambiar de sección se ponen datos razonables del modo dominante
+      if (t.value === 'circ') Object.assign(sc, { R: sc.R || '10', tipo: 'TE', m: '1', n: '1' }); else Object.assign(sc, { a: sc.a || '22,86', b: sc.b || '10,16', tipo: 'TE', m: '1', n: '0' });
+      formulario();
+    }
+    calcula();
+  });
+  $('#campos').addEventListener('input', (e) => { const t = e.target; if (!t.dataset.k || t.tagName === 'SELECT') return; sc[t.dataset.k] = t.value; $('#ejemplos').value = ''; calcula(); });
+
+  const sel = $('#ejemplos');
+  sel.innerHTML = '<option value="">Examples…</option>' + G.ejemplos.map((e) => `<option value="${e.clave}">${esc(e.nombre)}</option>`).join('');
+  sel.addEventListener('change', () => { if (sel.value) abrirEjemplo(sel.value); });
+  function abrirEjemplo(clave) {
+    const e = G.ejemplos.find((x) => x.clave === clave);
+    if (!e) return;
+    sc = copia(e.sc); formulario(); calcula(); sel.value = clave;
+  }
+
+  function azar() {
+    const de = (l) => l[Math.floor(Math.random() * l.length)], c = (x) => String(x).replace('.', '.');
+    const g = de([['22,86', '10,16'], ['47,55', '22,15'], ['15,8', '7,9'], ['58', '29'], ['34,85', '15,8']]);
+    const er = de(['1', '1', '2,25', '2,1', '4']), tipo = de(['TE', 'TE', 'TM']);
+    const m = tipo === 'TM' ? de(['1', '1', '2']) : de(['1', '1', '2', '0']), n = tipo === 'TM' ? de(['1', '1', '2']) : (m === '0' ? '1' : de(['0', '0', '1']));
+    const w = Math.sqrt(+m * +m / (+c(g[0]).replace(',', '.')) ** 2 + (+n) ** 2 / (+c(g[1]).replace(',', '.')) ** 2);
+    const fc = Constantes.SI.c / Math.sqrt(+c(er).replace(',', '.')) / 2 * w * 1000 / 1e9;
+    const fr = Math.round(fc * de([1.15, 1.3, 1.6, 2]) * 10) / 10;
+    sc = { forma: 'rect', a: g[0], b: g[1], er, f: c(fr), tipo, m, n, lc: '' };
+    formulario(); calcula(); sel.value = '';
+  }
+  const enunciado = () => `A rectangular waveguide of ${esc(sc.a)} × ${esc(sc.b)} mm ${+String(sc.er).replace(',', '.') === 1 ? 'is air-filled' : `is filled with a dielectric of εr = ${esc(sc.er)}`}. For the mode ${esc(sc.tipo)}<sub>${esc(sc.m)}${esc(sc.n)}</sub> at ${esc(sc.f)} GHz, calculate the cutoff frequency and wavelength, the phase constant β, the wavelength in the guide, the phase and group velocities and the wave impedance.`;
+
+  const dato = (t, v, cl = 'num') => `<div class="${cl}"><span>${t}</span>${v}</div>`;
+  function calcula() {
+    const err = $('#error');
+    try { sol = G.resolver(sc); } catch (e) {
+      sol = null; err.textContent = e.message; err.hidden = false;
+      $('#resumen').innerHTML = ''; $('#pasos').innerHTML = ''; $('#leyenda').textContent = ''; dibuja(); return;
+    }
+    err.hidden = true; guarda();
+    const circ = sol.forma === 'circ', nm = circ ? G.nomC : G.nom, mo = nm(sol.tipo, sol.m, sol.n);
+    let h = dato('Cutoff frequency', `f<sub>c</sub> = ${f(sol.fc / 1e9)} GHz`) + dato('Cutoff wavelength', `λ<sub>c</sub> = ${f(sol.lc * 1000)} mm`);
+    if (sol.propaga) h += dato('Mode status', `${mo} propagates`, 'est') + dato('Phase constant', `β = ${f(sol.beta)} rad/m`) + dato('Wavelength in the guide', `λ<sub>g</sub> = ${f(sol.lg * 1000)} mm`) +
+      dato('Phase velocity', `v<sub>f</sub> = ${f(sol.vf)} m/s`) + dato('Group velocity', `v<sub>g</sub> = ${f(sol.vg)} m/s`) + dato(`${sol.tipo} wave impedance`, `Z<sub>${sol.tipo}</sub> = ${f(sol.Z)} Ω`);
+    else h += dato('Mode status', `${mo} does not propagate (f &lt; f<sub>c</sub>)`, 'est') + dato('Attenuation', `α = ${f(sol.alfa)} Np/m`) + dato('In decibels', `${f(sol.dB)} dB/m`);
+    h += dato('Single-mode band', `${f(sol.banda[0] / 1e9)} to ${f(sol.banda[1] / 1e9)} GHz`, 'est') + dato('Modes that propagate at this frequency', sol.modos.length ? sol.modos.slice(0, 8).map((q) => nm(q.tipo, q.m, q.n)).join(', ') + (sol.modos.length > 8 ? ', …' : '') : 'ninguno', 'est');
+    if (sol.cavidad) h += dato('Cavity closing the guide', `d = ${f(sol.cavidad.d * 1000)} mm: resonates at ` + sol.cavidad.res.map((q) => `${f(q.f / 1e9)} GHz (p = ${q.p})`).join(', '), 'est');
+    $('#abrir-cav').hidden = !sol.cavidad;
+    $('#resumen').innerHTML = h;
+    $('#pasos').innerHTML = sol.pasos.map((p) => `<li><strong>${Mates.html(p.t)}</strong>${Mates.html(p.html)}</li>`).join('');
+    $('#leyenda').textContent = `Transverse electric field of the ${sol.tipo}${sol.m}${sol.n} mode in the ${sol.forma === 'circ' ? 'circular' : 'a × b'} cross-section: each arrow gives its direction and relative size. The dashed lines separate the zones where the field changes direction.`;
+    dibuja();
+  }
+
+  function colores() { const cs = getComputedStyle(document.documentElement); for (const k of ['--ink', '--muted', '--line', '--accent', '--panel']) col[k] = cs.getPropertyValue(k).trim(); }
+  function flecha(g, x, y, dx, dy, l) {
+    const mod = Math.hypot(dx, dy); if (mod < 1e-9) return;
+    const ux = dx / mod, uy = dy / mod, L = l * Math.min(1, mod), x2 = x + ux * L / 2, y2 = y + uy * L / 2, x1 = x - ux * L / 2, y1 = y - uy * L / 2, h = Math.min(6, L * 0.4);
+    g.beginPath(); g.moveTo(x1, y1); g.lineTo(x2, y2); g.stroke();
+    g.beginPath(); g.moveTo(x2, y2); g.lineTo(x2 - ux * h - uy * h * 0.5, y2 - uy * h + ux * h * 0.5); g.lineTo(x2 - ux * h + uy * h * 0.5, y2 - uy * h - ux * h * 0.5); g.closePath(); g.fill();
+  }
+  function dibujaCirc(g, w, h) {
+    const R = Math.min(w, h) / 2 - 22, cx = w / 2, cy = h / 2 + 4;
+    g.fillStyle = col['--panel']; g.strokeStyle = col['--ink']; g.lineWidth = 2.2; g.beginPath(); g.arc(cx, cy, R, 0, 2 * Math.PI); g.fill(); g.stroke();
+    const N = 17, rr = sol.R, vs = []; let mx = 0;
+    for (let i = 0; i < N; i++) for (let j = 0; j < N; j++) {
+      const x = ((i + 0.5) / N * 2 - 1) * rr, y = ((j + 0.5) / N * 2 - 1) * rr;
+      if (Math.hypot(x, y) > rr * 0.97) continue;
+      const e = G.campoCirc(sol.tipo, sol.m, sol.n, rr, x, y); vs.push([cx + (x / rr) * R, cy - (y / rr) * R, e[0], -e[1]]); mx = Math.max(mx, Math.hypot(e[0], e[1]));
+    }
+    g.strokeStyle = col['--accent']; g.fillStyle = col['--accent']; g.lineWidth = 1.6;
+    const L = (2 * R / N) * 0.9; for (const [x, y, ex, ey] of vs) flecha(g, x, y, ex / mx, ey / mx, L);
+    g.font = '12px system-ui, sans-serif'; g.fillStyle = col['--muted']; g.textAlign = 'center'; g.textBaseline = 'bottom'; g.fillText(txt(`R = ${f(sol.R * 1000)} mm`), cx, cy - R - 3);
+    g.textBaseline = 'top'; g.fillText(`${sol.tipo}${sol.m}${sol.n}`, cx, cy + R + 3);
+  }
+  function dibuja() {
+    const { g, w, h } = lienzo('#grafica');
+    if (!sol || !w || !h) return;
+    if (sol.forma === 'circ') { dibujaCirc(g, w, h); return; }
+    const mg = 16, esc1 = Math.min((w - 2 * mg) / sol.a, (h - 2 * mg - 14) / sol.b), W = sol.a * esc1, H = sol.b * esc1, x0 = (w - W) / 2, y0 = (h - H) / 2 + 6;
+    g.fillStyle = col['--panel']; g.strokeStyle = col['--ink']; g.lineWidth = 2.2; g.fillRect(x0, y0, W, H); g.strokeRect(x0, y0, W, H);
+    g.save(); g.setLineDash([4, 4]); g.strokeStyle = col['--line']; g.lineWidth = 1;
+    for (let i = 1; i < sol.m; i++) { const x = x0 + (i / sol.m) * W; g.beginPath(); g.moveTo(x, y0); g.lineTo(x, y0 + H); g.stroke(); }
+    for (let j = 1; j < sol.n; j++) { const y = y0 + (j / sol.n) * H; g.beginPath(); g.moveTo(x0, y); g.lineTo(x0 + W, y); g.stroke(); }
+    g.restore();
+    const nx = Math.max(6, Math.min(22, Math.round(W / 26))), ny = Math.max(4, Math.min(14, Math.round(H / 26)));
+    let mx = 0; const vs = [];
+    for (let i = 0; i < nx; i++) for (let j = 0; j < ny; j++) {
+      const x = (i + 0.5) / nx * sol.a, y = (j + 0.5) / ny * sol.b, e = G.campo(sol.tipo, sol.m, sol.n, sol.a, sol.b, x, y);
+      vs.push([x0 + (i + 0.5) / nx * W, y0 + H - (j + 0.5) / ny * H, e[0], -e[1]]); mx = Math.max(mx, Math.hypot(e[0], e[1]));
+    }
+    g.strokeStyle = col['--accent']; g.fillStyle = col['--accent']; g.lineWidth = 1.6;
+    const L = Math.min(W / nx, H / ny) * 0.9;
+    for (const [x, y, ex, ey] of vs) flecha(g, x, y, ex / mx, ey / mx, L);
+    g.font = '12px system-ui, sans-serif'; g.fillStyle = col['--muted']; g.textAlign = 'center'; g.textBaseline = 'bottom';
+    g.fillText(txt(`a = ${f(sol.a * 1000)} mm`), x0 + W / 2, y0 - 3); g.textBaseline = 'top'; g.fillText(`${sol.tipo}${sol.m}${sol.n}`, x0 + W / 2, y0 + H + 3);
+    g.save(); g.translate(x0 - 4, y0 + H / 2); g.rotate(-Math.PI / 2); g.textBaseline = 'bottom'; g.fillText(txt(`b = ${f(sol.b * 1000)} mm`), 0, 0); g.restore();
+  }
+  const mm = (x) => String(+(x * 1000).toPrecision(8)).replace('.', '.');
+  $('#abrir-cav').addEventListener('click', () => {
+    if (!sol || !sol.cavidad) return;
+    const c = sol.cavidad, p1 = c.res.find((q) => q.p >= 1) || c.res[0], base = { er: String(sol.er).replace('.', '.'), tand: '0', sigma: '5,8e7', tipo: sol.tipo, plano: 'xz', pos: 50, que: 'E', beta: '' };
+    const est = sol.forma === 'circ' ? { ...base, geo: 'cil', R: mm(sol.R), L: mm(c.d), i1: String(sol.m), i2: String(sol.n), i3: String(p1.p) } : { ...base, geo: 'rect', a: mm(sol.a), b: mm(sol.b), d: mm(c.d), i1: String(sol.m), i2: String(sol.n), i3: String(p1.p) };
+    try { localStorage.setItem('cavidades-v1', JSON.stringify(est)); } catch (e) { /* sin almacenamiento */ }
+    location.href = '../cavidades/' + (location.protocol === 'file:' ? 'index.html' : '');
+  });
+  Herramienta.exportar('#grafica', { nombre: 'guia-de-onda-campo', titulo: 'Mode field in the guide' });
+  window.addEventListener('resize', dibuja);
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { colores(); dibuja(); });
+
+  const ver = $('#ver'); if (ver) ver.textContent = Version.de('guias-onda').current;
+  colores(); formulario(); calcula();
+  window.GuiasOndaApp = { abrirEjemplo, azar, enunciado, resultado: () => sol && { fc: sol.fc, lc: sol.lc, beta: sol.beta, lg: sol.lg, vf: sol.vf, vg: sol.vg, Z: sol.Z, alfa: sol.alfa }, estado: () => copia(sc), cavidad: () => { $('#abrir-cav').click(); } };
+})();
+
+</script>
+<script src="../../../js/en/biblioteca.en.5cb97548.js"></script>
+<script src="../../../js/en/practica.en.192a5c1e.js"></script>
+<script src="../../../js/en/personal.en.00676b87.js"></script>
+<script>
+Biblioteca.monta('guias-onda', 'guias-onda-v1');
+Practica.monta('guias-onda', 'guias-onda-v1');
+Enunciado.monta('guias-onda', 'guias-onda-v1');
+</script>
+</html>

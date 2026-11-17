@@ -144,7 +144,7 @@
       h += dato('Dominio', M(`"Dom" f = ${sol.dom}`), 'ancho');
       h += dato('Simetría', sol.par ? 'par' : sol.impar ? 'impar' : 'ninguna');
       h += dato('Asíntotas', sol.asTxt.map(M).join('<br>') || 'ninguna');
-      h += dato('Extremos', sol.extremos.map((q) => `${q.tipo} en x = ${fH(q.x)}`).join('<br>') || 'ninguno');
+      h += dato('Extremos', sol.extremos.map((q) => `${q.tipo === 'máximo' ? 'máximo' : 'mínimo'} en x = ${fH(q.x)}`).join('<br>') || 'ninguno');
       h += dato('Inflexión', sol.infl.map((q) => `x = ${fH(q.x)}`).join('<br>') || 'ninguna');
     } else if (sol.modo === 'implicita') {
       h += dato('Derivada', M(`y′ = ${sol.txt}`), 'ancho');

@@ -38,7 +38,7 @@
   /* ---------- Ejemplos ---------- */
   const sel = $('#ejemplos');
   const EC = Lewis.ejemplosCadena.map((e) => ({ clave: 'c-' + e.clave, nombre: e.nombre, sc: { modo: 'cadena', cadena: e.texto } }));
-  sel.innerHTML = '<option value="">Ejemplos…</option><optgroup label="Un átomo central">' + P.ejemplos.map((e) => `<option value="${e.clave}">${e.nombre}</option>`).join('') + '</optgroup><optgroup label="Varios centros (semidesarrollada)">' + EC.map((e) => `<option value="${e.clave}">${e.nombre}</option>`).join('') + '</optgroup>';
+  sel.innerHTML = '<option value="">Ejemplos…</option><optgroup label="' + 'Un átomo central' + '">' + P.ejemplos.map((e) => `<option value="${e.clave}">${e.nombre}</option>`).join('') + '</optgroup><optgroup label="' + 'Varios centros (semidesarrollada)' + '">' + EC.map((e) => `<option value="${e.clave}">${e.nombre}</option>`).join('') + '</optgroup>';
   sel.addEventListener('change', () => { if (sel.value) abrirEjemplo(sel.value); });
   function abrirEjemplo(clave) {
     const e = P.ejemplos.find((x) => x.clave === clave) || EC.find((x) => x.clave === clave);

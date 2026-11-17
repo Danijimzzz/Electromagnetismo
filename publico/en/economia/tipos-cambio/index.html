@@ -1,0 +1,553 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTQiIGZpbGw9IiMwZDZiNjYiLz48ZyBmaWxsPSJub25lIiBzdHJva2U9IiNlNmE2NDAiIHN0cm9rZS13aWR0aD0iMi40IiBzdHJva2UtZGFzaGFycmF5PSI0IDYuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIj48cGF0aCBkPSJNMjAgMzJINDQiLz48cGF0aCBkPSJNMjEgMjdDMjcgMTQgMzcgMTQgNDMgMjciLz48cGF0aCBkPSJNMjEgMzdDMjcgNTAgMzcgNTAgNDMgMzciLz48cGF0aCBkPSJNMTcgMjRDMjIgNCA0MiA0IDQ3IDI0Ii8+PHBhdGggZD0iTTE3IDQwQzIyIDYwIDQyIDYwIDQ3IDQwIi8+PC9nPjxjaXJjbGUgY3g9IjE3IiBjeT0iMzIiIHI9IjgiIGZpbGw9IiNlZjdhNjIiLz48Y2lyY2xlIGN4PSI0NyIgY3k9IjMyIiByPSI4IiBmaWxsPSIjNzRhMmYyIi8+PHBhdGggZD0iTTEzIDMyaDhNMTcgMjh2OE00MyAzMmg4IiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iMi42IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48L3N2Zz4K">
+<link rel="apple-touch-icon" href="../../../apple-touch-icon.png">
+<meta property="og:title" content="Exchange rate and PPP calculator">
+<meta property="og:description" content="Currency exchange with commission, cross rate, appreciation and depreciation, purchasing power parity and real exchange rate, step by step">
+<link rel="canonical" href="https://simulaciencia.vercel.app/en/economia/tipos-cambio/">
+<link rel="alternate" hreflang="es" href="https://simulaciencia.vercel.app/economia/tipos-cambio/">
+<link rel="alternate" hreflang="en" href="https://simulaciencia.vercel.app/en/economia/tipos-cambio/">
+<link rel="alternate" hreflang="x-default" href="https://simulaciencia.vercel.app/economia/tipos-cambio/">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="https://simulaciencia.vercel.app/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebApplication","name":"Exchange rates and PPP","description":"Exchange rate calculator: exchange euros for dollars, pounds or yen with commission, cross exchange rate, appreciation and depreciation of the euro, absolute and relative purchasing power parity and real exchange rate (Big Mac index), step by step.","url":"https://simulaciencia.vercel.app/economia/tipos-cambio/","inLanguage":"es","isAccessibleForFree":true,"applicationCategory":"EducationalApplication","operatingSystem":"Web browser","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://simulaciencia.vercel.app/"},{"@type":"ListItem","position":2,"name":"Economics","item":"https://simulaciencia.vercel.app/economia/"},{"@type":"ListItem","position":3,"name":"Exchange rates and PPP","item":"https://simulaciencia.vercel.app/economia/tipos-cambio/"}]},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How is the real exchange rate calculated?","acceptedAnswer":{"@type":"Answer","text":"ε = e·P*/P, with e in units of domestic currency per unit of foreign currency. With e = 0.9 €/$, P* = $100 and P = €95: ε = 0.9 · 100/95 ≈ 0.947."}},{"@type":"Question","name":"What is purchasing power parity?","acceptedAnswer":{"@type":"Answer","text":"It says the exchange rate equalizes the price of the same basket in the two countries, e = P/P*. If the basket costs €90 in the eurozone and $100 in the US, e = 0.9 €/$."}}]}]}</script>
+<link rel="manifest" href="../../manifest.webmanifest">
+<meta name="theme-color" content="#0d6b66">
+<script src="../../pwa.js" defer></script>
+<meta name="google-adsense-account" content="ca-pub-6407501780492688">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6407501780492688" crossorigin="anonymous"></script>
+<script>window.googlefc = window.googlefc || {}; googlefc.callbackQueue = googlefc.callbackQueue || [];
+document.addEventListener('click', (e) => { if (!e.target.closest('.pref-cookies')) return; e.preventDefault(); googlefc.callbackQueue.push(() => googlefc.showRevocationMessage()); });</script>
+<style>.anuncio { max-width:860px; margin:28px 0 0; text-align:center; min-height:120px } .anuncio > span { display:block; font:11px/1.6 system-ui, sans-serif; letter-spacing:.06em; text-transform:uppercase; color:var(--muted, #5b6670) } .anuncio ins { display:block }</style>
+<style>.anuncio-lado { display:none } @media (min-width: 901px) { .anuncio-lado { display:block; grid-column:1; grid-row:2; position:sticky; top:96px; margin:8px 0 0; max-width:none; min-height:250px; min-width:0; overflow:hidden } main .layout.con-lado > :nth-child(2) { grid-row:1 / span 2 } }</style>
+<script>document.addEventListener('DOMContentLoaded', () => {
+  const l = document.querySelector('main .layout');
+  if (!l || l.classList.contains('invertido') || l.children.length !== 2 || !l.offsetParent || !matchMedia('(min-width: 901px)').matches) return;
+  l.classList.add('con-lado');
+  const a = document.createElement('div'); a.className = 'anuncio anuncio-lado';
+  a.innerHTML = '<span>Publicidad</span><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-6407501780492688" data-ad-slot="9800921596" data-ad-format="auto" data-full-width-responsive="true"></ins>';
+  l.appendChild(a); (window.adsbygoogle = window.adsbygoogle || []).push({});
+});</script>
+<script>(() => {
+  const raiz = document.documentElement, mq = matchMedia('(prefers-color-scheme: dark)'), oyentes = [];
+  try { const t = localStorage.getItem('simu-tema'); if (t === 'dark' || t === 'light') raiz.dataset.theme = t; } catch (e) { /* sin almacenamiento */ }
+  const orig = MediaQueryList.prototype.addEventListener;
+  MediaQueryList.prototype.addEventListener = function (tipo, f, ...r) { if (tipo === 'change' && /prefers-color-scheme/.test(this.media)) oyentes.push(f); return orig.call(this, tipo, f, ...r); };
+  const oscuro = () => (raiz.dataset.theme ? raiz.dataset.theme === 'dark' : mq.matches);
+  const rotula = () => document.querySelectorAll('.tema').forEach((b) => { const t = oscuro() ? 'Switch to light mode' : 'Switch to dark mode'; b.title = t; b.setAttribute('aria-label', t); });
+  document.addEventListener('DOMContentLoaded', rotula);
+  mq.addEventListener('change', rotula);
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.tema')) return;
+    raiz.dataset.theme = oscuro() ? 'light' : 'dark';
+    try { localStorage.setItem('simu-tema', raiz.dataset.theme); } catch (e) { /* sin almacenamiento */ }
+    rotula();
+    for (const f of oyentes) { try { f.call(mq, { matches: oscuro(), media: mq.media }); } catch (err) { console.error(err); } }
+  });
+})();</script>
+<script>(() => {
+  const ENFOCABLE = 'a[href],button,input,select,textarea,summary,[tabindex]';
+  let espera = 0;
+  const revisa = () => {
+    espera = 0;
+    for (const e of document.querySelectorAll('main *')) {
+      const desborda = e.scrollWidth > e.clientWidth || e.scrollHeight > e.clientHeight;
+      if (e.dataset.sf) { if (!desborda || e.querySelector(ENFOCABLE)) { e.removeAttribute('tabindex'); delete e.dataset.sf; } continue; }
+      if (!desborda || e.hasAttribute('tabindex') || e.matches('svg,svg *,canvas') || e.querySelector(ENFOCABLE)) continue;
+      const o = getComputedStyle(e);
+      if (/auto|scroll/.test(o.overflowX + o.overflowY)) { e.tabIndex = 0; e.dataset.sf = '1'; }
+    }
+  };
+  window.revisaScroll = revisa; // también lo llama pruebas/accesibilidad.js antes de pasar axe
+  const pide = () => { if (!espera) espera = setTimeout(revisa, 400); };
+  addEventListener('load', () => { revisa(); const m = document.querySelector('main'); if (m) new MutationObserver(pide).observe(m, { childList: true, subtree: true, characterData: true }); });
+  addEventListener('resize', pide);
+})();</script>
+<script src="../../buscador.js" defer></script>
+<script src="../../llama.js" defer></script>
+<title>Exchange rate and PPP calculator · Ciencify</title>
+<meta name="description" content="Exchange rate calculator: exchange euros for dollars, pounds or yen with commission, cross exchange rate, appreciation and depreciation of the euro, absolute and relative purchasing power parity and real exchange rate (Big Mac index), step by step.">
+<style>/* =====================================================================
+   Hoja de estilos común de todas las herramientas (fuente/<herramienta>/pagina.html).
+   diseno.js la mete en cada página, antes de su propio <style>, junto con el color
+   de la asignatura (--accent, --accent-soft) y la cabecera del portal. La guía de uso
+   de cada componente, con su HTML, está en DISENO.md.
+   Una herramienta no vuelve a definir estas reglas: ajusta las variables de medida
+   (--col-datos, --ancho-valor, --alto-grafica) o añade una clase propia.
+   ===================================================================== */
+
+/* ---------- Colores y letras (claro y oscuro) ---------- */
+:root {
+  --bg: #eef1ee; --panel: #fff; --ink: #1a2128; --muted: #5b6670; --line: #d5dbd5; --error: #c0392b;
+  --f-ui: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-math: "STIX Two Text", "Cambria Math", Cambria, Georgia, serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+  --vidrio: rgba(255,255,255,.55); --vidrio-fuerte: rgba(255,255,255,.72); --vidrio-borde: rgba(255,255,255,.7); --vidrio-brillo: inset 0 1px 0 rgba(255,255,255,.8);
+  --vidrio-sombra: 0 1px 2px rgba(20,40,60,.06), 0 8px 28px rgba(20,40,60,.10); --blur: blur(22px) saturate(1.7); --halo1: rgba(13,107,102,.22); --halo2: rgba(42,93,181,.20); --halo3: rgba(107,63,160,.14);
+  /* medidas que cada herramienta puede ajustar */
+  --col-datos: 360px; --ancho-etiqueta: minmax(0, 1fr); --ancho-valor: 150px; --letra-campo: 13px var(--f-ui); --ancho-dato: 190px; --alto-grafica: clamp(260px, 36vw, 380px); --margen-grafica: 10px;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #111619; --panel: #182025; --ink: #e3e8ea; --muted: #a3aeb5; --line: #2a343b; --error: #f08a80; --vidrio: rgba(34,46,54,.50); --vidrio-fuerte: rgba(26,36,42,.70); --vidrio-borde: rgba(255,255,255,.12); --vidrio-brillo: inset 0 1px 0 rgba(255,255,255,.10); --vidrio-sombra: 0 1px 2px rgba(0,0,0,.3), 0 10px 32px rgba(0,0,0,.35); --halo1: rgba(77,188,176,.20); --halo2: rgba(116,162,242,.18); --halo3: rgba(170,120,230,.14); color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #111619; --panel: #182025; --ink: #e3e8ea; --muted: #a3aeb5; --line: #2a343b; --error: #f08a80; --vidrio: rgba(34,46,54,.50); --vidrio-fuerte: rgba(26,36,42,.70); --vidrio-borde: rgba(255,255,255,.12); --vidrio-brillo: inset 0 1px 0 rgba(255,255,255,.10); --vidrio-sombra: 0 1px 2px rgba(0,0,0,.3), 0 10px 32px rgba(0,0,0,.35); --halo1: rgba(77,188,176,.20); --halo2: rgba(116,162,242,.18); --halo3: rgba(170,120,230,.14); color-scheme: dark }
+/* fin de los colores */
+
+/* ---------- Base ---------- */
+* { box-sizing: border-box }
+[hidden] { display: none !important }
+html, body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.45 var(--f-ui) }
+a { color: var(--accent) }
+.wrap { max-width: 1300px; margin: 0 auto; padding: 16px clamp(16px, 3vw, 24px) 32px }
+h1 { font: 600 24px/1.25 var(--f-ui); margin: 0 0 4px }
+.lead { color: var(--muted); margin: 0 0 12px; max-width: 760px }
+/* texto solo para lectores de pantalla; sin position:absolute para que no ensanche las tablas con scroll */
+.solo-lector { display: inline-block; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; vertical-align: top }
+footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 8px 16px 24px }
+footer a { color: var(--muted); margin: 0 6px; white-space: nowrap; display: inline-block }
+
+/* ---------- Diseño A: datos a la izquierda, resultados a la derecha ---------- */
+.layout { display: grid; grid-template-columns: var(--col-datos) minmax(0, 1fr); gap: 16px; align-items: start }
+.layout.invertido { grid-template-columns: minmax(0, 1fr) var(--col-datos) }
+@media (max-width: 900px) { .layout, .layout.invertido { grid-template-columns: minmax(0, 1fr) } }
+
+/* ---------- Tarjetas ---------- */
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 14px; margin-bottom: 14px }
+.card h2 { font: 600 12px/1.4 var(--f-ui); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 0 0 10px }
+.destacado { border-color: var(--line); border-top: 3px solid var(--accent) }
+.destacado h2 { color: var(--accent) }
+
+/* ---------- Datos: campos, separadores, botones y pestañas ---------- */
+.campos { display: grid; grid-template-columns: var(--ancho-etiqueta) var(--ancho-valor); gap: 7px 10px; align-items: center }
+.campos label { font-size: 13.5px }
+.campos label small { color: var(--muted) }
+.campos .ancho { grid-column: 1 / -1 }
+.sep { grid-column: 1 / -1; font: 600 12px var(--f-ui); color: var(--accent); text-transform: uppercase; letter-spacing: .04em; margin-top: 8px }
+.in { font: var(--letra-campo); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; width: 100%; font-variant-numeric: tabular-nums }
+.btn { font: 500 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 5px 10px; cursor: pointer; white-space: nowrap }
+.btn:hover { border-color: var(--accent) }
+/* foco del teclado en todo lo que se pulsa o se escribe (sin especificidad: una herramienta puede ajustarlo) */
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible { outline: 2px solid var(--accent); outline-offset: 1px }
+.controles { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 8px }
+.controles > .nota, .controles > .leyenda { flex: 1 1 220px; margin: 0 }
+.exportar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 8px 0 }
+.exportar-aviso { color: var(--muted); font-size: 12.5px }
+.tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px }
+.tools label { color: var(--muted); font-size: 13px; display: inline-flex; gap: 6px; align-items: center }
+.modos { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; margin-bottom: 14px }
+.modos button { font: 500 13.5px var(--f-ui); border: 0; background: var(--panel); color: var(--muted); padding: 7px 14px; cursor: pointer }
+.modos button[aria-selected=true] { background: var(--accent); color: var(--panel) }
+.error { color: var(--error); font-size: 13px; margin: 10px 0 0 }
+.nota { color: var(--muted); font-size: 12.5px; margin: 8px 0 0 }
+
+/* ---------- Resultados ---------- */
+.res { display: grid; grid-template-columns: repeat(auto-fill, minmax(var(--ancho-dato), 1fr)); gap: 6px 14px; font: 16px var(--f-math) }
+.res div { overflow-x: auto; overflow-y: hidden }
+.res span { display: block; font: 12px var(--f-ui); color: var(--muted) }
+.res div.ancho { grid-column: 1 / -1 }
+.resumen { display: grid; grid-template-columns: repeat(auto-fill, minmax(var(--ancho-dato), 1fr)); gap: 8px; margin: 0 }
+.resumen div { background: var(--accent-soft); border-radius: 8px; padding: 8px 10px; overflow-x: auto; overflow-y: hidden }
+.resumen div span { display: block; font-size: 12px; color: var(--muted) }
+.resumen div b { font: 600 17px var(--f-math) }
+.resumen div.ancho { grid-column: 1 / -1 }
+
+/* ---------- Gráficas ---------- */
+canvas { display: block; width: 100%; height: var(--alto-grafica); border-radius: 8px; background: var(--bg); margin-top: var(--margen-grafica) }
+.leyenda { font-size: 12.5px; color: var(--muted); margin: 6px 0 0 }
+.leyenda b { font-weight: 600 }
+
+/* ---------- Desarrollo paso a paso ---------- */
+/* el número va dentro del paso para que no lo corte el desplazamiento de las fórmulas largas */
+.pasos ol { margin: 0; padding: 0; list-style: none; counter-reset: paso }
+.pasos li { position: relative; margin: 0 0 12px; padding-left: 22px; font-family: var(--f-math); font-size: 15.5px; overflow-x: auto; counter-increment: paso; overflow-y: hidden }
+.pasos li::before { content: counter(paso) "."; position: absolute; left: 0; top: 0; font: 13.5px/1.45 var(--f-ui); color: var(--muted) }
+.pasos li strong { font: 600 13.5px var(--f-ui); display: block; margin-bottom: 2px }
+.pasos table.tabla { border-collapse: collapse; margin: 6px 0; font: 13px var(--f-ui); font-variant-numeric: tabular-nums }
+.pasos table.tabla th, .pasos table.tabla td { border: 1px solid var(--line); padding: 3px 9px; text-align: right }
+.pasos table.tabla th { background: var(--accent-soft); font-weight: 600 }
+.tabla-scroll { overflow-x: auto }
+
+/* matrices con corchetes, dentro de una fórmula */
+.mat { position: relative; display: inline-block; vertical-align: middle; padding: 0 7px; margin: 2px 2px }
+.mat::before, .mat::after { content: ""; position: absolute; top: 0; bottom: 0; width: 5px; border: 1.4px solid currentColor }
+.mat::before { left: 0; border-right: 0 }
+.mat::after { right: 0; border-left: 0 }
+.mat table { border-collapse: collapse }
+.mat td { padding: 2px 7px; text-align: center; white-space: nowrap; font-variant-numeric: tabular-nums }
+
+/* ---------- Teoría ---------- */
+.teoria, .preguntas { margin-top: 28px; max-width: 860px; font-size: 15px; line-height: 1.6 }
+.preguntas h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
+.preguntas h3 { font: 600 15px var(--f-ui); margin: 14px 0 2px }
+.preguntas p { margin: 0 }
+.teoria h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
+.teoria .f { max-width: 100%; overflow-x: auto; overflow-y: hidden; font-family: var(--f-math); font-size: 16.5px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; display: inline-block }
+.teoria ul { padding-left: 20px }
+.teoria li { margin-bottom: 4px }
+.teoria li, .teoria p { overflow-x: auto; overflow-y: hidden }
+
+/* ---------- Liquid Glass ---------- */
+/* Vidrio solo en el marco (tarjetas, controles, barras); el lienzo de las gráficas y las fórmulas no se tocan. */
+body { display: flow-root; background: radial-gradient(60% 50% at 8% 0%, var(--halo1), transparent 70%), radial-gradient(50% 45% at 95% 10%, var(--halo2), transparent 70%), radial-gradient(55% 50% at 60% 100%, var(--halo3), transparent 70%), var(--bg); background-attachment: fixed }
+.card { background: var(--vidrio); border-color: var(--vidrio-borde); border-radius: 18px; box-shadow: var(--vidrio-brillo), var(--vidrio-sombra); -webkit-backdrop-filter: var(--blur); backdrop-filter: var(--blur) }
+.destacado { border-top: 3px solid var(--accent) }
+.in { background: var(--vidrio); border-color: var(--vidrio-borde); border-radius: 10px; box-shadow: var(--vidrio-brillo) }
+.btn { background: var(--vidrio-fuerte); border-color: var(--vidrio-borde); border-radius: 99px; padding: 5px 14px; box-shadow: var(--vidrio-brillo) }
+.modos { border-color: var(--vidrio-borde); border-radius: 99px; background: var(--vidrio); box-shadow: var(--vidrio-brillo); -webkit-backdrop-filter: var(--blur); backdrop-filter: var(--blur) }
+.modos button { background: transparent; border-radius: 99px }
+.modos button[aria-selected=true] { box-shadow: 0 1px 6px rgba(0,0,0,.18) }
+.resumen div { border-radius: 14px }
+.teoria .f { background: var(--vidrio); border-color: var(--vidrio-borde); border-radius: 12px }
+canvas { border-radius: 14px }
+@media (max-width: 900px) { .card, .modos { -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px) } }
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) { .card, .modos, header.top { background: var(--panel); -webkit-backdrop-filter: none; backdrop-filter: none } .in, .btn, .teoria .f { background: var(--panel) } }
+
+:root { --accent:#6b7a12; --accent-soft:color-mix(in srgb, #6b7a12 12%, #fff); --marca:#0d6b66 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --accent:#b8c955; --accent-soft:color-mix(in srgb, #b8c955 16%, #182025); --marca:#4dbcb0 } }
+:root[data-theme="dark"] { --accent:#b8c955; --accent-soft:color-mix(in srgb, #b8c955 16%, #182025); --marca:#4dbcb0 }
+header.top { display:flex; align-items:center; gap:8px 20px; flex-wrap:wrap; padding:12px clamp(16px,3vw,28px); position:sticky; top:10px; z-index:10; margin:10px clamp(10px,2vw,20px) 0; border:1px solid var(--vidrio-borde); border-radius:22px; background:var(--vidrio-fuerte); box-shadow:var(--vidrio-brillo),var(--vidrio-sombra); -webkit-backdrop-filter:var(--blur); backdrop-filter:var(--blur) }
+header.top .logo { font:600 18px var(--f-math); margin:0; white-space:nowrap; color:var(--ink); text-decoration:none } header.top .logo i { color:var(--marca) }
+header.top nav { display:flex; gap:4px 14px; font-size:14px; overflow-x:auto; max-width:100%; scrollbar-width:none }
+header.top nav a { white-space:nowrap; padding:2px 0; color:var(--muted); text-decoration:none } header.top nav a:hover { color:var(--ink) }
+header.top nav a[aria-current] { color:var(--ink); font-weight:600; box-shadow:inset 0 -2px 0 var(--accent) }
+header.top form { margin-left:auto; flex:0 1 170px; min-width:130px }
+header.top .foro { margin-left:auto; display:inline-flex; align-items:center; gap:6px; white-space:nowrap; font:600 14px var(--f-ui); color:var(--ink); text-decoration:none; border:1px solid var(--vidrio-borde); background:var(--vidrio); border-radius:99px; padding:6px 12px } header.top .foro:hover, header.top .foro[aria-current] { border-color:var(--accent); color:var(--accent) } header.top .foro + form { margin-left:0 } header.top > .foro ~ .tema { margin-left:0 }
+@media (min-width:701px) { header.top { flex-wrap:nowrap } header.top nav { min-width:0 } }
+header.top .buscar { font:14px var(--f-ui); color:var(--ink); border:1px solid var(--vidrio-borde); border-radius:99px; padding:7px 14px; width:100%; background:var(--vidrio) }
+header.top .buscar:focus-visible, header.top a:focus-visible { outline:2px solid var(--accent); outline-offset:1px }
+.miga { display:flex; align-items:center; flex-wrap:wrap; gap:8px; font-size:13.5px; color:var(--muted); margin:0 0 10px }
+.miga a { color:var(--accent); font-weight:600; text-decoration:none } .miga a:hover { text-decoration:underline }
+.miga-ico { display:inline-grid; place-items:center; width:22px; height:22px; border-radius:6px; background:var(--accent-soft); color:var(--accent); font:italic 600 13px var(--f-math) }
+.miga-der { margin-left:auto; display:flex; gap:8px } .miga-izq:empty, .miga-der:empty { display:none }
+.bib-btn, .prac-btn { border-radius:8px !important; padding:6px 12px !important }
+body.bib-ejemplos select[id^="ejemplo"] { display:none }
+@media print { header.top, .miga, .prac-btn { display:none !important } }
+:root { --vida:#6a4fc2 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --vida:#b39ff7 } }
+:root[data-theme="dark"] { --vida:#b39ff7 }
+.relacionadas { max-width:860px; margin:16px 0 0; background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--accent); border-radius:4px 12px 12px 4px; padding:12px 16px }
+.relacionadas h2 { font:600 12px/1.4 var(--f-ui); text-transform:uppercase; letter-spacing:.06em; color:var(--accent); margin:0 0 4px }
+.relacionadas a { display:flex; gap:10px; align-items:baseline; padding:5px 0; color:var(--ink); text-decoration:none; font-size:14px }
+.relacionadas a b { font-weight:600; white-space:nowrap } .relacionadas a span { color:var(--muted) } .relacionadas a:hover b { color:var(--accent); text-decoration:underline }
+.vida-real { max-width:860px; margin:28px 0 0; background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--vida); border-radius:4px 12px 12px 4px; padding:12px 16px }
+.vida-real h2 { font:600 12px/1.4 var(--f-ui); text-transform:uppercase; letter-spacing:.06em; color:var(--vida); margin:0 0 4px }
+.vida-real a { display:flex; gap:10px; align-items:baseline; padding:5px 0; color:var(--ink); text-decoration:none; font-size:14px }
+.vida-real a b { font-weight:600; white-space:nowrap } .vida-real a span { color:var(--muted) } .vida-real a:hover b { color:var(--vida); text-decoration:underline }
+@media (max-width:600px) { .vida-real a, .relacionadas a { display:block } .vida-real a b, .relacionadas a b { display:block; white-space:normal } }
+@media (max-width:700px) { header.top form { display:none } h1 { font-size:21px }
+  .miga-izq, .miga-der, .miga::after { order:-1 } .miga::after { content:''; flex-basis:100%; height:0 } }
+
+.tema { flex:0 0 auto; margin-left:auto; width:36px; height:36px; display:grid; place-items:center; padding:0; border:1px solid var(--vidrio-borde, var(--line)); border-radius:99px; background:var(--vidrio, var(--bg)); color:var(--ink); cursor:pointer }
+.buscar ~ .tema, form ~ .tema { margin-left:0 }
+.tema:hover { border-color:var(--accent); color:var(--accent) }
+.tema:focus-visible { outline:2px solid var(--accent); outline-offset:1px }
+.tema .sol { display:none }
+:root[data-theme="dark"] .tema .sol { display:block } :root[data-theme="dark"] .tema .luna { display:none }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .tema .sol { display:block } :root:not([data-theme="light"]) .tema .luna { display:none } }
+@media (max-width:700px) { .top > .tema { margin-left:auto } .top > nav { order:1 } }
+</style>
+<style>
+:root {
+  --serie-1: #2a5db5; --serie-2: #c2412a; --serie-3: #6b3fa0 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --serie-1: #74a2f2; --serie-2: #ef7a62; --serie-3: #b48be8 } }
+:root[data-theme="dark"] {
+  --serie-1: #74a2f2; --serie-2: #ef7a62; --serie-3: #b48be8 }
+textarea.in { font: 13px/1.5 var(--f-mono); resize: vertical; min-height: 120px }
+.tabla-eco { border-collapse: collapse; font: 13.5px var(--f-ui); width: 100%; font-variant-numeric: tabular-nums }
+.tabla-eco th, .tabla-eco td { padding: 5px 8px; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap }
+.tabla-eco th { font-weight: 600; color: var(--muted) } .tabla-eco th:first-child, .tabla-eco td:first-child { text-align: left }
+.tabla-eco tfoot td { font-weight: 600; background: var(--accent-soft) }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../../">Cienci<i>fy</i></a><nav aria-label="Subjects"><a href="../../../">Home</a><a href="../../electromagnetismo/">Electromagnetism</a><a href="../../fisica/">General physics</a><a href="../../quimica/">Chemistry</a><a href="../../matematicas/">Mathematics</a><a href="../../estadistica/">Statistics</a><a href="../../circuitos/">Circuits</a><a href="../" aria-current="page">Economics</a><a href="../../fenomenos/">Real life</a></nav><a class="foro" href="../../foro/"><span aria-hidden="true">💬</span>Forum</a><form action="../../../" role="search"><input class="buscar" type="search" name="q" placeholder="Search: Biot-Savart, molarity…" aria-label="Search tools (shortcut: / key)" title="Shortcut: / or Ctrl+K"></form><style>
+.lg { position:relative; flex:0 0 auto }
+.lg-btn { display:inline-flex; align-items:center; gap:6px; height:36px; padding:0 12px; border:1px solid var(--vidrio-borde, var(--line)); border-radius:99px; background:var(--vidrio, var(--bg)); color:var(--ink); font:600 13px var(--f-ui, system-ui, sans-serif); cursor:pointer }
+.lg-btn:hover { border-color:var(--accent); color:var(--accent) }
+.lg-btn:focus-visible, .lg-pop a:focus-visible, .lg-ban button:focus-visible { outline:2px solid var(--accent); outline-offset:1px }
+.lg-pop { position:absolute; top:44px; right:0; z-index:50; min-width:210px; margin:0; padding:6px; list-style:none; border:1px solid var(--vidrio-borde, var(--line)); border-radius:16px; background:rgba(255,255,255,.98); color:var(--ink); box-shadow:0 12px 36px rgba(0,0,0,.22) }
+.lg-pop[hidden] { display:none }
+:root[data-theme="dark"] .lg-pop, :root[data-theme="dark"] .lg-ban { background:rgba(28,34,38,.98) }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .lg-pop, :root:not([data-theme="light"]) .lg-ban { background:rgba(28,34,38,.98) } }
+.lg-t { font:600 11px var(--f-ui, system-ui, sans-serif); text-transform:uppercase; letter-spacing:.06em; color:var(--muted); padding:6px 10px 4px }
+.lg-pop a { display:flex; justify-content:space-between; align-items:center; gap:14px; padding:8px 10px; border-radius:10px; color:var(--ink); text-decoration:none; font:500 14px var(--f-ui, system-ui, sans-serif) }
+.lg-pop a:hover { background:var(--accent-soft) }
+.lg-pop a > span { display:flex; align-items:center; gap:10px }
+.lg-pop a small { color:var(--muted); font-size:12px }
+.lg-pop a[aria-current="true"] { background:var(--accent-soft); font-weight:700 }
+.lg-pop a[aria-current="true"] small::after { content:' ✓'; color:var(--accent) }
+.lg-fl { flex:none; border-radius:50%; box-shadow:0 0 0 1px rgba(0,0,0,.18) }
+.lg-ban { position:fixed; left:50%; bottom:18px; z-index:60; transform:translateX(-50%); width:min(560px, calc(100vw - 24px)); box-sizing:border-box; display:flex; flex-wrap:wrap; align-items:center; gap:10px 12px; padding:12px 16px; border:1px solid var(--vidrio-borde, var(--line)); border-radius:18px; background:rgba(255,255,255,.98); color:var(--ink); box-shadow:0 12px 36px rgba(0,0,0,.25); font:14px var(--f-ui, system-ui, sans-serif) }
+.lg-ban p { flex:1 1 220px; margin:0 }
+.lg-ban button { font:600 13px var(--f-ui, system-ui, sans-serif); padding:7px 14px; border-radius:99px; border:1px solid var(--vidrio-borde, var(--line)); background:var(--vidrio, var(--bg)); color:var(--ink); cursor:pointer }
+.lg-ban button.lg-si { background:var(--accent); border-color:var(--accent); color:#fff }
+:root[data-theme="dark"] .lg-ban button.lg-si { color:#0d141a }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .lg-ban button.lg-si { color:#0d141a } }
+@media (max-width:700px) { .top > .lg { margin-left:auto } .top > .lg + .tema { margin-left:0 } }
+@media print { .lg, .lg-ban { display:none !important } }
+</style><div class="lg"><button class="lg-btn" type="button" aria-expanded="false" aria-controls="lg-lista" aria-label="Language: English" title="Language"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.8 3 2.8 15 0 18M12 3c-2.8 3-2.8 15 0 18"/></svg><span>EN</span><span aria-hidden="true">▾</span></button><ul class="lg-pop" id="lg-lista" hidden><li class="lg-t" aria-hidden="true">Language · Idioma</li><li><a href="../../../" hreflang="es" lang="es"><span><svg class="lg-fl" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false"><rect width="24" height="24" fill="#c60b1e"/><rect y="6" width="24" height="12" fill="#ffc400"/></svg>Español</span><small>ES</small></a></li><li><a href="../../../en/" hreflang="en" lang="en" aria-current="true"><span><svg class="lg-fl" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false"><rect width="24" height="24" fill="#012169"/><path d="M0 0L24 24M24 0L0 24" stroke="#fff" stroke-width="5"/><path d="M0 0L24 24M24 0L0 24" stroke="#c8102e" stroke-width="2"/><path d="M12 0V24M0 12H24" stroke="#fff" stroke-width="8"/><path d="M12 0V24M0 12H24" stroke="#c8102e" stroke-width="4.5"/></svg>English</span><small>EN</small></a></li></ul></div><script>(() => {
+  const L = [{"c":"es","d":"","n":"Español","a":["Esta página está disponible en español.","Cambiar a español","Seguir aquí"]},{"c":"en","d":"en/","n":"English","a":["This page is available in English.","Switch to English","Stay here"]}], ACTUAL = "en", K = 'simu-idioma';
+  const guarda = (c) => { try { localStorage.setItem(K, c); } catch (e) { /* sin almacenamiento */ } };
+  const lee = () => { try { return localStorage.getItem(K); } catch (e) { return null; } };
+  const resto = () => { let p = location.pathname; for (const i of L) if (i.d && p.startsWith('/' + i.d)) { p = '/' + p.slice(i.d.length + 1); break; } return p + location.search + location.hash; };
+  const destino = (i) => '/' + i.d + resto().replace(/^\//, '');
+  const btn = document.querySelector('.lg-btn'), pop = document.querySelector('.lg-pop');
+  if (!btn || !pop) return;
+  pop.querySelectorAll('a[hreflang]').forEach((a) => { const i = L.find((x) => x.c === a.hreflang); if (i && /^https?:$/.test(location.protocol)) a.href = destino(i); a.addEventListener('click', () => guarda(a.hreflang)); });
+  const abre = (v) => { pop.hidden = !v; btn.setAttribute('aria-expanded', String(v)); };
+  btn.addEventListener('click', (e) => { e.stopPropagation(); abre(pop.hidden); });
+  document.addEventListener('click', (e) => { if (!pop.hidden && !e.target.closest('.lg')) abre(false); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !pop.hidden) { abre(false); btn.focus(); } });
+  pop.addEventListener('focusout', (e) => { if (!pop.hidden && !e.relatedTarget?.closest?.('.lg')) abre(false); });
+  // aviso: una vez, sin elección guardada, con el idioma del navegador publicado y distinto del de la página
+  if (lee() || window.__sinAviso) return;
+  const pref = (navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language || '']).map((s) => String(s).toLowerCase().slice(0, 2));
+  const i = pref.map((c) => L.find((x) => x.c === c)).find(Boolean);
+  if (!i || i.c === ACTUAL) { return; }
+  const b = document.createElement('div'); b.className = 'lg-ban'; b.setAttribute('role', 'region'); b.setAttribute('aria-label', "Language"); b.lang = i.c;
+  const t = document.createElement('p'); t.textContent = i.a[0];
+  const si = document.createElement('button'); si.type = 'button'; si.className = 'lg-si'; si.textContent = i.a[1];
+  const no = document.createElement('button'); no.type = 'button'; no.textContent = i.a[2];
+  si.addEventListener('click', () => { guarda(i.c); const a = [...pop.querySelectorAll('a[hreflang]')].find((x) => x.hreflang === i.c); location.href = a ? a.href : destino(i); });
+  no.addEventListener('click', () => { guarda(ACTUAL); b.remove(); });
+  b.append(t, si, no); document.body.append(b);
+})();</script><button class="tema" type="button" title="Switch between light and dark mode" aria-label="Switch between light and dark mode"><svg class="luna" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.5A8.5 8.5 0 1 1 9.5 3.5a7 7 0 0 0 11 11z"/></svg><svg class="sol" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button></header>
+<main class="wrap">
+<nav class="miga" aria-label="You are here"><span class="miga-izq"></span><span class="miga-ico" aria-hidden="true">€</span><a href="../">Economics</a><span aria-hidden="true">›</span><span>Exchange rates</span><span class="miga-der"></span></nav>
+<h1>Exchange rates and PPP</h1>
+<p class="lead">Exchange euros for another currency, calculate a cross rate, see how much the euro has appreciated or depreciated and compare prices with purchasing power parity and the real exchange rate.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Data</h2>
+    <select id="ejemplos" class="in" aria-label="Examples" style="margin-bottom:12px"></select>
+    <div class="campos" id="campos"></div>
+    <p class="nota" id="nota"></p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card destacado"><h2>Results</h2><div class="resumen" id="resumen"></div></div>
+    <div class="card"><h2>Chart</h2>
+      <canvas id="grafica" aria-label="The conversion line, the bars of the exchange rate or of the price in euros, or the exchange rate year by year"></canvas>
+      <p class="leyenda" id="leyenda"></p>
+    </div>
+    <div class="card"><h2>Year by year</h2><div class="tabla-scroll" id="tabla"></div></div>
+    <div class="card pasos"><h2>Working</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<div class="anuncio"><span>Advertising</span><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-6407501780492688" data-ad-slot="4415753033" data-ad-format="auto" data-full-width-responsive="true"></ins><script>(window.adsbygoogle = window.adsbygoogle || []).push({});</script></div>
+<section class="teoria">
+<h2>Nominal exchange rate</h2>
+<p class="m">It is the price of one currency in another. In the eurozone it is given as the ECB publishes it: $E$ units of the other currency per €1 (for example, €1 = $1.08). To convert euros into the other currency you multiply by $E$ and to go back to euros you divide. If $E$ rises, the euro appreciates (is worth more) and the other currency depreciates.</p>
+<h2>Cross exchange rate</h2>
+<p>If the value of the euro in two currencies is known, the rate between them comes from dividing: with €1 = $1.08 and €1 = £0.85, one dollar is worth 0.85/1.08 = 0.787 pounds. This is how rates are calculated between currencies that are not quoted directly.</p>
+<div class="anuncio"><span>Advertising</span><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-6407501780492688" data-ad-slot="4415753033" data-ad-format="auto" data-full-width-responsive="true"></ins><script>(window.adsbygoogle = window.adsbygoogle || []).push({});</script></div>
+<h2>Purchasing power parity</h2>
+<p class="m">PPP says that, in the long run, the same good should cost the same everywhere, so the exchange rate would be $E_{PPP} = P_f/P$. The real exchange rate, $q = E · P/P_f$, counts how many foreign goods can be bought with what one costs here: if it is greater than 1, the euro is overvalued. The Big Mac index from The Economist compares the price of the burger in each country this way.</p>
+<h2>Relative PPP</h2>
+<p class="m">Even if price levels do not equalize, the relative version says the exchange rate offsets the inflation difference: $E_1 = E_0 · (1 + π_f)/(1 + π)$. The currency of the country with higher inflation depreciates, approximately, by the difference between the two inflation rates.</p>
+</section>
+<section class="preguntas" aria-label="Frequently asked questions">
+<h2>Frequently asked questions</h2>
+<h3>How is the real exchange rate calculated?</h3>
+<p>ε = e·P*/P, with e in units of domestic currency per unit of foreign currency. With e = 0.9 €/$, P* = $100 and P = €95: ε = 0.9 · 100/95 ≈ 0.947.</p>
+<h3>What is purchasing power parity?</h3>
+<p>It says the exchange rate equalizes the price of the same basket in the two countries, e = P/P*. If the basket costs €90 in the eurozone and $100 in the US, e = 0.9 €/$.</p>
+</section>
+<div class="anuncio"><span>Advertising</span><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-6407501780492688" data-ad-slot="4415753033" data-ad-format="auto" data-full-width-responsive="true"></ins><script>(window.adsbygoogle = window.adsbygoogle || []).push({});</script></div>
+<section class="relacionadas" aria-label="Related tools"><h2>Related tools</h2>
+<a href="../interes/"><b>Simple and compound interest →</b><span>Final and initial capital, rate, time, nominal rate (TIN) and effective annual rate (TAE) under simple and compound interest.</span></a>
+<a href="../prestamos/"><b>Loans and amortization →</b><span>Payment and amortization schedule under the French system, the constant-principal system and the American system, with the effective annual rate (TAE).</span></a>
+<a href="../phillips-okun/"><b>Phillips curve and Okun's law →</b><span>Relationship between unemployment and inflation and between unemployment and GDP growth.</span></a>
+<a href="../is-lm/"><b>IS-LM model →</b><span>IS and LM curves with interactive charts and the effects of fiscal and monetary policy.</span></a>
+</section>
+</main>
+<footer><a href="../../../">Home</a>·<a href="../../contacto.html">Contact</a>·<a href="mailto:danijimzzz30@gmail.com?subject=Error%20en%20Tipos%20de%20cambio&amp;body=Herramienta%3A%20Tipos%20de%20cambio%20(economia%2Ftipos-cambio)%0A%0AQu%C3%A9%20esperaba%20y%20qu%C3%A9%20ha%20pasado%3A%0A">Report an error</a>·<a href="../../aviso-legal.html">Legal notice</a>·<a href="../../privacidad.html">Privacy</a>·<a href="../../cookies.html">Cookies</a> · <a href="#" class="pref-cookies">Cookie preferences</a>· Exchange rates <span id="ver"></span> (beta)</footer>
+</body>
+<script>
+const Pagina = { carpeta: 'tipos-cambio', guarda: 'tipos-cambio-v1' };
+const Version = (() => { const registros = {"web":[{"v":"1.21"}],"control":[{"v":"0.2"}],"termo-estadistica":[{"v":"0.2"}],"markowitz":[{"v":"0.3"}],"cavidades":[{"v":"0.2"}],"organica":[{"v":"0.3"}],"transformada-z":[{"v":"0.2"}],"semiconductores":[{"v":"0.2"}],"relatividad":[{"v":"0.2"}],"osc-acopladas":[{"v":"0.2"}],"solubilidad":[{"v":"0.2"}],"lagrange":[{"v":"0.2"}],"series":[{"v":"0.3"}],"no-parametricos":[{"v":"0.3"}],"regresion-multiple":[{"v":"0.2"}],"anova":[{"v":"0.3"}],"black-scholes":[{"v":"0.3"}],"bonos":[{"v":"0.3"}],"solow":[{"v":"0.3"}],"integrales-multiples":[{"v":"0.1"}],"formulacion":[{"v":"0.2"}],"balance":[{"v":"0.2"}],"redox":[{"v":"0.2"}],"lineas-transmision":[{"v":"0.3"}],"superficies":[{"v":"0.2"}],"vsepr":[{"v":"0.2"}],"maxwell":[{"v":"0.3"}],"fresnel":[{"v":"0.2"}],"gravitacion":[{"v":"0.2"}],"convolucion":[{"v":"0.2"}],"laplace-numerica":[{"v":"0.2"}],"imagenes":[{"v":"0.2.1"}],"guias-onda":[{"v":"0.2"}],"antena":[{"v":"0.2"}],"bode":[{"v":"0.3"}],"optica":[{"v":"0.2"}],"simulador":[{"v":"0.4"}],"teoria-juegos":[{"v":"0.2"}],"puertas-logicas":[{"v":"0.4"}],"multiplicador":[{"v":"0.3"}],"is-lm":[{"v":"0.3"}],"choques":[{"v":"0.1"}],"termoquimica":[{"v":"0.3"}],"probabilidad":[{"v":"0.2"}],"unidades":[{"v":"0.2"}],"equilibrio":[{"v":"0.2"}],"oscilaciones":[{"v":"0.1"}],"beneficio":[{"v":"0.3"}],"costes":[{"v":"0.3"}],"sistemas-numericos":[{"v":"0.2"}],"excedentes":[{"v":"0.2"}],"oferta-demanda":[{"v":"0.2"}],"chi2-bondad":[{"v":"0.2"}],"contrastes":[{"v":"0.2"}],"errores":[{"v":"0.2"}],"graficador":[{"v":"0.2"}],"metodos-numericos":[{"v":"0.2"}],"fisica-moderna":[{"v":"0.2"}],"lorenz-gini":[{"v":"0.2"}],"phillips-okun":[{"v":"0.3"}],"tipos-cambio":[{"v":"0.3"}],"elasticidades":[{"v":"0.3"}],"pib-ipc":[{"v":"0.2"}],"numeros-indice":[{"v":"0.2"}],"ratios":[{"v":"0.2"}],"punto-muerto":[{"v":"0.2"}],"ahorro":[{"v":"0.3"}],"van-tir":[{"v":"0.3"}],"amortizacion-inmovilizado":[{"v":"0.2"}],"prestamos":[{"v":"0.3"}],"rentas":[{"v":"0.3"}],"interes":[{"v":"0.3"}],"descriptiva":[{"v":"0.2"}],"regresion-economia":[{"v":"0.2"}],"ajustador":[{"v":"0.2.1"}],"electrostatica":[{"v":"0.11"}],"magnetostatica":[{"v":"0.4"}],"tabla-periodica":[{"v":"0.2"}],"trabajo-y-energia":[{"v":"0.3"}],"masa-molar":[{"v":"0.2"}],"configuracion-electronica":[{"v":"0.2"}],"condensadores":[{"v":"0.4"}],"tiro-parabolico":[{"v":"0.4"}],"disoluciones":[{"v":"0.2"}],"calorimetria":[{"v":"0.2"}],"induccion":[{"v":"0.4"}],"matrices":[{"v":"0.3"}],"derivadas":[{"v":"0.3"}],"laplace":[{"v":"0.2"}],"interferencia":[{"v":"0.2"}],"ondas-em":[{"v":"0.4"}],"intervalos":[{"v":"0.3"}],"fuerza":[{"v":"0.3"}],"campos":[{"v":"0.2.1"}],"cinetica":[{"v":"0.2"}],"edos":[{"v":"0.2"}],"fourier":[{"v":"0.2"}],"taylor":[{"v":"0.3"}],"complejos":[{"v":"0.3"}],"sistemas":[{"v":"0.3"}],"regresion":[{"v":"0.3"}],"estadistica":[{"v":"0.3"}],"dinamica":[{"v":"0.3"}],"solido-rigido":[{"v":"0.3"}],"ondas":[{"v":"0.3"}],"gases":[{"v":"0.6"}],"ciclos":[{"v":"0.2"}],"ph":[{"v":"0.4"}],"fluidos":[{"v":"0.3"}],"doppler":[{"v":"0.2"}],"resistencias":[{"v":"0.3"}],"faraday":[{"v":"0.4"}],"fenomenos":[{"v":"0.9"}]}; const de = (h) => ({ current: registros[h][0].v, log: registros[h] }); return { registros, de }; })();
+
+</script>
+<script src="../../../js/en/herramienta.en.e2425303.js"></script>
+<script src="../../../js/en/enunciado.en.73e3a542.js"></script>
+<script src="../../../js/en/mates.en.fbd66204.js"></script>
+<script src="../../../js/en/calculadora.en.e7f2ebf8.js"></script>
+<script src="../../../js/en/economia-comun.en.bcee27dd.js"></script>
+<script>
+const TiposCambio = (() => {
+  const K = typeof Eco !== 'undefined' ? Eco : require('../economia/comun.js');
+  const { f, num, lee } = K;
+  const MODOS = { convertir: 'Exchange money', cruzado: 'Cross exchange rate', variacion: 'Appreciation or depreciation', ppa: 'PPP and real exchange rate', relativa: 'Relative PPP (inflation)', paridad: 'Interest rate parity' };
+  const MONEDAS = { USD: ['dollars', '$', 'the dollar'], GBP: ['pounds', '£', 'the pound'], JPY: ['yen', '¥', 'the yen'], CHF: ['Swiss francs', 'CHF', 'the Swiss franc'], MXN: ['Mexican pesos', 'MXN', 'the Mexican peso'], CNY: ['yuan', 'CNY', 'the yuan'] };
+  const mon = (k) => { const c = MONEDAS[k] ? k : 'USD'; return [MONEDAS[c][0], c, MONEDAS[c][2]]; };
+  const n = (x) => f(x, 6).replace(/\./g, ''), pc = (x) => `${f(100 * x, 4)} %`;
+  const tipo = (sc, k, nom) => lee(sc, k, nom, { min: 0, minEx: true });
+
+  function convertir(sc) {
+    const m = mon(sc.mon), E = tipo(sc, 'E', 'the exchange rate'), x = lee(sc, 'x', 'the amount', { min: 0, minEx: true });
+    const c = lee(sc, 'c', 'the commission', { min: 0, max: 100, maxEx: true, def: 0 }) / 100, aOtra = sc.sentido !== 'aEuros';
+    const bruto = aOtra ? x * E : x / E, neto = bruto * (1 - c), pasos = [];
+    pasos.push({ t: 'The exchange rate', html: `$E = ${n(E)}$ ${m[0]} per euro: €1 = ${n(E)} ${m[1]}, or the other way round, 1 ${m[1]} = 1/${n(E)} = €${f(1 / E, 5)}.` });
+    pasos.push({ t: aOtra ? 'From euros to the other currency: multiply' : 'From the other currency to euros: divide', html: aOtra ? `$${n(x)} · ${n(E)} = ${n(bruto)}$ ${m[1]}` : `$${n(x)}/${n(E)} = ${n(bruto)}$ €` });
+    if (c) pasos.push({ t: 'The commission', html: `${f(100 * c, 4)} % is kept: $${n(bruto)} · (1 − ${f(c, 6)}) = ${n(neto)}$ ${aOtra ? m[1] : '€'}. It is like exchanging at a worse rate, of ${f(aOtra ? E * (1 - c) : E / (1 - c), 5)} ${m[1]} per euro.` });
+    return { modo: 'convertir', m, E, x, c, aOtra, bruto, neto, inv: 1 / E, pasos };
+  }
+
+  function cruzado(sc) {
+    if (sc.mon === sc.mon2) throw new Error('Choose two different currencies');
+    const m1 = mon(sc.mon), m2 = mon(sc.mon2), E1 = tipo(sc, 'E', `the ${m1[0]} per euro`), E2 = tipo(sc, 'E2', `the ${m2[0]} per euro`);
+    const t = E2 / E1, pasos = [];
+    pasos.push({ t: 'The two rates against the euro', html: `€1 = ${n(E1)} ${m1[1]} and €1 = ${n(E2)} ${m2[1]}. Since both are worth the same (one euro), ${n(E1)} ${m1[1]} = ${n(E2)} ${m2[1]}.` });
+    pasos.push({ t: 'Cross rate', html: `Dividing by ${n(E1)}: $1$ ${m1[1]} $= ${n(E2)}/${n(E1)} = ${f(t, 5)}$ ${m2[1]}.` });
+    pasos.push({ t: 'The other way round', html: `1 ${m2[1]} $= ${n(E1)}/${n(E2)} = ${f(1 / t, 5)}$ ${m1[1]}.` });
+    return { modo: 'cruzado', m1, m2, E1, E2, t, inv: 1 / t, pasos };
+  }
+
+  function variacion(sc) {
+    const m = mon(sc.mon), E0 = tipo(sc, 'E', 'the previous exchange rate'), E1 = tipo(sc, 'E2', 'the current exchange rate');
+    const ve = E1 / E0 - 1, vo = E0 / E1 - 1, pasos = [];
+    const que = Math.abs(ve) < 1e-12 ? 'does not change' : ve > 0 ? 'appreciates' : 'depreciates', que2 = Math.abs(ve) < 1e-12 ? 'does not change' : ve > 0 ? 'depreciates' : 'appreciates';
+    pasos.push({ t: 'The euro', html: `One euro goes from being worth ${n(E0)} to ${n(E1)} ${m[1]}: $${n(E1)}/${n(E0)} − 1 = ${pc(ve)}$. The euro <b>${que}</b>${Math.abs(ve) < 1e-12 ? '' : ` by ${f(Math.abs(100 * ve), 4)} %`}.` });
+    pasos.push({ t: 'The other currency', html: `${m[2][0].toUpperCase() + m[2].slice(1)}: goes from being worth $1/${n(E0)} = ${f(1 / E0, 5)}$ € to $1/${n(E1)} = ${f(1 / E1, 5)}$ €: $${n(E0)}/${n(E1)} − 1 = ${pc(vo)}$. ${Math.abs(ve) < 1e-12 ? 'It does not change either.' : `It ${ve > 0 ? 'depreciates' : 'appreciates'}, but not by the same %: the base is different.`}` });
+    if (Math.abs(ve) > 1e-12) pasos.push({ t: 'What it implies', html: ve > 0 ? 'With a stronger euro, foreign goods are cheaper (imports fall in price and traveling abroad costs less), but what Spain sells abroad becomes more expensive: exports lose competitiveness.' : 'With a weaker euro, what Spain sells abroad is cheaper (exports gain competitiveness and more tourists come), but what is bought abroad becomes more expensive: the price of imports, such as oil, rises.' });
+    return { modo: 'variacion', m, E0, E1, ve, vo, que, que2, pasos };
+  }
+
+  function ppa(sc) {
+    const m = mon(sc.mon), P = lee(sc, 'P', 'the price in Spain', { min: 0, minEx: true }), Pe = lee(sc, 'Pe', 'the price abroad', { min: 0, minEx: true }), E = tipo(sc, 'E', 'the exchange rate');
+    const Eppa = Pe / P, q = (E * P) / Pe, dev = q - 1, PeEur = Pe / E, pasos = [];
+    pasos.push({ t: 'PPP exchange rate', html: `If the same good cost the same in both places, $E_{PPP} = P_f/P = ${n(Pe)}/${n(P)} = ${f(Eppa, 5)}$ ${m[1]} per euro.` });
+    pasos.push({ t: 'Foreign price in euros', html: `At the actual exchange rate, $P_f/E = ${n(Pe)}/${n(E)} = ${f(PeEur, 5)}$ €, compared with €${n(P)} in Spain.` });
+    pasos.push({ t: 'Real exchange rate', html: `$q = E · P/P_f = ${n(E)} · ${n(P)}/${n(Pe)} = ${f(q, 5)}$: with what the good costs in Spain, ${f(q, 4)} can be bought abroad. It is the same as $E/E_{PPP}$.` });
+    pasos.push({ t: 'Overvalued or undervalued', html: Math.abs(dev) < 1e-9 ? 'PPP holds: the euro is at its value.' : `$q − 1 = ${pc(dev)}$: according to PPP, the euro is <b>${dev > 0 ? 'overvalued' : 'undervalued'}</b> by ${f(Math.abs(100 * dev), 4)} % against ${m[2]} (the good is ${dev > 0 ? 'more expensive' : 'cheaper'} in Spain).` });
+    return { modo: 'ppa', m, P, Pe, E, Eppa, q, dev, PeEur, pasos };
+  }
+
+  function relativa(sc) {
+    const m = mon(sc.mon), E0 = tipo(sc, 'E', 'today\'s exchange rate');
+    const pi = lee(sc, 'pi', 'inflation in Spain', { min: -100, minEx: true }) / 100, pe = lee(sc, 'pe', 'inflation abroad', { min: -100, minEx: true }) / 100;
+    const N = lee(sc, 'n', 'the years', { min: 1, max: 100, entero: true });
+    const r = (1 + pe) / (1 + pi), En = E0 * r ** N, v = En / E0 - 1, filas = Array.from({ length: N + 1 }, (_, t) => ({ t, E: E0 * r ** t })), pasos = [];
+    pasos.push({ t: 'Relative PPP', html: `For PPP to hold, the exchange rate has to offset the inflation difference: each year it is multiplied by $(1 + π_f)/(1 + π) = ${f(1 + pe, 6)}/${f(1 + pi, 6)} = ${f(r, 6)}$.` });
+    pasos.push({ t: `In ${N} year${N > 1 ? 's' : ''}`, html: `$E_${N} = E_0 · (${f(r, 6)})^${N} = ${n(E0)} · ${f(r ** N, 6)} = ${f(En, 5)}$ ${m[1]} per euro.` });
+    pasos.push({ t: 'What happens to the euro', html: Math.abs(pi - pe) < 1e-12 ? 'With the same inflation, the exchange rate does not move.' : `The euro ${pi > pe ? 'depreciates' : 'appreciates'} by ${pc(Math.abs(v))} in total, because prices in Spain rise ${pi > pe ? "more" : "less"} than abroad. Each year, approximately, $π_f − π = ${f(100 * (pe - pi), 4)}$ %.` });
+    return { modo: 'relativa', m, E0, pi, pe, N, r, En, v, filas, pasos };
+  }
+
+  function paridad(sc) {
+    const m = mon(sc.mon), E = tipo(sc, 'E', 'today\'s exchange rate'), i = lee(sc, 'i', 'the interest rate in Spain', { min: -50, max: 100 }) / 100, ie = lee(sc, 'ie', 'the interest rate abroad', { min: -50, max: 100 }) / 100;
+    const N = lee(sc, 'n', 'the term in years', { min: 0, minEx: true, max: 50 }), vacio = K.vacio(sc.Fm), Fm = vacio ? null : lee(sc, 'Fm', 'the market forward rate', { min: 0, minEx: true });
+    const aqui = (1 + i) ** N, fuera = (1 + ie) ** N, F = E * fuera / aqui, prima = F / E - 1, dif = ie - i, pasos = [];
+    pasos.push({ t: 'Two ways of investing one euro', html: `In Spain, one euro earns $(1 + i)^T = (1 + ${f(i, 5)})^{${f(N, 5)}} = ${f(aqui, 7)}$ €.<br>Abroad: it is exchanged today for $E = ${n(E)}$ ${m[1]}, invested at ${pc(ie)} and exchanged back into euros with a forward contract $F$: $E·(1 + i^*)^T/F = ${n(E)}·${f(fuera, 7)}/F$ €.` });
+    pasos.push({ t: 'Covered parity', html: `If there is no arbitrage, the two ways earn the same:<br>$F = E·{(1 + i^*)^T}/{(1 + i)^T} = ${n(E)}·${f(fuera, 7)}/${f(aqui, 7)} = ${f(F, 6)}$ ${m[1]} per euro.` });
+    pasos.push({ t: 'Premium or discount', html: Math.abs(prima) < 1e-12 ? 'The interest rates are equal and the forward rate coincides with today\'s.' : `$F/E − 1 = ${pc(prima)}$: the euro trades forward at a <b>${prima > 0 ? 'premium' : 'discount'}</b> of ${f(Math.abs(100 * prima), 4)} %, because the interest rate ${dif > 0 ? 'abroad is higher' : 'here is higher'}. Approximately, $(F − E)/E ≈ i^* − i = ${f(100 * dif, 4)}$ points (per year).` });
+    pasos.push({ t: 'Uncovered parity', html: `If investors demand no risk premium and do not hedge, the expected exchange rate in ${f(N, 4)} year${N === 1 ? '' : 's'} is the forward rate: $E^e = F = ${f(F, 6)}$. The currency with the higher interest rate is expected to depreciate: here, ${m[2]} ${dif > 0 ? 'yields more but is expected to be worth fewer euros' : dif < 0 ? 'yields less but is expected to be worth more euros' : 'yields the same and is not expected to change'}.` });
+    let arb = null;
+    if (Fm !== null) {
+      const cubierta = E * fuera / Fm, dg = cubierta - aqui;
+      arb = { Fm, cubierta, aqui, dg, pct: dg / aqui };
+      pasos.push({ t: 'Arbitrage with the market forward rate', html: `With $F_m = ${n(Fm)}$: investing abroad with cover earns $${n(E)}·${f(fuera, 7)}/${n(Fm)} = ${f(cubierta, 7)}$ € per euro and investing here, $${f(aqui, 7)}$ €. ${Math.abs(dg) < 1e-9 ? 'There is no arbitrage.' : dg > 0 ? `It pays to <b>invest abroad with cover</b> (borrowing euros here): you earn €${f(dg, 5)} per euro, ${f(100 * dg / aqui, 4)} %, with no risk. In doing so, the forward rate and today's rate would move until the gain disappears.` : `It pays to <b>invest here</b> and borrow abroad with cover: you earn €${f(-dg, 5)} per euro, ${f(-100 * dg / aqui, 4)} %, with no risk. In doing so, the forward rate and today's rate would move until the gain disappears.`}` });
+    }
+    const filas = Array.from({ length: Math.min(Math.ceil(N), 20) + 1 }, (_, t) => ({ t, F: E * ((1 + ie) / (1 + i)) ** t }));
+    return { modo: 'paridad', m, E, i, ie, N, F, prima, dif, aqui, fuera, arb, filas, pasos };
+  }
+
+  const R = { convertir, cruzado, variacion, ppa, relativa, paridad };
+  const resolver = (sc) => { const r = (R[sc.modo] || convertir)(sc); r.pasos.push({ t: 'Convention', html: 'Quoted in “certain” terms: units of foreign currency per €1. A single rate is used (no bid-ask spread) and the commission is applied to the converted amount. There is no rounding to cents in the steps.' }); return r; };
+
+  const ejemplos = [
+    { clave: 'viaje', nombre: 'Exchange €500 into dollars with a 2 % commission', sc: { modo: 'convertir', mon: 'USD', sentido: 'aOtra', E: '1,08', x: '500', c: '2' } },
+    { clave: 'vuelta', nombre: 'Go back with 20,000 yen', sc: { modo: 'convertir', mon: 'JPY', sentido: 'aEuros', E: '160', x: '20000', c: '0' } },
+    { clave: 'cruzado', nombre: 'Dollars into pounds with the euro as a bridge', sc: { modo: 'cruzado', mon: 'USD', mon2: 'GBP', E: '1,08', E2: '0,85' } },
+    { clave: 'cae', nombre: 'The euro falls from 1.10 to 1.05 dollars', sc: { modo: 'variacion', mon: 'USD', E: '1,10', E2: '1,05' } },
+    { clave: 'bigmac', nombre: 'Big Mac index: Spain and Japan', sc: { modo: 'ppa', mon: 'JPY', P: '5,40', Pe: '480', E: '160' } },
+    { clave: 'paridad', nombre: 'Forward rate at 1 year: 3 % here and 5 % abroad', sc: { modo: 'paridad', mon: 'USD', E: '1,08', i: '3', ie: '5', n: '1', Fm: '' } },
+    { clave: 'arbitraje', nombre: 'Arbitrage: the market offers 1.12 forward', sc: { modo: 'paridad', mon: 'USD', E: '1,08', i: '3', ie: '5', n: '1', Fm: '1,12' } },
+    { clave: 'inflacion', nombre: 'Inflation of 3 % here and 2 % in the US', sc: { modo: 'relativa', mon: 'USD', E: '1,08', pi: '3', pe: '2', n: '5' } },
+  ];
+
+  const AZ = K.az, TC = { USD: [1.05, 1.08, 1.1], GBP: [0.84, 0.86], CHF: [0.93, 0.96], JPY: [150, 160, 165] };
+  const azar = AZ.desde(ejemplos, (sc) => {
+    const mon = AZ.toma(Object.keys(TC)), E = AZ.t(AZ.toma(TC[mon]));
+    if (sc.modo === 'convertir') return { mon, E, sentido: AZ.toma(['aOtra', 'aEuros']), x: String(mon === 'JPY' ? AZ.toma([10000, 20000, 50000]) : AZ.toma([200, 500, 1000])), c: String(AZ.toma([0, 1, 2])) };
+    if (sc.modo === 'cruzado') { const m2 = AZ.toma(['USD', 'GBP', 'CHF'].filter((m) => m !== mon)); return { mon, mon2: m2, E, E2: AZ.t(AZ.toma(TC[m2])) }; }
+    if (sc.modo === 'variacion') { const e1 = AZ.toma(TC[mon]); return { mon, E: AZ.t(e1), E2: AZ.t(e1 * (1 + AZ.toma([-0.05, -0.03, 0.03, 0.05])), 4) }; }
+    if (sc.modo === 'ppa') { const pe = { USD: 5.8, GBP: 4.2, JPY: 480, CHF: 6.5 }[mon]; return { mon, P: AZ.t(AZ.toma([4.5, 5.4])), Pe: AZ.t(pe), E }; }
+    if (sc.modo === 'paridad') return { mon, E, i: AZ.t(AZ.toma([2, 3, 4])), ie: AZ.t(AZ.toma([4, 5, 6])), n: AZ.t(AZ.toma([0.5, 1, 2])), Fm: '' };
+    return { mon, E, pi: AZ.t(AZ.toma([2, 3, 4])), pe: AZ.t(AZ.toma([1, 2, 3])), n: String(AZ.toma([3, 5, 10])) };
+  }, null, (sc) => resolver(sc));
+  const enunciado = (sc) => {
+    const m = sc.mon;
+    switch (sc.modo) {
+      case 'convertir': return sc.sentido === 'aEuros' ? `You have ${sc.x} ${m} and the exchange rate is €1 = ${sc.E} ${m}${sc.c !== '0' ? `, with a commission of ${sc.c} %` : ''}. How many euros do you receive?` : `You exchange €${sc.x} into ${m} at €1 = ${sc.E} ${m}${sc.c !== '0' ? ` and a commission of ${sc.c} %` : ''}. How many ${m} do you receive?`;
+      case 'cruzado': return `If €1 = ${sc.E} ${m} and €1 = ${sc.E2} ${sc.mon2}, calculate the cross rate between ${m} and ${sc.mon2} in both directions.`;
+      case 'variacion': return `The exchange rate goes from €1 = ${sc.E} ${m} to €1 = ${sc.E2} ${m}. Does the euro appreciate or depreciate, and by what percentage? And the other currency?`;
+      case 'ppa': return `A burger costs €${sc.P} in the eurozone and ${sc.Pe} ${m} in the other country, and the exchange rate is €1 = ${sc.E} ${m}. Calculate the purchasing-power-parity exchange rate, the real exchange rate and whether the euro is overvalued or undervalued.`;
+      case 'paridad': return `The exchange rate is €1 = ${sc.E} ${m}, the interest rate in the eurozone is ${sc.i} % and abroad ${sc.ie} %. Calculate the forward rate at ${sc.n} year${sc.n === '1' ? '' : 's'} using covered interest parity and the premium or discount of the euro.`;
+      default: return `The exchange rate is €1 = ${sc.E} ${m}; annual inflation is ${sc.pi} % in the eurozone and ${sc.pe} % abroad. Using relative purchasing power parity, calculate the exchange rate in ${sc.n} years and the change in the euro.`;
+    }
+  };
+
+  return { azar, enunciado, resolver, ejemplos, MODOS, MONEDAS };
+})();
+
+</script>
+<script src="../../../js/en/compartir.en.08e9415d.js"></script>
+<script>
+(() => {
+  const T = TiposCambio, { f, num, dinero } = Eco;
+  const ops = Object.entries(T.MONEDAS).map(([k, [nom]]) => [k, `${nom[0].toUpperCase() + nom.slice(1)} (${k})`]);
+  const sim = (k) => (T.MONEDAS[k] || T.MONEDAS.USD)[1], va = (x) => f(x, 5);
+  const dos = (a, b, nA, nB, ejeY) => ({ x: [0.3, 2.7], y: Eco.rango([a, b], { cero: true, aire: 0.2 }), fx: (v) => (Math.abs(v - 1) < 1e-9 ? nA : Math.abs(v - 2) < 1e-9 ? nB : ''), fy: (v) => f(v), ejeY,
+    series: [{ tipo: 'barras', pts: [[1, a]], ancho: 0.8, color: '--serie-1' }, { tipo: 'barras', pts: [[2, b]], ancho: 0.8, color: '--serie-2' }],
+    etiquetas: [{ x: 1, y: a, texto: va(a), alinea: 'center' }, { x: 2, y: b, texto: va(b), alinea: 'center' }] });
+  Calculadora.monta({
+    C: T, carpeta: 'tipos-cambio', app: 'TiposCambioApp', azar: T.azar, enunciado: T.enunciado,
+    nota: 'The exchange rate is given as the European Central Bank publishes it: units of the other currency per €1. The comma is the decimal separator. <b>The rates in the examples are illustrative</b> ($1.08 per euro, 160 yen…), not quotes from any particular day: enter the one for the day you are interested in.',
+    campos: (sc) => {
+      const cs = [{ k: 'modo', nom: 'Calculate', tipo: 'sel', ops: Object.entries(T.MODOS) }, { k: 'mon', nom: sc.modo === 'cruzado' ? 'First currency' : 'Currency', tipo: 'sel', ops }], s = sim(sc.mon);
+      if (sc.modo === 'cruzado') return [...cs, { k: 'mon2', nom: 'Second currency', tipo: 'sel', ops: ops.slice(1).concat(ops.slice(0, 1)) }, { k: 'E', nom: '€1 in the first', un: s }, { k: 'E2', nom: '€1 in the second', un: sim(sc.mon2) }];
+      if (sc.modo === 'variacion') return [...cs, { k: 'E', nom: '€1 before', un: s }, { k: 'E2', nom: '€1 now', un: s }];
+      if (sc.modo === 'ppa') return [...cs, { k: 'P', nom: 'Price in Spain', un: '€' }, { k: 'Pe', nom: 'Price abroad', un: s }, { k: 'E', nom: 'Exchange rate: €1 =', un: s }];
+      if (sc.modo === 'paridad') return [...cs, { k: 'E', nom: 'Exchange rate today: €1 =', un: s }, { k: 'i', nom: 'Interest rate in Spain i', un: '% per year' }, { k: 'ie', nom: 'Interest rate abroad i*', un: '% per year' }, { k: 'n', nom: 'Term', un: 'years' }, { k: 'Fm', nom: 'Market forward rate', un: s, ayuda: 'optional, to see whether there is arbitrage' }];
+      if (sc.modo === 'relativa') return [...cs, { k: 'E', nom: 'Exchange rate today: €1 =', un: s }, { k: 'pi', nom: 'Inflation in Spain π', un: '% per year' }, { k: 'pe', nom: 'Inflation abroad πₑ', un: '% per year' }, { k: 'n', nom: 'Years', un: 'years' }];
+      return [...cs, { k: 'sentido', nom: 'Direction', tipo: 'sel', ops: [['aOtra', 'From euros to the other currency'], ['aEuros', 'From the other currency to euros']] }, { k: 'E', nom: 'Exchange rate: €1 =', un: s }, { k: 'x', nom: 'Quantity', un: sc.sentido === 'aEuros' ? s : '€' }, { k: 'c', nom: 'Commission', un: '%' }];
+    },
+    resumen: (s) => {
+      if (s.modo === 'convertir') { const u = s.aOtra ? s.m[1] : '€'; return [['You receive', `${num(s.neto)} ${u}`, true], ...(s.c ? [['No commission', `${num(s.bruto)} ${u}`], ['Commission', `${num(s.bruto - s.neto)} ${u}`]] : []), [`1 ${s.m[1]} is worth`, `${f(s.inv, 5)} €`]]; }
+      if (s.modo === 'cruzado') return [[`1 ${s.m1[1]} =`, `${f(s.t, 5)} ${s.m2[1]}`, true], [`1 ${s.m2[1]} =`, `${f(s.inv, 5)} ${s.m1[1]}`, true]];
+      if (s.modo === 'variacion') return [['The euro', `${s.que} (${f(100 * s.ve, 4)} %)`, true], [s.m[2][0].toUpperCase() + s.m[2].slice(1), `${s.que2} (${f(100 * s.vo, 4)} %)`, true]];
+      if (s.modo === 'ppa') return [['PPP exchange rate', `${f(s.Eppa, 5)} ${s.m[1]}`], ['Real exchange rate q', f(s.q, 4)], ['The euro is', Math.abs(s.dev) < 1e-9 ? 'fairly valued' : `${s.dev > 0 ? 'overvalued' : 'undervalued'} by ${f(Math.abs(100 * s.dev), 4)} %`, true], ['Foreign price in euros', dinero(s.PeEur)]];
+      if (s.modo === 'paridad') return [[`Forward rate (${f(s.N, 4)} year${s.N === 1 ? '' : 's'}): €1 =`, `${f(s.F, 6)} ${s.m[1]}`, true], [`${s.prima >= 0 ? 'Premium' : 'Discount'} of the euro forward`, `${f(100 * Math.abs(s.prima), 4)} %`], ['Differential i* − i', `${f(100 * s.dif, 4)} points`], ['Expected rate (uncovered)', `${f(s.F, 6)} ${s.m[1]}`],
+        ...(s.arb ? [['Invest here (per euro)', dinero(s.arb.aqui, 5)], ['Invest abroad with cover', dinero(s.arb.cubierta, 5)], ['Arbitrage', Math.abs(s.arb.dg) < 1e-9 ? 'none' : s.arb.dg > 0 ? `invest abroad: +€${f(s.arb.dg, 4)} per euro` : `invest here: +€${f(-s.arb.dg, 4)} per euro`, true]] : [])];
+      return [[`In ${s.N} year${s.N > 1 ? 's' : ''}: €1 =`, `${f(s.En, 5)} ${s.m[1]}`, true], ['Change in the euro', `${f(100 * s.v, 4)} %`], ['Each year', `× ${f(s.r, 6)}`]];
+    },
+    tabla: (s) => (s.modo === 'paridad' ? `<table class="tabla-eco"><thead><tr><th>Term (years)</th><th>Forward rate: €1 =</th><th>Premium or discount</th></tr></thead><tbody>${s.filas.map((r) => `<tr><td>${r.t}</td><td>${f(r.F, 6)} ${s.m[1]}</td><td>${f(100 * (r.F / s.E - 1), 4)} %</td></tr>`).join('')}</tbody></table>` : s.modo === 'relativa' ? `<table class="tabla-eco"><thead><tr><th>Year</th><th>1 € =</th><th>Cumulative change</th></tr></thead><tbody>${s.filas.map((r) => `<tr><td>${r.t}</td><td>${f(r.E, 5)} ${s.m[1]}</td><td>${f(100 * (r.E / s.E0 - 1), 4)} %</td></tr>`).join('')}</tbody></table>` : ''),
+    grafica: (s) => {
+      if (s.modo === 'variacion') return dos(s.E0, s.E1, 'Before', 'Now', `${s.m[0]} per euro`);
+      if (s.modo === 'ppa') return dos(s.P, s.PeEur, 'In Spain', 'Abroad', 'Price in euros');
+      if (s.modo === 'paridad') return { x: [0, s.N], y: Eco.rango(s.filas.map((r) => r.F).concat([s.E, s.F, ...(s.arb ? [s.arb.Fm] : [])])), fy: (v) => f(v), ejeX: 'Term (years)', ejeY: `${s.m[0]} per euro`,
+        series: [{ pts: [0, s.N].map((t) => [t, s.E * ((1 + s.ie) / (1 + s.i)) ** t]), color: '--serie-1' }, { tipo: 'puntos', pts: [[s.N, s.F]], color: '--serie-3', radio: 6 }, ...(s.arb ? [{ tipo: 'puntos', pts: [[s.N, s.arb.Fm]], color: '--serie-2', radio: 6 }] : [])], horizontales: [{ y: s.E, texto: 'hoy' }] };
+      if (s.modo === 'relativa') return { x: [0, s.N], y: Eco.rango(s.filas.map((r) => r.E).concat(s.E0)), fy: (v) => f(v), ejeX: 'Years', ejeY: `${s.m[0]} per euro`,
+        series: [{ pts: s.filas.map((r) => [r.t, r.E]), color: '--serie-1' }, { tipo: 'puntos', pts: s.filas.map((r) => [r.t, r.E]), color: '--serie-1' }], horizontales: [{ y: s.E0, texto: 'hoy' }] };
+      const [x, y, k, ex, ey] = s.modo === 'cruzado' ? [100, 100 * s.t, s.t, s.m1[0], s.m2[0]] : [s.x, s.bruto, s.bruto / s.x, s.aOtra ? 'euros' : s.m[0], s.aOtra ? s.m[0] : 'euros'];
+      return { x: [0, 2 * x], y: [0, 2.1 * y], fx: (v) => num(v, 0), fy: (v) => num(v, y < 10 ? 2 : 0), ejeX: ex[0].toUpperCase() + ex.slice(1), ejeY: ey[0].toUpperCase() + ey.slice(1),
+        series: [{ pts: [[0, 0], [2 * x, 2 * x * k]], color: '--serie-1' }, ...(s.c ? [{ pts: [[0, 0], [2 * x, 2 * x * k * (1 - s.c)]], color: '--serie-2', discontinua: true }] : []), { tipo: 'puntos', pts: [[x, s.modo === 'cruzado' ? y : s.neto]], color: '--serie-3', radio: 6 }] };
+    },
+    leyenda: (s) => ({ convertir: () => `<b>Blue line</b>: what you receive at the exchange rate${s.c ? '; <b>dashed</b>: after the commission' : ''}. <b>Point</b>: your exchange.`, cruzado: () => `<b>Line</b>: ${s.m2[0]} received for ${s.m1[0]}. <b>Point</b>: 100 ${s.m1[1]}.`, variacion: () => `<b>Bars</b>: ${s.m[0]} per euro before and now.`, ppa: () => '<b>Bars</b>: what the same good costs in Spain and abroad, converted to euros. If PPP held, they would be equal.', relativa: () => `<b>Line</b>: the exchange rate that maintains PPP, year by year. <b>Dashed</b>: today's.`, paridad: () => `<b>Blue line</b>: the no-arbitrage forward rate, F = E·((1 + i*)/(1 + i))ᵀ, by term. <b>Purple point</b>: the forward rate at the end of the term.${s.arb ? ' <b>Red point</b>: the market forward rate; if it does not match, there is arbitrage.' : ''} <b>Dashed</b>: today's rate.` }[s.modo]()),
+  });
+})();
+
+</script>
+<script src="../../../js/en/biblioteca.en.5cb97548.js"></script>
+<script src="../../../js/en/practica.en.192a5c1e.js"></script>
+<script src="../../../js/en/personal.en.00676b87.js"></script>
+<script>
+Biblioteca.monta('tipos-cambio', 'tipos-cambio-v1');
+Practica.monta('tipos-cambio', 'tipos-cambio-v1');
+Enunciado.monta('tipos-cambio', 'tipos-cambio-v1');
+</script>
+</html>

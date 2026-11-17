@@ -48,6 +48,7 @@ module.exports = ({ fs, path, fuente, publico, args, mal: avisa, pagina }) => {
     // la rueda acerca la gráfica y cambia la ventana
     extra: async (page, m) => {
       await page.evaluate(() => GraficadorApp.abrirEjemplo('cubica'));
+      await page.locator('#grafica').scrollIntoViewIfNeeded();
       const b = await page.locator('#grafica').boundingBox();
       await page.mouse.move(b.x + b.width / 2, b.y + b.height / 2);
       await page.mouse.wheel(0, -200);

@@ -1,0 +1,562 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTQiIGZpbGw9IiMwZDZiNjYiLz48ZyBmaWxsPSJub25lIiBzdHJva2U9IiNlNmE2NDAiIHN0cm9rZS13aWR0aD0iMi40IiBzdHJva2UtZGFzaGFycmF5PSI0IDYuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIj48cGF0aCBkPSJNMjAgMzJINDQiLz48cGF0aCBkPSJNMjEgMjdDMjcgMTQgMzcgMTQgNDMgMjciLz48cGF0aCBkPSJNMjEgMzdDMjcgNTAgMzcgNTAgNDMgMzciLz48cGF0aCBkPSJNMTcgMjRDMjIgNCA0MiA0IDQ3IDI0Ii8+PHBhdGggZD0iTTE3IDQwQzIyIDYwIDQyIDYwIDQ3IDQwIi8+PC9nPjxjaXJjbGUgY3g9IjE3IiBjeT0iMzIiIHI9IjgiIGZpbGw9IiNlZjdhNjIiLz48Y2lyY2xlIGN4PSI0NyIgY3k9IjMyIiByPSI4IiBmaWxsPSIjNzRhMmYyIi8+PHBhdGggZD0iTTEzIDMyaDhNMTcgMjh2OE00MyAzMmg4IiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iMi42IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48L3N2Zz4K">
+<link rel="apple-touch-icon" href="../../../apple-touch-icon.png">
+<meta property="og:title" content="Oscillation calculator">
+<meta property="og:description" content="Oscillation calculator: simple harmonic motion of a spring and a pendulum, damped oscillator (underdamped, critical and overdamped) and forced oscillator with its resonance, step by step">
+<link rel="canonical" href="https://simulaciencia.vercel.app/en/fisica/oscilaciones/">
+<link rel="alternate" hreflang="es" href="https://simulaciencia.vercel.app/fisica/oscilaciones/">
+<link rel="alternate" hreflang="en" href="https://simulaciencia.vercel.app/en/fisica/oscilaciones/">
+<link rel="alternate" hreflang="x-default" href="https://simulaciencia.vercel.app/fisica/oscilaciones/">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="https://simulaciencia.vercel.app/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebApplication","name":"Oscillations: SHM, damped and forced","description":"Oscillation calculator online: simple harmonic motion (spring and pendulum), damped oscillator (underdamped, critical and overdamped) and forced oscillator with its resonance, with graph and step-by-step working.","url":"https://simulaciencia.vercel.app/fisica/oscilaciones/","inLanguage":"es","isAccessibleForFree":true,"applicationCategory":"EducationalApplication","operatingSystem":"Web browser","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://simulaciencia.vercel.app/"},{"@type":"ListItem","position":2,"name":"General physics","item":"https://simulaciencia.vercel.app/fisica/"},{"@type":"ListItem","position":3,"name":"Oscillations: SHM, damped and forced","item":"https://simulaciencia.vercel.app/fisica/oscilaciones/"}]},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How are the frequency and period of an oscillator calculated?","acceptedAnswer":{"@type":"Answer","text":"Spring: ω = √(k/m) and T = 2π√(m/k); simple pendulum: T = 2π√(L/g). With k = 100 N/m and m = 1 kg, ω = 10 rad/s and T ≈ 0.63 s; a 1 m pendulum has T ≈ 2.0 s."}},{"@type":"Question","name":"What is the difference between an underdamped, critically damped and overdamped oscillator?","acceptedAnswer":{"@type":"Answer","text":"With friction b and mass m, if b < 2√(km) the system oscillates with frequency ω′ = √(ω₀² − (b/2m)²) and decreasing amplitude; if b = 2√(km) it returns to equilibrium without oscillating and as fast as possible; if b > 2√(km) it returns slowly. With an external force, there is resonance when ω approaches the natural frequency."}}]}]}</script>
+<link rel="manifest" href="../../manifest.webmanifest">
+<meta name="theme-color" content="#0d6b66">
+<script src="../../pwa.js" defer></script>
+<meta name="google-adsense-account" content="ca-pub-6407501780492688">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6407501780492688" crossorigin="anonymous"></script>
+<script>window.googlefc = window.googlefc || {}; googlefc.callbackQueue = googlefc.callbackQueue || [];
+document.addEventListener('click', (e) => { if (!e.target.closest('.pref-cookies')) return; e.preventDefault(); googlefc.callbackQueue.push(() => googlefc.showRevocationMessage()); });</script>
+<style>.anuncio { max-width:860px; margin:28px 0 0; text-align:center; min-height:120px } .anuncio > span { display:block; font:11px/1.6 system-ui, sans-serif; letter-spacing:.06em; text-transform:uppercase; color:var(--muted, #5b6670) } .anuncio ins { display:block }</style>
+<style>.anuncio-lado { display:none } @media (min-width: 901px) { .anuncio-lado { display:block; grid-column:1; grid-row:2; position:sticky; top:96px; margin:8px 0 0; max-width:none; min-height:250px; min-width:0; overflow:hidden } main .layout.con-lado > :nth-child(2) { grid-row:1 / span 2 } }</style>
+<script>document.addEventListener('DOMContentLoaded', () => {
+  const l = document.querySelector('main .layout');
+  if (!l || l.classList.contains('invertido') || l.children.length !== 2 || !l.offsetParent || !matchMedia('(min-width: 901px)').matches) return;
+  l.classList.add('con-lado');
+  const a = document.createElement('div'); a.className = 'anuncio anuncio-lado';
+  a.innerHTML = '<span>Publicidad</span><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-6407501780492688" data-ad-slot="9800921596" data-ad-format="auto" data-full-width-responsive="true"></ins>';
+  l.appendChild(a); (window.adsbygoogle = window.adsbygoogle || []).push({});
+});</script>
+<script>(() => {
+  const raiz = document.documentElement, mq = matchMedia('(prefers-color-scheme: dark)'), oyentes = [];
+  try { const t = localStorage.getItem('simu-tema'); if (t === 'dark' || t === 'light') raiz.dataset.theme = t; } catch (e) { /* sin almacenamiento */ }
+  const orig = MediaQueryList.prototype.addEventListener;
+  MediaQueryList.prototype.addEventListener = function (tipo, f, ...r) { if (tipo === 'change' && /prefers-color-scheme/.test(this.media)) oyentes.push(f); return orig.call(this, tipo, f, ...r); };
+  const oscuro = () => (raiz.dataset.theme ? raiz.dataset.theme === 'dark' : mq.matches);
+  const rotula = () => document.querySelectorAll('.tema').forEach((b) => { const t = oscuro() ? 'Switch to light mode' : 'Switch to dark mode'; b.title = t; b.setAttribute('aria-label', t); });
+  document.addEventListener('DOMContentLoaded', rotula);
+  mq.addEventListener('change', rotula);
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.tema')) return;
+    raiz.dataset.theme = oscuro() ? 'light' : 'dark';
+    try { localStorage.setItem('simu-tema', raiz.dataset.theme); } catch (e) { /* sin almacenamiento */ }
+    rotula();
+    for (const f of oyentes) { try { f.call(mq, { matches: oscuro(), media: mq.media }); } catch (err) { console.error(err); } }
+  });
+})();</script>
+<script>(() => {
+  const ENFOCABLE = 'a[href],button,input,select,textarea,summary,[tabindex]';
+  let espera = 0;
+  const revisa = () => {
+    espera = 0;
+    for (const e of document.querySelectorAll('main *')) {
+      const desborda = e.scrollWidth > e.clientWidth || e.scrollHeight > e.clientHeight;
+      if (e.dataset.sf) { if (!desborda || e.querySelector(ENFOCABLE)) { e.removeAttribute('tabindex'); delete e.dataset.sf; } continue; }
+      if (!desborda || e.hasAttribute('tabindex') || e.matches('svg,svg *,canvas') || e.querySelector(ENFOCABLE)) continue;
+      const o = getComputedStyle(e);
+      if (/auto|scroll/.test(o.overflowX + o.overflowY)) { e.tabIndex = 0; e.dataset.sf = '1'; }
+    }
+  };
+  window.revisaScroll = revisa; // también lo llama pruebas/accesibilidad.js antes de pasar axe
+  const pide = () => { if (!espera) espera = setTimeout(revisa, 400); };
+  addEventListener('load', () => { revisa(); const m = document.querySelector('main'); if (m) new MutationObserver(pide).observe(m, { childList: true, subtree: true, characterData: true }); });
+  addEventListener('resize', pide);
+})();</script>
+<script src="../../buscador.js" defer></script>
+<script src="../../llama.js" defer></script>
+<title>Oscillation calculator: SHM, damped and resonance · Ciencify</title>
+<meta name="description" content="Oscillation calculator online: simple harmonic motion (spring and pendulum), damped oscillator (underdamped, critical and overdamped) and forced oscillator with its resonance, with graph and step-by-step working.">
+<style>/* =====================================================================
+   Hoja de estilos común de todas las herramientas (fuente/<herramienta>/pagina.html).
+   diseno.js la mete en cada página, antes de su propio <style>, junto con el color
+   de la asignatura (--accent, --accent-soft) y la cabecera del portal. La guía de uso
+   de cada componente, con su HTML, está en DISENO.md.
+   Una herramienta no vuelve a definir estas reglas: ajusta las variables de medida
+   (--col-datos, --ancho-valor, --alto-grafica) o añade una clase propia.
+   ===================================================================== */
+
+/* ---------- Colores y letras (claro y oscuro) ---------- */
+:root {
+  --bg: #eef1ee; --panel: #fff; --ink: #1a2128; --muted: #5b6670; --line: #d5dbd5; --error: #c0392b;
+  --f-ui: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-math: "STIX Two Text", "Cambria Math", Cambria, Georgia, serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+  --vidrio: rgba(255,255,255,.55); --vidrio-fuerte: rgba(255,255,255,.72); --vidrio-borde: rgba(255,255,255,.7); --vidrio-brillo: inset 0 1px 0 rgba(255,255,255,.8);
+  --vidrio-sombra: 0 1px 2px rgba(20,40,60,.06), 0 8px 28px rgba(20,40,60,.10); --blur: blur(22px) saturate(1.7); --halo1: rgba(13,107,102,.22); --halo2: rgba(42,93,181,.20); --halo3: rgba(107,63,160,.14);
+  /* medidas que cada herramienta puede ajustar */
+  --col-datos: 360px; --ancho-etiqueta: minmax(0, 1fr); --ancho-valor: 150px; --letra-campo: 13px var(--f-ui); --ancho-dato: 190px; --alto-grafica: clamp(260px, 36vw, 380px); --margen-grafica: 10px;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #111619; --panel: #182025; --ink: #e3e8ea; --muted: #a3aeb5; --line: #2a343b; --error: #f08a80; --vidrio: rgba(34,46,54,.50); --vidrio-fuerte: rgba(26,36,42,.70); --vidrio-borde: rgba(255,255,255,.12); --vidrio-brillo: inset 0 1px 0 rgba(255,255,255,.10); --vidrio-sombra: 0 1px 2px rgba(0,0,0,.3), 0 10px 32px rgba(0,0,0,.35); --halo1: rgba(77,188,176,.20); --halo2: rgba(116,162,242,.18); --halo3: rgba(170,120,230,.14); color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #111619; --panel: #182025; --ink: #e3e8ea; --muted: #a3aeb5; --line: #2a343b; --error: #f08a80; --vidrio: rgba(34,46,54,.50); --vidrio-fuerte: rgba(26,36,42,.70); --vidrio-borde: rgba(255,255,255,.12); --vidrio-brillo: inset 0 1px 0 rgba(255,255,255,.10); --vidrio-sombra: 0 1px 2px rgba(0,0,0,.3), 0 10px 32px rgba(0,0,0,.35); --halo1: rgba(77,188,176,.20); --halo2: rgba(116,162,242,.18); --halo3: rgba(170,120,230,.14); color-scheme: dark }
+/* fin de los colores */
+
+/* ---------- Base ---------- */
+* { box-sizing: border-box }
+[hidden] { display: none !important }
+html, body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.45 var(--f-ui) }
+a { color: var(--accent) }
+.wrap { max-width: 1300px; margin: 0 auto; padding: 16px clamp(16px, 3vw, 24px) 32px }
+h1 { font: 600 24px/1.25 var(--f-ui); margin: 0 0 4px }
+.lead { color: var(--muted); margin: 0 0 12px; max-width: 760px }
+/* texto solo para lectores de pantalla; sin position:absolute para que no ensanche las tablas con scroll */
+.solo-lector { display: inline-block; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; vertical-align: top }
+footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 8px 16px 24px }
+footer a { color: var(--muted); margin: 0 6px; white-space: nowrap; display: inline-block }
+
+/* ---------- Diseño A: datos a la izquierda, resultados a la derecha ---------- */
+.layout { display: grid; grid-template-columns: var(--col-datos) minmax(0, 1fr); gap: 16px; align-items: start }
+.layout.invertido { grid-template-columns: minmax(0, 1fr) var(--col-datos) }
+@media (max-width: 900px) { .layout, .layout.invertido { grid-template-columns: minmax(0, 1fr) } }
+
+/* ---------- Tarjetas ---------- */
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 14px; margin-bottom: 14px }
+.card h2 { font: 600 12px/1.4 var(--f-ui); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 0 0 10px }
+.destacado { border-color: var(--line); border-top: 3px solid var(--accent) }
+.destacado h2 { color: var(--accent) }
+
+/* ---------- Datos: campos, separadores, botones y pestañas ---------- */
+.campos { display: grid; grid-template-columns: var(--ancho-etiqueta) var(--ancho-valor); gap: 7px 10px; align-items: center }
+.campos label { font-size: 13.5px }
+.campos label small { color: var(--muted) }
+.campos .ancho { grid-column: 1 / -1 }
+.sep { grid-column: 1 / -1; font: 600 12px var(--f-ui); color: var(--accent); text-transform: uppercase; letter-spacing: .04em; margin-top: 8px }
+.in { font: var(--letra-campo); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; width: 100%; font-variant-numeric: tabular-nums }
+.btn { font: 500 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 5px 10px; cursor: pointer; white-space: nowrap }
+.btn:hover { border-color: var(--accent) }
+/* foco del teclado en todo lo que se pulsa o se escribe (sin especificidad: una herramienta puede ajustarlo) */
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible { outline: 2px solid var(--accent); outline-offset: 1px }
+.controles { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 8px }
+.controles > .nota, .controles > .leyenda { flex: 1 1 220px; margin: 0 }
+.exportar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 8px 0 }
+.exportar-aviso { color: var(--muted); font-size: 12.5px }
+.tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px }
+.tools label { color: var(--muted); font-size: 13px; display: inline-flex; gap: 6px; align-items: center }
+.modos { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; margin-bottom: 14px }
+.modos button { font: 500 13.5px var(--f-ui); border: 0; background: var(--panel); color: var(--muted); padding: 7px 14px; cursor: pointer }
+.modos button[aria-selected=true] { background: var(--accent); color: var(--panel) }
+.error { color: var(--error); font-size: 13px; margin: 10px 0 0 }
+.nota { color: var(--muted); font-size: 12.5px; margin: 8px 0 0 }
+
+/* ---------- Resultados ---------- */
+.res { display: grid; grid-template-columns: repeat(auto-fill, minmax(var(--ancho-dato), 1fr)); gap: 6px 14px; font: 16px var(--f-math) }
+.res div { overflow-x: auto; overflow-y: hidden }
+.res span { display: block; font: 12px var(--f-ui); color: var(--muted) }
+.res div.ancho { grid-column: 1 / -1 }
+.resumen { display: grid; grid-template-columns: repeat(auto-fill, minmax(var(--ancho-dato), 1fr)); gap: 8px; margin: 0 }
+.resumen div { background: var(--accent-soft); border-radius: 8px; padding: 8px 10px; overflow-x: auto; overflow-y: hidden }
+.resumen div span { display: block; font-size: 12px; color: var(--muted) }
+.resumen div b { font: 600 17px var(--f-math) }
+.resumen div.ancho { grid-column: 1 / -1 }
+
+/* ---------- Gráficas ---------- */
+canvas { display: block; width: 100%; height: var(--alto-grafica); border-radius: 8px; background: var(--bg); margin-top: var(--margen-grafica) }
+.leyenda { font-size: 12.5px; color: var(--muted); margin: 6px 0 0 }
+.leyenda b { font-weight: 600 }
+
+/* ---------- Desarrollo paso a paso ---------- */
+/* el número va dentro del paso para que no lo corte el desplazamiento de las fórmulas largas */
+.pasos ol { margin: 0; padding: 0; list-style: none; counter-reset: paso }
+.pasos li { position: relative; margin: 0 0 12px; padding-left: 22px; font-family: var(--f-math); font-size: 15.5px; overflow-x: auto; counter-increment: paso; overflow-y: hidden }
+.pasos li::before { content: counter(paso) "."; position: absolute; left: 0; top: 0; font: 13.5px/1.45 var(--f-ui); color: var(--muted) }
+.pasos li strong { font: 600 13.5px var(--f-ui); display: block; margin-bottom: 2px }
+.pasos table.tabla { border-collapse: collapse; margin: 6px 0; font: 13px var(--f-ui); font-variant-numeric: tabular-nums }
+.pasos table.tabla th, .pasos table.tabla td { border: 1px solid var(--line); padding: 3px 9px; text-align: right }
+.pasos table.tabla th { background: var(--accent-soft); font-weight: 600 }
+.tabla-scroll { overflow-x: auto }
+
+/* matrices con corchetes, dentro de una fórmula */
+.mat { position: relative; display: inline-block; vertical-align: middle; padding: 0 7px; margin: 2px 2px }
+.mat::before, .mat::after { content: ""; position: absolute; top: 0; bottom: 0; width: 5px; border: 1.4px solid currentColor }
+.mat::before { left: 0; border-right: 0 }
+.mat::after { right: 0; border-left: 0 }
+.mat table { border-collapse: collapse }
+.mat td { padding: 2px 7px; text-align: center; white-space: nowrap; font-variant-numeric: tabular-nums }
+
+/* ---------- Teoría ---------- */
+.teoria, .preguntas { margin-top: 28px; max-width: 860px; font-size: 15px; line-height: 1.6 }
+.preguntas h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
+.preguntas h3 { font: 600 15px var(--f-ui); margin: 14px 0 2px }
+.preguntas p { margin: 0 }
+.teoria h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
+.teoria .f { max-width: 100%; overflow-x: auto; overflow-y: hidden; font-family: var(--f-math); font-size: 16.5px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; display: inline-block }
+.teoria ul { padding-left: 20px }
+.teoria li { margin-bottom: 4px }
+.teoria li, .teoria p { overflow-x: auto; overflow-y: hidden }
+
+/* ---------- Liquid Glass ---------- */
+/* Vidrio solo en el marco (tarjetas, controles, barras); el lienzo de las gráficas y las fórmulas no se tocan. */
+body { display: flow-root; background: radial-gradient(60% 50% at 8% 0%, var(--halo1), transparent 70%), radial-gradient(50% 45% at 95% 10%, var(--halo2), transparent 70%), radial-gradient(55% 50% at 60% 100%, var(--halo3), transparent 70%), var(--bg); background-attachment: fixed }
+.card { background: var(--vidrio); border-color: var(--vidrio-borde); border-radius: 18px; box-shadow: var(--vidrio-brillo), var(--vidrio-sombra); -webkit-backdrop-filter: var(--blur); backdrop-filter: var(--blur) }
+.destacado { border-top: 3px solid var(--accent) }
+.in { background: var(--vidrio); border-color: var(--vidrio-borde); border-radius: 10px; box-shadow: var(--vidrio-brillo) }
+.btn { background: var(--vidrio-fuerte); border-color: var(--vidrio-borde); border-radius: 99px; padding: 5px 14px; box-shadow: var(--vidrio-brillo) }
+.modos { border-color: var(--vidrio-borde); border-radius: 99px; background: var(--vidrio); box-shadow: var(--vidrio-brillo); -webkit-backdrop-filter: var(--blur); backdrop-filter: var(--blur) }
+.modos button { background: transparent; border-radius: 99px }
+.modos button[aria-selected=true] { box-shadow: 0 1px 6px rgba(0,0,0,.18) }
+.resumen div { border-radius: 14px }
+.teoria .f { background: var(--vidrio); border-color: var(--vidrio-borde); border-radius: 12px }
+canvas { border-radius: 14px }
+@media (max-width: 900px) { .card, .modos { -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px) } }
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) { .card, .modos, header.top { background: var(--panel); -webkit-backdrop-filter: none; backdrop-filter: none } .in, .btn, .teoria .f { background: var(--panel) } }
+
+:root { --accent:#2a5db5; --accent-soft:color-mix(in srgb, #2a5db5 12%, #fff); --marca:#0d6b66 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --accent:#74a2f2; --accent-soft:color-mix(in srgb, #74a2f2 16%, #182025); --marca:#4dbcb0 } }
+:root[data-theme="dark"] { --accent:#74a2f2; --accent-soft:color-mix(in srgb, #74a2f2 16%, #182025); --marca:#4dbcb0 }
+header.top { display:flex; align-items:center; gap:8px 20px; flex-wrap:wrap; padding:12px clamp(16px,3vw,28px); position:sticky; top:10px; z-index:10; margin:10px clamp(10px,2vw,20px) 0; border:1px solid var(--vidrio-borde); border-radius:22px; background:var(--vidrio-fuerte); box-shadow:var(--vidrio-brillo),var(--vidrio-sombra); -webkit-backdrop-filter:var(--blur); backdrop-filter:var(--blur) }
+header.top .logo { font:600 18px var(--f-math); margin:0; white-space:nowrap; color:var(--ink); text-decoration:none } header.top .logo i { color:var(--marca) }
+header.top nav { display:flex; gap:4px 14px; font-size:14px; overflow-x:auto; max-width:100%; scrollbar-width:none }
+header.top nav a { white-space:nowrap; padding:2px 0; color:var(--muted); text-decoration:none } header.top nav a:hover { color:var(--ink) }
+header.top nav a[aria-current] { color:var(--ink); font-weight:600; box-shadow:inset 0 -2px 0 var(--accent) }
+header.top form { margin-left:auto; flex:0 1 170px; min-width:130px }
+header.top .foro { margin-left:auto; display:inline-flex; align-items:center; gap:6px; white-space:nowrap; font:600 14px var(--f-ui); color:var(--ink); text-decoration:none; border:1px solid var(--vidrio-borde); background:var(--vidrio); border-radius:99px; padding:6px 12px } header.top .foro:hover, header.top .foro[aria-current] { border-color:var(--accent); color:var(--accent) } header.top .foro + form { margin-left:0 } header.top > .foro ~ .tema { margin-left:0 }
+@media (min-width:701px) { header.top { flex-wrap:nowrap } header.top nav { min-width:0 } }
+header.top .buscar { font:14px var(--f-ui); color:var(--ink); border:1px solid var(--vidrio-borde); border-radius:99px; padding:7px 14px; width:100%; background:var(--vidrio) }
+header.top .buscar:focus-visible, header.top a:focus-visible { outline:2px solid var(--accent); outline-offset:1px }
+.miga { display:flex; align-items:center; flex-wrap:wrap; gap:8px; font-size:13.5px; color:var(--muted); margin:0 0 10px }
+.miga a { color:var(--accent); font-weight:600; text-decoration:none } .miga a:hover { text-decoration:underline }
+.miga-ico { display:inline-grid; place-items:center; width:22px; height:22px; border-radius:6px; background:var(--accent-soft); color:var(--accent); font:italic 600 13px var(--f-math) }
+.miga-der { margin-left:auto; display:flex; gap:8px } .miga-izq:empty, .miga-der:empty { display:none }
+.bib-btn, .prac-btn { border-radius:8px !important; padding:6px 12px !important }
+body.bib-ejemplos select[id^="ejemplo"] { display:none }
+@media print { header.top, .miga, .prac-btn { display:none !important } }
+:root { --vida:#6a4fc2 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --vida:#b39ff7 } }
+:root[data-theme="dark"] { --vida:#b39ff7 }
+.relacionadas { max-width:860px; margin:16px 0 0; background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--accent); border-radius:4px 12px 12px 4px; padding:12px 16px }
+.relacionadas h2 { font:600 12px/1.4 var(--f-ui); text-transform:uppercase; letter-spacing:.06em; color:var(--accent); margin:0 0 4px }
+.relacionadas a { display:flex; gap:10px; align-items:baseline; padding:5px 0; color:var(--ink); text-decoration:none; font-size:14px }
+.relacionadas a b { font-weight:600; white-space:nowrap } .relacionadas a span { color:var(--muted) } .relacionadas a:hover b { color:var(--accent); text-decoration:underline }
+.vida-real { max-width:860px; margin:28px 0 0; background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--vida); border-radius:4px 12px 12px 4px; padding:12px 16px }
+.vida-real h2 { font:600 12px/1.4 var(--f-ui); text-transform:uppercase; letter-spacing:.06em; color:var(--vida); margin:0 0 4px }
+.vida-real a { display:flex; gap:10px; align-items:baseline; padding:5px 0; color:var(--ink); text-decoration:none; font-size:14px }
+.vida-real a b { font-weight:600; white-space:nowrap } .vida-real a span { color:var(--muted) } .vida-real a:hover b { color:var(--vida); text-decoration:underline }
+@media (max-width:600px) { .vida-real a, .relacionadas a { display:block } .vida-real a b, .relacionadas a b { display:block; white-space:normal } }
+@media (max-width:700px) { header.top form { display:none } h1 { font-size:21px }
+  .miga-izq, .miga-der, .miga::after { order:-1 } .miga::after { content:''; flex-basis:100%; height:0 } }
+
+.tema { flex:0 0 auto; margin-left:auto; width:36px; height:36px; display:grid; place-items:center; padding:0; border:1px solid var(--vidrio-borde, var(--line)); border-radius:99px; background:var(--vidrio, var(--bg)); color:var(--ink); cursor:pointer }
+.buscar ~ .tema, form ~ .tema { margin-left:0 }
+.tema:hover { border-color:var(--accent); color:var(--accent) }
+.tema:focus-visible { outline:2px solid var(--accent); outline-offset:1px }
+.tema .sol { display:none }
+:root[data-theme="dark"] .tema .sol { display:block } :root[data-theme="dark"] .tema .luna { display:none }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .tema .sol { display:block } :root:not([data-theme="light"]) .tema .luna { display:none } }
+@media (max-width:700px) { .top > .tema { margin-left:auto } .top > nav { order:1 } }
+</style>
+<style>
+:root {
+  --serie-1: #2a5db5; --serie-2: #c2412a }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --serie-1: #74a2f2; --serie-2: #ef7a62 } }
+:root[data-theme="dark"] {
+  --serie-1: #74a2f2; --serie-2: #ef7a62 }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../../">Cienci<i>fy</i></a><nav aria-label="Subjects"><a href="../../../">Home</a><a href="../../electromagnetismo/">Electromagnetism</a><a href="../" aria-current="page">General physics</a><a href="../../quimica/">Chemistry</a><a href="../../matematicas/">Mathematics</a><a href="../../estadistica/">Statistics</a><a href="../../circuitos/">Circuits</a><a href="../../economia/">Economics</a><a href="../../fenomenos/">Real life</a></nav><a class="foro" href="../../foro/"><span aria-hidden="true">💬</span>Forum</a><form action="../../../" role="search"><input class="buscar" type="search" name="q" placeholder="Search: Biot-Savart, molarity…" aria-label="Search tools (shortcut: / key)" title="Shortcut: / or Ctrl+K"></form><style>
+.lg { position:relative; flex:0 0 auto }
+.lg-btn { display:inline-flex; align-items:center; gap:6px; height:36px; padding:0 12px; border:1px solid var(--vidrio-borde, var(--line)); border-radius:99px; background:var(--vidrio, var(--bg)); color:var(--ink); font:600 13px var(--f-ui, system-ui, sans-serif); cursor:pointer }
+.lg-btn:hover { border-color:var(--accent); color:var(--accent) }
+.lg-btn:focus-visible, .lg-pop a:focus-visible, .lg-ban button:focus-visible { outline:2px solid var(--accent); outline-offset:1px }
+.lg-pop { position:absolute; top:44px; right:0; z-index:50; min-width:210px; margin:0; padding:6px; list-style:none; border:1px solid var(--vidrio-borde, var(--line)); border-radius:16px; background:rgba(255,255,255,.98); color:var(--ink); box-shadow:0 12px 36px rgba(0,0,0,.22) }
+.lg-pop[hidden] { display:none }
+:root[data-theme="dark"] .lg-pop, :root[data-theme="dark"] .lg-ban { background:rgba(28,34,38,.98) }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .lg-pop, :root:not([data-theme="light"]) .lg-ban { background:rgba(28,34,38,.98) } }
+.lg-t { font:600 11px var(--f-ui, system-ui, sans-serif); text-transform:uppercase; letter-spacing:.06em; color:var(--muted); padding:6px 10px 4px }
+.lg-pop a { display:flex; justify-content:space-between; align-items:center; gap:14px; padding:8px 10px; border-radius:10px; color:var(--ink); text-decoration:none; font:500 14px var(--f-ui, system-ui, sans-serif) }
+.lg-pop a:hover { background:var(--accent-soft) }
+.lg-pop a > span { display:flex; align-items:center; gap:10px }
+.lg-pop a small { color:var(--muted); font-size:12px }
+.lg-pop a[aria-current="true"] { background:var(--accent-soft); font-weight:700 }
+.lg-pop a[aria-current="true"] small::after { content:' ✓'; color:var(--accent) }
+.lg-fl { flex:none; border-radius:50%; box-shadow:0 0 0 1px rgba(0,0,0,.18) }
+.lg-ban { position:fixed; left:50%; bottom:18px; z-index:60; transform:translateX(-50%); width:min(560px, calc(100vw - 24px)); box-sizing:border-box; display:flex; flex-wrap:wrap; align-items:center; gap:10px 12px; padding:12px 16px; border:1px solid var(--vidrio-borde, var(--line)); border-radius:18px; background:rgba(255,255,255,.98); color:var(--ink); box-shadow:0 12px 36px rgba(0,0,0,.25); font:14px var(--f-ui, system-ui, sans-serif) }
+.lg-ban p { flex:1 1 220px; margin:0 }
+.lg-ban button { font:600 13px var(--f-ui, system-ui, sans-serif); padding:7px 14px; border-radius:99px; border:1px solid var(--vidrio-borde, var(--line)); background:var(--vidrio, var(--bg)); color:var(--ink); cursor:pointer }
+.lg-ban button.lg-si { background:var(--accent); border-color:var(--accent); color:#fff }
+:root[data-theme="dark"] .lg-ban button.lg-si { color:#0d141a }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .lg-ban button.lg-si { color:#0d141a } }
+@media (max-width:700px) { .top > .lg { margin-left:auto } .top > .lg + .tema { margin-left:0 } }
+@media print { .lg, .lg-ban { display:none !important } }
+</style><div class="lg"><button class="lg-btn" type="button" aria-expanded="false" aria-controls="lg-lista" aria-label="Language: English" title="Language"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.8 3 2.8 15 0 18M12 3c-2.8 3-2.8 15 0 18"/></svg><span>EN</span><span aria-hidden="true">▾</span></button><ul class="lg-pop" id="lg-lista" hidden><li class="lg-t" aria-hidden="true">Language · Idioma</li><li><a href="../../../" hreflang="es" lang="es"><span><svg class="lg-fl" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false"><rect width="24" height="24" fill="#c60b1e"/><rect y="6" width="24" height="12" fill="#ffc400"/></svg>Español</span><small>ES</small></a></li><li><a href="../../../en/" hreflang="en" lang="en" aria-current="true"><span><svg class="lg-fl" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false"><rect width="24" height="24" fill="#012169"/><path d="M0 0L24 24M24 0L0 24" stroke="#fff" stroke-width="5"/><path d="M0 0L24 24M24 0L0 24" stroke="#c8102e" stroke-width="2"/><path d="M12 0V24M0 12H24" stroke="#fff" stroke-width="8"/><path d="M12 0V24M0 12H24" stroke="#c8102e" stroke-width="4.5"/></svg>English</span><small>EN</small></a></li></ul></div><script>(() => {
+  const L = [{"c":"es","d":"","n":"Español","a":["Esta página está disponible en español.","Cambiar a español","Seguir aquí"]},{"c":"en","d":"en/","n":"English","a":["This page is available in English.","Switch to English","Stay here"]}], ACTUAL = "en", K = 'simu-idioma';
+  const guarda = (c) => { try { localStorage.setItem(K, c); } catch (e) { /* sin almacenamiento */ } };
+  const lee = () => { try { return localStorage.getItem(K); } catch (e) { return null; } };
+  const resto = () => { let p = location.pathname; for (const i of L) if (i.d && p.startsWith('/' + i.d)) { p = '/' + p.slice(i.d.length + 1); break; } return p + location.search + location.hash; };
+  const destino = (i) => '/' + i.d + resto().replace(/^\//, '');
+  const btn = document.querySelector('.lg-btn'), pop = document.querySelector('.lg-pop');
+  if (!btn || !pop) return;
+  pop.querySelectorAll('a[hreflang]').forEach((a) => { const i = L.find((x) => x.c === a.hreflang); if (i && /^https?:$/.test(location.protocol)) a.href = destino(i); a.addEventListener('click', () => guarda(a.hreflang)); });
+  const abre = (v) => { pop.hidden = !v; btn.setAttribute('aria-expanded', String(v)); };
+  btn.addEventListener('click', (e) => { e.stopPropagation(); abre(pop.hidden); });
+  document.addEventListener('click', (e) => { if (!pop.hidden && !e.target.closest('.lg')) abre(false); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !pop.hidden) { abre(false); btn.focus(); } });
+  pop.addEventListener('focusout', (e) => { if (!pop.hidden && !e.relatedTarget?.closest?.('.lg')) abre(false); });
+  // aviso: una vez, sin elección guardada, con el idioma del navegador publicado y distinto del de la página
+  if (lee() || window.__sinAviso) return;
+  const pref = (navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language || '']).map((s) => String(s).toLowerCase().slice(0, 2));
+  const i = pref.map((c) => L.find((x) => x.c === c)).find(Boolean);
+  if (!i || i.c === ACTUAL) { return; }
+  const b = document.createElement('div'); b.className = 'lg-ban'; b.setAttribute('role', 'region'); b.setAttribute('aria-label', "Language"); b.lang = i.c;
+  const t = document.createElement('p'); t.textContent = i.a[0];
+  const si = document.createElement('button'); si.type = 'button'; si.className = 'lg-si'; si.textContent = i.a[1];
+  const no = document.createElement('button'); no.type = 'button'; no.textContent = i.a[2];
+  si.addEventListener('click', () => { guarda(i.c); const a = [...pop.querySelectorAll('a[hreflang]')].find((x) => x.hreflang === i.c); location.href = a ? a.href : destino(i); });
+  no.addEventListener('click', () => { guarda(ACTUAL); b.remove(); });
+  b.append(t, si, no); document.body.append(b);
+})();</script><button class="tema" type="button" title="Switch between light and dark mode" aria-label="Switch between light and dark mode"><svg class="luna" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.5A8.5 8.5 0 1 1 9.5 3.5a7 7 0 0 0 11 11z"/></svg><svg class="sol" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button></header>
+<main class="wrap">
+<nav class="miga" aria-label="You are here"><span class="miga-izq"></span><span class="miga-ico" aria-hidden="true">F</span><a href="../">General physics</a><span aria-hidden="true">›</span><span>Oscillations</span><span class="miga-der"></span></nav>
+<h1>Oscillations: SHM, damped and forced</h1>
+<p class="lead">Calculate the period, the energy and the position of a spring or a pendulum, how an oscillator with friction dies out and how much an oscillator driven by a periodic force is amplified near its resonance.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Data</h2>
+    <select id="ejemplos" class="in" aria-label="Examples" style="margin-bottom:12px"></select>
+    <div class="campos" id="campos"></div>
+    <p class="nota" id="nota"></p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card destacado"><h2>Results</h2><div class="resumen" id="resumen"></div></div>
+    <div class="card"><h2>Graph</h2>
+      <canvas id="grafica" aria-label="Position against time of an oscillator, or amplitude against the frequency of the force in the forced oscillator"></canvas>
+      <p class="leyenda" id="leyenda"></p>
+    </div>
+    <div class="card pasos"><h2>Working</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<div class="anuncio"><span>Advertising</span><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-6407501780492688" data-ad-slot="4415753033" data-ad-format="auto" data-full-width-responsive="true"></ins><script>(window.adsbygoogle = window.adsbygoogle || []).push({});</script></div>
+<section class="teoria">
+<h2>Simple harmonic motion</h2>
+<p class="m">A body of mass $m$ attached to a spring of constant $k$ experiences a force $F = −k x$, and its equation $m x″ = −k x$ has the solution $x = A cos(ω t + φ)$ with $ω = √(k/m)$. The period $T = 2π/ω$ does not depend on the amplitude. The velocity is $v = −A ω sin(ω t + φ)$, the acceleration $a = −ω^2 x$, and the total energy $E = 1/2 k A^2$ passes from kinetic to potential without being lost.</p>
+<h2>The simple pendulum</h2>
+<p class="m">For small angles, $sin θ ≈ θ$ and the pendulum obeys $ω = √(g/L)$, independent of the mass. With large amplitudes the real period is longer; the tool calculates it with the arithmetic–geometric mean and compares it with the approximate one.</p>
+<div class="anuncio"><span>Advertising</span><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-6407501780492688" data-ad-slot="4415753033" data-ad-format="auto" data-full-width-responsive="true"></ins><script>(window.adsbygoogle = window.adsbygoogle || []).push({});</script></div>
+<h2>Damped oscillator</h2>
+<p class="m">With a friction $−b v$ the equation is $m x″ + b x′ + k x = 0$. With $γ = b/2m$ and $ω_0 = √(k/m)$ there are three cases: if $γ < ω_0$ it oscillates with $ω_d = √(ω_0^2 − γ^2)$ inside an envelope $e^{−γ t}$; if $γ = ω_0$ it is critical and returns to equilibrium as fast as possible without oscillating (this is how door dampers are designed); if $γ > ω_0$ it is overdamped and returns slowly. The quality factor $Q = ω_0/(2γ)$ measures how lightly damped it is.</p>
+<h2>Forced oscillator and resonance</h2>
+<p class="m">With a force $F_0 cos(ω t)$, after the transient the body oscillates at the frequency of the force with amplitude $A = {F_0/m}/√((ω_0^2 − ω^2)^2 + 4γ^2ω^2)$, lagging by an angle $δ$ with respect to it. The amplitude is greatest near $ω_r = √(ω_0^2 − 2γ^2)$: this is resonance, the narrower and taller the lower the friction. It is what makes a glass ring to the voice, or what is avoided in bridges and in buildings in earthquakes.</p>
+</section>
+<section class="preguntas" aria-label="Frequently asked questions">
+<h2>Frequently asked questions</h2>
+<h3>How are the frequency and period of an oscillator calculated?</h3>
+<p>Spring: ω = √(k/m) and T = 2π√(m/k); simple pendulum: T = 2π√(L/g). With k = 100 N/m and m = 1 kg, ω = 10 rad/s and T ≈ 0.63 s; a 1 m pendulum has T ≈ 2.0 s.</p>
+<h3>What is the difference between an underdamped, critically damped and overdamped oscillator?</h3>
+<p>With friction b and mass m, if b &lt; 2√(km) the system oscillates with frequency ω′ = √(ω₀² − (b/2m)²) and decreasing amplitude; if b = 2√(km) it returns to equilibrium without oscillating and as fast as possible; if b &gt; 2√(km) it returns slowly. With an external force, there is resonance when ω approaches the natural frequency.</p>
+</section>
+<div class="anuncio"><span>Advertising</span><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-6407501780492688" data-ad-slot="4415753033" data-ad-format="auto" data-full-width-responsive="true"></ins><script>(window.adsbygoogle = window.adsbygoogle || []).push({});</script></div>
+<section class="relacionadas" aria-label="Related tools"><h2>Related tools</h2>
+<a href="../../matematicas/edos/"><b>Differential equations →</b><span>Slope field with Euler and RK4, linear second-order ODEs with resonance and systems with their phase diagram.</span></a>
+<a href="../../circuitos/bode/"><b>Bode plots and filters →</b><span>RC, RL and RLC filters (low-pass, high-pass, band-pass and band-stop) with their magnitude and phase Bode plot, the cutoff frequency, the quality factor Q and the bandwidth.</span></a>
+<a href="../gravitacion/"><b>Gravitation and orbits →</b><span>Newton's law, satellites in circular orbit, escape velocity, geostationary orbit and Kepler's laws with the ellipse drawn.</span></a>
+<a href="../optica/"><b>Geometric optics: lenses and mirrors →</b><span>Thin lenses, spherical mirrors and multi-lens systems with ray tracing: position and size of the image, total magnification, equivalent lens, whether it is real or virtual and power.</span></a>
+</section>
+</main>
+<footer><a href="../../../">Home</a>·<a href="../../contacto.html">Contact</a>·<a href="mailto:danijimzzz30@gmail.com?subject=Error%20en%20Oscilaciones&amp;body=Herramienta%3A%20Oscilaciones%20(fisica%2Foscilaciones)%0A%0AQu%C3%A9%20esperaba%20y%20qu%C3%A9%20ha%20pasado%3A%0A">Report an error</a>·<a href="../../aviso-legal.html">Legal notice</a>·<a href="../../privacidad.html">Privacy</a>·<a href="../../cookies.html">Cookies</a> · <a href="#" class="pref-cookies">Cookie preferences</a>· Oscillations <span id="ver"></span> (beta)</footer>
+</body>
+<script>
+const Pagina = { carpeta: 'oscilaciones', guarda: 'oscilaciones-v1' };
+const Version = (() => { const registros = {"web":[{"v":"1.21"}],"control":[{"v":"0.2"}],"termo-estadistica":[{"v":"0.2"}],"markowitz":[{"v":"0.3"}],"cavidades":[{"v":"0.2"}],"organica":[{"v":"0.3"}],"transformada-z":[{"v":"0.2"}],"semiconductores":[{"v":"0.2"}],"relatividad":[{"v":"0.2"}],"osc-acopladas":[{"v":"0.2"}],"solubilidad":[{"v":"0.2"}],"lagrange":[{"v":"0.2"}],"series":[{"v":"0.3"}],"no-parametricos":[{"v":"0.3"}],"regresion-multiple":[{"v":"0.2"}],"anova":[{"v":"0.3"}],"black-scholes":[{"v":"0.3"}],"bonos":[{"v":"0.3"}],"solow":[{"v":"0.3"}],"integrales-multiples":[{"v":"0.1"}],"formulacion":[{"v":"0.2"}],"balance":[{"v":"0.2"}],"redox":[{"v":"0.2"}],"lineas-transmision":[{"v":"0.3"}],"superficies":[{"v":"0.2"}],"vsepr":[{"v":"0.2"}],"maxwell":[{"v":"0.3"}],"fresnel":[{"v":"0.2"}],"gravitacion":[{"v":"0.2"}],"convolucion":[{"v":"0.2"}],"laplace-numerica":[{"v":"0.2"}],"imagenes":[{"v":"0.2.1"}],"guias-onda":[{"v":"0.2"}],"antena":[{"v":"0.2"}],"bode":[{"v":"0.3"}],"optica":[{"v":"0.2"}],"simulador":[{"v":"0.4"}],"teoria-juegos":[{"v":"0.2"}],"puertas-logicas":[{"v":"0.4"}],"multiplicador":[{"v":"0.3"}],"is-lm":[{"v":"0.3"}],"choques":[{"v":"0.1"}],"termoquimica":[{"v":"0.3"}],"probabilidad":[{"v":"0.2"}],"unidades":[{"v":"0.2"}],"equilibrio":[{"v":"0.2"}],"oscilaciones":[{"v":"0.1"}],"beneficio":[{"v":"0.3"}],"costes":[{"v":"0.3"}],"sistemas-numericos":[{"v":"0.2"}],"excedentes":[{"v":"0.2"}],"oferta-demanda":[{"v":"0.2"}],"chi2-bondad":[{"v":"0.2"}],"contrastes":[{"v":"0.2"}],"errores":[{"v":"0.2"}],"graficador":[{"v":"0.2"}],"metodos-numericos":[{"v":"0.2"}],"fisica-moderna":[{"v":"0.2"}],"lorenz-gini":[{"v":"0.2"}],"phillips-okun":[{"v":"0.3"}],"tipos-cambio":[{"v":"0.3"}],"elasticidades":[{"v":"0.3"}],"pib-ipc":[{"v":"0.2"}],"numeros-indice":[{"v":"0.2"}],"ratios":[{"v":"0.2"}],"punto-muerto":[{"v":"0.2"}],"ahorro":[{"v":"0.3"}],"van-tir":[{"v":"0.3"}],"amortizacion-inmovilizado":[{"v":"0.2"}],"prestamos":[{"v":"0.3"}],"rentas":[{"v":"0.3"}],"interes":[{"v":"0.3"}],"descriptiva":[{"v":"0.2"}],"regresion-economia":[{"v":"0.2"}],"ajustador":[{"v":"0.2.1"}],"electrostatica":[{"v":"0.11"}],"magnetostatica":[{"v":"0.4"}],"tabla-periodica":[{"v":"0.2"}],"trabajo-y-energia":[{"v":"0.3"}],"masa-molar":[{"v":"0.2"}],"configuracion-electronica":[{"v":"0.2"}],"condensadores":[{"v":"0.4"}],"tiro-parabolico":[{"v":"0.4"}],"disoluciones":[{"v":"0.2"}],"calorimetria":[{"v":"0.2"}],"induccion":[{"v":"0.4"}],"matrices":[{"v":"0.3"}],"derivadas":[{"v":"0.3"}],"laplace":[{"v":"0.2"}],"interferencia":[{"v":"0.2"}],"ondas-em":[{"v":"0.4"}],"intervalos":[{"v":"0.3"}],"fuerza":[{"v":"0.3"}],"campos":[{"v":"0.2.1"}],"cinetica":[{"v":"0.2"}],"edos":[{"v":"0.2"}],"fourier":[{"v":"0.2"}],"taylor":[{"v":"0.3"}],"complejos":[{"v":"0.3"}],"sistemas":[{"v":"0.3"}],"regresion":[{"v":"0.3"}],"estadistica":[{"v":"0.3"}],"dinamica":[{"v":"0.3"}],"solido-rigido":[{"v":"0.3"}],"ondas":[{"v":"0.3"}],"gases":[{"v":"0.6"}],"ciclos":[{"v":"0.2"}],"ph":[{"v":"0.4"}],"fluidos":[{"v":"0.3"}],"doppler":[{"v":"0.2"}],"resistencias":[{"v":"0.3"}],"faraday":[{"v":"0.4"}],"fenomenos":[{"v":"0.9"}]}; const de = (h) => ({ current: registros[h][0].v, log: registros[h] }); return { registros, de }; })();
+
+</script>
+<script src="../../../js/en/herramienta.en.e2425303.js"></script>
+<script src="../../../js/en/enunciado.en.73e3a542.js"></script>
+<script src="../../../js/en/mates.en.fbd66204.js"></script>
+<script src="../../../js/en/calculadora.en.cc076887.js"></script>
+<script>
+const Oscilaciones = (() => {
+  const K = typeof Calculadora !== 'undefined' ? Calculadora : require('../calculadora.js');
+  const { lee, f } = K, n = f, RAD = Math.PI / 180;
+  const MODOS = { mas: 'Simple harmonic motion', amortiguado: 'Damped oscillator', forzado: 'Forced oscillator and resonance' };
+  const SISTEMAS = { muelle: 'Mass on a spring', pendulo: 'Simple pendulum' };
+
+  const agm = (a, b) => { for (let i = 0; i < 30 && Math.abs(a - b) > 1e-15; i++) [a, b] = [(a + b) / 2, Math.sqrt(a * b)]; return a; };
+  const factorPendulo = (th0) => 1 / agm(1, Math.cos(th0 / 2));
+
+  function mas(sc) {
+    const sis = sc.sistema === 'pendulo' ? 'pendulo' : 'muelle', pasos = [];
+    const m = lee(sc, 'm', 'the mass', { min: 0, minEx: true }), t = lee(sc, 't', 'the instant', { def: 0 });
+    let w, k, L, g, th0 = null;
+    if (sis === 'muelle') {
+      k = lee(sc, 'k', 'the spring constant', { min: 0, minEx: true }); w = Math.sqrt(k / m);
+      pasos.push({ t: 'Angular frequency', html: `$ω = √(k/m) = √({${n(k)}}/{${n(m)}}) = ${n(w, 5)} "rad/s"$` });
+    } else {
+      L = lee(sc, 'L', 'the length', { min: 0, minEx: true }); g = lee(sc, 'g', 'gravity', { min: 0, minEx: true, def: 9.8 }); w = Math.sqrt(g / L); k = m * w * w;
+      pasos.push({ t: 'Angular frequency', html: `For small angles, $ω = √(g/L) = √({${n(g)}}/{${n(L)}}) = ${n(w, 5)} "rad/s"$ (equivalent to a spring of constant $k = m ω^2 = ${n(k, 4)} "N/m"$).` });
+    }
+    const T = (2 * Math.PI) / w, fr = 1 / T;
+    pasos.push({ t: 'Period and frequency', html: `$T = 2π/ω = ${n(T, 5)} "s"$ and $f = 1/T = ${n(fr, 5)} "Hz"$` });
+    let A, phi, x0, v0;
+    if (sis === 'muelle' && sc.ini === 'xv') {
+      x0 = lee(sc, 'x0', 'the initial position'); v0 = lee(sc, 'v0', 'the initial speed', { def: 0 });
+      A = Math.hypot(x0, v0 / w); if (A === 0) throw new Error('With x₀ = 0 and v₀ = 0 the body does not move');
+      phi = Math.atan2(-v0 / w, x0);
+      pasos.push({ t: 'Amplitude and phase', html: `$A = √(x_0^2 + (v_0/ω)^2) = √(${n(x0)}^2 + (${n(v0)}/${n(w, 5)})^2) = ${n(A, 5)} "m"$ and $φ = "atan2"(−v_0/ω, x_0) = ${n(phi, 5)} "rad"$ = ${n(phi / RAD, 5)}°` });
+    } else {
+      const am = lee(sc, 'A', sis === 'pendulo' ? 'the angular amplitude' : 'the amplitude', { min: 0, minEx: true });
+      const ph = lee(sc, 'fase', 'the initial phase', { def: 0 });
+      phi = ph * RAD;
+      if (sis === 'pendulo') {
+        th0 = am * RAD; if (th0 >= Math.PI) throw new Error('The angular amplitude must be less than 180°');
+        A = L * th0;
+        pasos.push({ t: 'Amplitude', html: `The angular amplitude is $θ_0 = ${n(am)}° = ${n(th0, 5)} "rad"$, and the maximum arc is $A = L θ_0 = ${n(A, 5)} "m"$.` });
+      } else A = am;
+      x0 = A * Math.cos(phi); v0 = -A * w * Math.sin(phi);
+    }
+    const vmax = A * w, amax = A * w * w, E = 0.5 * k * A * A;
+    const x = A * Math.cos(w * t + phi), v = -A * w * Math.sin(w * t + phi), a = -w * w * x, Ep = 0.5 * k * x * x, Ec = 0.5 * m * v * v;
+    pasos.push({ t: 'Equations of motion', html: `$x(t) = A cos(ω t + φ) = ${n(A, 5)} cos(${n(w, 5)} t + ${n(phi, 4)})$, $v = −A ω sin(ω t + φ)$ and $a = −ω^2 x$. Maxima: $v_{max} = A ω = ${n(vmax, 5)} "m/s"$ and $a_{max} = A ω^2 = ${n(amax, 5)} "m/s"^2$.` });
+    pasos.push({ t: `At t = ${n(t)} s`, html: `$x = ${n(x, 5)} "m"$, $v = ${n(v, 5)} "m/s"$ y $a = −ω^2 x = ${n(a, 5)} "m/s"^2$.` });
+    pasos.push({ t: 'Energy', html: `$E = 1/2 k A^2 = ${n(E, 5)} "J"$ stays constant. At that instant: $E_p = 1/2 k x^2 = ${n(Ep, 5)} "J"$ and $E_c = 1/2 m v^2 = ${n(Ec, 5)} "J"$ (they add up to ${n(Ep + Ec, 5)} J).` });
+    let Texacto = null;
+    if (sis === 'pendulo') {
+      Texacto = T * factorPendulo(th0);
+      pasos.push({ t: 'How good is the approximation', html: `With this amplitude the exact period is $T = ${n(Texacto, 5)} "s"$, ${n(100 * (Texacto / T - 1), 3)} % longer than the small-angle one.${th0 > 0.26 ? ' Beyond about 15° the motion is no longer simple harmonic and the exact period should be used.' : ' Below about 15° the approximation is very good.'}` });
+    }
+    return { modo: 'mas', sis, m, k, w, T, fr, A, phi, x0, v0, vmax, amax, E, t, x, v, a, Ep, Ec, th0, Texacto, pasos };
+  }
+
+  function movimiento(gm, w0, x0, v0) {
+    const d = gm * gm - w0 * w0, tol = 1e-9 * w0 * w0;
+    if (d < -tol) { const wd = Math.sqrt(-d), B = (v0 + gm * x0) / wd; return { caso: 'sub', wd, B, x: (t) => Math.exp(-gm * t) * (x0 * Math.cos(wd * t) + B * Math.sin(wd * t)) }; }
+    if (Math.abs(d) <= tol) { const B = v0 + gm * x0; return { caso: 'crit', B, x: (t) => (x0 + B * t) * Math.exp(-gm * t) }; }
+    const s = Math.sqrt(d), r1 = -gm + s, r2 = -gm - s, c1 = (v0 - r2 * x0) / (r1 - r2), c2 = x0 - c1;
+    return { caso: 'sobre', r1, r2, c1, c2, x: (t) => c1 * Math.exp(r1 * t) + c2 * Math.exp(r2 * t) };
+  }
+
+  function amortiguado(sc) {
+    const m = lee(sc, 'm', 'the mass', { min: 0, minEx: true }), k = lee(sc, 'k', 'the spring constant', { min: 0, minEx: true }), b = lee(sc, 'b', 'the friction coefficient', { min: 0, minEx: true });
+    const x0 = lee(sc, 'x0', 'the initial position'), v0 = lee(sc, 'v0', 'the initial speed', { def: 0 });
+    if (x0 === 0 && v0 === 0) throw new Error('With x₀ = 0 and v₀ = 0 the body does not move');
+    const w0 = Math.sqrt(k / m), gm = b / (2 * m), bc = 2 * Math.sqrt(k * m), mov = movimiento(gm, w0, x0, v0), tau = 1 / gm, pasos = [];
+    pasos.push({ t: 'Oscillator parameters', html: `$ω_0 = √(k/m) = ${n(w0, 5)} "rad/s"$ and $γ = b/(2m) = ${n(b)}/(2·${n(m)}) = ${n(gm, 5)} "s"^{−1}$. The critical damping coefficient would be $b_c = 2√(k m) = ${n(bc, 5)} "kg/s"$.` });
+    let R = { modo: 'amortiguado', m, k, b, x0, v0, w0, gm, bc, caso: mov.caso, tau, x: mov.x, pasos };
+    if (mov.caso === 'sub') {
+      const wd = mov.wd, Td = (2 * Math.PI) / wd, Q = w0 / (2 * gm), dl = gm * Td;
+      pasos.push({ t: 'Type of motion', html: `$γ < ω_0$ ($b < b_c$): underdamped. It oscillates with angular frequency $ω_d = √(ω_0^2 − γ^2) = ${n(wd, 5)} "rad/s"$ and period $T_d = 2π/ω_d = ${n(Td, 5)} "s"$, inside an envelope $e^{−γ t}$.` });
+      pasos.push({ t: 'Solution', html: `$x(t) = e^{−γ t}(x_0 cos ω_d t + B sin ω_d t)$ with $B = (v_0 + γ x_0)/ω_d = ${n(mov.B, 5)}$.` });
+      pasos.push({ t: 'How strongly damped it is', html: `Quality factor $Q = ω_0/(2γ) = ${n(Q, 4)}$; logarithmic decrement $δ = γ T_d = ${n(dl, 4)}$ (on each oscillation the amplitude shrinks by a factor $e^{δ} = ${n(Math.exp(dl), 4)}$).` });
+      Object.assign(R, { wd, Td, Q, dl, B: mov.B });
+    } else if (mov.caso === 'crit') {
+      pasos.push({ t: 'Type of motion', html: `$γ = ω_0$ ($b = b_c$): critical damping. It returns to equilibrium fastest without oscillating.` });
+      pasos.push({ t: 'Solution', html: `$x(t) = (x_0 + (v_0 + γ x_0) t) e^{−γ t} = (${n(x0)} + ${n(mov.B, 5)} t) e^{−${n(gm, 5)} t}$` });
+      Object.assign(R, { B: mov.B });
+    } else {
+      pasos.push({ t: 'Type of motion', html: `$γ > ω_0$ ($b > b_c$): overdamped. It does not oscillate; it returns to equilibrium exponentially.` });
+      pasos.push({ t: 'Solution', html: `The roots are $r_{1,2} = −γ ± √(γ^2 − ω_0^2) = ${n(mov.r1, 5)}$ and ${n(mov.r2, 5)} s⁻¹, and $x(t) = c_1 e^{r_1 t} + c_2 e^{r_2 t}$ with $c_1 = ${n(mov.c1, 5)}$ and $c_2 = ${n(mov.c2, 5)}$.` });
+      Object.assign(R, { r1: mov.r1, r2: mov.r2, c1: mov.c1, c2: mov.c2 });
+    }
+    pasos.push({ t: 'Relaxation time', html: `The amplitude drops to $1/e$ at $τ = 1/γ = 2m/b = ${n(tau, 5)} "s"$; the energy, at $τ/2$.` });
+    return R;
+  }
+
+  function forzado(sc) {
+    const m = lee(sc, 'm', 'the mass', { min: 0, minEx: true }), k = lee(sc, 'k', 'the spring constant', { min: 0, minEx: true }), b = lee(sc, 'b', 'the friction coefficient', { min: 0, minEx: true });
+    const F0 = lee(sc, 'F0', 'the maximum force', { min: 0, minEx: true }), w = lee(sc, 'w', 'the frequency of the force', { min: 0, minEx: true });
+    const w0 = Math.sqrt(k / m), gm = b / (2 * m), pasos = [];
+    const amp = (ww) => (F0 / m) / Math.hypot(w0 * w0 - ww * ww, 2 * gm * ww);
+    const A = amp(w), delta = Math.atan2(2 * gm * w, w0 * w0 - w * w), Q = w0 / (2 * gm);
+    pasos.push({ t: 'Parameters', html: `$ω_0 = √(k/m) = ${n(w0, 5)} "rad/s"$ ($f_0 = ${n(w0 / (2 * Math.PI), 5)} "Hz"$) and $γ = b/(2m) = ${n(gm, 5)} "s"^{−1}$. The force $F_0 cos(ω t)$ has $ω = ${n(w, 5)} "rad/s"$ ($ω/ω_0 = ${n(w / w0, 4)}$).` });
+    pasos.push({ t: 'Steady-state amplitude', html: `$A = {F_0/m}/√((ω_0^2 − ω^2)^2 + 4 γ^2 ω^2) = {${n(F0 / m, 5)}}/√((${n(w0 * w0, 5)} − ${n(w * w, 5)})^2 + (${n(2 * gm * w, 5)})^2) = ${n(A, 5)} "m"$` });
+    pasos.push({ t: 'Phase difference', html: `$δ = "atan2"(2γω, ω_0^2 − ω^2) = ${n(delta, 5)} "rad"$ = ${n(delta / RAD, 4)}°: the body ${delta < 1e-3 ? 'moves in step with the force' : Math.abs(delta - Math.PI / 2) < 1e-3 ? 'lags by a quarter of a period (90°), exactly at velocity resonance' : 'lags behind the force'}, and $x(t) = A cos(ω t − δ)$.` });
+    const hayRes = w0 * w0 > 2 * gm * gm, wr = hayRes ? Math.sqrt(w0 * w0 - 2 * gm * gm) : 0, Amax = hayRes ? (F0 / m) / (2 * gm * Math.sqrt(w0 * w0 - gm * gm)) : (F0 / m) / (w0 * w0);
+    pasos.push({ t: 'Resonance', html: hayRes ? `The amplitude is maximum at $ω_r = √(ω_0^2 − 2γ^2) = ${n(wr, 5)} "rad/s"$, with $A_{max} = {F_0/m}/(2γ√(ω_0^2 − γ^2)) = ${n(Amax, 5)} "m"$. Quality factor $Q = ω_0/(2γ) = ${n(Q, 4)}$.` : `With so much damping ($2γ^2 ≥ ω_0^2$) there is no amplitude maximum: it grows smaller the larger ω is, and the highest value is the static one, $F_0/k = ${n(F0 / k, 5)} "m"$.` });
+    const est = F0 / k;
+    pasos.push({ t: 'Comparison with the static force', html: `A constant force $F_0$ would stretch the spring $F_0/k = ${n(est, 5)} "m"$; the amplitude is ${n(A / est, 4)} times that deformation (amplification).` });
+    const P = 0.5 * b * w * w * A * A;
+    pasos.push({ t: 'Mean power absorbed', html: `$P = 1/2 b ω^2 A^2 = ${n(P, 5)} "W"$, which is what the friction dissipates.` });
+    return { modo: 'forzado', m, k, b, F0, w, w0, gm, Q, A, delta, hayRes, wr, Amax, est, P, amp, pasos };
+  }
+
+  const R = { mas, amortiguado, forzado };
+  const resolver = (sc) => (R[sc.modo] || mas)(sc);
+
+  const ejemplos = [
+    { clave: 'muelle', nombre: '0.5 kg mass on a 200 N/m spring', sc: { modo: 'mas', sistema: 'muelle', m: '0,5', k: '200', ini: 'af', A: '0,1', fase: '0', t: '0,05' } },
+    { clave: 'muelle-xv', nombre: 'Spring released from x₀ = 4 cm with v₀ = 0.6 m/s', sc: { modo: 'mas', sistema: 'muelle', m: '0,5', k: '200', ini: 'xv', x0: '0,04', v0: '0,6', t: '0,1' } },
+    { clave: 'pendulo', nombre: '1 m pendulum released from 10°', sc: { modo: 'mas', sistema: 'pendulo', m: '0,2', L: '1', g: '9,8', A: '10', fase: '0', t: '0,5' } },
+    { clave: 'sub', nombre: 'Underdamped: m = 1 kg, k = 100 N/m, b = 2 kg/s', sc: { modo: 'amortiguado', m: '1', k: '100', b: '2', x0: '0,2', v0: '0' } },
+    { clave: 'critico', nombre: 'Critical damping (b = 20 kg/s)', sc: { modo: 'amortiguado', m: '1', k: '100', b: '20', x0: '0,2', v0: '0' } },
+    { clave: 'sobre', nombre: 'Overdamped (b = 50 kg/s)', sc: { modo: 'amortiguado', m: '1', k: '100', b: '50', x0: '0,2', v0: '0' } },
+    { clave: 'resonancia', nombre: 'Forced oscillator exactly at ω = ω₀', sc: { modo: 'forzado', m: '1', k: '100', b: '2', F0: '5', w: '10' } },
+    { clave: 'fuera', nombre: 'Forced oscillator well below resonance', sc: { modo: 'forzado', m: '1', k: '100', b: '2', F0: '5', w: '5' } },
+  ];
+
+  const azar = () => {
+    const r = (a, b, d = 1) => (Math.round((a + Math.random() * (b - a)) * 10 ** d) / 10 ** d).toString().replace('.', '.');
+    const modo = ['mas', 'amortiguado', 'forzado'][Math.floor(Math.random() * 3)];
+    if (modo === 'mas') return { modo, sistema: 'muelle', m: r(0.2, 2, 1), k: r(50, 400, 0), ini: 'af', A: r(0.05, 0.3, 2), fase: '0', t: r(0.05, 0.5, 2) };
+    if (modo === 'amortiguado') return { modo, m: r(0.5, 2, 1), k: r(50, 300, 0), b: r(0.5, 8, 1), x0: r(0.05, 0.3, 2), v0: '0' };
+    return { modo, m: r(0.5, 2, 1), k: r(50, 300, 0), b: r(0.5, 6, 1), F0: r(1, 10, 1), w: r(3, 20, 1) };
+  };
+
+  return { resolver, ejemplos, azar, MODOS, SISTEMAS, factorPendulo, movimiento, f };
+})();
+
+</script>
+<script src="../../../js/en/compartir.en.08e9415d.js"></script>
+<script>
+(() => {
+  const O = Oscilaciones, { f } = O, TAU = 2 * Math.PI;
+  const enunciado = (sc, s) => {
+    if (sc.modo === 'mas') return sc.sistema === 'pendulo' ? `A simple pendulum of ${sc.L} m and ${sc.m} kg is released from ${sc.A}°. Calculate its period and its maximum speed.` : `A mass of ${sc.m} kg attached to a spring of ${sc.k} N/m oscillates with amplitude ${sc.A} m. Calculate the period, the maximum speed and the energy.`;
+    if (sc.modo === 'amortiguado') return `An oscillator of ${sc.m} kg and ${sc.k} N/m has a damping coefficient of ${sc.b} kg/s and starts from rest at x₀ = ${sc.x0} m. What type of motion does it perform?`;
+    return `An oscillator of ${sc.m} kg, ${sc.k} N/m and b = ${sc.b} kg/s is subjected to a force of ${sc.F0} N with ω = ${sc.w} rad/s. Calculate the amplitude and the phase shift.`;
+  };
+  Calculadora.monta({
+    C: O, carpeta: 'oscilaciones', app: 'OscilacionesApp', azar: O.azar, enunciado,
+    nota: 'You can enter 0.05, 5e-2 or 5·10^-2. The pendulum uses the small-angle approximation; it is compared with the exact period.',
+    campos: (sc) => {
+      const cs = [{ k: 'modo', nom: 'Calculate', tipo: 'sel', ops: Object.entries(O.MODOS) }];
+      if (sc.modo === 'amortiguado') return [...cs, { k: 'm', nom: 'Mass m', un: 'kg' }, { k: 'k', nom: 'Constant k', un: 'N/m' }, { k: 'b', nom: 'Damping b', un: 'kg/s' }, { k: 'x0', nom: 'Initial position x₀', un: 'm' }, { k: 'v0', nom: 'Initial velocity v₀', un: 'm/s' }];
+      if (sc.modo === 'forzado') return [...cs, { k: 'm', nom: 'Mass m', un: 'kg' }, { k: 'k', nom: 'Constant k', un: 'N/m' }, { k: 'b', nom: 'Damping b', un: 'kg/s' }, { k: 'F0', nom: 'Maximum force F₀', un: 'N' }, { k: 'w', nom: 'Force frequency ω', un: 'rad/s' }];
+      const pen = sc.sistema === 'pendulo';
+      return [...cs, { k: 'sistema', nom: 'System', tipo: 'sel', ops: Object.entries(O.SISTEMAS) }, { k: 'm', nom: 'Mass m', un: 'kg' },
+        ...(pen ? [{ k: 'L', nom: 'Length L', un: 'm' }, { k: 'g', nom: 'Gravity g', un: 'm/s²' }, { k: 'A', nom: 'Angular amplitude θ₀', un: '°' }, { k: 'fase', nom: 'Initial phase φ', un: '°' }]
+          : [{ k: 'k', nom: 'Constant k', un: 'N/m' }, { k: 'ini', nom: 'Initial conditions', tipo: 'sel', ops: [['af', 'Amplitude and phase'], ['xv', 'Position and velocity']] },
+            ...(sc.ini === 'xv' ? [{ k: 'x0', nom: 'Position x₀', un: 'm' }, { k: 'v0', nom: 'Velocity v₀', un: 'm/s' }] : [{ k: 'A', nom: 'Amplitude A', un: 'm' }, { k: 'fase', nom: 'Initial phase φ', un: '°' }])]),
+        { k: 't', nom: 'Time t', un: 's' }];
+    },
+    resumen: (s) => {
+      if (s.modo === 'mas') return [['Period T', `${f(s.T, 5)} s`, true], ['Frequency f', `${f(s.fr, 5)} Hz`], ['Angular frequency ω', `${f(s.w, 5)} rad/s`], ['Amplitude', `${f(s.A, 4)} m`], ['Maximum speed', `${f(s.vmax, 4)} m/s`], ['Maximum acceleration', `${f(s.amax, 4)} m/s²`], ['Total energy', `${f(s.E, 4)} J`],
+        [`x at t = ${f(s.t)} s`, `${f(s.x, 4)} m`], ...(s.Texacto ? [['Exact period', `${f(s.Texacto, 5)} s`]] : [])];
+      if (s.modo === 'amortiguado') return [['Motion', { sub: 'subamortiguado', crit: 'critical', sobre: 'sobreamortiguado' }[s.caso], true], ['Relaxation time τ', `${f(s.tau, 4)} s`], ['ω₀', `${f(s.w0, 5)} rad/s`], ['γ = b/2m', `${f(s.gm, 4)} s⁻¹`], ['Critical damping coefficient', `${f(s.bc, 4)} kg/s`],
+        ...(s.caso === 'sub' ? [['Frequency ω_d', `${f(s.wd, 5)} rad/s`], ['Period T_d', `${f(s.Td, 5)} s`], ['Quality factor Q', f(s.Q, 4)], ['Logarithmic decrement', f(s.dl, 4)]] : [])];
+      return [['Amplitude A', `${f(s.A, 5)} m`, true], ['Phase shift δ', `${f(s.delta / (Math.PI / 180), 4)}°`], ['ω₀', `${f(s.w0, 5)} rad/s`], ['Quality factor Q', f(s.Q, 4)], ['Maximum amplitude', `${f(s.Amax, 4)} m`], ['Resonance frequency', s.hayRes ? `${f(s.wr, 5)} rad/s` : 'no maximum'], ['Average power', `${f(s.P, 4)} W`]];
+    },
+    grafica: (s) => {
+      if (s.modo === 'forzado') {
+        const wmax = Math.max(s.w, s.w0) * 1.8, pts = []; let ymax = s.Amax;
+        for (let j = 0; j <= 300; j++) { const w = (wmax * j) / 300; pts.push([w, s.amp(w)]); }
+        ymax = Math.max(ymax, s.A, s.est) * 1.15;
+        return { x: [0, wmax], y: [0, ymax], fx: (v) => f(v, 3), ejeX: 'ω (rad/s)', ejeY: 'Amplitude A (m)', series: [{ pts, color: '--serie-1' }, { tipo: 'puntos', pts: [[s.w, s.A]], color: '--serie-2', radio: 6 }], verticales: [{ x: s.w0, texto: 'ω₀' }] };
+      }
+      if (s.modo === 'amortiguado') {
+        const tmax = s.caso === 'sub' ? Math.min(Math.max(3 * s.Td, 5 * s.tau), 12 * s.Td) : 6 * Math.max(s.tau, 1 / Math.abs(s.r1 ?? s.gm)), pts = [], sup = [], inf = [];
+        let amp = Math.abs(s.x0); for (let j = 0; j <= 400; j++) { const t = (tmax * j) / 400, x = s.x(t); pts.push([t, x]); amp = Math.max(amp, Math.abs(x)); }
+        if (s.caso === 'sub') { const A = Math.hypot(s.x0, s.B); for (let j = 0; j <= 100; j++) { const t = (tmax * j) / 100, e = A * Math.exp(-s.gm * t); sup.push([t, e]); inf.push([t, -e]); } amp = Math.max(amp, A); }
+        return { x: [0, tmax], y: [-amp * 1.1, amp * 1.1], fx: (v) => f(v, 3), ejeX: 'Time (s)', ejeY: 'Position x (m)', series: [...(sup.length ? [{ pts: sup, color: '--muted', discontinua: true }, { pts: inf, color: '--muted', discontinua: true }] : []), { pts, color: '--serie-1' }], horizontales: [{ y: 0 }] };
+      }
+      const pts = [], tmax = 2 * s.T; for (let j = 0; j <= 300; j++) { const t = (tmax * j) / 300; pts.push([t, s.A * Math.cos(s.w * t + s.phi)]); }
+      return { x: [0, tmax], y: [-s.A * 1.15, s.A * 1.15], fx: (v) => f(v, 3), ejeX: 'Time (s)', ejeY: 'Position x (m)', series: [{ pts, color: '--serie-1' }, { tipo: 'puntos', pts: [[Math.min(s.t, tmax), s.A * Math.cos(s.w * Math.min(s.t, tmax) + s.phi)]], color: '--serie-2', radio: 6 }], horizontales: [{ y: 0 }] };
+    },
+    leyenda: (s) => ({ mas: '<b>Curve</b>: x(t) = A cos(ωt + φ) over two periods. <b>Point</b>: the chosen instant.', amortiguado: s.caso === 'sub' ? '<b>Curve</b>: the position. <b>Dashed lines</b>: the envelope e<sup>−γt</sup>, which decreases even while the body keeps oscillating.' : '<b>Curve</b>: the position. It does not cross equilibrium more than once.', forzado: '<b>Curve</b>: steady-state amplitude versus the frequency of the force. <b>Point</b>: your case. The dashed line marks ω₀.' }[s.modo]),
+  });
+})();
+
+</script>
+<script src="../../../js/en/biblioteca.en.5cb97548.js"></script>
+<script src="../../../js/en/practica.en.192a5c1e.js"></script>
+<script src="../../../js/en/personal.en.00676b87.js"></script>
+<script>
+Biblioteca.monta('oscilaciones', 'oscilaciones-v1');
+Practica.monta('oscilaciones', 'oscilaciones-v1');
+Enunciado.monta('oscilaciones', 'oscilaciones-v1');
+</script>
+</html>

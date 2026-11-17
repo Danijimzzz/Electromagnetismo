@@ -1,0 +1,642 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTQiIGZpbGw9IiMwZDZiNjYiLz48ZyBmaWxsPSJub25lIiBzdHJva2U9IiNlNmE2NDAiIHN0cm9rZS13aWR0aD0iMi40IiBzdHJva2UtZGFzaGFycmF5PSI0IDYuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIj48cGF0aCBkPSJNMjAgMzJINDQiLz48cGF0aCBkPSJNMjEgMjdDMjcgMTQgMzcgMTQgNDMgMjciLz48cGF0aCBkPSJNMjEgMzdDMjcgNTAgMzcgNTAgNDMgMzciLz48cGF0aCBkPSJNMTcgMjRDMjIgNCA0MiA0IDQ3IDI0Ii8+PHBhdGggZD0iTTE3IDQwQzIyIDYwIDQyIDYwIDQ3IDQwIi8+PC9nPjxjaXJjbGUgY3g9IjE3IiBjeT0iMzIiIHI9IjgiIGZpbGw9IiNlZjdhNjIiLz48Y2lyY2xlIGN4PSI0NyIgY3k9IjMyIiByPSI4IiBmaWxsPSIjNzRhMmYyIi8+PHBhdGggZD0iTTEzIDMyaDhNMTcgMjh2OE00MyAzMmg4IiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iMi42IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48L3N2Zz4K">
+<link rel="apple-touch-icon" href="../../../apple-touch-icon.png">
+<meta property="og:title" content="Error and uncertainty propagation, step by step">
+<meta property="og:description" content="Uncertainty of a calculated quantity with partial derivatives (quadratic or linear), relative error, weight of each measurement, rounded result and error of a series of measurements">
+<link rel="canonical" href="https://simulaciencia.vercel.app/en/estadistica/errores/">
+<link rel="alternate" hreflang="es" href="https://simulaciencia.vercel.app/estadistica/errores/">
+<link rel="alternate" hreflang="en" href="https://simulaciencia.vercel.app/en/estadistica/errores/">
+<link rel="alternate" hreflang="x-default" href="https://simulaciencia.vercel.app/estadistica/errores/">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="https://simulaciencia.vercel.app/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebApplication","name":"Error propagation","description":"Error propagation calculator: uncertainty of a calculated quantity with partial derivatives, quadratic sum or linear bound, relative error, weight of each variable and a properly rounded result; also the error of a series of measurements.","url":"https://simulaciencia.vercel.app/estadistica/errores/","inLanguage":"es","isAccessibleForFree":true,"applicationCategory":"EducationalApplication","operatingSystem":"Web browser","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://simulaciencia.vercel.app/"},{"@type":"ListItem","position":2,"name":"Statistics","item":"https://simulaciencia.vercel.app/estadistica/"},{"@type":"ListItem","position":3,"name":"Error propagation","item":"https://simulaciencia.vercel.app/estadistica/errores/"}]},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How does error propagate in a calculated quantity?","acceptedAnswer":{"@type":"Answer","text":"σ_f = √(Σ(∂f/∂xᵢ · σᵢ)²). For f = x·y with x = 10 ± 0.1 and y = 5 ± 0.1, the relative errors add in quadrature: √(0.01² + 0.02²) ≈ 2.2 %, so f = 50 ± 1.1."}},{"@type":"Question","name":"How is a measurement rounded together with its uncertainty?","acceptedAnswer":{"@type":"Answer","text":"The uncertainty is given with one or two significant figures and the value is rounded to the same decimal place. For sums and differences, σ = √(σ₁² + σ₂²)."}}]}]}</script>
+<link rel="manifest" href="../../manifest.webmanifest">
+<meta name="theme-color" content="#0d6b66">
+<script src="../../pwa.js" defer></script>
+<meta name="google-adsense-account" content="ca-pub-6407501780492688">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6407501780492688" crossorigin="anonymous"></script>
+<script>window.googlefc = window.googlefc || {}; googlefc.callbackQueue = googlefc.callbackQueue || [];
+document.addEventListener('click', (e) => { if (!e.target.closest('.pref-cookies')) return; e.preventDefault(); googlefc.callbackQueue.push(() => googlefc.showRevocationMessage()); });</script>
+<style>.anuncio { max-width:860px; margin:28px 0 0; text-align:center; min-height:120px } .anuncio > span { display:block; font:11px/1.6 system-ui, sans-serif; letter-spacing:.06em; text-transform:uppercase; color:var(--muted, #5b6670) } .anuncio ins { display:block }</style>
+<style>.anuncio-lado { display:none } @media (min-width: 901px) { .anuncio-lado { display:block; grid-column:1; grid-row:2; position:sticky; top:96px; margin:8px 0 0; max-width:none; min-height:250px; min-width:0; overflow:hidden } main .layout.con-lado > :nth-child(2) { grid-row:1 / span 2 } }</style>
+<script>document.addEventListener('DOMContentLoaded', () => {
+  const l = document.querySelector('main .layout');
+  if (!l || l.classList.contains('invertido') || l.children.length !== 2 || !l.offsetParent || !matchMedia('(min-width: 901px)').matches) return;
+  l.classList.add('con-lado');
+  const a = document.createElement('div'); a.className = 'anuncio anuncio-lado';
+  a.innerHTML = '<span>Publicidad</span><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-6407501780492688" data-ad-slot="9800921596" data-ad-format="auto" data-full-width-responsive="true"></ins>';
+  l.appendChild(a); (window.adsbygoogle = window.adsbygoogle || []).push({});
+});</script>
+<script>(() => {
+  const raiz = document.documentElement, mq = matchMedia('(prefers-color-scheme: dark)'), oyentes = [];
+  try { const t = localStorage.getItem('simu-tema'); if (t === 'dark' || t === 'light') raiz.dataset.theme = t; } catch (e) { /* sin almacenamiento */ }
+  const orig = MediaQueryList.prototype.addEventListener;
+  MediaQueryList.prototype.addEventListener = function (tipo, f, ...r) { if (tipo === 'change' && /prefers-color-scheme/.test(this.media)) oyentes.push(f); return orig.call(this, tipo, f, ...r); };
+  const oscuro = () => (raiz.dataset.theme ? raiz.dataset.theme === 'dark' : mq.matches);
+  const rotula = () => document.querySelectorAll('.tema').forEach((b) => { const t = oscuro() ? 'Switch to light mode' : 'Switch to dark mode'; b.title = t; b.setAttribute('aria-label', t); });
+  document.addEventListener('DOMContentLoaded', rotula);
+  mq.addEventListener('change', rotula);
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.tema')) return;
+    raiz.dataset.theme = oscuro() ? 'light' : 'dark';
+    try { localStorage.setItem('simu-tema', raiz.dataset.theme); } catch (e) { /* sin almacenamiento */ }
+    rotula();
+    for (const f of oyentes) { try { f.call(mq, { matches: oscuro(), media: mq.media }); } catch (err) { console.error(err); } }
+  });
+})();</script>
+<script>(() => {
+  const ENFOCABLE = 'a[href],button,input,select,textarea,summary,[tabindex]';
+  let espera = 0;
+  const revisa = () => {
+    espera = 0;
+    for (const e of document.querySelectorAll('main *')) {
+      const desborda = e.scrollWidth > e.clientWidth || e.scrollHeight > e.clientHeight;
+      if (e.dataset.sf) { if (!desborda || e.querySelector(ENFOCABLE)) { e.removeAttribute('tabindex'); delete e.dataset.sf; } continue; }
+      if (!desborda || e.hasAttribute('tabindex') || e.matches('svg,svg *,canvas') || e.querySelector(ENFOCABLE)) continue;
+      const o = getComputedStyle(e);
+      if (/auto|scroll/.test(o.overflowX + o.overflowY)) { e.tabIndex = 0; e.dataset.sf = '1'; }
+    }
+  };
+  window.revisaScroll = revisa; // también lo llama pruebas/accesibilidad.js antes de pasar axe
+  const pide = () => { if (!espera) espera = setTimeout(revisa, 400); };
+  addEventListener('load', () => { revisa(); const m = document.querySelector('main'); if (m) new MutationObserver(pide).observe(m, { childList: true, subtree: true, characterData: true }); });
+  addEventListener('resize', pide);
+})();</script>
+<script src="../../buscador.js" defer></script>
+<script src="../../llama.js" defer></script>
+<title>Error propagation calculator, step by step · Ciencify</title>
+<meta name="description" content="Error propagation calculator: uncertainty of a calculated quantity with partial derivatives, quadratic sum or linear bound, relative error, weight of each variable and a properly rounded result; also the error of a series of measurements.">
+<style>/* =====================================================================
+   Hoja de estilos común de todas las herramientas (fuente/<herramienta>/pagina.html).
+   diseno.js la mete en cada página, antes de su propio <style>, junto con el color
+   de la asignatura (--accent, --accent-soft) y la cabecera del portal. La guía de uso
+   de cada componente, con su HTML, está en DISENO.md.
+   Una herramienta no vuelve a definir estas reglas: ajusta las variables de medida
+   (--col-datos, --ancho-valor, --alto-grafica) o añade una clase propia.
+   ===================================================================== */
+
+/* ---------- Colores y letras (claro y oscuro) ---------- */
+:root {
+  --bg: #eef1ee; --panel: #fff; --ink: #1a2128; --muted: #5b6670; --line: #d5dbd5; --error: #c0392b;
+  --f-ui: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-math: "STIX Two Text", "Cambria Math", Cambria, Georgia, serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+  --vidrio: rgba(255,255,255,.55); --vidrio-fuerte: rgba(255,255,255,.72); --vidrio-borde: rgba(255,255,255,.7); --vidrio-brillo: inset 0 1px 0 rgba(255,255,255,.8);
+  --vidrio-sombra: 0 1px 2px rgba(20,40,60,.06), 0 8px 28px rgba(20,40,60,.10); --blur: blur(22px) saturate(1.7); --halo1: rgba(13,107,102,.22); --halo2: rgba(42,93,181,.20); --halo3: rgba(107,63,160,.14);
+  /* medidas que cada herramienta puede ajustar */
+  --col-datos: 360px; --ancho-etiqueta: minmax(0, 1fr); --ancho-valor: 150px; --letra-campo: 13px var(--f-ui); --ancho-dato: 190px; --alto-grafica: clamp(260px, 36vw, 380px); --margen-grafica: 10px;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #111619; --panel: #182025; --ink: #e3e8ea; --muted: #a3aeb5; --line: #2a343b; --error: #f08a80; --vidrio: rgba(34,46,54,.50); --vidrio-fuerte: rgba(26,36,42,.70); --vidrio-borde: rgba(255,255,255,.12); --vidrio-brillo: inset 0 1px 0 rgba(255,255,255,.10); --vidrio-sombra: 0 1px 2px rgba(0,0,0,.3), 0 10px 32px rgba(0,0,0,.35); --halo1: rgba(77,188,176,.20); --halo2: rgba(116,162,242,.18); --halo3: rgba(170,120,230,.14); color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #111619; --panel: #182025; --ink: #e3e8ea; --muted: #a3aeb5; --line: #2a343b; --error: #f08a80; --vidrio: rgba(34,46,54,.50); --vidrio-fuerte: rgba(26,36,42,.70); --vidrio-borde: rgba(255,255,255,.12); --vidrio-brillo: inset 0 1px 0 rgba(255,255,255,.10); --vidrio-sombra: 0 1px 2px rgba(0,0,0,.3), 0 10px 32px rgba(0,0,0,.35); --halo1: rgba(77,188,176,.20); --halo2: rgba(116,162,242,.18); --halo3: rgba(170,120,230,.14); color-scheme: dark }
+/* fin de los colores */
+
+/* ---------- Base ---------- */
+* { box-sizing: border-box }
+[hidden] { display: none !important }
+html, body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.45 var(--f-ui) }
+a { color: var(--accent) }
+.wrap { max-width: 1300px; margin: 0 auto; padding: 16px clamp(16px, 3vw, 24px) 32px }
+h1 { font: 600 24px/1.25 var(--f-ui); margin: 0 0 4px }
+.lead { color: var(--muted); margin: 0 0 12px; max-width: 760px }
+/* texto solo para lectores de pantalla; sin position:absolute para que no ensanche las tablas con scroll */
+.solo-lector { display: inline-block; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; vertical-align: top }
+footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 8px 16px 24px }
+footer a { color: var(--muted); margin: 0 6px; white-space: nowrap; display: inline-block }
+
+/* ---------- Diseño A: datos a la izquierda, resultados a la derecha ---------- */
+.layout { display: grid; grid-template-columns: var(--col-datos) minmax(0, 1fr); gap: 16px; align-items: start }
+.layout.invertido { grid-template-columns: minmax(0, 1fr) var(--col-datos) }
+@media (max-width: 900px) { .layout, .layout.invertido { grid-template-columns: minmax(0, 1fr) } }
+
+/* ---------- Tarjetas ---------- */
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 14px; margin-bottom: 14px }
+.card h2 { font: 600 12px/1.4 var(--f-ui); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 0 0 10px }
+.destacado { border-color: var(--line); border-top: 3px solid var(--accent) }
+.destacado h2 { color: var(--accent) }
+
+/* ---------- Datos: campos, separadores, botones y pestañas ---------- */
+.campos { display: grid; grid-template-columns: var(--ancho-etiqueta) var(--ancho-valor); gap: 7px 10px; align-items: center }
+.campos label { font-size: 13.5px }
+.campos label small { color: var(--muted) }
+.campos .ancho { grid-column: 1 / -1 }
+.sep { grid-column: 1 / -1; font: 600 12px var(--f-ui); color: var(--accent); text-transform: uppercase; letter-spacing: .04em; margin-top: 8px }
+.in { font: var(--letra-campo); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; width: 100%; font-variant-numeric: tabular-nums }
+.btn { font: 500 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 5px 10px; cursor: pointer; white-space: nowrap }
+.btn:hover { border-color: var(--accent) }
+/* foco del teclado en todo lo que se pulsa o se escribe (sin especificidad: una herramienta puede ajustarlo) */
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible { outline: 2px solid var(--accent); outline-offset: 1px }
+.controles { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 8px }
+.controles > .nota, .controles > .leyenda { flex: 1 1 220px; margin: 0 }
+.exportar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 8px 0 }
+.exportar-aviso { color: var(--muted); font-size: 12.5px }
+.tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px }
+.tools label { color: var(--muted); font-size: 13px; display: inline-flex; gap: 6px; align-items: center }
+.modos { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; margin-bottom: 14px }
+.modos button { font: 500 13.5px var(--f-ui); border: 0; background: var(--panel); color: var(--muted); padding: 7px 14px; cursor: pointer }
+.modos button[aria-selected=true] { background: var(--accent); color: var(--panel) }
+.error { color: var(--error); font-size: 13px; margin: 10px 0 0 }
+.nota { color: var(--muted); font-size: 12.5px; margin: 8px 0 0 }
+
+/* ---------- Resultados ---------- */
+.res { display: grid; grid-template-columns: repeat(auto-fill, minmax(var(--ancho-dato), 1fr)); gap: 6px 14px; font: 16px var(--f-math) }
+.res div { overflow-x: auto; overflow-y: hidden }
+.res span { display: block; font: 12px var(--f-ui); color: var(--muted) }
+.res div.ancho { grid-column: 1 / -1 }
+.resumen { display: grid; grid-template-columns: repeat(auto-fill, minmax(var(--ancho-dato), 1fr)); gap: 8px; margin: 0 }
+.resumen div { background: var(--accent-soft); border-radius: 8px; padding: 8px 10px; overflow-x: auto; overflow-y: hidden }
+.resumen div span { display: block; font-size: 12px; color: var(--muted) }
+.resumen div b { font: 600 17px var(--f-math) }
+.resumen div.ancho { grid-column: 1 / -1 }
+
+/* ---------- Gráficas ---------- */
+canvas { display: block; width: 100%; height: var(--alto-grafica); border-radius: 8px; background: var(--bg); margin-top: var(--margen-grafica) }
+.leyenda { font-size: 12.5px; color: var(--muted); margin: 6px 0 0 }
+.leyenda b { font-weight: 600 }
+
+/* ---------- Desarrollo paso a paso ---------- */
+/* el número va dentro del paso para que no lo corte el desplazamiento de las fórmulas largas */
+.pasos ol { margin: 0; padding: 0; list-style: none; counter-reset: paso }
+.pasos li { position: relative; margin: 0 0 12px; padding-left: 22px; font-family: var(--f-math); font-size: 15.5px; overflow-x: auto; counter-increment: paso; overflow-y: hidden }
+.pasos li::before { content: counter(paso) "."; position: absolute; left: 0; top: 0; font: 13.5px/1.45 var(--f-ui); color: var(--muted) }
+.pasos li strong { font: 600 13.5px var(--f-ui); display: block; margin-bottom: 2px }
+.pasos table.tabla { border-collapse: collapse; margin: 6px 0; font: 13px var(--f-ui); font-variant-numeric: tabular-nums }
+.pasos table.tabla th, .pasos table.tabla td { border: 1px solid var(--line); padding: 3px 9px; text-align: right }
+.pasos table.tabla th { background: var(--accent-soft); font-weight: 600 }
+.tabla-scroll { overflow-x: auto }
+
+/* matrices con corchetes, dentro de una fórmula */
+.mat { position: relative; display: inline-block; vertical-align: middle; padding: 0 7px; margin: 2px 2px }
+.mat::before, .mat::after { content: ""; position: absolute; top: 0; bottom: 0; width: 5px; border: 1.4px solid currentColor }
+.mat::before { left: 0; border-right: 0 }
+.mat::after { right: 0; border-left: 0 }
+.mat table { border-collapse: collapse }
+.mat td { padding: 2px 7px; text-align: center; white-space: nowrap; font-variant-numeric: tabular-nums }
+
+/* ---------- Teoría ---------- */
+.teoria, .preguntas { margin-top: 28px; max-width: 860px; font-size: 15px; line-height: 1.6 }
+.preguntas h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
+.preguntas h3 { font: 600 15px var(--f-ui); margin: 14px 0 2px }
+.preguntas p { margin: 0 }
+.teoria h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
+.teoria .f { max-width: 100%; overflow-x: auto; overflow-y: hidden; font-family: var(--f-math); font-size: 16.5px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; display: inline-block }
+.teoria ul { padding-left: 20px }
+.teoria li { margin-bottom: 4px }
+.teoria li, .teoria p { overflow-x: auto; overflow-y: hidden }
+
+/* ---------- Liquid Glass ---------- */
+/* Vidrio solo en el marco (tarjetas, controles, barras); el lienzo de las gráficas y las fórmulas no se tocan. */
+body { display: flow-root; background: radial-gradient(60% 50% at 8% 0%, var(--halo1), transparent 70%), radial-gradient(50% 45% at 95% 10%, var(--halo2), transparent 70%), radial-gradient(55% 50% at 60% 100%, var(--halo3), transparent 70%), var(--bg); background-attachment: fixed }
+.card { background: var(--vidrio); border-color: var(--vidrio-borde); border-radius: 18px; box-shadow: var(--vidrio-brillo), var(--vidrio-sombra); -webkit-backdrop-filter: var(--blur); backdrop-filter: var(--blur) }
+.destacado { border-top: 3px solid var(--accent) }
+.in { background: var(--vidrio); border-color: var(--vidrio-borde); border-radius: 10px; box-shadow: var(--vidrio-brillo) }
+.btn { background: var(--vidrio-fuerte); border-color: var(--vidrio-borde); border-radius: 99px; padding: 5px 14px; box-shadow: var(--vidrio-brillo) }
+.modos { border-color: var(--vidrio-borde); border-radius: 99px; background: var(--vidrio); box-shadow: var(--vidrio-brillo); -webkit-backdrop-filter: var(--blur); backdrop-filter: var(--blur) }
+.modos button { background: transparent; border-radius: 99px }
+.modos button[aria-selected=true] { box-shadow: 0 1px 6px rgba(0,0,0,.18) }
+.resumen div { border-radius: 14px }
+.teoria .f { background: var(--vidrio); border-color: var(--vidrio-borde); border-radius: 12px }
+canvas { border-radius: 14px }
+@media (max-width: 900px) { .card, .modos { -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px) } }
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) { .card, .modos, header.top { background: var(--panel); -webkit-backdrop-filter: none; backdrop-filter: none } .in, .btn, .teoria .f { background: var(--panel) } }
+
+:root { --accent:#a3367a; --accent-soft:color-mix(in srgb, #a3367a 12%, #fff); --marca:#0d6b66 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --accent:#e07ab8; --accent-soft:color-mix(in srgb, #e07ab8 16%, #182025); --marca:#4dbcb0 } }
+:root[data-theme="dark"] { --accent:#e07ab8; --accent-soft:color-mix(in srgb, #e07ab8 16%, #182025); --marca:#4dbcb0 }
+header.top { display:flex; align-items:center; gap:8px 20px; flex-wrap:wrap; padding:12px clamp(16px,3vw,28px); position:sticky; top:10px; z-index:10; margin:10px clamp(10px,2vw,20px) 0; border:1px solid var(--vidrio-borde); border-radius:22px; background:var(--vidrio-fuerte); box-shadow:var(--vidrio-brillo),var(--vidrio-sombra); -webkit-backdrop-filter:var(--blur); backdrop-filter:var(--blur) }
+header.top .logo { font:600 18px var(--f-math); margin:0; white-space:nowrap; color:var(--ink); text-decoration:none } header.top .logo i { color:var(--marca) }
+header.top nav { display:flex; gap:4px 14px; font-size:14px; overflow-x:auto; max-width:100%; scrollbar-width:none }
+header.top nav a { white-space:nowrap; padding:2px 0; color:var(--muted); text-decoration:none } header.top nav a:hover { color:var(--ink) }
+header.top nav a[aria-current] { color:var(--ink); font-weight:600; box-shadow:inset 0 -2px 0 var(--accent) }
+header.top form { margin-left:auto; flex:0 1 170px; min-width:130px }
+header.top .foro { margin-left:auto; display:inline-flex; align-items:center; gap:6px; white-space:nowrap; font:600 14px var(--f-ui); color:var(--ink); text-decoration:none; border:1px solid var(--vidrio-borde); background:var(--vidrio); border-radius:99px; padding:6px 12px } header.top .foro:hover, header.top .foro[aria-current] { border-color:var(--accent); color:var(--accent) } header.top .foro + form { margin-left:0 } header.top > .foro ~ .tema { margin-left:0 }
+@media (min-width:701px) { header.top { flex-wrap:nowrap } header.top nav { min-width:0 } }
+header.top .buscar { font:14px var(--f-ui); color:var(--ink); border:1px solid var(--vidrio-borde); border-radius:99px; padding:7px 14px; width:100%; background:var(--vidrio) }
+header.top .buscar:focus-visible, header.top a:focus-visible { outline:2px solid var(--accent); outline-offset:1px }
+.miga { display:flex; align-items:center; flex-wrap:wrap; gap:8px; font-size:13.5px; color:var(--muted); margin:0 0 10px }
+.miga a { color:var(--accent); font-weight:600; text-decoration:none } .miga a:hover { text-decoration:underline }
+.miga-ico { display:inline-grid; place-items:center; width:22px; height:22px; border-radius:6px; background:var(--accent-soft); color:var(--accent); font:italic 600 13px var(--f-math) }
+.miga-der { margin-left:auto; display:flex; gap:8px } .miga-izq:empty, .miga-der:empty { display:none }
+.bib-btn, .prac-btn { border-radius:8px !important; padding:6px 12px !important }
+body.bib-ejemplos select[id^="ejemplo"] { display:none }
+@media print { header.top, .miga, .prac-btn { display:none !important } }
+:root { --vida:#6a4fc2 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --vida:#b39ff7 } }
+:root[data-theme="dark"] { --vida:#b39ff7 }
+.relacionadas { max-width:860px; margin:16px 0 0; background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--accent); border-radius:4px 12px 12px 4px; padding:12px 16px }
+.relacionadas h2 { font:600 12px/1.4 var(--f-ui); text-transform:uppercase; letter-spacing:.06em; color:var(--accent); margin:0 0 4px }
+.relacionadas a { display:flex; gap:10px; align-items:baseline; padding:5px 0; color:var(--ink); text-decoration:none; font-size:14px }
+.relacionadas a b { font-weight:600; white-space:nowrap } .relacionadas a span { color:var(--muted) } .relacionadas a:hover b { color:var(--accent); text-decoration:underline }
+.vida-real { max-width:860px; margin:28px 0 0; background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--vida); border-radius:4px 12px 12px 4px; padding:12px 16px }
+.vida-real h2 { font:600 12px/1.4 var(--f-ui); text-transform:uppercase; letter-spacing:.06em; color:var(--vida); margin:0 0 4px }
+.vida-real a { display:flex; gap:10px; align-items:baseline; padding:5px 0; color:var(--ink); text-decoration:none; font-size:14px }
+.vida-real a b { font-weight:600; white-space:nowrap } .vida-real a span { color:var(--muted) } .vida-real a:hover b { color:var(--vida); text-decoration:underline }
+@media (max-width:600px) { .vida-real a, .relacionadas a { display:block } .vida-real a b, .relacionadas a b { display:block; white-space:normal } }
+@media (max-width:700px) { header.top form { display:none } h1 { font-size:21px }
+  .miga-izq, .miga-der, .miga::after { order:-1 } .miga::after { content:''; flex-basis:100%; height:0 } }
+
+.tema { flex:0 0 auto; margin-left:auto; width:36px; height:36px; display:grid; place-items:center; padding:0; border:1px solid var(--vidrio-borde, var(--line)); border-radius:99px; background:var(--vidrio, var(--bg)); color:var(--ink); cursor:pointer }
+.buscar ~ .tema, form ~ .tema { margin-left:0 }
+.tema:hover { border-color:var(--accent); color:var(--accent) }
+.tema:focus-visible { outline:2px solid var(--accent); outline-offset:1px }
+.tema .sol { display:none }
+:root[data-theme="dark"] .tema .sol { display:block } :root[data-theme="dark"] .tema .luna { display:none }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .tema .sol { display:block } :root:not([data-theme="light"]) .tema .luna { display:none } }
+@media (max-width:700px) { .top > .tema { margin-left:auto } .top > nav { order:1 } }
+</style>
+<style>
+:root {
+  --serie-1: #2a5db5; --serie-2: #c2412a }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --serie-1: #74a2f2; --serie-2: #ef7a62 } }
+:root[data-theme="dark"] {
+  --serie-1: #74a2f2; --serie-2: #ef7a62 }
+textarea.in { font: 13px/1.5 var(--f-mono); resize: vertical; min-height: 84px }
+.tabla-eco { border-collapse: collapse; font: 13.5px var(--f-ui); width: 100%; font-variant-numeric: tabular-nums }
+.tabla-eco th, .tabla-eco td { padding: 5px 8px; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap }
+.tabla-eco th { font-weight: 600; color: var(--muted) } .tabla-eco th:first-child, .tabla-eco td:first-child { text-align: left }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../../">Cienci<i>fy</i></a><nav aria-label="Subjects"><a href="../../../">Home</a><a href="../../electromagnetismo/">Electromagnetism</a><a href="../../fisica/">General physics</a><a href="../../quimica/">Chemistry</a><a href="../../matematicas/">Mathematics</a><a href="../" aria-current="page">Statistics</a><a href="../../circuitos/">Circuits</a><a href="../../economia/">Economics</a><a href="../../fenomenos/">Real life</a></nav><a class="foro" href="../../foro/"><span aria-hidden="true">💬</span>Forum</a><form action="../../../" role="search"><input class="buscar" type="search" name="q" placeholder="Search: Biot-Savart, molarity…" aria-label="Search tools (shortcut: / key)" title="Shortcut: / or Ctrl+K"></form><style>
+.lg { position:relative; flex:0 0 auto }
+.lg-btn { display:inline-flex; align-items:center; gap:6px; height:36px; padding:0 12px; border:1px solid var(--vidrio-borde, var(--line)); border-radius:99px; background:var(--vidrio, var(--bg)); color:var(--ink); font:600 13px var(--f-ui, system-ui, sans-serif); cursor:pointer }
+.lg-btn:hover { border-color:var(--accent); color:var(--accent) }
+.lg-btn:focus-visible, .lg-pop a:focus-visible, .lg-ban button:focus-visible { outline:2px solid var(--accent); outline-offset:1px }
+.lg-pop { position:absolute; top:44px; right:0; z-index:50; min-width:210px; margin:0; padding:6px; list-style:none; border:1px solid var(--vidrio-borde, var(--line)); border-radius:16px; background:rgba(255,255,255,.98); color:var(--ink); box-shadow:0 12px 36px rgba(0,0,0,.22) }
+.lg-pop[hidden] { display:none }
+:root[data-theme="dark"] .lg-pop, :root[data-theme="dark"] .lg-ban { background:rgba(28,34,38,.98) }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .lg-pop, :root:not([data-theme="light"]) .lg-ban { background:rgba(28,34,38,.98) } }
+.lg-t { font:600 11px var(--f-ui, system-ui, sans-serif); text-transform:uppercase; letter-spacing:.06em; color:var(--muted); padding:6px 10px 4px }
+.lg-pop a { display:flex; justify-content:space-between; align-items:center; gap:14px; padding:8px 10px; border-radius:10px; color:var(--ink); text-decoration:none; font:500 14px var(--f-ui, system-ui, sans-serif) }
+.lg-pop a:hover { background:var(--accent-soft) }
+.lg-pop a > span { display:flex; align-items:center; gap:10px }
+.lg-pop a small { color:var(--muted); font-size:12px }
+.lg-pop a[aria-current="true"] { background:var(--accent-soft); font-weight:700 }
+.lg-pop a[aria-current="true"] small::after { content:' ✓'; color:var(--accent) }
+.lg-fl { flex:none; border-radius:50%; box-shadow:0 0 0 1px rgba(0,0,0,.18) }
+.lg-ban { position:fixed; left:50%; bottom:18px; z-index:60; transform:translateX(-50%); width:min(560px, calc(100vw - 24px)); box-sizing:border-box; display:flex; flex-wrap:wrap; align-items:center; gap:10px 12px; padding:12px 16px; border:1px solid var(--vidrio-borde, var(--line)); border-radius:18px; background:rgba(255,255,255,.98); color:var(--ink); box-shadow:0 12px 36px rgba(0,0,0,.25); font:14px var(--f-ui, system-ui, sans-serif) }
+.lg-ban p { flex:1 1 220px; margin:0 }
+.lg-ban button { font:600 13px var(--f-ui, system-ui, sans-serif); padding:7px 14px; border-radius:99px; border:1px solid var(--vidrio-borde, var(--line)); background:var(--vidrio, var(--bg)); color:var(--ink); cursor:pointer }
+.lg-ban button.lg-si { background:var(--accent); border-color:var(--accent); color:#fff }
+:root[data-theme="dark"] .lg-ban button.lg-si { color:#0d141a }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .lg-ban button.lg-si { color:#0d141a } }
+@media (max-width:700px) { .top > .lg { margin-left:auto } .top > .lg + .tema { margin-left:0 } }
+@media print { .lg, .lg-ban { display:none !important } }
+</style><div class="lg"><button class="lg-btn" type="button" aria-expanded="false" aria-controls="lg-lista" aria-label="Language: English" title="Language"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.8 3 2.8 15 0 18M12 3c-2.8 3-2.8 15 0 18"/></svg><span>EN</span><span aria-hidden="true">▾</span></button><ul class="lg-pop" id="lg-lista" hidden><li class="lg-t" aria-hidden="true">Language · Idioma</li><li><a href="../../../" hreflang="es" lang="es"><span><svg class="lg-fl" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false"><rect width="24" height="24" fill="#c60b1e"/><rect y="6" width="24" height="12" fill="#ffc400"/></svg>Español</span><small>ES</small></a></li><li><a href="../../../en/" hreflang="en" lang="en" aria-current="true"><span><svg class="lg-fl" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false"><rect width="24" height="24" fill="#012169"/><path d="M0 0L24 24M24 0L0 24" stroke="#fff" stroke-width="5"/><path d="M0 0L24 24M24 0L0 24" stroke="#c8102e" stroke-width="2"/><path d="M12 0V24M0 12H24" stroke="#fff" stroke-width="8"/><path d="M12 0V24M0 12H24" stroke="#c8102e" stroke-width="4.5"/></svg>English</span><small>EN</small></a></li></ul></div><script>(() => {
+  const L = [{"c":"es","d":"","n":"Español","a":["Esta página está disponible en español.","Cambiar a español","Seguir aquí"]},{"c":"en","d":"en/","n":"English","a":["This page is available in English.","Switch to English","Stay here"]}], ACTUAL = "en", K = 'simu-idioma';
+  const guarda = (c) => { try { localStorage.setItem(K, c); } catch (e) { /* sin almacenamiento */ } };
+  const lee = () => { try { return localStorage.getItem(K); } catch (e) { return null; } };
+  const resto = () => { let p = location.pathname; for (const i of L) if (i.d && p.startsWith('/' + i.d)) { p = '/' + p.slice(i.d.length + 1); break; } return p + location.search + location.hash; };
+  const destino = (i) => '/' + i.d + resto().replace(/^\//, '');
+  const btn = document.querySelector('.lg-btn'), pop = document.querySelector('.lg-pop');
+  if (!btn || !pop) return;
+  pop.querySelectorAll('a[hreflang]').forEach((a) => { const i = L.find((x) => x.c === a.hreflang); if (i && /^https?:$/.test(location.protocol)) a.href = destino(i); a.addEventListener('click', () => guarda(a.hreflang)); });
+  const abre = (v) => { pop.hidden = !v; btn.setAttribute('aria-expanded', String(v)); };
+  btn.addEventListener('click', (e) => { e.stopPropagation(); abre(pop.hidden); });
+  document.addEventListener('click', (e) => { if (!pop.hidden && !e.target.closest('.lg')) abre(false); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !pop.hidden) { abre(false); btn.focus(); } });
+  pop.addEventListener('focusout', (e) => { if (!pop.hidden && !e.relatedTarget?.closest?.('.lg')) abre(false); });
+  // aviso: una vez, sin elección guardada, con el idioma del navegador publicado y distinto del de la página
+  if (lee() || window.__sinAviso) return;
+  const pref = (navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language || '']).map((s) => String(s).toLowerCase().slice(0, 2));
+  const i = pref.map((c) => L.find((x) => x.c === c)).find(Boolean);
+  if (!i || i.c === ACTUAL) { return; }
+  const b = document.createElement('div'); b.className = 'lg-ban'; b.setAttribute('role', 'region'); b.setAttribute('aria-label', "Language"); b.lang = i.c;
+  const t = document.createElement('p'); t.textContent = i.a[0];
+  const si = document.createElement('button'); si.type = 'button'; si.className = 'lg-si'; si.textContent = i.a[1];
+  const no = document.createElement('button'); no.type = 'button'; no.textContent = i.a[2];
+  si.addEventListener('click', () => { guarda(i.c); const a = [...pop.querySelectorAll('a[hreflang]')].find((x) => x.hreflang === i.c); location.href = a ? a.href : destino(i); });
+  no.addEventListener('click', () => { guarda(ACTUAL); b.remove(); });
+  b.append(t, si, no); document.body.append(b);
+})();</script><button class="tema" type="button" title="Switch between light and dark mode" aria-label="Switch between light and dark mode"><svg class="luna" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.5A8.5 8.5 0 1 1 9.5 3.5a7 7 0 0 0 11 11z"/></svg><svg class="sol" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button></header>
+<main class="wrap">
+<nav class="miga" aria-label="You are here"><span class="miga-izq"></span><span class="miga-ico" aria-hidden="true">σ</span><a href="../">Statistics</a><span aria-hidden="true">›</span><span>Error propagation</span><span class="miga-der"></span></nav>
+<h1>Error propagation</h1>
+<p class="lead">Enter the formula and the measurements with their uncertainty, and get the error of the calculated quantity with partial derivatives, how much each measurement weighs and the result rounded as required in the lab.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Data</h2>
+    <select id="ejemplos" class="in" aria-label="Examples" style="margin-bottom:12px"></select>
+    <div class="campos" id="campos"></div>
+    <p class="nota" id="nota"></p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card destacado"><h2>Results</h2><div class="resumen" id="resumen"></div></div>
+    <div class="card"><h2>Graph</h2>
+      <canvas id="grafica" aria-label="Bar chart with what each variable contributes to the uncertainty, or the measurements with their mean and error band"></canvas>
+      <p class="leyenda" id="leyenda"></p>
+    </div>
+    <div class="card"><h2>Table</h2><div class="tabla-scroll" id="tabla"></div></div>
+    <div class="card pasos"><h2>Working</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<div class="anuncio"><span>Advertising</span><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-6407501780492688" data-ad-slot="4415753033" data-ad-format="auto" data-full-width-responsive="true"></ins><script>(window.adsbygoogle = window.adsbygoogle || []).push({});</script></div>
+<section class="teoria">
+<h2>Propagation with partial derivatives</h2>
+<p class="m">If a quantity is calculated as $f(x, y, …)$ from measurements with uncertainties $Δx$, $Δy$…, each contributes its partial derivative times its uncertainty. If the errors are independent they add in quadrature; the linear bound (adding the absolute values) gives the worst possible case and is the one used in many lab manuals:</p>
+<p class="f m">$Δf = √(({∂f}/{∂x} Δx)^2 + ({∂f}/{∂y} Δy)^2 + …)$<br>$Δf ≤ |{∂f}/{∂x}| Δx + |{∂f}/{∂y}| Δy + …$</p>
+<p class="m">For products and quotients of powers, $f = x^a y^b$, the relative errors are added: ${Δf}/{f} = √((a {Δx}/{x})^2 + (b {Δy}/{y})^2)$. That is why the measurement raised to a high power, like the period in $g = 4π^2 l/T^2$, is the one that weighs most.</p>
+<h2>How the result is rounded</h2>
+<p class="m">The uncertainty is given with <b>one significant figure</b>, or two if the first is a 1 (0.014 and not 0.01). The value is rounded <b>to the same decimal place</b> as the uncertainty and they are written together with the unit: $g = (9.81 ± 0.05)$ m/s². Writing $9.810652 ± 0.05$ is a mistake: the last digits mean nothing.</p>
+<div class="anuncio"><span>Advertising</span><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-6407501780492688" data-ad-slot="4415753033" data-ad-format="auto" data-full-width-responsive="true"></ins><script>(window.adsbygoogle = window.adsbygoogle || []).push({});</script></div>
+<h2>Repeated measurements</h2>
+<p class="m">With n measurements of the same thing the mean is taken. The spread is measured with the standard deviation $s$ (dividing by $n − 1$), and the mean differs from the true value by about $s/√n$, the standard error of the mean. It is combined in quadrature with the resolution of the instrument: if the instrument dominates, measuring more times improves nothing.</p>
+<h2>Correlated variables</h2>
+<p class="m">Quadrature addition only holds if the errors are independent. If two variables rise and fall together (measured with the same badly calibrated instrument, or both coming from the same fit) a cross term with their covariance must be added, $"cov"(x, y) = r · Δx · Δy$, where $r$ is the correlation coefficient, between −1 and 1. The term carries the sign of the derivatives, so it can increase or reduce the error: in a sum with $r > 0$ the errors reinforce each other, and in a difference they cancel.</p>
+<p class="f m">$Δf^2 = ({∂f}/{∂x} Δx)^2 + ({∂f}/{∂y} Δy)^2 + 2 {∂f}/{∂x} {∂f}/{∂y} "cov"(x, y)$</p>
+<h2>Weighted mean</h2>
+<p class="m">When there are several measurements of the same quantity with different uncertainties, they do not all weigh the same: each enters with weight $w_i = 1/σ_i^2$. The uncertainty of the mean is smaller than that of the best measurement. The reduced $χ^2$ tells whether the measurements are compatible with each other: close to 1, they are; if considerably larger, they differ more than their uncertainties say, and here the uncertainty of the mean is enlarged by multiplying it by $√{χ^2_"red"}$.</p>
+<p class="f m">$x̄ = {∑ w_i x_i}/{∑ w_i}$, &ensp; $σ_{x̄} = 1/√{∑ w_i}$, &ensp; $χ^2_"red" = 1/{n − 1} ∑ ({x_i − x̄}/{σ_i})^2$</p>
+<h2>Compare with the accepted value</h2>
+<p class="m">To know whether a result agrees with the table value, the percentage difference is not enough: the discrepancy must be measured in uncertainties, $z = |x − x_"ac"|/√{Δx^2 + Δx_"ac"^2}$. Up to 1 σ the result is compatible; up to 2 σ, compatible at 2σ (it happens in one in three correct measurements); between 2 and 3 σ it is doubtful, and above 3 σ it is incompatible: there is a systematic error or the uncertainty is underestimated.</p>
+</section>
+<section class="preguntas" aria-label="Frequently asked questions">
+<h2>Frequently asked questions</h2>
+<h3>How does error propagate in a calculated quantity?</h3>
+<p>σ_f = √(Σ(∂f/∂xᵢ · σᵢ)²). For f = x·y with x = 10 ± 0.1 and y = 5 ± 0.1, the relative errors add in quadrature: √(0.01² + 0.02²) ≈ 2.2 %, so f = 50 ± 1.1.</p>
+<h3>How is a measurement rounded together with its uncertainty?</h3>
+<p>The uncertainty is given with one or two significant figures and the value is rounded to the same decimal place. For sums and differences, σ = √(σ₁² + σ₂²).</p>
+</section>
+<div class="anuncio"><span>Advertising</span><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-6407501780492688" data-ad-slot="4415753033" data-ad-format="auto" data-full-width-responsive="true"></ins><script>(window.adsbygoogle = window.adsbygoogle || []).push({});</script></div>
+<section class="relacionadas" aria-label="Related tools"><h2>Related tools</h2>
+<a href="../../matematicas/derivadas/"><b>Derivatives and integrals →</b><span>Derivatives with the rule of each step, tangent and extrema; antiderivatives by substitution, parts and partial fractions, and Barrow.</span></a>
+<a href="../regresion/"><b>Regression and correlation →</b><span>Covariance, Pearson's and Spearman's r, the two lines, compared non-linear fits, residuals and the error of the slope and intercept for lab work.</span></a>
+<a href="../contrastes/"><b>Hypothesis tests →</b><span>Tests of means, proportions and variances with the statistic, the critical region and the p-value, plus power, effect size, normality and several variances.</span></a>
+<a href="../descriptiva/"><b>Descriptive statistics →</b><span>Mean, median, mode, quartiles and deviation of a list or a frequency table, with the histogram and the box plot.</span></a>
+</section>
+</main>
+<footer><a href="../../../">Home</a>·<a href="../../contacto.html">Contact</a>·<a href="mailto:danijimzzz30@gmail.com?subject=Error%20en%20Propagaci%C3%B3n%20de%20errores&amp;body=Herramienta%3A%20Propagaci%C3%B3n%20de%20errores%20(estadistica%2Ferrores)%0A%0AQu%C3%A9%20esperaba%20y%20qu%C3%A9%20ha%20pasado%3A%0A">Report an error</a>·<a href="../../aviso-legal.html">Legal notice</a>·<a href="../../privacidad.html">Privacy</a>·<a href="../../cookies.html">Cookies</a> · <a href="#" class="pref-cookies">Cookie preferences</a>· Error propagation <span id="ver"></span> (beta)</footer>
+</body>
+<script>
+const Pagina = { carpeta: 'errores', guarda: 'errores-v1' };
+const Version = (() => { const registros = {"web":[{"v":"1.21"}],"control":[{"v":"0.2"}],"termo-estadistica":[{"v":"0.2"}],"markowitz":[{"v":"0.3"}],"cavidades":[{"v":"0.2"}],"organica":[{"v":"0.3"}],"transformada-z":[{"v":"0.2"}],"semiconductores":[{"v":"0.2"}],"relatividad":[{"v":"0.2"}],"osc-acopladas":[{"v":"0.2"}],"solubilidad":[{"v":"0.2"}],"lagrange":[{"v":"0.2"}],"series":[{"v":"0.3"}],"no-parametricos":[{"v":"0.3"}],"regresion-multiple":[{"v":"0.2"}],"anova":[{"v":"0.3"}],"black-scholes":[{"v":"0.3"}],"bonos":[{"v":"0.3"}],"solow":[{"v":"0.3"}],"integrales-multiples":[{"v":"0.1"}],"formulacion":[{"v":"0.2"}],"balance":[{"v":"0.2"}],"redox":[{"v":"0.2"}],"lineas-transmision":[{"v":"0.3"}],"superficies":[{"v":"0.2"}],"vsepr":[{"v":"0.2"}],"maxwell":[{"v":"0.3"}],"fresnel":[{"v":"0.2"}],"gravitacion":[{"v":"0.2"}],"convolucion":[{"v":"0.2"}],"laplace-numerica":[{"v":"0.2"}],"imagenes":[{"v":"0.2.1"}],"guias-onda":[{"v":"0.2"}],"antena":[{"v":"0.2"}],"bode":[{"v":"0.3"}],"optica":[{"v":"0.2"}],"simulador":[{"v":"0.4"}],"teoria-juegos":[{"v":"0.2"}],"puertas-logicas":[{"v":"0.4"}],"multiplicador":[{"v":"0.3"}],"is-lm":[{"v":"0.3"}],"choques":[{"v":"0.1"}],"termoquimica":[{"v":"0.3"}],"probabilidad":[{"v":"0.2"}],"unidades":[{"v":"0.2"}],"equilibrio":[{"v":"0.2"}],"oscilaciones":[{"v":"0.1"}],"beneficio":[{"v":"0.3"}],"costes":[{"v":"0.3"}],"sistemas-numericos":[{"v":"0.2"}],"excedentes":[{"v":"0.2"}],"oferta-demanda":[{"v":"0.2"}],"chi2-bondad":[{"v":"0.2"}],"contrastes":[{"v":"0.2"}],"errores":[{"v":"0.2"}],"graficador":[{"v":"0.2"}],"metodos-numericos":[{"v":"0.2"}],"fisica-moderna":[{"v":"0.2"}],"lorenz-gini":[{"v":"0.2"}],"phillips-okun":[{"v":"0.3"}],"tipos-cambio":[{"v":"0.3"}],"elasticidades":[{"v":"0.3"}],"pib-ipc":[{"v":"0.2"}],"numeros-indice":[{"v":"0.2"}],"ratios":[{"v":"0.2"}],"punto-muerto":[{"v":"0.2"}],"ahorro":[{"v":"0.3"}],"van-tir":[{"v":"0.3"}],"amortizacion-inmovilizado":[{"v":"0.2"}],"prestamos":[{"v":"0.3"}],"rentas":[{"v":"0.3"}],"interes":[{"v":"0.3"}],"descriptiva":[{"v":"0.2"}],"regresion-economia":[{"v":"0.2"}],"ajustador":[{"v":"0.2.1"}],"electrostatica":[{"v":"0.11"}],"magnetostatica":[{"v":"0.4"}],"tabla-periodica":[{"v":"0.2"}],"trabajo-y-energia":[{"v":"0.3"}],"masa-molar":[{"v":"0.2"}],"configuracion-electronica":[{"v":"0.2"}],"condensadores":[{"v":"0.4"}],"tiro-parabolico":[{"v":"0.4"}],"disoluciones":[{"v":"0.2"}],"calorimetria":[{"v":"0.2"}],"induccion":[{"v":"0.4"}],"matrices":[{"v":"0.3"}],"derivadas":[{"v":"0.3"}],"laplace":[{"v":"0.2"}],"interferencia":[{"v":"0.2"}],"ondas-em":[{"v":"0.4"}],"intervalos":[{"v":"0.3"}],"fuerza":[{"v":"0.3"}],"campos":[{"v":"0.2.1"}],"cinetica":[{"v":"0.2"}],"edos":[{"v":"0.2"}],"fourier":[{"v":"0.2"}],"taylor":[{"v":"0.3"}],"complejos":[{"v":"0.3"}],"sistemas":[{"v":"0.3"}],"regresion":[{"v":"0.3"}],"estadistica":[{"v":"0.3"}],"dinamica":[{"v":"0.3"}],"solido-rigido":[{"v":"0.3"}],"ondas":[{"v":"0.3"}],"gases":[{"v":"0.6"}],"ciclos":[{"v":"0.2"}],"ph":[{"v":"0.4"}],"fluidos":[{"v":"0.3"}],"doppler":[{"v":"0.2"}],"resistencias":[{"v":"0.3"}],"faraday":[{"v":"0.4"}],"fenomenos":[{"v":"0.9"}]}; const de = (h) => ({ current: registros[h][0].v, log: registros[h] }); return { registros, de }; })();
+
+</script>
+<script src="../../../js/en/herramienta.en.e2425303.js"></script>
+<script src="../../../js/en/enunciado.en.73e3a542.js"></script>
+<script src="../../../js/en/mates.en.fbd66204.js"></script>
+<script src="../../../js/en/matematicas-expresion.en.792eb544.js"></script>
+<script src="../../../js/en/calculadora.en.98ec18c2.js"></script>
+<script>
+const Errores = (() => {
+  const E = typeof Expresion !== 'undefined' ? Expresion : require('../matematicas/expresion.js');
+  const K = typeof Calculadora !== 'undefined' ? Calculadora : require('../calculadora.js');
+  const { f, lee, leeNum, vacio } = K;
+  const MODOS = { formula: 'A calculated quantity f(x, y, …)', medidas: 'A series of repeated measurements', ponderada: 'Several measurements of the same thing (weighted mean)' };
+  const METODOS = { cuadratica: 'Quadratic sum (independent errors)', lineal: 'Linear bound (sum of absolute values)' };
+
+  function redondea(v, d) {
+    if (!(d > 0) || !isFinite(d)) return { v, d, dec: null, txt: f(v, 6) };
+    let e = Math.floor(Math.log10(d)), c = d / 10 ** e;
+    let cifras = c < 1.95 ? 2 : 1, r = Math.round(d / 10 ** (e - cifras + 1)) * 10 ** (e - cifras + 1);
+    if (r >= 10 ** (e + 1) - 1e-12 * 10 ** e) { e += 1; cifras = 2; r = 10 ** e; }
+    const pos = e - cifras + 1, vr = Math.round(v / 10 ** pos) * 10 ** pos, dec = Math.max(0, -pos);
+    const t = (x) => (dec ? x.toFixed(dec) : String(Math.round(x))).replace('.', '.').replace('-', '−');
+    return { v: vr, d: r, dec, pos, txt: `${t(vr)} ± ${t(r)}` };
+  }
+
+  function variables(texto) {
+    const out = [];
+    String(texto ?? '').split(/\r?\n/).forEach((lin, i) => {
+      const l = lin.trim().replace(/±|\+\/-|\+-/g, ' ').replace(/=/g, ' ').replace(/;/g, ' ');
+      if (!l || l.startsWith('#')) return;
+      const tk = l.split(/\s+/);
+      if (tk.length !== 3) throw new Error(`Variables, row ${i + 1}: enter the name, the value and its uncertainty (“l 1,250 0,002”)`);
+      const [n, a, b] = tk, v = leeNum(a), d = leeNum(b);
+      if (!/^[a-zA-Zα-ωΑ-Ω]$/.test(n)) throw new Error(`Variables, row ${i + 1}: the name “${n}” must be a single letter`);
+      if (!isFinite(v) || !isFinite(d)) throw new Error(`Variables, row ${i + 1}: “${a}” or “${b}” is not a number`);
+      if (d < 0) throw new Error(`Variables, row ${i + 1}: the uncertainty cannot be negative`);
+      if (out.some((q) => q.k === n.toLowerCase())) throw new Error(`The variable ${n} is repeated`);
+      if (n.toLowerCase() === 'e') throw new Error('Do not call a variable e: e is the number e = 2.718…');
+      out.push({ n, k: n.toLowerCase(), v, d });
+    });
+    if (!out.length) throw new Error('Enter at least one variable with its value and its uncertainty');
+    return out;
+  }
+  const nombres = (n, vs) => {
+    if (n.t === 'x') { const k = n.n || 'x', q = vs.find((x) => x.k === k); return q && q.n !== k ? { t: 'x', n: q.n } : n; }
+    return { ...n, ...(n.a ? { a: nombres(n.a, vs) } : {}), ...(n.b ? { b: nombres(n.b, vs) } : {}) };
+  };
+
+  function correlaciones(texto, vs) {
+    const out = [];
+    String(texto ?? '').split(/\r?\n/).forEach((lin, i) => {
+      const l = lin.trim().replace(/[=;()]/g, ' ').replace(/,\s*(?=[a-zA-Zα-ωΑ-Ω])/g, ' ').replace(/[−–]/g, '-').trim();
+      if (!l || l.startsWith('#')) return;
+      let tk = l.split(/\s+/), cov = false;
+      if (tk.length === 4 && /^cov$/i.test(tk[0])) { cov = true; tk = tk.slice(1); } else if (tk.length === 4 && /^(r|ρ|corr)$/i.test(tk[0])) tk = tk.slice(1);
+      if (tk.length !== 3) throw new Error(`Correlations, row ${i + 1}: enter the two variables and their correlation coefficient (“l T 0,8”) or their covariance (“cov l T 0,00002”)`);
+      const a = vs.find((q) => q.k === tk[0].toLowerCase()), b = vs.find((q) => q.k === tk[1].toLowerCase()), x = leeNum(tk[2]);
+      if (!a || !b) throw new Error(`Correlations, row ${i + 1}: the variable ${!a ? tk[0] : tk[1]} is not in the list of variables`);
+      if (a === b) throw new Error(`Correlations, row ${i + 1}: two different variables are needed`);
+      if (!isFinite(x)) throw new Error(`Correlations, row ${i + 1}: “${tk[2]}” is not a number`);
+      if (out.some((c) => (c.a === a && c.b === b) || (c.a === b && c.b === a))) throw new Error(`The correlation between ${a.n} and ${b.n} is repeated`);
+      let r = x, c = x;
+      if (cov) { if (!(a.d > 0 && b.d > 0)) throw new Error(`Correlations, row ${i + 1}: with zero uncertainty there can be no covariance`); r = x / (a.d * b.d); } else c = x * a.d * b.d;
+      if (Math.abs(r) > 1 + 1e-9) throw new Error(cov ? `Correlations, row ${i + 1}: that covariance gives a correlation coefficient of ${f(r, 4)}, and it must be between −1 and 1 (|cov| ≤ Δ${a.n}·Δ${b.n} = ${f(a.d * b.d, 3)})` : `Correlations, row ${i + 1}: the correlation coefficient must be between −1 and 1`);
+      out.push({ a, b, r: Math.max(-1, Math.min(1, r)), cov: c, dada: cov ? 'cov' : 'r' });
+    });
+    return out;
+  }
+  function compara(sc, nom, v, d, un, pasos) {
+    if (vacio(sc.acept)) return null;
+    const v0 = leeNum(sc.acept), d0 = vacio(sc.dacept) ? 0 : leeNum(sc.dacept);
+    if (!isFinite(v0)) throw new Error('The accepted value must be a number');
+    if (!isFinite(d0) || d0 < 0) throw new Error('The uncertainty of the accepted value must be a positive number or zero');
+    const dif = v - v0, sig = Math.hypot(d, d0), z = sig > 0 ? Math.abs(dif) / sig : (dif === 0 ? 0 : Infinity);
+    const nivel = z <= 1 ? 'compatible' : z <= 2 ? 'compatible a 2σ' : z <= 3 ? 'dudoso' : 'incompatible';
+    const frase = z <= 1 ? 'the difference is less than one σ: the result is <b>compatible</b> with the accepted value' : z <= 2 ? 'the difference is between 1 and 2 σ: the result is <b>compatible at 2σ</b>, normal in one in three correct measurements' : z <= 3 ? 'the difference is between 2 and 3 σ: the result is <b>doubtful</b>; by pure chance it only happens in 5 % of measurements, so it is worth looking for a systematic error' : 'the difference exceeds 3 σ: the result is <b>incompatible</b> with the accepted value; there is a systematic error or the uncertainty is underestimated';
+    pasos.push({ t: 'Comparison with the accepted value', html: `Discrepancy: $${nom} − ${nom}_{"ac"} = ${f(v, 6)} − ${f(v0, 6)} = ${f(dif, 3)}$${un} (${f(100 * Math.abs(dif) / Math.abs(v0), 3)} % of the accepted value). It is measured in uncertainties: $z = {|${nom} − ${nom}_{"ac"}|}/{${d0 > 0 ? `√(Δ${nom}^2 + Δ${nom}_{"ac"}^2)` : `Δ${nom}`}} = {${f(Math.abs(dif), 3)}}/{${f(sig, 3)}} = ${f(z, 3)}$. Since ${frase}.` });
+    return { v0, d0, dif, sig, z, nivel, relPct: 100 * Math.abs(dif) / Math.abs(v0) };
+  }
+
+  function formula(sc) {
+    const vs = variables(sc.vars), met = METODOS[sc.metodo] ? sc.metodo : 'cuadratica';
+    const nom = vacio(sc.nombre) ? 'f' : String(sc.nombre).trim();
+    const ast = nombres(E.simp(E.lee(sc.f, 'The formula', vs.map((q) => q.k))), vs);
+    const env = Object.fromEntries(vs.map((q) => [q.n, q.v])), val = (n) => E.valor(n, env.x ?? NaN, env);
+    const v = val(ast);
+    if (!isFinite(v)) throw new Error('The formula cannot be evaluated with those values');
+    const usadas = vs.filter((q) => E.tieneX(ast, q.n));
+    if (!usadas.length) throw new Error('The formula uses none of the variables');
+    for (const q of usadas) { q.der = E.simp(E.deriva(ast, q.n)); q.dv = val(q.der); q.c = Math.abs(q.dv) * q.d; if (!isFinite(q.dv)) throw new Error(`The derivative with respect to ${q.n} cannot be evaluated there`); }
+    const cors = met === 'lineal' ? [] : correlaciones(sc.corr, vs).filter((c) => usadas.includes(c.a) && usadas.includes(c.b));
+    for (const c of cors) c.t = 2 * c.a.dv * c.b.dv * c.cov;
+    const cruz = cors.reduce((s, c) => s + c.t, 0), indep2 = usadas.reduce((s, q) => s + q.c * q.c, 0), var2 = indep2 + cruz;
+    if (var2 < -1e-12 * indep2) throw new Error('Those correlations cannot occur at the same time: the squared uncertainty comes out negative');
+    const d = met === 'lineal' ? usadas.reduce((s, q) => s + q.c, 0) : (var2 < 1e-12 * indep2 ? 0 : Math.sqrt(var2)), dIndep = Math.sqrt(indep2);
+    const tot = usadas.reduce((s, q) => s + (met === 'lineal' ? q.c : q.c * q.c), 0);
+    for (const q of usadas) q.peso = tot ? (met === 'lineal' ? q.c : q.c * q.c) / tot : 0;
+    const R = redondea(v, d), un = vacio(sc.unidad) ? '' : ` ${String(sc.unidad).trim()}`;
+    const pasos = [];
+    const sv = `${nom}(${usadas.map((q) => q.n).join(', ')})`, D = (n) => `{∂${nom}}/{∂${n}}`;
+    pasos.push({ t: 'Value of the quantity', html: `$${nom} = ${E.texto(ast)} = ${f(v, 6)}$${un}<br>with ${usadas.map((q) => `$${q.n} = ${f(q.v, 6)} ± ${f(q.d, 3)}$`).join(', ')}.` });
+    pasos.push({ t: 'Partial derivatives', html: usadas.map((q) => `$${D(q.n)} = ${E.texto(q.der)} = ${f(q.dv, 5)}$, &ensp; $|${D(q.n)}| · Δ${q.n} = ${f(Math.abs(q.dv), 5)} · ${f(q.d, 3)} = ${f(q.c, 4)}$`).join('<br>') });
+    pasos.push({ t: 'Uncertainty', html: met === 'lineal'
+      ? `Linear bound (the worst case): $Δ${nom} = ${usadas.map((q) => `|${D(q.n)}| Δ${q.n}`).join(' + ')}$<br>$Δ${nom} = ${usadas.map((q) => f(q.c, 4)).join(' + ')} = ${f(d, 4)}$`
+      : `With independent errors they add in quadrature: $Δ${nom} = √(${usadas.map((q) => `(${D(q.n)} Δ${q.n})^2`).join(' + ')})$<br>$Δ${nom} = √(${usadas.map((q) => `${f(q.c, 4)}^2`).join(' + ')}) = ${f(d, 4)}$` });
+    if (cors.length) pasos.push({ t: 'Correlated variables', html: `If two variables are not independent the cross term $2 · {∂${nom}}/{∂a} · {∂${nom}}/{∂b} · "cov"(a, b)$ must be added, with $"cov"(a, b) = r · Δa · Δb$:<br>${cors.map((c) => `$${c.a.n}$ y $${c.b.n}$: $r = ${f(c.r, 4)}$, $"cov" = ${f(c.cov, 4)}$ ⇒ $2 · ${f(c.a.dv, 5)} · ${c.b.dv < 0 ? `(${f(c.b.dv, 5)})` : f(c.b.dv, 5)} · ${c.cov < 0 ? `(${f(c.cov, 4)})` : f(c.cov, 4)} = ${f(c.t, 4)}$`).join('<br>')}<br>$Δ${nom} = √(${f(indep2, 4)} ${cruz < 0 ? '−' : '+'} ${f(Math.abs(cruz), 4)}) = ${f(d, 4)}$, compared with $${f(dIndep, 4)}$ if they were independent: the correlation ${Math.abs(d - dIndep) < 1e-12 * dIndep ? 'does not change' : d > dIndep ? 'increases' : 'reduces'} the error.` });
+    if (met === 'lineal' && !vacio(sc.corr)) pasos.push({ t: 'Correlations', html: 'The linear bound is already the worst possible case (as if everything were correlated against you): correlations are only used with the quadratic sum.' });
+    pasos.push({ t: 'Relative error', html: `$ε = {Δ${nom}}/{|${nom}|} = ${f(d, 4)}/${f(Math.abs(v), 6)} = ${f(d / Math.abs(v), 3)}$ (${f((100 * d) / Math.abs(v), 3)} %). ${usadas.slice().sort((a, b) => b.peso - a.peso)[0].n} weighs most (${f(100 * usadas.slice().sort((a, b) => b.peso - a.peso)[0].peso, 3)} % of ${met === 'lineal' ? 'the bound' : '$Δ' + nom + '^2$'}): it is the measurement worth improving.` });
+    pasos.push({ t: 'Rounded result', html: redTxt(nom, v, d, R, un) });
+    const comp = compara(sc, nom, v, d, un, pasos);
+    return { modo: 'formula', met, nom, ast, sv, vs: usadas, v, d, dIndep, cors, cruz, comp, rel: d / Math.abs(v), R, un, pasos };
+  }
+  const redTxt = (nom, v, d, R, un) => R.dec === null ? `$${nom} = ${f(v, 6)}$${un} (sin incertidumbre)` : `The uncertainty is kept with ${/^1/.test(String(R.d / 10 ** R.pos)) ? 'two significant figures (it starts with 1)' : 'one significant figure'}: $Δ${nom} = ${f(d, 4)} → ${R.txt.split(' ± ')[1]}$, and the value is rounded to that same digit: $${f(v, 8)} → ${R.txt.split(' ± ')[0]}$.<br><b>${nom} = (${R.txt})${un}</b>`;
+
+  function medidas(sc) {
+    const xs = K.lista(sc.datos, 'las medidas');
+    if (xs.length < 2) throw new Error('At least 2 measurements are needed');
+    const n = xs.length, m = xs.reduce((a, x) => a + x, 0) / n, s = Math.sqrt(xs.reduce((a, x) => a + (x - m) ** 2, 0) / (n - 1)), sm = s / Math.sqrt(n);
+    const ins = lee(sc, 'inst', 'the instrument error', { min: 0, def: 0 }), k = lee(sc, 'k', 'the coverage factor', { min: 0, minEx: true, def: 1 });
+    const ale = k * sm, d = Math.sqrt(ale * ale + ins * ins);
+    const nom = vacio(sc.nombre) ? 'x' : String(sc.nombre).trim(), un = vacio(sc.unidad) ? '' : ` ${String(sc.unidad).trim()}`, R = redondea(m, d);
+    const pasos = [];
+    pasos.push({ t: 'Mean', html: `$x̄ = {∑ x_i}/n = ${f(xs.reduce((a, x) => a + x, 0), 8)}/${n} = ${f(m, 8)}$${un}` });
+    pasos.push({ t: 'Standard deviation and error of the mean', html: `$s = √({∑ (x_i − x̄)^2}/{n − 1}) = ${f(s, 4)}$, and the error of the mean (how far the mean of the measurements strays from the true value) is $s/√n = ${f(s, 4)}/√${n} = ${f(sm, 4)}$${k !== 1 ? `, which with the coverage factor $k = ${f(k)}$ gives $${f(ale, 4)}$` : ''}.` });
+    pasos.push({ t: 'Total error', html: `It is added in quadrature with the instrument error (its resolution): $Δ${nom} = √(${f(ale, 4)}^2 + ${f(ins, 4)}^2) = ${f(d, 4)}$. ${ins > ale ? 'The instrument dominates: repeating more measurements hardly improves the result.' : 'The spread of the measurements dominates: with more measurements the error would fall as $1/√n$.'}` });
+    pasos.push({ t: 'Rounded result', html: redTxt(nom, m, d, R, un) });
+    const comp = compara(sc, nom, m, d, un, pasos);
+    return { modo: 'medidas', nom, xs, n, m, s, sm, ins, k, ale, d, v: m, comp, rel: d / Math.abs(m), R, un, pasos };
+  }
+
+  function ponderada(sc) {
+    const ms = [];
+    String(sc.pond ?? '').split(/\r?\n/).forEach((lin, i) => {
+      const l = lin.trim().replace(/±|\+\/-|\+-/g, ' ').replace(/;/g, ' ');
+      if (!l || l.startsWith('#')) return;
+      const tk = l.split(/\s+/);
+      if (tk.length !== 2) throw new Error(`Measurements, row ${i + 1}: enter the value and its uncertainty (“9,79 0,03”)`);
+      const x = leeNum(tk[0]), d = leeNum(tk[1]);
+      if (!isFinite(x) || !isFinite(d)) throw new Error(`Measurements, row ${i + 1}: “${tk[0]}” or “${tk[1]}” is not a number`);
+      if (!(d > 0)) throw new Error(`Measurements, row ${i + 1}: the uncertainty must be greater than zero (the weight is 1/σ²)`);
+      ms.push({ x, d, w: 1 / (d * d) });
+    });
+    if (ms.length < 2) throw new Error('At least 2 measurements are needed, each with its uncertainty');
+    const n = ms.length, W = ms.reduce((a, q) => a + q.w, 0), m = ms.reduce((a, q) => a + q.w * q.x, 0) / W, dInt = 1 / Math.sqrt(W);
+    const chi2 = ms.reduce((a, q) => a + ((q.x - m) / q.d) ** 2, 0), gl = n - 1, red = chi2 / gl, dExt = dInt * Math.sqrt(red);
+    for (const q of ms) { q.peso = q.w / W; q.z = (q.x - m) / q.d; }
+    const simple = ms.reduce((a, q) => a + q.x, 0) / n;
+    const amplia = red > 1, d = amplia ? dExt : dInt;
+    const nom = vacio(sc.nombre) ? 'x' : String(sc.nombre).trim(), un = vacio(sc.unidad) ? '' : ` ${String(sc.unidad).trim()}`, R = redondea(m, d);
+    const corta = (ts) => (ts.length > 6 ? [...ts.slice(0, 3), '…', ...ts.slice(-1)] : ts).join(' + ');
+    const pasos = [];
+    pasos.push({ t: 'Weights', html: `Each measurement weighs $w_i = 1/σ_i^2$, so the most precise one dominates: ${(n > 6 ? [...ms.slice(0, 3), null, ...ms.slice(-1)] : ms).map((q) => (q ? `$1/${f(q.d, 3)}^2 = ${f(q.w, 4)}$` : '…')).join(', ')}; they add up to $∑ w_i = ${f(W, 5)}$.` });
+    pasos.push({ t: 'Weighted mean', html: `$x̄ = {∑ w_i x_i}/{∑ w_i} = {${corta(ms.map((q) => `${f(q.w, 4)}·${f(q.x, 6)}`))}}/{${f(W, 5)}} = ${f(m, 8)}$${un} (the unweighted mean would be $${f(simple, 6)}$).` });
+    pasos.push({ t: 'Uncertainty of the mean', html: `$σ_{x̄} = 1/√{∑ w_i} = 1/√{${f(W, 5)}} = ${f(dInt, 4)}$${un}: it is smaller than that of the best measurement ($${f(Math.min(...ms.map((q) => q.d)), 3)}$).` });
+    pasos.push({ t: 'Reduced χ²: are they compatible with each other?', html: `$χ^2 = ∑ ({x_i − x̄}/{σ_i})^2 = ${f(chi2, 4)}$ with $n − 1 = ${gl}$ degrees of freedom: $χ^2_"red" = ${f(red, 4)}$. ${red > 2 ? `It is much greater than 1: the measurements differ more than their uncertainties say (one is underestimated or there is a systematic error). The uncertainty is enlarged by $√{χ^2_"red"}$: $${f(dInt, 4)} · ${f(Math.sqrt(red), 4)} = ${f(dExt, 4)}$.` : red > 1 ? `It is somewhat greater than 1: the measurements are compatible, but to be safe the uncertainty is enlarged by $√{χ^2_"red"}$: $${f(dInt, 4)} · ${f(Math.sqrt(red), 4)} = ${f(dExt, 4)}$.` : `It does not exceed 1: the measurements are compatible with each other and the uncertainty $${f(dInt, 4)}$ is kept${red < 0.3 && n > 2 ? ' (it is very small: the uncertainties may be overestimated)' : ''}.`}` });
+    pasos.push({ t: 'Rounded result', html: redTxt(nom, m, d, R, un) });
+    const comp = compara(sc, nom, m, d, un, pasos);
+    return { modo: 'ponderada', nom, ms, n, m, W, dInt, dExt, chi2, gl, red, amplia, simple, d, v: m, comp, rel: d / Math.abs(m), R, un, pasos };
+  }
+
+  const resolver = (sc) => (sc.modo === 'medidas' ? medidas : sc.modo === 'ponderada' ? ponderada : formula)(sc);
+
+  const ejemplos = [
+    { clave: 'pendulo', nombre: 'g with a pendulum: g = 4π² l / T²', sc: { modo: 'formula', nombre: 'g', f: '4 pi^2 l / T^2', vars: 'l 1,000 0,001\nT 2,006 0,005', metodo: 'cuadratica', unidad: 'm/s²' } },
+    { clave: 'densidad', nombre: 'Density of a cylinder: ρ = 4m / (π d² h)', sc: { modo: 'formula', nombre: 'ρ', f: '4 m / (pi d^2 h)', vars: 'm 45,32 0,01\nd 1,250 0,005\nh 4,30 0,05', metodo: 'cuadratica', unidad: 'g/cm³' } },
+    { clave: 'ohm', nombre: 'Resistance from Ohm\'s law, linear bound', sc: { modo: 'formula', nombre: 'R', f: 'V / I', vars: 'V 12,0 0,1\nI 0,250 0,005', metodo: 'lineal', unidad: 'Ω' } },
+    { clave: 'potencia', nombre: 'Kinetic energy: E = m v² / 2', sc: { modo: 'formula', nombre: 'K', f: 'm v^2 / 2', vars: 'm 0,500 0,001\nv 3,20 0,05', metodo: 'cuadratica', unidad: 'J' } },
+    { clave: 'correlacion', nombre: 'Correlated variables: perimeter P = 2(a + b)', sc: { modo: 'formula', nombre: 'P', f: '2 (a + b)', vars: 'a 12,40 0,05\nb 8,20 0,05', corr: 'a b 0,9', metodo: 'cuadratica', unidad: 'cm' } },
+    { clave: 'aceptado', nombre: 'g with a pendulum, compared with 9.80665 m/s²', sc: { modo: 'formula', nombre: 'g', f: '4 pi^2 l / T^2', vars: 'l 1,000 0,001\nT 2,006 0,005', metodo: 'cuadratica', unidad: 'm/s²', acept: '9,80665', dacept: '' } },
+    { clave: 'ponderada', nombre: 'Weighted mean of three measurements of g', sc: { modo: 'ponderada', nombre: 'g', pond: '9,79 0,03\n9,83 0,02\n9,76 0,05', unidad: 'm/s²', acept: '', dacept: '' } },
+    { clave: 'tiempos', nombre: 'Series of period measurements with a stopwatch', sc: { modo: 'medidas', nombre: 'T', datos: '2,01 1,98 2,03 2,00 1,97 2,02 1,99 2,04 2,00 1,99', inst: '0,01', k: '1', unidad: 's' } },
+  ];
+
+  return { resolver, ejemplos, redondea, MODOS, METODOS };
+})();
+
+</script>
+<script src="../../../js/en/compartir.en.08e9415d.js"></script>
+<script>
+(() => {
+  const C = Errores, { f } = Calculadora;
+  function azar() {
+    const r = (a, b, d) => (a + Math.random() * (b - a)).toFixed(d).replace('.', '.'), t = Math.floor(Math.random() * 3);
+    if (t === 0) return { modo: 'formula', nombre: 'g', f: '4 pi^2 l / T^2', vars: `l ${r(0.5, 1.5, 3)} 0,001\nT ${r(1.5, 2.4, 3)} ${['0,002', '0,005', '0,01'][Math.floor(Math.random() * 3)]}`, metodo: 'cuadratica', unidad: 'm/s²' };
+    if (t === 1) return { modo: 'formula', nombre: 'R', f: 'V / I', vars: `V ${r(3, 24, 1)} 0,1\nI ${r(0.1, 0.9, 3)} 0,005`, metodo: 'cuadratica', unidad: 'Ω' };
+    return { modo: 'formula', nombre: 'ρ', f: 'm / (a b c)', vars: `m ${r(20, 80, 2)} 0,01\na ${r(2, 4, 2)} 0,02\nb ${r(2, 4, 2)} 0,02\nc ${r(1, 3, 2)} 0,02`, metodo: 'cuadratica', unidad: 'g/cm³' };
+  }
+  Calculadora.monta({
+    C, carpeta: 'errores', app: 'ErroresApp', azar,
+    enunciado: (sc, s) => s && s.modo === 'formula' ? Mates.html(`$${s.nom} = ${Expresion.texto(s.ast)}$ is calculated with ${s.vs.map((q) => `$${q.n} = ${f(q.v, 6)} ± ${f(q.d, 3)}$`).join(', ')}. Find ${s.nom}, its uncertainty (independent errors) and the relative error, and write the result properly rounded.`) : 'With the measurements on the left, find the mean, the error and the rounded result.',
+    nota: 'In the variables, one row per variable with its name (one letter), its value and its uncertainty: “l 1,250 0,002” or “T = 2,006 ± 0,005”. In the formula, pi is π and e is the number e; write products with spaces or *: 4 pi^2 l / T^2.',
+    campos: (sc) => sc.modo === 'ponderada' ? [
+      { k: 'modo', nom: 'Calculate the error of', tipo: 'sel', ops: Object.entries(C.MODOS) },
+      { k: 'nombre', nom: 'Quantity', tipo: 'texto', ayuda: 'its symbol' },
+      { k: 'pond', nom: 'Measurements', tipo: 'area', ayuda: 'one per row: value and uncertainty', filas: 5 },
+      { k: 'unidad', nom: 'Unit', tipo: 'texto', ayuda: 'optional' },
+      { sep: 'Compare with the accepted value (optional)' },
+      { k: 'acept', nom: 'Accepted value' }, { k: 'dacept', nom: 'Su incertidumbre', ayuda: 'si la tiene' },
+    ] : sc.modo === 'medidas' ? [
+      { k: 'modo', nom: 'Calculate the error of', tipo: 'sel', ops: Object.entries(C.MODOS) },
+      { k: 'nombre', nom: 'Quantity', tipo: 'texto', ayuda: 'its symbol' },
+      { k: 'datos', nom: 'Measurements', tipo: 'area', ayuda: 'separated by spaces', filas: 4 },
+      { k: 'inst', nom: 'Instrument error', ayuda: 'its resolution' },
+      { k: 'k', nom: 'Coverage factor k', ayuda: '1 by default' },
+      { k: 'unidad', nom: 'Unit', tipo: 'texto', ayuda: 'optional' },
+      { sep: 'Compare with the accepted value (optional)' },
+      { k: 'acept', nom: 'Accepted value' }, { k: 'dacept', nom: 'Su incertidumbre', ayuda: 'si la tiene' },
+    ] : [
+      { k: 'modo', nom: 'Calculate the error of', tipo: 'sel', ops: Object.entries(C.MODOS) },
+      { k: 'nombre', nom: 'Quantity', tipo: 'texto', ayuda: 'its symbol' },
+      { k: 'f', nom: 'Formula', tipo: 'texto' },
+      { k: 'vars', nom: 'Variables', tipo: 'area', ayuda: 'nombre, valor e incertidumbre', filas: 4 },
+      { k: 'metodo', nom: 'How they are combined', tipo: 'sel', ops: Object.entries(C.METODOS) },
+      ...(sc.metodo === 'lineal' ? [] : [{ k: 'corr', nom: 'Correlations', tipo: 'area', ayuda: 'optional: “l T 0,8” or “cov l T 0,00002”', filas: 2 }]),
+      { k: 'unidad', nom: 'Unit', tipo: 'texto', ayuda: 'optional' },
+      { sep: 'Compare with the accepted value (optional)' },
+      { k: 'acept', nom: 'Accepted value' }, { k: 'dacept', nom: 'Su incertidumbre', ayuda: 'si la tiene' },
+    ],
+    resumen: (s) => [
+      ['Result', `${s.nom} = (${s.R.txt})${s.un}`, true],
+      [s.modo === 'medidas' ? 'Mean' : s.modo === 'ponderada' ? 'Weighted mean' : `Value of ${s.nom}`, f(s.v, 6)], [`Uncertainty Δ${s.nom}`, f(s.d, 3)], ['Relative error', `${f(100 * s.rel, 3)} %`],
+      ...(s.modo === 'medidas' ? [['Standard deviation s', f(s.s, 3)], ['Error of the mean s/√n', f(s.sm, 3)]] : []),
+      ...(s.modo === 'ponderada' ? [['χ² reducido', f(s.red, 4)], ['σ of the mean (1/√∑w)', f(s.dInt, 3)], ['Unweighted mean', f(s.simple, 6)]] : []),
+      ...(s.modo === 'formula' && s.cors.length ? [['If they were independent', `Δ${s.nom} = ${f(s.dIndep, 3)}`]] : []),
+      ...(s.comp ? [['Discrepancy with the accepted value', `${f(s.comp.dif, 3)}${s.un} (${f(s.comp.relPct, 3)} %)`], ['En incertidumbres', `${f(s.comp.z, 3)} σ: ${s.comp.nivel}`]] : []),
+    ],
+    tabla: (s) => s.modo === 'medidas' ? '' : s.modo === 'ponderada' ? `<table class="tabla-eco"><thead><tr><th>Measurement</th><th>Value</th><th>σ</th><th>Weight 1/σ²</th><th>Weight</th><th>(x − x̄)/σ</th></tr></thead><tbody>${s.ms.map((q, i) => `<tr><td>${i + 1}</td><td>${f(q.x, 6)}</td><td>${f(q.d, 3)}</td><td>${f(q.w, 4)}</td><td>${f(100 * q.peso, 3)} %</td><td>${f(q.z, 3)}</td></tr>`).join('')}</tbody></table>` : `<table class="tabla-eco"><thead><tr><th>Variable</th><th>Value</th><th>Δ</th><th>∂${s.nom}/∂x</th><th>|∂${s.nom}/∂x|·Δx</th><th>Weight</th></tr></thead><tbody>${s.vs.map((q) => `<tr><td>${q.n}</td><td>${f(q.v, 6)}</td><td>${f(q.d, 3)}</td><td>${f(q.dv, 5)}</td><td>${f(q.c, 4)}</td><td>${f(100 * q.peso, 3)} %</td></tr>`).join('')}</tbody></table>`,
+    grafica: (s) => {
+      if (s.modo === 'medidas') {
+        const ys = [...s.xs, s.m - s.d, s.m + s.d], y = Calculadora.rango(ys, { aire: 0.2 });
+        return { x: [0.5, s.n + 0.5], y, ejeX: 'measurement number', ejeY: s.nom, fx: (v) => (Number.isInteger(v) ? String(v) : ''),
+          series: [{ tipo: 'area', pts: [[0.5, s.m + s.d], [s.n + 0.5, s.m + s.d]], base: s.m - s.d, color: '--serie-1', alfa: 0.15 }, { tipo: 'puntos', pts: s.xs.map((x, i) => [i + 1, x]), color: '--serie-2' }],
+          horizontales: [{ y: s.m, color: '--serie-1', texto: `x̄ = ${f(s.m, 5)}` }, { y: s.m + s.d, color: '--muted' }, { y: s.m - s.d, color: '--muted' }] };
+      }
+      if (s.modo === 'ponderada') {
+        const ys = [...s.ms.flatMap((q) => [q.x - q.d, q.x + q.d]), s.m - s.d, s.m + s.d, ...(s.comp ? [s.comp.v0] : [])], y = Calculadora.rango(ys, { aire: 0.15 });
+        return { x: [0.5, s.n + 0.5], y, ejeX: 'measurement number', ejeY: s.nom, fx: (v) => (Number.isInteger(v) ? String(v) : ''),
+          series: [{ tipo: 'area', pts: [[0.5, s.m + s.d], [s.n + 0.5, s.m + s.d]], base: s.m - s.d, color: '--serie-1', alfa: 0.15 }, { tipo: 'puntos', pts: s.ms.map((q, i) => [i + 1, q.x]), color: '--serie-2' }],
+          horizontales: [{ y: s.m, color: '--serie-1', texto: `x̄ = ${f(s.m, 5)}` }, ...(s.comp ? [{ y: s.comp.v0, color: '--serie-3', texto: 'aceptado' }] : [])] };
+      }
+      const nombres = s.vs.map((q) => q.n);
+      return { x: [0.4, s.vs.length + 0.6], y: [0, 100], ejeY: `% of ${s.met === 'lineal' ? 'the bound' : 'Δ' + s.nom + '²'}`, fx: (v) => (Number.isInteger(v) ? nombres[v - 1] || '' : ''), fy: (v) => `${f(v)} %`,
+        series: [{ tipo: 'barras', ancho: 0.6, pts: s.vs.map((q, i) => [i + 1, 100 * q.peso]), color: '--serie-1' }] };
+    },
+    despues: (r, s, col) => {
+      if (s.modo !== 'ponderada') return;
+      const { g, X, Y } = r; g.strokeStyle = col['--serie-2'] || col['--ink']; g.lineWidth = 1.6;
+      s.ms.forEach((q, i) => { const x = X(i + 1); g.beginPath(); g.moveTo(x, Y(q.x - q.d)); g.lineTo(x, Y(q.x + q.d)); g.moveTo(x - 5, Y(q.x - q.d)); g.lineTo(x + 5, Y(q.x - q.d)); g.moveTo(x - 5, Y(q.x + q.d)); g.lineTo(x + 5, Y(q.x + q.d)); g.stroke(); });
+    },
+    datosExporta: (s) => (s.modo === 'ponderada' ? { cab: ['Measurement', 'Value', 'Uncertainty', 'Weight (%)'], filas: s.ms.map((q, i) => [i + 1, q.x, q.d, 100 * q.peso]) } : null),
+    leyenda: (s) => s.modo === 'ponderada' ? `Each <b>point</b> is a measurement with its error bar; the <b>band</b> is the weighted mean with its uncertainty${s.comp ? ' and the dashed line, the accepted value' : ''}.` : s.modo === 'medidas' ? 'Each <b>point</b> is a measurement; the <b>band</b> runs from x̄ − Δ to x̄ + Δ.' : `What each variable contributes to ${s.met === 'lineal' ? 'the linear bound' : 'the squared uncertainty'}: the tallest bar is the measurement most worth improving.`,
+  });
+})();
+
+</script>
+<script src="../../../js/en/biblioteca.en.5cb97548.js"></script>
+<script src="../../../js/en/practica.en.192a5c1e.js"></script>
+<script src="../../../js/en/personal.en.00676b87.js"></script>
+<script>
+Biblioteca.monta('errores', 'errores-v1');
+Practica.monta('errores', 'errores-v1');
+Enunciado.monta('errores', 'errores-v1');
+</script>
+</html>

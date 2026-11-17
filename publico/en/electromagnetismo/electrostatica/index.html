@@ -1,0 +1,763 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTQiIGZpbGw9IiMwZDZiNjYiLz48ZyBmaWxsPSJub25lIiBzdHJva2U9IiNlNmE2NDAiIHN0cm9rZS13aWR0aD0iMi40IiBzdHJva2UtZGFzaGFycmF5PSI0IDYuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIj48cGF0aCBkPSJNMjAgMzJINDQiLz48cGF0aCBkPSJNMjEgMjdDMjcgMTQgMzcgMTQgNDMgMjciLz48cGF0aCBkPSJNMjEgMzdDMjcgNTAgMzcgNTAgNDMgMzciLz48cGF0aCBkPSJNMTcgMjRDMjIgNCA0MiA0IDQ3IDI0Ii8+PHBhdGggZD0iTTE3IDQwQzIyIDYwIDQyIDYwIDQ3IDQwIi8+PC9nPjxjaXJjbGUgY3g9IjE3IiBjeT0iMzIiIHI9IjgiIGZpbGw9IiNlZjdhNjIiLz48Y2lyY2xlIGN4PSI0NyIgY3k9IjMyIiByPSI4IiBmaWxsPSIjNzRhMmYyIi8+PHBhdGggZD0iTTEzIDMyaDhNMTcgMjh2OE00MyAzMmg4IiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iMi42IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48L3N2Zz4K">
+<link rel="apple-touch-icon" href="../../../apple-touch-icon.png">
+<meta property="og:title" content="Electrostatics simulator">
+<meta property="og:description" content="Field, potential and energy of charges, wires, planes, spheres and conductors, with step-by-step working">
+<link rel="canonical" href="https://simulaciencia.vercel.app/en/electromagnetismo/electrostatica/">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="https://simulaciencia.vercel.app/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="description" content="Electrostatics simulator: electric field, potential, force and energy of point charges, wires, planes, spheres and dipoles, with field lines, 3D view and the step-by-step working as in the solutions manual.">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebApplication","name":"Electrostatics","description":"Electrostatics simulator: electric field, potential, force and energy of point charges, wires, planes, spheres and dipoles, with field lines, 3D view and the step-by-step working as in the solutions manual.","url":"https://simulaciencia.vercel.app/electromagnetismo/electrostatica/","inLanguage":"es","isAccessibleForFree":true,"applicationCategory":"EducationalApplication","operatingSystem":"Web browser","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://simulaciencia.vercel.app/"},{"@type":"ListItem","position":2,"name":"Electromagnetismo","item":"https://simulaciencia.vercel.app/electromagnetismo/"},{"@type":"ListItem","position":3,"name":"Electrostatics","item":"https://simulaciencia.vercel.app/electromagnetismo/electrostatica/"}]},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How is the electric field of several point charges calculated?","acceptedAnswer":{"@type":"Answer","text":"With the superposition principle: the field at a point is the vector sum of the field of each charge, E = Σ k·qᵢ/rᵢ² along the line joining the charge to the point, with k = 8.99·10⁹ N·m²/C². For example, a 2 nC charge at 3 cm creates E = 8.99·10⁹ · 2·10⁻⁹ / 0.03² ≈ 2.0·10⁴ N/C."}},{"@type":"Question","name":"How is Gauss's law used to find the field?","acceptedAnswer":{"@type":"Answer","text":"You choose a Gaussian surface with the symmetry of the problem (sphere, cylinder or box) and apply ∮E·dS = Q_int/ε₀. Outside a sphere charged with Q, E = Q/(4πε₀r²); for an infinite wire with density λ, E = λ/(2πε₀r); and for an infinite plane with density σ, E = σ/(2ε₀)."}},{"@type":"Question","name":"How are the potential and the energy of a system of charges calculated?","acceptedAnswer":{"@type":"Answer","text":"The potential is a scalar and is added with its sign, V = Σ k·qᵢ/rᵢ. The energy of the system is the sum over all pairs, U = Σ k·qᵢqⱼ/rᵢⱼ. For example, two 1 nC charges 10 cm apart have U = 8.99·10⁹ · 10⁻¹⁸ / 0.1 ≈ 9.0·10⁻⁸ J."}}]}]}</script>
+<link rel="manifest" href="../../manifest.webmanifest">
+<meta name="theme-color" content="#0d6b66">
+<script src="../../pwa.js" defer></script>
+<meta name="google-adsense-account" content="ca-pub-6407501780492688">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6407501780492688" crossorigin="anonymous"></script>
+<script>window.googlefc = window.googlefc || {}; googlefc.callbackQueue = googlefc.callbackQueue || [];
+document.addEventListener('click', (e) => { if (!e.target.closest('.pref-cookies')) return; e.preventDefault(); googlefc.callbackQueue.push(() => googlefc.showRevocationMessage()); });</script>
+<style>.anuncio { max-width:860px; margin:28px 0 0; text-align:center; min-height:120px } .anuncio > span { display:block; font:11px/1.6 system-ui, sans-serif; letter-spacing:.06em; text-transform:uppercase; color:var(--muted, #5b6670) } .anuncio ins { display:block }</style>
+<script>(() => {
+  const raiz = document.documentElement, mq = matchMedia('(prefers-color-scheme: dark)'), oyentes = [];
+  try { const t = localStorage.getItem('simu-tema'); if (t === 'dark' || t === 'light') raiz.dataset.theme = t; } catch (e) { /* sin almacenamiento */ }
+  const orig = MediaQueryList.prototype.addEventListener;
+  MediaQueryList.prototype.addEventListener = function (tipo, f, ...r) { if (tipo === 'change' && /prefers-color-scheme/.test(this.media)) oyentes.push(f); return orig.call(this, tipo, f, ...r); };
+  const oscuro = () => (raiz.dataset.theme ? raiz.dataset.theme === 'dark' : mq.matches);
+  const rotula = () => document.querySelectorAll('.tema').forEach((b) => { const t = oscuro() ? 'Switch to light mode' : 'Switch to dark mode'; b.title = t; b.setAttribute('aria-label', t); });
+  document.addEventListener('DOMContentLoaded', rotula);
+  mq.addEventListener('change', rotula);
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.tema')) return;
+    raiz.dataset.theme = oscuro() ? 'light' : 'dark';
+    try { localStorage.setItem('simu-tema', raiz.dataset.theme); } catch (e) { /* sin almacenamiento */ }
+    rotula();
+    for (const f of oyentes) { try { f.call(mq, { matches: oscuro(), media: mq.media }); } catch (err) { console.error(err); } }
+  });
+})();</script>
+<script>(() => {
+  const ENFOCABLE = 'a[href],button,input,select,textarea,summary,[tabindex]';
+  let espera = 0;
+  const revisa = () => {
+    espera = 0;
+    for (const e of document.querySelectorAll('main *')) {
+      const desborda = e.scrollWidth > e.clientWidth || e.scrollHeight > e.clientHeight;
+      if (e.dataset.sf) { if (!desborda || e.querySelector(ENFOCABLE)) { e.removeAttribute('tabindex'); delete e.dataset.sf; } continue; }
+      if (!desborda || e.hasAttribute('tabindex') || e.matches('svg,svg *,canvas') || e.querySelector(ENFOCABLE)) continue;
+      const o = getComputedStyle(e);
+      if (/auto|scroll/.test(o.overflowX + o.overflowY)) { e.tabIndex = 0; e.dataset.sf = '1'; }
+    }
+  };
+  window.revisaScroll = revisa; // también lo llama pruebas/accesibilidad.js antes de pasar axe
+  const pide = () => { if (!espera) espera = setTimeout(revisa, 400); };
+  addEventListener('load', () => { revisa(); const m = document.querySelector('main'); if (m) new MutationObserver(pide).observe(m, { childList: true, subtree: true, characterData: true }); });
+  addEventListener('resize', pide);
+})();</script>
+<script src="../../buscador.js" defer></script>
+<script src="../../llama.js" defer></script>
+<title>Electrostatics simulator: field, potential and force</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400;1,600&display=swap">
+<style>
+/* Mesa de laboratorio: montaje a la izquierda, lienzo + preguntas a la derecha */
+:root {
+  --bg: #eef1ee; --panel: #ffffff; --ink: #1a2128; --muted: #5b6670; --line: #d5dbd5;
+  --vidrio: rgba(255,255,255,.55); --vidrio-fuerte: rgba(255,255,255,.72); --vidrio-borde: rgba(255,255,255,.7); --vidrio-brillo: inset 0 1px 0 rgba(255,255,255,.8);
+  --vidrio-sombra: 0 1px 2px rgba(20,40,60,.06), 0 8px 28px rgba(20,40,60,.10); --blur: blur(22px) saturate(1.7); --halo1: rgba(13,107,102,.22); --halo2: rgba(42,93,181,.20); --halo3: rgba(107,63,160,.14);
+  --accent: #0d6b66; --accent-soft: #e0efec; --pos: #c2412a; --neg: #2a5db5; --dipole: #b0700a; --mark: #6b3fa0;
+  --canvas: #fbfcfa; --grid: #e7ebe6; --fieldline: #7d8c86; --equi: #c49a52; --warn: #8a5a00; --warn-bg: #fff4dc; --ok: #1d7a3e; --bad: #b3261e;
+  --probe: #c0127a; --side: #e4e9e4; --side-hover: #d8dfd9; --side-active: #cdd8d2;
+  --f-ui: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-math: "STIX Two Text", "Cambria Math", Cambria, Georgia, serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --vidrio: rgba(34,46,54,.50); --vidrio-fuerte: rgba(26,36,42,.70); --vidrio-borde: rgba(255,255,255,.12); --vidrio-brillo: inset 0 1px 0 rgba(255,255,255,.10); --vidrio-sombra: 0 1px 2px rgba(0,0,0,.3), 0 10px 32px rgba(0,0,0,.35); --halo1: rgba(77,188,176,.20); --halo2: rgba(116,162,242,.18); --halo3: rgba(170,120,230,.14); 
+  --bg: #111619; --panel: #182025; --ink: #e3e8ea; --muted: #a3aeb5; --line: #2a343b;
+  --accent: #4dbcb0; --accent-soft: #173431; --pos: #ef7a62; --neg: #74a2f2; --dipole: #e6a640; --mark: #b892ec;
+  --canvas: #141b1f; --grid: #1e282d; --fieldline: #6e8380; --equi: #9b7a3d; --warn: #f0c060; --warn-bg: #2d2412; --ok: #5fcf8a; --bad: #f08a80; --probe: #f070c0; --side: #0c1013; --side-hover: #1a2227; --side-active: #22303a; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --vidrio: rgba(34,46,54,.50); --vidrio-fuerte: rgba(26,36,42,.70); --vidrio-borde: rgba(255,255,255,.12); --vidrio-brillo: inset 0 1px 0 rgba(255,255,255,.10); --vidrio-sombra: 0 1px 2px rgba(0,0,0,.3), 0 10px 32px rgba(0,0,0,.35); --halo1: rgba(77,188,176,.20); --halo2: rgba(116,162,242,.18); --halo3: rgba(170,120,230,.14); 
+  --bg: #111619; --panel: #182025; --ink: #e3e8ea; --muted: #a3aeb5; --line: #2a343b;
+  --accent: #4dbcb0; --accent-soft: #173431; --pos: #ef7a62; --neg: #74a2f2; --dipole: #e6a640; --mark: #b892ec;
+  --canvas: #141b1f; --grid: #1e282d; --fieldline: #6e8380; --equi: #9b7a3d; --warn: #f0c060; --warn-bg: #2d2412; --ok: #5fcf8a; --bad: #f08a80; --probe: #f070c0; --side: #0c1013; --side-hover: #1a2227; --side-active: #22303a; color-scheme: dark }
+* { box-sizing: border-box }
+[hidden] { display: none !important }
+html, body { background: var(--bg); color: var(--ink) }
+.tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center }
+.in { font: 13px var(--f-mono); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 5px 7px; min-width: 0; width: 100% }
+select.in { font-family: var(--f-ui); padding-right: 4px }
+#cv:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap }
+.in:focus-visible, .btn:focus-visible, summary:focus-visible, .icon:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px }
+.btn.a-inicio { text-decoration: none; font-weight: 600; color: var(--accent); white-space: nowrap; border-radius: 999px } .btn.a-inicio:hover { border-color: var(--accent) }
+.btn { font: 500 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 6px 11px; cursor: pointer }
+.btn:hover { border-color: var(--accent) }
+.btn.ghost { background: var(--accent-soft); border-color: transparent; color: var(--accent) }
+.tools .in { width: auto }
+.layout { display: grid; grid-template-columns: minmax(300px, 380px) minmax(0, 1fr); gap: 16px; align-items: start }
+@container main (max-width: 860px) { .layout { grid-template-columns: minmax(0, 1fr) } .layout > .col:last-child { order: -1 } }
+.col { display: flex; flex-direction: column; gap: 14px; min-width: 0 }
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 12px; display: flex; flex-direction: column; gap: 10px; min-width: 0 }
+.panel > header { display: flex; align-items: center; justify-content: space-between; gap: 8px }
+.panel h2 { font: 600 12px var(--f-ui); text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 0 }
+.panel header .in { width: auto; max-width: 60% }
+.hint { color: var(--muted); font-size: 12.5px; margin: 0 }
+.hint code { font-family: var(--f-mono); font-size: 12px; background: var(--bg); padding: 0 3px; border-radius: 3px }
+.card { border: 1px solid var(--line); border-radius: 8px; padding: 9px 10px; display: flex; flex-direction: column; gap: 6px; background: var(--panel) }
+.card.unk { border-color: var(--mark); border-style: dashed }
+.card-h { display: flex; align-items: center; gap: 8px }
+.card-h h3 { font: 600 13.5px var(--f-ui); margin: 0; flex: 1 }
+.card-h .name { width: 70px; flex: 0 0 auto; font-family: var(--f-math); font-style: italic; font-size: 14px }
+.badge { font-size: 11px; font-weight: 600; letter-spacing: .03em; padding: 2px 7px; border-radius: 99px; background: var(--accent-soft); color: var(--accent); flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
+.icon { margin-left: auto; border: 0; background: none; color: var(--muted); font-size: 18px; line-height: 1; cursor: pointer; padding: 2px 6px; border-radius: 5px }
+.icon:hover { color: var(--bad); background: var(--bg) }
+.row { display: grid; grid-template-columns: 110px minmax(0, 1fr); gap: 8px; align-items: center }
+.lab { color: var(--muted); font-size: 12.5px }
+.lab.math { font-size: 16px; color: var(--ink) }
+.ctl { min-width: 0; display: block }
+.vec { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 5px }
+.vc { display: flex; align-items: center; gap: 3px; min-width: 0 }
+.vc i { font: italic 13px var(--f-math); color: var(--muted) }
+.chg { display: flex; align-items: center; gap: 5px; min-width: 0 }
+.chg .num { flex: 1 1 60%; min-width: 0 }
+.chg .sym { flex: 0 1 70px; min-width: 0 }
+.chg .x { color: var(--muted); font-size: 12px; white-space: nowrap }
+.pill { display: inline-block; font: 600 11.5px var(--f-ui); padding: 2px 8px; border-radius: 99px; background: var(--bg); color: var(--muted); margin-right: 6px }
+.pill.ok { background: color-mix(in srgb, var(--ok) 16%, transparent); color: var(--ok) }
+.pill.bad { background: color-mix(in srgb, var(--bad) 16%, transparent); color: var(--bad) }
+.empty { color: var(--muted); font-style: italic; margin: 4px 0 }
+#errors, .warn { color: var(--warn); background: var(--warn-bg); border-radius: 6px; padding: 6px 9px; font: 13px var(--f-ui) }
+#note { background: var(--accent-soft); color: var(--ink); border-radius: 8px; padding: 8px 11px; font-size: 13px }
+.stage { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; display: flex; flex-direction: column }
+.stage-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; padding: 8px 10px; border-bottom: 1px solid var(--line); font-size: 12.5px; color: var(--muted) }
+.stage-bar label { display: inline-flex; align-items: center; gap: 5px; cursor: pointer }
+.stage-bar .in { width: auto }
+#cut { width: 56px }
+.zoom { margin-left: auto; display: flex; gap: 4px }
+.zoom .btn { padding: 3px 9px }
+.cvwrap { position: relative; height: min(62vh, 560px); min-height: 280px }
+#cv { display: block; touch-action: none; cursor: crosshair }
+#cv.dragging { cursor: grabbing }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 14px; padding: 7px 10px; border-top: 1px solid var(--line); font-size: 12px; color: var(--muted) }
+.legend b { display: inline-block; width: 10px; height: 10px; border-radius: 50%; vertical-align: -1px; margin-right: 4px }
+.legend .ln { display: inline-block; width: 16px; height: 0; border-top: 2px solid; vertical-align: 3px; margin-right: 4px }
+.an-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 380px), 1fr)); gap: 12px }
+.an .an-f { display: flex; flex-direction: column; gap: 6px }
+.result { font-family: var(--f-math); font-size: 17px; line-height: 2.1; overflow-x: auto; padding: 4px 2px; border-top: 1px dashed var(--line) }
+.result:empty { display: none }
+.result .sub { font-size: 15px; color: var(--ink) }
+.result .warn { line-height: 1.45 }
+.math, .math .big { font-family: var(--f-math) }
+.big { font-size: 18px }
+.act:empty { display: none }
+.steps-d summary { cursor: pointer; color: var(--accent); font: 500 13px var(--f-ui); padding: 2px 0 }
+.steps-b { font-size: 15px; line-height: 2; overflow-x: auto; padding-top: 4px }
+.steps-b p { margin: 4px 0; font-family: var(--f-ui); font-size: 13px; line-height: 1.5; color: var(--muted) }
+.steps-b ol.steps { margin: 4px 0; padding-left: 20px; display: flex; flex-direction: column; gap: 8px }
+.st-h { font-weight: 600 }
+.st-h .tag { font: 500 11px var(--f-ui); color: var(--muted); margin-left: 6px }
+.st-r { color: var(--accent) }
+.eq { overflow-x: auto }
+.fr { display: inline-flex; flex-direction: column; vertical-align: middle; text-align: center; line-height: 1.15; margin: 0 .12em; font-size: .9em }
+.fr > .nu { border-bottom: 1px solid currentColor; padding: 0 .25em .05em }
+.fr > .de { padding: .05em .25em 0 }
+.uv, .vv { position: relative; font-style: italic; display: inline-block }
+.uv::before, .vv::before { content: "→"; position: absolute; top: -.58em; left: 0; right: 0; text-align: center; font-size: .62em; font-style: normal }
+.result sub, .steps-b sub { font-size: .7em }
+#flash { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(18px + env(safe-area-inset-bottom, 0px)); background: var(--ink); color: var(--bg); padding: 7px 14px; border-radius: 8px; font-size: 13px; z-index: 20 }
+@container main (max-width: 520px) { .row { grid-template-columns: minmax(0, 1fr) } }
+#hoja-imp { display: none }
+@media print { body.hoja-imprimiendo > *:not(#hoja-imp) { display: none !important } body.hoja-imprimiendo #hoja-imp { display: block !important } body.hoja-imprimiendo { padding: 0 !important; background: #fff !important } #hoja-imp { color: #000; font: 11pt/1.4 var(--f-ui) } #hoja-imp h1 { font-size: 17pt; margin: 0 0 4px } #hoja-imp .hoja-sub { color: #555; margin: 0 0 14px } #hoja-imp section.hoja-ej { margin: 0 0 18px; padding-top: 10px; border-top: 1px solid #999 } #hoja-imp section.hoja-ej h2 { font: 600 10pt var(--f-ui); text-transform: uppercase; letter-spacing: .06em; color: #555; margin: 10px 0 4px; break-after: avoid } #hoja-imp section.hoja-ej > h2:first-child { font: 600 13pt var(--f-ui); text-transform: none; letter-spacing: 0; color: #000; margin: 0 0 8px } #hoja-imp .card { box-shadow: none !important; border: 0 !important; padding: 0 0 6px !important; background: none !important; break-inside: avoid } #hoja-imp .stmt { white-space: pre-wrap; font: 11pt/1.4 var(--f-math); background: none; border: 1px solid #bbb; padding: 6px 8px } #hoja-imp img { max-width: 100%; max-height: 9cm; object-fit: contain } }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important } }
+
+body { font: 14px/1.45 var(--f-ui); margin: 0 }
+.app { display: grid; grid-template-columns: 276px minmax(0, 1fr); min-height: 100vh; min-height: 100dvh }
+.app.closed { grid-template-columns: 0 minmax(0, 1fr) }
+.side { position: sticky; top: 0; height: 100vh; height: 100dvh; background: var(--vidrio-fuerte); -webkit-backdrop-filter: var(--blur); backdrop-filter: var(--blur); border-right: 1px solid var(--vidrio-borde); display: flex; flex-direction: column; overflow: hidden; padding-left: env(safe-area-inset-left, 0px); min-width: 0 }
+.app.closed .side { visibility: hidden; border: 0 }
+.side-h { display: flex; align-items: center; gap: 8px; padding: 14px 10px 8px 16px }
+.logo { font: 600 18px/1.1 var(--f-math); margin-right: auto; white-space: nowrap }
+.logo i { color: var(--accent) }
+.iconbtn { border: 0; background: none; color: var(--muted); width: 32px; height: 32px; border-radius: 7px; display: inline-grid; place-items: center; cursor: pointer; flex: 0 0 auto }
+.iconbtn:hover { background: var(--side-hover); color: var(--ink) }
+.iconbtn svg { width: 18px; height: 18px }
+.side-act { display: flex; flex-direction: column; gap: 2px; padding: 4px 8px 6px }
+.side-btn { text-decoration: none; display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; border: 0; background: none; color: var(--ink); font: 500 13.5px var(--f-ui); padding: 7px 9px; border-radius: 8px; cursor: pointer }
+.side-btn:hover { background: var(--side-hover) }
+.side-btn:disabled { opacity: .45; cursor: default; background: none }
+.side-btn .ic { width: 22px; height: 22px; border-radius: 6px; display: inline-grid; place-items: center; background: var(--panel); border: 1px solid var(--line); color: var(--accent); font-size: 14px; line-height: 1; flex: 0 0 auto }
+.side-list { flex: 1; overflow-y: auto; padding: 4px 8px 16px }
+.sec { margin-top: 10px }
+.sec-h { display: flex; justify-content: space-between; align-items: center; width: 100%; border: 0; background: none; font: 600 11px var(--f-ui); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); padding: 5px 9px; text-align: left; border-radius: 6px }
+button.sec-h[aria-expanded] { cursor: pointer }
+button.sec-h[aria-expanded]:hover { color: var(--ink) }
+.sec-l { display: flex; flex-direction: column; gap: 1px }
+.item { position: relative; display: flex; align-items: center; border-radius: 8px }
+.item:hover { background: var(--side-hover) }
+.item.active { background: var(--side-active) }
+.item .it { flex: 1; min-width: 0; text-align: left; border: 0; background: none; color: var(--ink); font: 13.5px/1.3 var(--f-ui); padding: 6px 4px 6px 9px; cursor: pointer; display: flex; flex-direction: column }
+.it-t, .it-s { white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
+.it-s { font-size: 11px; color: var(--muted) }
+.item .more { border: 0; background: none; color: var(--muted); width: 28px; height: 28px; border-radius: 6px; cursor: pointer; opacity: 0; font-size: 16px; flex: 0 0 auto; margin-right: 2px }
+.item:hover .more, .item.active .more, .item .more:focus-visible { opacity: 1 }
+.item .more:hover { color: var(--ink); background: var(--side) }
+@media (hover: none) { .item .more { opacity: 1 } }
+.menu { position: absolute; right: 4px; top: calc(100% - 2px); z-index: 30; background: var(--panel); border: 1px solid var(--line); border-radius: 9px; box-shadow: 0 10px 28px rgba(0,0,0,.16); padding: 4px; min-width: 200px }
+.menu button { display: block; width: 100%; text-align: left; border: 0; background: none; color: var(--ink); padding: 7px 10px; border-radius: 6px; font: 13px var(--f-ui); cursor: pointer }
+.menu button:hover { background: var(--bg) }
+.menu .danger { color: var(--bad) }
+.side-empty { color: var(--muted); font-size: 12.5px; padding: 2px 9px; margin: 0 }
+.side-f { border-top: 1px solid var(--line); padding: 8px; padding-bottom: max(8px, env(safe-area-inset-bottom, 0px)) }
+.side-f p { font-size: 11.5px; color: var(--muted); margin: 4px 9px 2px }
+.scrim { display: none }
+.main { min-width: 0; container: main / inline-size; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 12px 40px }
+.app:not(.closed) .main { padding-left: 20px }
+.top { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin-bottom: 10px }
+#side-open { display: none }
+.app.closed #side-open { display: inline-grid }
+.title-in { font: 600 23px/1.2 var(--f-math); color: var(--ink); background: none; border: 1px solid transparent; border-radius: 7px; padding: 3px 7px; flex: 1 1 260px; min-width: 0 }
+.title-in:hover { border-color: var(--line) }
+.title-in:focus { background: var(--panel); border-color: var(--accent); outline: none }
+.tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center }
+.unitbox { display: flex; align-items: center; gap: 6px; color: var(--muted); font-size: 12.5px }
+#unit { width: 44px; text-align: center }
+.stmt { margin-bottom: 14px }
+#statement { width: 100%; resize: vertical; font: 15px/1.5 var(--f-math); color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 7px; padding: 8px 10px; min-height: 60px }
+#statement:focus { outline: 2px solid var(--accent); outline-offset: 0; border-color: transparent }
+#note, #errors { margin-bottom: 10px }
+.chips { display: flex; flex-wrap: wrap; gap: 6px }
+.chip { font: 500 12.5px var(--f-ui); color: var(--accent); background: var(--accent-soft); border: 1px solid transparent; border-radius: 99px; padding: 4px 10px; cursor: pointer }
+.chip:hover { border-color: var(--accent) }
+.chip:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px }
+.icon.del:hover { color: var(--bad) }
+.card-h .icon + .icon { margin-left: 0 }
+body.dropping .main { outline: 3px dashed var(--accent); outline-offset: -8px }
+
+.btn:disabled { opacity: .45; cursor: default; border-color: var(--line) }
+.unit { font: 500 .78em var(--f-ui); color: var(--muted); margin-left: .15em }
+.search { width: 100%; font: 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 6px 9px; margin-top: 4px }
+.search:focus-visible { outline: 2px solid var(--accent); outline-offset: 0 }
+.fold-h { display: flex; align-items: center; gap: 6px; width: 100%; border: 0; background: none; color: var(--ink); font: 500 13px var(--f-ui); padding: 5px 9px; border-radius: 7px; cursor: pointer; text-align: left }
+.fold-h:hover { background: var(--side-hover) }
+.fold-h .chev { color: var(--muted); width: 10px }
+.fold-n { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
+.count { font: 500 11px var(--f-ui); color: var(--muted) }
+.fold-l { display: flex; flex-direction: column; gap: 1px; padding-left: 12px; border-left: 1px solid var(--line); margin-left: 13px }
+.top .tools { gap: 6px }
+.sep { width: 1px; height: 22px; background: var(--line); margin: 0 2px }
+.toggle { display: inline-flex; align-items: center; gap: 5px; font-size: 12.5px; color: var(--ink); cursor: pointer; padding: 5px 9px; border: 1px solid var(--line); border-radius: 6px; background: var(--panel) }
+.toggle:has(input:checked) { border-color: var(--mark); color: var(--mark); background: color-mix(in srgb, var(--mark) 10%, var(--panel)) }
+.wrap-rel { position: relative }
+.wrap-rel .menu { top: calc(100% + 4px); right: 0 }
+.chip.on, .btn.on { background: var(--mark); color: var(--panel); border-color: var(--mark) }
+#cv.placing { cursor: copy }
+.nowrap { white-space: nowrap; display: inline-flex; align-items: center; gap: 4px }
+.probes { display: inline-flex; gap: 4px; align-items: center }
+.probes .btn { padding: 3px 8px; font-size: 12px }
+.unk-list { display: flex; flex-wrap: wrap; gap: 6px }
+.unk-o { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--line); border-radius: 99px; padding: 3px 10px 3px 7px; cursor: pointer; font-size: 13px }
+.unk-o:has(input:checked) { border-color: var(--mark); border-style: dashed; background: color-mix(in srgb, var(--mark) 8%, transparent) }
+.unk-o .math { font-size: 15px; font-style: italic }
+.card.cond { background: var(--bg) }
+.unk-card { border-color: var(--mark) }
+.chart { display: block; width: 100%; height: 200px; margin-top: 6px; touch-action: pan-y }
+.chart-l { display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: center; font: 12px var(--f-ui); line-height: 1.4 }
+.ser { display: inline-flex; align-items: center; gap: 5px; border: 0; background: none; color: var(--ink); font: 13px var(--f-math); cursor: pointer; padding: 2px 4px; border-radius: 5px }
+.ser:hover { background: var(--bg) }
+.ser.off { opacity: .4 }
+.sw { display: inline-block; width: 16px; border-top: 2.5px solid }
+.sw.dash { border-top-style: dashed }
+.chart-l .hint { margin-left: auto; font-size: 11.5px }
+.prac:empty { display: none }
+.prac { display: flex; flex-direction: column; gap: 8px; border-top: 1px dashed var(--line); padding-top: 8px }
+.prac-r { display: grid; grid-template-columns: 70px minmax(0, 1fr); gap: 4px 8px; align-items: center }
+.prac-r .tools { grid-column: 2 }
+.prac-r .one { display: block }
+.prac .pill:empty { display: none }
+.app.practice .card.has-ans:not(.reveal) .result, .app.practice .card.has-ans:not(.reveal) .steps-d { display: none }
+.app.practice .unk-card:not(.reveal) .result, .app.practice .unk-card:not(.reveal) .steps-d { display: none }
+.app.practice .unk-card:not(.has-ans) .result { display: block }
+@media (max-width: 900px) {
+  .app, .app.closed { grid-template-columns: minmax(0, 1fr) }
+  .side, .app.closed .side { position: fixed; left: 0; top: 0; bottom: 0; height: auto; width: min(86vw, 300px); z-index: 40; transform: translateX(-100%); transition: transform .2s ease; visibility: visible; border-right: 1px solid var(--line); padding-top: env(safe-area-inset-top, 0px) }
+  .app.mobile-open .side { transform: none; box-shadow: 0 0 40px rgba(0,0,0,.3) }
+  .app.mobile-open .scrim { display: block; position: fixed; inset: 0; background: rgba(0,0,0,.35); z-index: 35 }
+  #side-open, .app.closed #side-open { display: inline-grid }
+  .app:not(.closed) .main { padding-left: max(16px, env(safe-area-inset-left, 0px)) }
+  .title-in { font-size: 20px }
+}
+
+/* Guía de uso */
+.guide { width: min(1080px, calc(100vw - 32px)); height: min(860px, calc(100dvh - 32px)); max-width: none; max-height: none; padding: 0; border: 1px solid var(--line); border-radius: 14px; background: var(--panel); color: var(--ink); font-family: var(--f-ui); box-shadow: 0 24px 70px rgba(0,0,0,.28); overflow: hidden }
+.guide[open] { display: flex; flex-direction: column }
+.guide::backdrop { background: rgba(10,16,20,.45) }
+.g-h { display: flex; align-items: center; gap: 10px; padding: 12px 14px 12px 20px; border-bottom: 1px solid var(--line) }
+.g-h h2 { font: 600 19px var(--f-math); margin: 0; flex: 1 }
+.g-h h2 i { color: var(--accent) }
+.g-h .icon:hover { color: var(--ink) }
+.g-b { flex: 1; min-height: 0; display: grid; grid-template-columns: 210px minmax(0, 1fr) }
+.g-nav { border-right: 1px solid var(--line); background: var(--side); padding: 10px 8px; display: flex; flex-direction: column; gap: 2px; overflow-y: auto }
+.g-nav button { text-align: left; border: 0; background: none; color: var(--ink); font: 500 13.5px var(--f-ui); padding: 7px 10px; border-radius: 8px; cursor: pointer; display: flex; gap: 8px }
+.g-nav button span { color: var(--muted); font-variant-numeric: tabular-nums; width: 14px }
+.g-nav button:hover { background: var(--side-hover) }
+.g-nav button.on { background: var(--side-active) }
+.g-c { position: relative; overflow-y: auto; padding: 8px 28px 40px; scroll-behavior: smooth; line-height: 1.55; font-size: 14.5px }
+.g-c section { padding-top: 18px; max-width: 760px }
+.g-c section + section { border-top: 1px solid var(--line); margin-top: 22px }
+.g-c h3 { font: 600 21px var(--f-math); margin: 0 0 6px }
+.g-c h4 { font: 600 14px var(--f-ui); margin: 16px 0 4px }
+#ver-log details { border-top: 1px solid var(--line); padding: 8px 0 }
+#ver-log summary { font: 600 14px var(--f-ui); cursor: pointer }
+#ver-log details ul { margin: 6px 0 0 }
+#ver-log .ver-c { font: 500 12px var(--f-ui); color: var(--muted); margin-left: 8px }
+#ver-log .ver-sub { margin-left: 16px; padding: 6px 0 }
+#ver-log .ver-sub summary { font-weight: 500 }
+.g-c p { margin: 6px 0 }
+.g-c ul, .g-c ol { margin: 6px 0; padding-left: 22px }
+.g-c li { margin: 3px 0 }
+.g-c b { font-weight: 600 }
+.g-c code, .g-c kbd { font: 12.5px var(--f-mono); background: var(--bg); border: 1px solid var(--line); padding: 0 4px; border-radius: 4px }
+.g-c .lead { color: var(--muted) }
+.g-c section:last-child { min-height: calc(100% - 30px) }
+.g-ver { color: var(--muted); font: 12.5px var(--f-ui); font-variant-numeric: tabular-nums }
+.side-f .ver { margin-top: 2px }
+.side-f .legal a { color: var(--muted); text-decoration: none; white-space: nowrap }
+.side-f .legal a:hover { color: var(--accent); text-decoration: underline }
+.linkbtn { border: 0; background: none; padding: 0; font: inherit; color: inherit; cursor: pointer; text-decoration: underline dotted; text-underline-offset: 2px }
+.linkbtn:hover { color: var(--ink) }
+.g-c figure { margin: 12px 0 6px }
+.g-c figure.narrow { max-width: 560px }
+.g-c figure img { display: block; width: 100%; height: auto; border: 1px solid var(--line); border-radius: 10px; background: #fbfcfa }
+.g-c figcaption { color: var(--muted); font-size: 12.5px; margin-top: 5px }
+.g-c .n { display: inline-grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; background: #c2412a; color: #fff; font: 600 12px var(--f-ui); margin-right: 4px; vertical-align: 1px }
+.g-c .tip { background: var(--accent-soft); border-radius: 8px; padding: 8px 12px; margin: 10px 0; font-size: 13.5px }
+.g-keys { border-collapse: collapse; font-size: 13.5px; margin-top: 6px }
+.g-keys td { padding: 5px 14px 5px 0; border-bottom: 1px solid var(--line); vertical-align: top }
+.g-keys td:first-child { white-space: nowrap }
+.g-help { font-weight: 600; min-width: 32px }
+@media (max-width: 760px) {
+  .guide { width: 100vw; height: 100dvh; border-radius: 0; border: 0 }
+  .g-b { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr) }
+  .g-nav { flex-direction: row; overflow-x: auto; border-right: 0; border-bottom: 1px solid var(--line); padding: 6px 8px }
+  .g-nav button { white-space: nowrap; flex: 0 0 auto }
+  .g-c { padding: 4px 16px 32px }
+}
+
+body { display: flow-root }
+/* Liquid Glass: solo el marco (paneles, barra del lienzo, barra lateral); el lienzo y las fórmulas no se tocan */
+.panel, .stage { background: var(--vidrio); border-color: var(--vidrio-borde); border-radius: 18px; box-shadow: var(--vidrio-brillo), var(--vidrio-sombra); -webkit-backdrop-filter: var(--blur); backdrop-filter: var(--blur) }
+.side { background: var(--vidrio-fuerte); -webkit-backdrop-filter: var(--blur); backdrop-filter: var(--blur); border-right-color: var(--vidrio-borde) }
+.in { background: var(--vidrio); border-color: var(--vidrio-borde); border-radius: 10px }
+.btn { background: var(--vidrio-fuerte); border-color: var(--vidrio-borde); border-radius: 99px }
+/* Barra lateral de la versión privada (la web usa «Mis ejercicios», biblioteca.js): panel de cristal flotante */
+@media (min-width: 901px) { .app { grid-template-columns: 296px minmax(0, 1fr) } }
+.side { top: 10px; height: calc(100vh - 20px); height: calc(100dvh - 20px); margin: 10px 0 10px 10px; border: 1px solid var(--vidrio-borde); border-radius: 24px; box-shadow: var(--vidrio-brillo), var(--vidrio-sombra); position: sticky }
+.app.closed .side { margin: 0; border: 0; box-shadow: none }
+.side-h { padding: 16px 10px 8px 16px }
+.iconbtn { border-radius: 50% }
+.side-act { padding: 0 14px 6px; gap: 8px }
+.search { border-radius: 99px }
+.side-list { padding: 0 10px 8px }
+.item { border-radius: 12px } .item.active { box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 35%, transparent) } .item.active .it { font-weight: 600 }
+.item .it { padding: 8px 4px 8px 10px }
+.item .more { opacity: 1; border-radius: 50%; display: grid; place-items: center; padding: 0 } .item .more svg { width: 17px; height: 17px }
+.item .more:hover { background: color-mix(in srgb, var(--ink) 9%, transparent); color: var(--accent) }
+.menu { border-radius: 16px; padding: 6px; background: var(--vidrio-fuerte); border-color: var(--vidrio-borde); -webkit-backdrop-filter: var(--blur); backdrop-filter: var(--blur) }
+.menu button { border-radius: 10px; padding: 8px 10px }
+.sec-h { padding: 5px 6px }
+.side-f { border-top: 0; padding: 6px 8px 10px }
+@media (max-width: 900px) {
+  .side, .app.closed .side { top: 10px; left: 10px; bottom: 10px; margin: 0; width: min(86vw, 310px); border: 1px solid var(--vidrio-borde); border-radius: 24px; transform: translateX(-115%) }
+  .app.mobile-open .side { transform: none }
+}
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) { .panel, .stage, .side { background: var(--panel); -webkit-backdrop-filter: none; backdrop-filter: none } }
+</style>
+
+<style>
+:root { --bg:#eef1ee; --panel:#fff; --ink:#1a2128; --muted:#5b6670; --line:#d5dbd5 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg:#111619; --panel:#182025; --ink:#e3e8ea; --muted:#a3aeb5; --line:#2a343b; color-scheme:dark } }
+:root[data-theme="dark"] { --bg:#111619; --panel:#182025; --ink:#e3e8ea; --muted:#a3aeb5; --line:#2a343b; color-scheme:dark }
+:root { --accent:#b83c26; --accent-soft:color-mix(in srgb, #b83c26 12%, #fff); --marca:#0d6b66 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --accent:#ef7a62; --accent-soft:color-mix(in srgb, #ef7a62 16%, #182025); --marca:#4dbcb0 } }
+:root[data-theme="dark"] { --accent:#ef7a62; --accent-soft:color-mix(in srgb, #ef7a62 16%, #182025); --marca:#4dbcb0 }
+.wrap { max-width:1300px }
+h1 { font:600 24px/1.25 var(--f-ui) }
+.card { border-radius:12px }
+.card h2 { font:600 12px/1.4 var(--f-ui); text-transform:uppercase; letter-spacing:.06em; color:var(--muted) }
+.destacado { box-shadow:none; border-color:var(--line); border-top:3px solid var(--accent) }
+.destacado h2 { color:var(--accent) }
+.resumen div { background:var(--accent-soft) }
+.sep { color:var(--accent) }
+header.top { display:flex; align-items:center; gap:8px 20px; flex-wrap:wrap; padding:12px clamp(16px,3vw,28px); position:sticky; top:10px; z-index:10; margin:10px clamp(10px,2vw,20px) 0; border:1px solid var(--vidrio-borde); border-radius:22px; background:var(--vidrio-fuerte); box-shadow:var(--vidrio-brillo),var(--vidrio-sombra); -webkit-backdrop-filter:var(--blur); backdrop-filter:var(--blur) }
+header.top .logo { font:600 18px var(--f-math); margin:0; white-space:nowrap; color:var(--ink); text-decoration:none } header.top .logo i { color:var(--marca) }
+header.top nav { display:flex; gap:4px 14px; font-size:14px; overflow-x:auto; max-width:100%; scrollbar-width:none }
+header.top nav a { white-space:nowrap; padding:2px 0; color:var(--muted); text-decoration:none } header.top nav a:hover { color:var(--ink) }
+header.top nav a[aria-current] { color:var(--ink); font-weight:600; box-shadow:inset 0 -2px 0 var(--accent) }
+header.top form { margin-left:auto; flex:0 1 170px; min-width:130px }
+header.top .foro { margin-left:auto; display:inline-flex; align-items:center; gap:6px; white-space:nowrap; font:600 14px var(--f-ui); color:var(--ink); text-decoration:none; border:1px solid var(--vidrio-borde); background:var(--vidrio); border-radius:99px; padding:6px 12px } header.top .foro:hover, header.top .foro[aria-current] { border-color:var(--accent); color:var(--accent) } header.top .foro + form { margin-left:0 } header.top > .foro ~ .tema { margin-left:0 }
+@media (min-width:701px) { header.top { flex-wrap:nowrap } header.top nav { min-width:0 } }
+header.top .buscar { font:14px var(--f-ui); color:var(--ink); border:1px solid var(--vidrio-borde); border-radius:99px; padding:7px 14px; width:100%; background:var(--vidrio) }
+header.top .buscar:focus-visible, header.top a:focus-visible { outline:2px solid var(--accent); outline-offset:1px }
+.miga { display:flex; align-items:center; flex-wrap:wrap; gap:8px; font-size:13.5px; color:var(--muted); margin:0 0 10px }
+.miga a { color:var(--accent); font-weight:600; text-decoration:none } .miga a:hover { text-decoration:underline }
+.miga-ico { display:inline-grid; place-items:center; width:22px; height:22px; border-radius:6px; background:var(--accent-soft); color:var(--accent); font:italic 600 13px var(--f-math) }
+.miga-der { margin-left:auto; display:flex; gap:8px } .miga-izq:empty, .miga-der:empty { display:none }
+.bib-btn, .prac-btn { border-radius:8px !important; padding:6px 12px !important }
+body.bib-ejemplos select[id^="ejemplo"] { display:none }
+@media print { header.top, .miga, .prac-btn { display:none !important } }
+:root { --vida:#6a4fc2 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --vida:#b39ff7 } }
+:root[data-theme="dark"] { --vida:#b39ff7 }
+.relacionadas { max-width:860px; margin:16px 0 0; background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--accent); border-radius:4px 12px 12px 4px; padding:12px 16px }
+.relacionadas h2 { font:600 12px/1.4 var(--f-ui); text-transform:uppercase; letter-spacing:.06em; color:var(--accent); margin:0 0 4px }
+.relacionadas a { display:flex; gap:10px; align-items:baseline; padding:5px 0; color:var(--ink); text-decoration:none; font-size:14px }
+.relacionadas a b { font-weight:600; white-space:nowrap } .relacionadas a span { color:var(--muted) } .relacionadas a:hover b { color:var(--accent); text-decoration:underline }
+.vida-real { max-width:860px; margin:28px 0 0; background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--vida); border-radius:4px 12px 12px 4px; padding:12px 16px }
+.vida-real h2 { font:600 12px/1.4 var(--f-ui); text-transform:uppercase; letter-spacing:.06em; color:var(--vida); margin:0 0 4px }
+.vida-real a { display:flex; gap:10px; align-items:baseline; padding:5px 0; color:var(--ink); text-decoration:none; font-size:14px }
+.vida-real a b { font-weight:600; white-space:nowrap } .vida-real a span { color:var(--muted) } .vida-real a:hover b { color:var(--vida); text-decoration:underline }
+@media (max-width:600px) { .vida-real a, .relacionadas a { display:block } .vida-real a b, .relacionadas a b { display:block; white-space:normal } }
+@media (max-width:700px) { header.top form { display:none } h1 { font-size:21px }
+  .miga-izq, .miga-der, .miga::after { order:-1 } .miga::after { content:''; flex-basis:100%; height:0 } }
+
+.tema { flex:0 0 auto; margin-left:auto; width:36px; height:36px; display:grid; place-items:center; padding:0; border:1px solid var(--vidrio-borde, var(--line)); border-radius:99px; background:var(--vidrio, var(--bg)); color:var(--ink); cursor:pointer }
+.buscar ~ .tema, form ~ .tema { margin-left:0 }
+.tema:hover { border-color:var(--accent); color:var(--accent) }
+.tema:focus-visible { outline:2px solid var(--accent); outline-offset:1px }
+.tema .sol { display:none }
+:root[data-theme="dark"] .tema .sol { display:block } :root[data-theme="dark"] .tema .luna { display:none }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .tema .sol { display:block } :root:not([data-theme="light"]) .tema .luna { display:none } }
+@media (max-width:700px) { .top > .tema { margin-left:auto } .top > nav { order:1 } }
+
+.main, .app:not(.closed) .main { padding:0 }
+.app, .app.closed { display:block !important }
+footer { text-align:center; font-size:12.5px; color:var(--muted); padding:20px 16px 8px } footer a { color:var(--muted); margin:0 6px; white-space:nowrap; display:inline-block }
+.main > .wrap { max-width:1300px; margin:0 auto; padding:16px clamp(16px,3vw,24px) 32px }
+.miga-der .toggle { font:600 13.5px var(--f-ui); border-radius:8px; padding:6px 12px; gap:6px }
+.miga-der .toggle input { position:absolute; opacity:0; width:1px; height:1px; pointer-events:none }
+.miga-der .toggle:has(input:checked) { background:var(--accent); border-color:var(--accent); color:var(--panel) }
+.miga-der .toggle:has(input:focus-visible) { outline:2px solid var(--accent); outline-offset:1px }
+.main .top { margin-bottom:12px }
+.main .top .title-in { font:600 24px/1.25 var(--f-ui); flex:1 1 300px; margin-left:-8px }
+.main .top .tools { flex-basis:100% }
+@media (max-width:700px) { .main .top .title-in { font-size:21px } }
+.solo-lector { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap }
+.teoria, .preguntas { margin-top:28px; max-width:860px; font-size:15px; line-height:1.6; color:var(--ink) }
+.teoria h2, .preguntas h2 { font:600 19px var(--f-ui); margin:24px 0 6px } .preguntas h3 { font:600 15px var(--f-ui); margin:14px 0 2px } .preguntas p { margin:0 } .teoria ul { padding-left:20px } .teoria li { margin-bottom:4px }
+.limites { margin-top:28px; max-width:860px; font-size:15px; line-height:1.6; padding:12px 18px 14px; background:var(--panel); border:1px solid var(--line); border-left:4px solid var(--accent); border-radius:8px } .limites h2 { font:600 17px var(--f-ui); margin:0 0 6px } .limites ul { margin:0; padding-left:20px } .limites li + li { margin-top:4px }
+.teoria .f { font-size:16px; background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:8px 12px; display:inline-block; max-width:100%; overflow-x:auto }</style>
+<div class="app" id="app">
+  <main class="main">
+<header class="top"><a class="logo" href="../../../">Cienci<i>fy</i></a><nav aria-label="Subjects"><a href="../../../">Home</a><a href="../" aria-current="page">Electromagnetism</a><a href="../../fisica/">General physics</a><a href="../../quimica/">Chemistry</a><a href="../../matematicas/">Mathematics</a><a href="../../estadistica/">Statistics</a><a href="../../circuitos/">Circuits</a><a href="../../economia/">Economics</a><a href="../../fenomenos/">Real life</a></nav><a class="foro" href="../../foro/"><span aria-hidden="true">💬</span>Forum</a><form action="../../../" role="search"><input class="buscar" type="search" name="q" placeholder="Search: Biot-Savart, molarity…" aria-label="Search tools (shortcut: / key)" title="Shortcut: / or Ctrl+K"></form><style>
+.lg { position:relative; flex:0 0 auto }
+.lg-btn { display:inline-flex; align-items:center; gap:6px; height:36px; padding:0 12px; border:1px solid var(--vidrio-borde, var(--line)); border-radius:99px; background:var(--vidrio, var(--bg)); color:var(--ink); font:600 13px var(--f-ui, system-ui, sans-serif); cursor:pointer }
+.lg-btn:hover { border-color:var(--accent); color:var(--accent) }
+.lg-btn:focus-visible, .lg-pop a:focus-visible, .lg-ban button:focus-visible { outline:2px solid var(--accent); outline-offset:1px }
+.lg-pop { position:absolute; top:44px; right:0; z-index:50; min-width:210px; margin:0; padding:6px; list-style:none; border:1px solid var(--vidrio-borde, var(--line)); border-radius:16px; background:rgba(255,255,255,.98); color:var(--ink); box-shadow:0 12px 36px rgba(0,0,0,.22) }
+.lg-pop[hidden] { display:none }
+:root[data-theme="dark"] .lg-pop, :root[data-theme="dark"] .lg-ban { background:rgba(28,34,38,.98) }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .lg-pop, :root:not([data-theme="light"]) .lg-ban { background:rgba(28,34,38,.98) } }
+.lg-t { font:600 11px var(--f-ui, system-ui, sans-serif); text-transform:uppercase; letter-spacing:.06em; color:var(--muted); padding:6px 10px 4px }
+.lg-pop a { display:flex; justify-content:space-between; align-items:center; gap:14px; padding:8px 10px; border-radius:10px; color:var(--ink); text-decoration:none; font:500 14px var(--f-ui, system-ui, sans-serif) }
+.lg-pop a:hover { background:var(--accent-soft) }
+.lg-pop a > span { display:flex; align-items:center; gap:10px }
+.lg-pop a small { color:var(--muted); font-size:12px }
+.lg-pop a[aria-current="true"] { background:var(--accent-soft); font-weight:700 }
+.lg-pop a[aria-current="true"] small::after { content:' ✓'; color:var(--accent) }
+.lg-fl { flex:none; border-radius:50%; box-shadow:0 0 0 1px rgba(0,0,0,.18) }
+.lg-ban { position:fixed; left:50%; bottom:18px; z-index:60; transform:translateX(-50%); width:min(560px, calc(100vw - 24px)); box-sizing:border-box; display:flex; flex-wrap:wrap; align-items:center; gap:10px 12px; padding:12px 16px; border:1px solid var(--vidrio-borde, var(--line)); border-radius:18px; background:rgba(255,255,255,.98); color:var(--ink); box-shadow:0 12px 36px rgba(0,0,0,.25); font:14px var(--f-ui, system-ui, sans-serif) }
+.lg-ban p { flex:1 1 220px; margin:0 }
+.lg-ban button { font:600 13px var(--f-ui, system-ui, sans-serif); padding:7px 14px; border-radius:99px; border:1px solid var(--vidrio-borde, var(--line)); background:var(--vidrio, var(--bg)); color:var(--ink); cursor:pointer }
+.lg-ban button.lg-si { background:var(--accent); border-color:var(--accent); color:#fff }
+:root[data-theme="dark"] .lg-ban button.lg-si { color:#0d141a }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .lg-ban button.lg-si { color:#0d141a } }
+@media (max-width:700px) { .top > .lg { margin-left:auto } .top > .lg + .tema { margin-left:0 } }
+@media print { .lg, .lg-ban { display:none !important } }
+</style><div class="lg"><button class="lg-btn" type="button" aria-expanded="false" aria-controls="lg-lista" aria-label="Language: English" title="Language"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.8 3 2.8 15 0 18M12 3c-2.8 3-2.8 15 0 18"/></svg><span>EN</span><span aria-hidden="true">▾</span></button><ul class="lg-pop" id="lg-lista" hidden><li class="lg-t" aria-hidden="true">Language · Idioma</li><li><a href="../../../" hreflang="es" lang="es"><span><svg class="lg-fl" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false"><rect width="24" height="24" fill="#c60b1e"/><rect y="6" width="24" height="12" fill="#ffc400"/></svg>Español</span><small>ES</small></a></li><li><a href="../../../en/" hreflang="en" lang="en" aria-current="true"><span><svg class="lg-fl" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false"><rect width="24" height="24" fill="#012169"/><path d="M0 0L24 24M24 0L0 24" stroke="#fff" stroke-width="5"/><path d="M0 0L24 24M24 0L0 24" stroke="#c8102e" stroke-width="2"/><path d="M12 0V24M0 12H24" stroke="#fff" stroke-width="8"/><path d="M12 0V24M0 12H24" stroke="#c8102e" stroke-width="4.5"/></svg>English</span><small>EN</small></a></li></ul></div><script>(() => {
+  const L = [{"c":"es","d":"","n":"Español","a":["Esta página está disponible en español.","Cambiar a español","Seguir aquí"]},{"c":"en","d":"en/","n":"English","a":["This page is available in English.","Switch to English","Stay here"]}], ACTUAL = "en", K = 'simu-idioma';
+  const guarda = (c) => { try { localStorage.setItem(K, c); } catch (e) { /* sin almacenamiento */ } };
+  const lee = () => { try { return localStorage.getItem(K); } catch (e) { return null; } };
+  const resto = () => { let p = location.pathname; for (const i of L) if (i.d && p.startsWith('/' + i.d)) { p = '/' + p.slice(i.d.length + 1); break; } return p + location.search + location.hash; };
+  const destino = (i) => '/' + i.d + resto().replace(/^\//, '');
+  const btn = document.querySelector('.lg-btn'), pop = document.querySelector('.lg-pop');
+  if (!btn || !pop) return;
+  pop.querySelectorAll('a[hreflang]').forEach((a) => { const i = L.find((x) => x.c === a.hreflang); if (i && /^https?:$/.test(location.protocol)) a.href = destino(i); a.addEventListener('click', () => guarda(a.hreflang)); });
+  const abre = (v) => { pop.hidden = !v; btn.setAttribute('aria-expanded', String(v)); };
+  btn.addEventListener('click', (e) => { e.stopPropagation(); abre(pop.hidden); });
+  document.addEventListener('click', (e) => { if (!pop.hidden && !e.target.closest('.lg')) abre(false); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !pop.hidden) { abre(false); btn.focus(); } });
+  pop.addEventListener('focusout', (e) => { if (!pop.hidden && !e.relatedTarget?.closest?.('.lg')) abre(false); });
+  // aviso: una vez, sin elección guardada, con el idioma del navegador publicado y distinto del de la página
+  if (lee() || window.__sinAviso) return;
+  const pref = (navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language || '']).map((s) => String(s).toLowerCase().slice(0, 2));
+  const i = pref.map((c) => L.find((x) => x.c === c)).find(Boolean);
+  if (!i || i.c === ACTUAL) { return; }
+  const b = document.createElement('div'); b.className = 'lg-ban'; b.setAttribute('role', 'region'); b.setAttribute('aria-label', "Language"); b.lang = i.c;
+  const t = document.createElement('p'); t.textContent = i.a[0];
+  const si = document.createElement('button'); si.type = 'button'; si.className = 'lg-si'; si.textContent = i.a[1];
+  const no = document.createElement('button'); no.type = 'button'; no.textContent = i.a[2];
+  si.addEventListener('click', () => { guarda(i.c); const a = [...pop.querySelectorAll('a[hreflang]')].find((x) => x.hreflang === i.c); location.href = a ? a.href : destino(i); });
+  no.addEventListener('click', () => { guarda(ACTUAL); b.remove(); });
+  b.append(t, si, no); document.body.append(b);
+})();</script><button class="tema" type="button" title="Switch between light and dark mode" aria-label="Switch between light and dark mode"><svg class="luna" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.5A8.5 8.5 0 1 1 9.5 3.5a7 7 0 0 0 11 11z"/></svg><svg class="sol" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button></header>
+<div class="wrap">
+<h1 class="solo-lector">Electrostatics simulator</h1>
+<nav class="miga" aria-label="You are here"><span class="miga-izq"></span><span class="miga-ico" aria-hidden="true">E</span><a href="../">Electromagnetism</a><span aria-hidden="true">›</span><span>Electrostatics</span><span class="miga-der"><label class="toggle" title="Hides the solutions so you can write your answer and check it"><input type="checkbox" id="practice"><span aria-hidden="true">✎</span> Practice mode</label></span></nav>
+    <div class="top">
+      <input id="title" class="title-in" aria-label="Problem title" placeholder="Problem title" autocomplete="off">
+      <div class="tools">
+        <select id="mode" class="in" aria-label="Type of calculation"><option value="sym">Symbolic</option><option value="si">Numeric SI</option></select>
+        <span class="unitbox">Unit <input id="unit" class="in" aria-label="Length unit"></span>
+        
+        <button id="help" class="btn g-help" title="User guide (F1)" aria-label="User guide">?</button>
+        <span class="sep" aria-hidden="true"></span>
+        <button id="undo" class="btn" title="Undo (Ctrl+Z)" aria-label="Undo">↶</button>
+        <button id="redo" class="btn" title="Redo (Ctrl+Shift+Z)" aria-label="Redo">↷</button>
+        <span class="wrap-rel" id="export-w"><button id="export" class="btn" title="Export the full solution">Export solution</button></span>
+        </div>
+    </div>
+    <section class="panel stmt"><header><h2>Statement</h2></header><textarea id="statement" aria-label="Statement" placeholder="Write or paste the problem statement here (optional)."></textarea></section>
+    <div id="note" hidden></div>
+    <div id="errors" hidden></div>
+    <div class="layout">
+  <div class="col">
+    <section class="panel">
+      <header><h2>Sources</h2></header>
+      <div class="chips" id="chips-src" aria-label="Add source"></div>
+      <p class="hint" id="hint-src"></p>
+      <div id="sources" class="col" style="gap:8px"></div>
+    </section>
+    <section class="panel">
+      <header><h2>Unknown</h2></header>
+      <p class="hint">If the statement gives conditions (equilibrium, zero field, a potential…), mark which sources are unknown and all of them are solved for at once.</p>
+      <div id="unknown" class="col" style="gap:6px"></div>
+    </section>
+    <section class="panel">
+      <header><h2>Symbols</h2></header>
+      <p class="hint">Set the dimensions of each symbol to write the powers of <code>a</code> correctly in the results.</p>
+      <div id="symbols" class="col" style="gap:6px"></div>
+    </section>
+  </div>
+
+  <div class="col">
+    <div class="stage">
+      <div class="stage-bar">
+        <span>View <select id="plane" class="in" aria-label="View plane"><option value="xy">XY plane</option><option value="xz">XZ plane</option><option value="yz">YZ plane</option><option value="3d">3D view</option></select></span>
+        <span id="cut-w"><span id="cut-l">z =</span> <input id="cut" class="in" aria-label="Section"></span>
+        <label><input type="checkbox" id="t-lines" checked> field lines</label>
+        <label><input type="checkbox" id="t-equi" checked> equipotentials</label>
+        <label><input type="checkbox" id="t-grid"> vectors</label>
+        <span class="nowrap"><label><input type="checkbox" id="t-cmap"> map of</label> <select id="cmap-q" class="in" aria-label="Colour map quantity"><option value="V">V</option><option value="E">|E|</option></select></span>
+        <span class="probes" aria-label="Test charges">Test <button id="probe-p" class="btn" data-place="probe:+" title="Release a positive test charge">+q</button><button id="probe-n" class="btn" data-place="probe:-" title="Release a negative test charge">−q</button><button id="probe-x" class="btn" title="Remove the test charges">Remove</button></span>
+        <span class="zoom"><button id="zout" class="btn" aria-label="Zoom out">−</button><button id="zfit" class="btn">Fit view</button><button id="zin" class="btn" aria-label="Zoom in">+</button></span>
+      </div>
+      <div class="cvwrap"><canvas id="cv"></canvas></div>
+      <div id="cv-estado" class="sr" role="status" aria-live="polite"></div>
+      <div class="legend"><span><b style="background:var(--pos)"></b>positive charge</span><span><b style="background:var(--neg)"></b>negative</span><span><span class="ln" style="border-color:var(--fieldline)"></span>field line</span><span><span class="ln" style="border-color:var(--equi);border-top-style:dashed"></span>equipotential</span><span><span class="ln" style="border-color:var(--accent)"></span>E field at the point</span><span><span class="ln" style="border-color:var(--dipole)"></span>dipole</span><span><span class="ln" style="border-color:var(--probe)"></span>test charge</span><span>Drag charges and points (Shift = no snapping). Ctrl + wheel to zoom. In 3D, drag to rotate.</span></div>
+    </div>
+    <section class="panel">
+      <header><h2>Questions</h2></header>
+      <div class="chips" id="chips-an" aria-label="Add question"></div>
+      <p class="hint" id="hint-an"></p>
+      <div id="analyses" class="an-grid"></div>
+    </section>
+  </div>
+</div>
+  <section class="teoria">
+  <h2>What this electrostatics simulator is</h2>
+  <p>It is a free electrostatics simulator for solving the course problems step by step. You place the sources (point charges, wires, rods, arcs, planes and sheets, spheres, shells, cylinders, rings, discs, conductors and dipoles), choose a point, and the simulator calculates the electric field, the potential, the force on a test charge and the energy, with the full working in symbolic form or with numbers and SI units.</p>
+  <h2>What you can calculate</h2>
+  <ul>
+    <li>The electric field <i>E</i> at any point, adding the contribution of each source (superposition principle).</li>
+    <li>The potential <i>V</i> and the potential difference between two points.</li>
+    <li>The force on a charge, with Coulomb's law, and the potential energy of a system of charges.</li>
+    <li>The Gauss flux, the <i>E</i>(<i>z</i>) and <i>V</i>(<i>z</i>) profiles and the torque on a dipole.</li>
+    <li>The unknowns of a statement with conditions: the charge that makes the field zero at a point, the one that leaves a charge in equilibrium or the one that gives a required potential.</li>
+  </ul>
+  <p class="f">E = k q / r², &ensp; V = k q / r, &ensp; F = q E, &ensp; k = 1 / (4π ε₀)</p>
+  <h2>How to use it</h2>
+  <p>Start with an example exercise or create a new one, drag the charges across the canvas and look at the field lines, equipotential surfaces, vectors or the colour map of the potential in the plane or in 3D. Save your problems in «My exercises», export the solution and test yourself with practice mode.</p>
+</section>
+<section class="preguntas" aria-label="Frequently asked questions">
+<h2>Frequently asked questions</h2>
+<h3>How is the electric field of several point charges calculated?</h3>
+<p>With the superposition principle: the field at a point is the vector sum of the field of each charge, E = Σ k·qᵢ/rᵢ² along the line joining the charge to the point, with k = 8.99·10⁹ N·m²/C². For example, a 2 nC charge at 3 cm creates E = 8.99·10⁹ · 2·10⁻⁹ / 0.03² ≈ 2.0·10⁴ N/C.</p>
+<h3>How is Gauss's law used to find the field?</h3>
+<p>You choose a Gaussian surface with the symmetry of the problem (sphere, cylinder or box) and apply ∮E·dS = Q_int/ε₀. Outside a sphere charged with Q, E = Q/(4πε₀r²); for an infinite wire with density λ, E = λ/(2πε₀r); and for an infinite plane with density σ, E = σ/(2ε₀).</p>
+<h3>How are the potential and the energy of a system of charges calculated?</h3>
+<p>The potential is a scalar and is added with its sign, V = Σ k·qᵢ/rᵢ. The energy of the system is the sum over all pairs, U = Σ k·qᵢqⱼ/rᵢⱼ. For example, two 1 nC charges 10 cm apart have U = 8.99·10⁹ · 10⁻¹⁸ / 0.1 ≈ 9.0·10⁻⁸ J.</p>
+</section>
+<div class="anuncio"><span>Advertising</span><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-6407501780492688" data-ad-slot="4415753033" data-ad-format="auto" data-full-width-responsive="true"></ins><script>(window.adsbygoogle = window.adsbygoogle || []).push({});</script></div>
+<section class="vida-real" aria-label="In real life"><h2>In real life</h2>
+<a href="../../fenomenos/fuego-san-telmo/"><b>St Elmo's Fire →</b><span>Why the tips of masts glow in a storm: point effect and corona discharge.</span></a>
+<a href="../../fenomenos/jaula-faraday/"><b>The Faraday cage →</b><span>Why nothing happens inside a car struck by lightning and why there is no signal in the lift.</span></a>
+<a href="../../fenomenos/linea-alta-tension/"><b>The high-voltage line and the ground →</b><span>The cable and the ground form a capacitor: why a fluorescent tube lights up underneath.</span></a>
+<a href="../../fenomenos/rayo/"><b>Lightning →</b><span>The cloud and the ground as a giant capacitor: energy, current and duration.</span></a>
+<a href="../../fenomenos/tension-paso/"><b>Step voltage →</b><span>Why it is dangerous to approach a fallen cable or a tree struck by lightning.</span></a>
+</section>
+<section class="relacionadas" aria-label="Related tools"><h2>Related tools</h2>
+<a href="../../matematicas/campos/"><b>Vector fields →</b><span>Gradient and directional derivative, divergence and curl, potential, work along a curve and Green's theorem, seeing the field.</span></a>
+<a href="../magnetostatica/"><b>Magnetostatics (Biot-Savart) →</b><span>B of wires, loops, arcs, solenoids and toroids.</span></a>
+<a href="../condensadores/"><b>Dielectrics and capacitors →</b><span>Plane, cylindrical and spherical with dielectric layers: capacitance, energy, D, P and polarization.</span></a>
+<a href="../cavidades/"><b>Resonant cavities →</b><span>Rectangular, cylindrical and spherical cavities: resonant frequency of each TE and TM mode, quality factor Q, bandwidth and field map.</span></a>
+</section>
+</div>
+<footer><a href="../../../">Home</a>·<a href="../../contacto.html">Contact</a>·<a href="mailto:danijimzzz30@gmail.com?subject=Error%20en%20Electrost%C3%A1tica&amp;body=Herramienta%3A%20Electrost%C3%A1tica%20(electromagnetismo%2Felectrostatica)%0A%0AQu%C3%A9%20esperaba%20y%20qu%C3%A9%20ha%20pasado%3A%0A">Report an error</a>·<a href="../../aviso-legal.html">Legal notice</a>·<a href="../../privacidad.html">Privacy</a>·<a href="../../cookies.html">Cookies</a> · <a href="#" class="pref-cookies">Cookie preferences</a>· <button id="ver" class="linkbtn" title="See what's new">Electrostatics <span class="ver-n"></span></button></footer>
+</main>
+
+</div>
+<div id="flash" hidden></div>
+<dialog id="guide" class="guide" aria-labelledby="guide-t">
+  <div class="g-h"><h2 id="guide-t">User guide of the <i>simulator</i></h2><span class="g-ver">version <span class="ver-n"></span></span><button id="guide-x" class="icon" aria-label="Close the guide" title="Close (Esc)">×</button></div>
+  <div class="g-b">
+    <nav class="g-nav" id="guide-nav" aria-label="Guide sections">
+      <button data-g="g-vista"><span>1</span>Overview</button>
+      <button data-g="g-elegir"><span>2</span>Choosing a problem</button>
+      <button data-g="g-sol"><span>3</span>Show the solution</button>
+      <button data-g="g-lienzo"><span>4</span>The field drawing</button>
+      <button data-g="g-editar"><span>5</span>Create and edit</button>
+      <button data-g="g-practica"><span>6</span>Practice mode</button>
+      <button data-g="g-guardar"><span>7</span>Save and export</button>
+      <button data-g="g-atajos"><span>8</span>Keyboard shortcuts</button>
+      <button data-g="g-novedades"><span>9</span>What's new</button>
+    </nav>
+    <div class="g-c" id="guide-c">
+      <section id="g-vista">
+        <h3>1 · Overview</h3>
+        <p class="lead">The simulator solves electrostatics problems: you set up the sources (charges, wires, planes, spheres…), add the questions and get the exact result with its working and the drawing of the field.</p>
+        <figure><img data-img="vista" alt="Full simulator screen with five numbered zones" width="1300" height="836"><figcaption>The screen has five zones.</figcaption></figure>
+        <ol style="list-style:none;padding-left:0">
+          <li><span class="n">1</span><b>My exercises:</b> the bar common to all tools, with your saved exercises and the example ones.</li>
+          <li><span class="n">2</span><b>Top bar:</b> title, symbolic or numeric mode, practice mode, undo and export.</li>
+          <li><span class="n">3</span><b>Statement</b> of the problem, which you can write or paste.</li>
+          <li><span class="n">4</span><b>Set-up:</b> sources, unknowns and symbols.</li>
+          <li><span class="n">5</span><b>Canvas and questions:</b> the drawing of the field and, below it, each question with its result.</li>
+        </ol>
+        <p class="tip">Everything is recalculated instantly: change a value, a position or drag a charge on the canvas and the result updates by itself.</p>
+        <p>Capacitors with dielectrics (capacitance, E, D and P fields, polarization charges and combinations) have their own tool: <a href="../condensadores/">Capacitors</a>.</p>
+      </section>
+
+      <section id="g-elegir">
+        <h3>2 · Choosing a problem</h3>
+        <figure style="max-width:320px"><img data-img="lateral" alt="My exercises bar with the Saved and Examples tabs" width="414" height="748"></figure>
+        <ul>
+          <li>The <b>Examples</b> tab (<b class="sec-name">Example exercises</b>) brings exercises already set up and solved. Click one to open it.</li>
+          <li><b>Saved</b> are yours: press <b>Save current</b> to save the open exercise, with the title and folder you want (type a new name and the folder is created).</li>
+          <li>The <b>⋮</b> button of each exercise opens its options: open, <b>select</b> (to print, copy the link or export several at once), change title and folder, pin to the top, copy the link, export or delete. The <b>⋮</b> at the top has the backup, import and export all.</li>
+          <li>The bar is the same in all Ciencify tools; the <b>My exercises</b> button at the top left opens and closes it, and <kbd>Ctrl</kbd>+<kbd>K</kbd> opens the search of the whole site.</li>
+        </ul>
+        <p class="tip">You can play with the examples, but changes are not saved automatically in them: press <b>Save current</b> to keep them as your own.</p>
+      </section>
+
+      <section id="g-sol">
+        <h3>3 · Seeing the solution</h3>
+        <p>Each question shows its exact result in the form of the textbook: a coefficient times the symbols, divided by <i>π ε₀ aⁿ</i>.</p>
+        <figure class="narrow"><img data-img="solucion" alt="Solved question with the step-by-step working unfolded" width="1023" height="934"><figcaption>Result of a question with the working unfolded.</figcaption></figure>
+        <ul>
+          <li>Press <b>See step-by-step working</b> to follow each step: the contribution of each source, the sum and the simplification.</li>
+          <li>If the problem has unknowns (for example, an unknown charge), the solved value appears in the <b>Unknown</b> panel, with its own working.</li>
+          <li>Dipole questions also say whether the equilibrium is <b>stable</b> or <b>unstable</b>, and the work needed to rotate it.</li>
+          <li>If a datum is missing or something does not add up, a red warning appears under the statement saying what to check.</li>
+        </ul>
+      </section>
+
+      <section id="g-lienzo">
+        <h3>4 · The field drawing</h3>
+        <figure class="narrow"><img data-img="lienzo" alt="Canvas with potential colour map and test charges" width="1038" height="1211"><figcaption>Colour map of the potential, field lines and test charges moving.</figcaption></figure>
+        <ul>
+          <li><b>View:</b> choose the XY, XZ or YZ plane and at what height it is cut (<code>z =</code>), or the <b>3D view</b>, which is rotated by dragging.</li>
+          <li>Turn on or off the <b>field lines</b>, the <b>equipotentials</b>, the <b>vectors</b> and the <b>colour map</b> of <i>V</i> or of |<i>E</i>|.</li>
+          <li><b>Test charges:</b> press <b>+q</b> or <b>−q</b> and click on the canvas; the charge moves following the force of the field. <b>Remove</b> deletes them.</li>
+          <li><b>Drag</b> the charges and points to move them (with <kbd>Shift</kbd> they do not snap to the grid). Zoom with the <b>−</b>/<b>+</b> buttons or with <kbd>Ctrl</kbd>+wheel, and <b>Fit view</b> centres everything again.</li>
+        </ul>
+        <figure class="narrow"><img data-img="vista3d" alt="3D view of the set-up" width="1038" height="1211"><figcaption>The 3D view, useful for sources that are not in the same plane.</figcaption></figure>
+        <p>The <b>E(z), V(z)</b> question draws how the field and the potential change along a line. Move the mouse over the graph to read the values.</p>
+        <figure class="narrow"><img data-img="grafica" alt="Graphs of E and V along a line" width="1023" height="968"></figure>
+      </section>
+
+      <section id="g-editar">
+        <h3>5 · Creating and editing a problem</h3>
+        <ol>
+          <li>Open a similar example or start from scratch, and press <b>Save current</b> in My exercises when you have something to keep.</li>
+          <li>Write the <b>title</b> at the top and paste the <b>statement</b> if you want to have it at hand.</li>
+          <li>Add the <b>sources</b> with the green buttons (<b>+ Charge</b>, <b>+ Wire</b>, <b>+ Plane</b>, <b>+ Ring</b>, <b>+ Disc</b>, <b>+ Conductor</b>…). The button stays marked: click on the canvas to place the source where you want, or press the button again to put it in its default place.</li>
+          <li>Fill in each card: the <b>value</b> is a coefficient times a symbol (for example <code>-1</code> × <code>q0</code>) and positions are in units of <code>a</code>. <code>5/2</code>, <code>2*sqrt(3)</code>, <code>√7</code> and <code>pi</code> are accepted.</li>
+          <li>Add the <b>questions</b> with the buttons of its panel: E field, potential, V<sub>B</sub> − V<sub>A</sub>, force, work, dipole, energy, Gauss flux or E(z), V(z) profile. They are also placed with a click on the canvas.</li>
+        </ol>
+        <figure><img data-img="editar" alt="Sources panel with the buttons to add and a charge card" width="1100" height="667"><figcaption>Buttons to add sources and the card of a point charge.</figcaption></figure>
+        <h4>Unknowns</h4>
+        <p>If the statement gives a condition (equilibrium, zero field, a known potential…), mark in <b>Unknown</b> which sources have an unknown value and add the conditions. As many equations as unknowns are needed; <i>E</i> = 0 counts as three.</p>
+        <h4>Symbols and units</h4>
+        <ul>
+          <li>In <b>Symbols</b> say what each symbol is (charge, linear, surface or volume density, or dipole moment) so that the powers of <code>a</code> come out right.</li>
+          <li>With the <b>Symbolic / Numeric SI</b> selector you choose between results with symbols or with numbers: in SI mode write the values in SI units and lengths in metres.</li>
+          <li><b>↶</b> and <b>↷</b> undo and redo any change (<kbd>Ctrl</kbd>+<kbd>Z</kbd>, <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Z</kbd>).</li>
+        </ul>
+      </section>
+
+      <section id="g-practica">
+        <h3>6 · Practice mode</h3>
+        <p>Tick <b>Practice mode</b> in the top bar to train: the solutions are hidden and each question asks for your answer.</p>
+        <figure><img data-img="practica" alt="Question in practice mode with an answer checked as correct" width="1023" height="274"><figcaption>A checked answer.</figcaption></figure>
+        <ol>
+          <li>Write the result with <code>q</code>, <code>lambda</code>, <code>sigma</code>, <code>rho</code>, <code>a</code>, <code>eps0</code>, <code>pi</code> and <code>sqrt(…)</code>, for example <code>q/(4*pi*eps0*a^2)</code>. The order of the factors does not matter. In SI mode write the number, such as <code>8.99e9</code>.</li>
+          <li>Press <b>Check</b> (or <kbd>Enter</kbd>): you will see ✓ if it is correct or ✗ if not, with a comment.</li>
+          <li><b>Show solution</b> shows the result and the working of that question whenever you want.</li>
+        </ol>
+      </section>
+
+      <section id="g-guardar">
+        <h3>7 · Saving, sharing and exporting</h3>
+        <ul>
+          <li><b>My exercises</b> are saved in this browser when you press <b>Save current</b> (or <b>Save changes</b>, the round button next to it, if it is already saved). You sort them with <b>folders</b>.</li>
+          <li>To move them to another computer use <b>Export</b> in the <b>⋮</b> of the exercise (or <b>Export all</b> at the top) and open them there with <b>Import file…</b> or by dragging the file onto the bar. <b>Copy link</b> also works: it opens the simulator with that exercise. Older <code>.emsim.json</code> files can still be opened.</li>
+          <li><b>Export solution</b> generates the full solution, with statement, results and working: as a <b>page to print</b> (.html; open it and use Print → Save as PDF) or as <b>Markdown</b> text (.md).</li>
+          <li><b>Print several:</b> in the <b>⋮</b> at the top press <b>Select several</b>, tick the exercises and choose <b>Print sheet</b>: they are put together on a single sheet, each with its statement, results and working.</li>
+        </ul>
+        <figure><img data-img="exportar" alt="Export solution menu open with its two options" width="1100" height="299"><figcaption>The export menu.</figcaption></figure>
+        <p class="tip">What the browser saves is only in that browser. If you clear the browsing data or change device, use the <b>backup</b> in the <b>⋮</b> of My exercises.</p>
+      </section>
+
+      <section id="g-atajos">
+        <h3>8 · Keyboard shortcuts</h3>
+        <table class="g-keys">
+          <tr><td><kbd>F1</kbd> o <kbd>?</kbd></td><td>Open this guide</td></tr>
+          <tr><td><kbd>Ctrl</kbd>+<kbd>Z</kbd></td><td>Undo</td></tr>
+          <tr><td><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Z</kbd> or <kbd>Ctrl</kbd>+<kbd>Y</kbd></td><td>Redo</td></tr>
+          <tr><td><kbd>Ctrl</kbd>+<kbd>K</kbd> or <kbd>/</kbd></td><td>Search of the whole site</td></tr>
+          <tr><td><kbd>Esc</kbd></td><td>Cancel placement on the canvas, close menus or this guide</td></tr>
+          <tr><td><kbd>Shift</kbd> while dragging</td><td>Move without snapping to the grid</td></tr>
+          <tr><td><kbd>Ctrl</kbd>+wheel</td><td>Zoom on the canvas</td></tr>
+        </table>
+        <p class="lead" style="margin-top:12px">On Mac, use <kbd>Cmd</kbd> instead of <kbd>Ctrl</kbd>.</p>
+      </section>
+
+      <section id="g-novedades">
+        <h3>9 · What's new</h3>
+        <p class="lead">You are using version <b class="ver-n"></b>. Each published change raises the number: the first one when there is something new and the second when it is only a fix.</p>
+        <div id="ver-log"></div>
+      </section>
+    </div>
+  </div>
+</dialog>
+<script>
+window.GUIA_IMG = {
+  "editar": "guia/editar.webp",
+  "exportar": "guia/exportar.webp",
+  "grafica": "guia/grafica.webp",
+  "lateral": "guia/lateral.webp",
+  "lienzo": "guia/lienzo.webp",
+  "practica": "guia/practica.webp",
+  "solucion": "guia/solucion.webp",
+  "vista": "guia/vista.webp",
+  "vista3d": "guia/vista3d.webp",
+};
+</script>
+<script src="../../../js/en/biblioteca.en.5cb97548.js"></script>
+<script src="../../../js/en/electrostatica.en.6e95d90c.js"></script>
+</html>

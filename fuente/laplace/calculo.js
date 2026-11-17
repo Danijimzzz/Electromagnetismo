@@ -501,7 +501,7 @@ const Laplace = (() => {
   function trozos(src, nom) {
     const ps = String(src).split(';').map((x) => x.trim()).filter(Boolean), out = [];
     for (const p of ps) {
-      const m = p.match(/^(.*?)\s+si\s+(.+)$/i);
+      const m = p.match(/^(.*?)\s+(?:si|if)\s+(.+)$/i);
       if (!m) throw new Error(`${nom}: cada trozo tiene que ser «expresión si a ≤ t < b», separados por «;»`);
       const c = m[2].replace(/≤|=</g, '<=').replace(/≥|=>/g, '>=').replace(/\s+/g, '');
       let a = 0, b = Infinity, q;

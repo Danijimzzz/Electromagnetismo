@@ -1,0 +1,491 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTQiIGZpbGw9IiMwZDZiNjYiLz48ZyBmaWxsPSJub25lIiBzdHJva2U9IiNlNmE2NDAiIHN0cm9rZS13aWR0aD0iMi40IiBzdHJva2UtZGFzaGFycmF5PSI0IDYuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIj48cGF0aCBkPSJNMjAgMzJINDQiLz48cGF0aCBkPSJNMjEgMjdDMjcgMTQgMzcgMTQgNDMgMjciLz48cGF0aCBkPSJNMjEgMzdDMjcgNTAgMzcgNTAgNDMgMzciLz48cGF0aCBkPSJNMTcgMjRDMjIgNCA0MiA0IDQ3IDI0Ii8+PHBhdGggZD0iTTE3IDQwQzIyIDYwIDQyIDYwIDQ3IDQwIi8+PC9nPjxjaXJjbGUgY3g9IjE3IiBjeT0iMzIiIHI9IjgiIGZpbGw9IiNlZjdhNjIiLz48Y2lyY2xlIGN4PSI0NyIgY3k9IjMyIiByPSI4IiBmaWxsPSIjNzRhMmYyIi8+PHBhdGggZD0iTTEzIDMyaDhNMTcgMjh2OE00MyAzMmg4IiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iMi42IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48L3N2Zz4K">
+<link rel="apple-touch-icon" href="../../../apple-touch-icon.png">
+<meta property="og:title" content="Coupled oscillations and normal modes calculator">
+<meta property="og:description" content="Coupled oscillations calculator: two masses with three springs, normal-mode frequencies, motion of each mass, beats and energy transfer, step by step">
+<link rel="canonical" href="https://simulaciencia.vercel.app/en/fisica/osc-acopladas/">
+<link rel="alternate" hreflang="es" href="https://simulaciencia.vercel.app/fisica/osc-acopladas/">
+<link rel="alternate" hreflang="en" href="https://simulaciencia.vercel.app/en/fisica/osc-acopladas/">
+<link rel="alternate" hreflang="x-default" href="https://simulaciencia.vercel.app/fisica/osc-acopladas/">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="https://simulaciencia.vercel.app/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebApplication","name":"Coupled oscillations","description":"Online coupled oscillations calculator: two masses with three springs, normal-mode frequencies, how each mass moves, beats and the transfer of energy from one mass to the other, with a graph and step-by-step working.","url":"https://simulaciencia.vercel.app/fisica/osc-acopladas/","inLanguage":"es","isAccessibleForFree":true,"applicationCategory":"EducationalApplication","operatingSystem":"Web browser","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://simulaciencia.vercel.app/"},{"@type":"ListItem","position":2,"name":"General physics","item":"https://simulaciencia.vercel.app/fisica/"},{"@type":"ListItem","position":3,"name":"Coupled oscillations","item":"https://simulaciencia.vercel.app/fisica/osc-acopladas/"}]},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What are the normal modes of two coupled masses?","acceptedAnswer":{"@type":"Answer","text":"They are the two ways of moving in which both masses oscillate at once with the same frequency. With m₁ = m₂ = 1 kg, k₁ = k₂ = 100 N/m and kc = 10 N/m, the in-phase mode has ω₁ = √(k/m) = 10 rad/s and the out-of-phase mode ω₂ = √((k + 2kc)/m) = √120 ≈ 10.95 rad/s."}},{"@type":"Question","name":"Why does a beat appear and how long does the energy take to pass from one mass to the other?","acceptedAnswer":{"@type":"Answer","text":"If only one mass is released, both modes are excited equally and the amplitude of each mass slowly rises and falls. The energy passes completely from one to the other in π/(ω₂ − ω₁); with the frequencies above that is π/0.954 ≈ 3.29 s."}}]}]}</script>
+<link rel="manifest" href="../../manifest.webmanifest">
+<meta name="theme-color" content="#0d6b66">
+<script src="../../pwa.js" defer></script>
+<meta name="google-adsense-account" content="ca-pub-6407501780492688">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6407501780492688" crossorigin="anonymous"></script>
+<script>window.googlefc = window.googlefc || {}; googlefc.callbackQueue = googlefc.callbackQueue || [];
+document.addEventListener('click', (e) => { if (!e.target.closest('.pref-cookies')) return; e.preventDefault(); googlefc.callbackQueue.push(() => googlefc.showRevocationMessage()); });</script>
+<style>.anuncio { max-width:860px; margin:28px 0 0; text-align:center; min-height:120px } .anuncio > span { display:block; font:11px/1.6 system-ui, sans-serif; letter-spacing:.06em; text-transform:uppercase; color:var(--muted, #5b6670) } .anuncio ins { display:block }</style>
+<style>.anuncio-lado { display:none } @media (min-width: 901px) { .anuncio-lado { display:block; grid-column:1; grid-row:2; position:sticky; top:96px; margin:8px 0 0; max-width:none; min-height:250px; min-width:0; overflow:hidden } main .layout.con-lado > :nth-child(2) { grid-row:1 / span 2 } }</style>
+<script>document.addEventListener('DOMContentLoaded', () => {
+  const l = document.querySelector('main .layout');
+  if (!l || l.classList.contains('invertido') || l.children.length !== 2 || !l.offsetParent || !matchMedia('(min-width: 901px)').matches) return;
+  l.classList.add('con-lado');
+  const a = document.createElement('div'); a.className = 'anuncio anuncio-lado';
+  a.innerHTML = '<span>Publicidad</span><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-6407501780492688" data-ad-slot="9800921596" data-ad-format="auto" data-full-width-responsive="true"></ins>';
+  l.appendChild(a); (window.adsbygoogle = window.adsbygoogle || []).push({});
+});</script>
+<script>(() => {
+  const raiz = document.documentElement, mq = matchMedia('(prefers-color-scheme: dark)'), oyentes = [];
+  try { const t = localStorage.getItem('simu-tema'); if (t === 'dark' || t === 'light') raiz.dataset.theme = t; } catch (e) { /* sin almacenamiento */ }
+  const orig = MediaQueryList.prototype.addEventListener;
+  MediaQueryList.prototype.addEventListener = function (tipo, f, ...r) { if (tipo === 'change' && /prefers-color-scheme/.test(this.media)) oyentes.push(f); return orig.call(this, tipo, f, ...r); };
+  const oscuro = () => (raiz.dataset.theme ? raiz.dataset.theme === 'dark' : mq.matches);
+  const rotula = () => document.querySelectorAll('.tema').forEach((b) => { const t = oscuro() ? 'Switch to light mode' : 'Switch to dark mode'; b.title = t; b.setAttribute('aria-label', t); });
+  document.addEventListener('DOMContentLoaded', rotula);
+  mq.addEventListener('change', rotula);
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.tema')) return;
+    raiz.dataset.theme = oscuro() ? 'light' : 'dark';
+    try { localStorage.setItem('simu-tema', raiz.dataset.theme); } catch (e) { /* sin almacenamiento */ }
+    rotula();
+    for (const f of oyentes) { try { f.call(mq, { matches: oscuro(), media: mq.media }); } catch (err) { console.error(err); } }
+  });
+})();</script>
+<script>(() => {
+  const ENFOCABLE = 'a[href],button,input,select,textarea,summary,[tabindex]';
+  let espera = 0;
+  const revisa = () => {
+    espera = 0;
+    for (const e of document.querySelectorAll('main *')) {
+      const desborda = e.scrollWidth > e.clientWidth || e.scrollHeight > e.clientHeight;
+      if (e.dataset.sf) { if (!desborda || e.querySelector(ENFOCABLE)) { e.removeAttribute('tabindex'); delete e.dataset.sf; } continue; }
+      if (!desborda || e.hasAttribute('tabindex') || e.matches('svg,svg *,canvas') || e.querySelector(ENFOCABLE)) continue;
+      const o = getComputedStyle(e);
+      if (/auto|scroll/.test(o.overflowX + o.overflowY)) { e.tabIndex = 0; e.dataset.sf = '1'; }
+    }
+  };
+  window.revisaScroll = revisa; // también lo llama pruebas/accesibilidad.js antes de pasar axe
+  const pide = () => { if (!espera) espera = setTimeout(revisa, 400); };
+  addEventListener('load', () => { revisa(); const m = document.querySelector('main'); if (m) new MutationObserver(pide).observe(m, { childList: true, subtree: true, characterData: true }); });
+  addEventListener('resize', pide);
+})();</script>
+<script src="../../buscador.js" defer></script>
+<script src="../../llama.js" defer></script>
+<title>Coupled oscillations and normal modes calculator · Ciencify</title>
+<meta name="description" content="Online coupled oscillations calculator: two masses with three springs, normal-mode frequencies, how each mass moves, beats and the transfer of energy from one mass to the other, with a graph and step-by-step working.">
+<style>/* =====================================================================
+   Hoja de estilos común de todas las herramientas (fuente/<herramienta>/pagina.html).
+   diseno.js la mete en cada página, antes de su propio <style>, junto con el color
+   de la asignatura (--accent, --accent-soft) y la cabecera del portal. La guía de uso
+   de cada componente, con su HTML, está en DISENO.md.
+   Una herramienta no vuelve a definir estas reglas: ajusta las variables de medida
+   (--col-datos, --ancho-valor, --alto-grafica) o añade una clase propia.
+   ===================================================================== */
+
+/* ---------- Colores y letras (claro y oscuro) ---------- */
+:root {
+  --bg: #eef1ee; --panel: #fff; --ink: #1a2128; --muted: #5b6670; --line: #d5dbd5; --error: #c0392b;
+  --f-ui: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-math: "STIX Two Text", "Cambria Math", Cambria, Georgia, serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+  --vidrio: rgba(255,255,255,.55); --vidrio-fuerte: rgba(255,255,255,.72); --vidrio-borde: rgba(255,255,255,.7); --vidrio-brillo: inset 0 1px 0 rgba(255,255,255,.8);
+  --vidrio-sombra: 0 1px 2px rgba(20,40,60,.06), 0 8px 28px rgba(20,40,60,.10); --blur: blur(22px) saturate(1.7); --halo1: rgba(13,107,102,.22); --halo2: rgba(42,93,181,.20); --halo3: rgba(107,63,160,.14);
+  /* medidas que cada herramienta puede ajustar */
+  --col-datos: 360px; --ancho-etiqueta: minmax(0, 1fr); --ancho-valor: 150px; --letra-campo: 13px var(--f-ui); --ancho-dato: 190px; --alto-grafica: clamp(260px, 36vw, 380px); --margen-grafica: 10px;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #111619; --panel: #182025; --ink: #e3e8ea; --muted: #a3aeb5; --line: #2a343b; --error: #f08a80; --vidrio: rgba(34,46,54,.50); --vidrio-fuerte: rgba(26,36,42,.70); --vidrio-borde: rgba(255,255,255,.12); --vidrio-brillo: inset 0 1px 0 rgba(255,255,255,.10); --vidrio-sombra: 0 1px 2px rgba(0,0,0,.3), 0 10px 32px rgba(0,0,0,.35); --halo1: rgba(77,188,176,.20); --halo2: rgba(116,162,242,.18); --halo3: rgba(170,120,230,.14); color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #111619; --panel: #182025; --ink: #e3e8ea; --muted: #a3aeb5; --line: #2a343b; --error: #f08a80; --vidrio: rgba(34,46,54,.50); --vidrio-fuerte: rgba(26,36,42,.70); --vidrio-borde: rgba(255,255,255,.12); --vidrio-brillo: inset 0 1px 0 rgba(255,255,255,.10); --vidrio-sombra: 0 1px 2px rgba(0,0,0,.3), 0 10px 32px rgba(0,0,0,.35); --halo1: rgba(77,188,176,.20); --halo2: rgba(116,162,242,.18); --halo3: rgba(170,120,230,.14); color-scheme: dark }
+/* fin de los colores */
+
+/* ---------- Base ---------- */
+* { box-sizing: border-box }
+[hidden] { display: none !important }
+html, body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.45 var(--f-ui) }
+a { color: var(--accent) }
+.wrap { max-width: 1300px; margin: 0 auto; padding: 16px clamp(16px, 3vw, 24px) 32px }
+h1 { font: 600 24px/1.25 var(--f-ui); margin: 0 0 4px }
+.lead { color: var(--muted); margin: 0 0 12px; max-width: 760px }
+/* texto solo para lectores de pantalla; sin position:absolute para que no ensanche las tablas con scroll */
+.solo-lector { display: inline-block; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; vertical-align: top }
+footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 8px 16px 24px }
+footer a { color: var(--muted); margin: 0 6px; white-space: nowrap; display: inline-block }
+
+/* ---------- Diseño A: datos a la izquierda, resultados a la derecha ---------- */
+.layout { display: grid; grid-template-columns: var(--col-datos) minmax(0, 1fr); gap: 16px; align-items: start }
+.layout.invertido { grid-template-columns: minmax(0, 1fr) var(--col-datos) }
+@media (max-width: 900px) { .layout, .layout.invertido { grid-template-columns: minmax(0, 1fr) } }
+
+/* ---------- Tarjetas ---------- */
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 14px; margin-bottom: 14px }
+.card h2 { font: 600 12px/1.4 var(--f-ui); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 0 0 10px }
+.destacado { border-color: var(--line); border-top: 3px solid var(--accent) }
+.destacado h2 { color: var(--accent) }
+
+/* ---------- Datos: campos, separadores, botones y pestañas ---------- */
+.campos { display: grid; grid-template-columns: var(--ancho-etiqueta) var(--ancho-valor); gap: 7px 10px; align-items: center }
+.campos label { font-size: 13.5px }
+.campos label small { color: var(--muted) }
+.campos .ancho { grid-column: 1 / -1 }
+.sep { grid-column: 1 / -1; font: 600 12px var(--f-ui); color: var(--accent); text-transform: uppercase; letter-spacing: .04em; margin-top: 8px }
+.in { font: var(--letra-campo); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; width: 100%; font-variant-numeric: tabular-nums }
+.btn { font: 500 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 5px 10px; cursor: pointer; white-space: nowrap }
+.btn:hover { border-color: var(--accent) }
+/* foco del teclado en todo lo que se pulsa o se escribe (sin especificidad: una herramienta puede ajustarlo) */
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible { outline: 2px solid var(--accent); outline-offset: 1px }
+.controles { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 8px }
+.controles > .nota, .controles > .leyenda { flex: 1 1 220px; margin: 0 }
+.exportar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 8px 0 }
+.exportar-aviso { color: var(--muted); font-size: 12.5px }
+.tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px }
+.tools label { color: var(--muted); font-size: 13px; display: inline-flex; gap: 6px; align-items: center }
+.modos { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; margin-bottom: 14px }
+.modos button { font: 500 13.5px var(--f-ui); border: 0; background: var(--panel); color: var(--muted); padding: 7px 14px; cursor: pointer }
+.modos button[aria-selected=true] { background: var(--accent); color: var(--panel) }
+.error { color: var(--error); font-size: 13px; margin: 10px 0 0 }
+.nota { color: var(--muted); font-size: 12.5px; margin: 8px 0 0 }
+
+/* ---------- Resultados ---------- */
+.res { display: grid; grid-template-columns: repeat(auto-fill, minmax(var(--ancho-dato), 1fr)); gap: 6px 14px; font: 16px var(--f-math) }
+.res div { overflow-x: auto; overflow-y: hidden }
+.res span { display: block; font: 12px var(--f-ui); color: var(--muted) }
+.res div.ancho { grid-column: 1 / -1 }
+.resumen { display: grid; grid-template-columns: repeat(auto-fill, minmax(var(--ancho-dato), 1fr)); gap: 8px; margin: 0 }
+.resumen div { background: var(--accent-soft); border-radius: 8px; padding: 8px 10px; overflow-x: auto; overflow-y: hidden }
+.resumen div span { display: block; font-size: 12px; color: var(--muted) }
+.resumen div b { font: 600 17px var(--f-math) }
+.resumen div.ancho { grid-column: 1 / -1 }
+
+/* ---------- Gráficas ---------- */
+canvas { display: block; width: 100%; height: var(--alto-grafica); border-radius: 8px; background: var(--bg); margin-top: var(--margen-grafica) }
+.leyenda { font-size: 12.5px; color: var(--muted); margin: 6px 0 0 }
+.leyenda b { font-weight: 600 }
+
+/* ---------- Desarrollo paso a paso ---------- */
+/* el número va dentro del paso para que no lo corte el desplazamiento de las fórmulas largas */
+.pasos ol { margin: 0; padding: 0; list-style: none; counter-reset: paso }
+.pasos li { position: relative; margin: 0 0 12px; padding-left: 22px; font-family: var(--f-math); font-size: 15.5px; overflow-x: auto; counter-increment: paso; overflow-y: hidden }
+.pasos li::before { content: counter(paso) "."; position: absolute; left: 0; top: 0; font: 13.5px/1.45 var(--f-ui); color: var(--muted) }
+.pasos li strong { font: 600 13.5px var(--f-ui); display: block; margin-bottom: 2px }
+.pasos table.tabla { border-collapse: collapse; margin: 6px 0; font: 13px var(--f-ui); font-variant-numeric: tabular-nums }
+.pasos table.tabla th, .pasos table.tabla td { border: 1px solid var(--line); padding: 3px 9px; text-align: right }
+.pasos table.tabla th { background: var(--accent-soft); font-weight: 600 }
+.tabla-scroll { overflow-x: auto }
+
+/* matrices con corchetes, dentro de una fórmula */
+.mat { position: relative; display: inline-block; vertical-align: middle; padding: 0 7px; margin: 2px 2px }
+.mat::before, .mat::after { content: ""; position: absolute; top: 0; bottom: 0; width: 5px; border: 1.4px solid currentColor }
+.mat::before { left: 0; border-right: 0 }
+.mat::after { right: 0; border-left: 0 }
+.mat table { border-collapse: collapse }
+.mat td { padding: 2px 7px; text-align: center; white-space: nowrap; font-variant-numeric: tabular-nums }
+
+/* ---------- Teoría ---------- */
+.teoria, .preguntas { margin-top: 28px; max-width: 860px; font-size: 15px; line-height: 1.6 }
+.preguntas h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
+.preguntas h3 { font: 600 15px var(--f-ui); margin: 14px 0 2px }
+.preguntas p { margin: 0 }
+.teoria h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
+.teoria .f { max-width: 100%; overflow-x: auto; overflow-y: hidden; font-family: var(--f-math); font-size: 16.5px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; display: inline-block }
+.teoria ul { padding-left: 20px }
+.teoria li { margin-bottom: 4px }
+.teoria li, .teoria p { overflow-x: auto; overflow-y: hidden }
+
+/* ---------- Liquid Glass ---------- */
+/* Vidrio solo en el marco (tarjetas, controles, barras); el lienzo de las gráficas y las fórmulas no se tocan. */
+body { display: flow-root; background: radial-gradient(60% 50% at 8% 0%, var(--halo1), transparent 70%), radial-gradient(50% 45% at 95% 10%, var(--halo2), transparent 70%), radial-gradient(55% 50% at 60% 100%, var(--halo3), transparent 70%), var(--bg); background-attachment: fixed }
+.card { background: var(--vidrio); border-color: var(--vidrio-borde); border-radius: 18px; box-shadow: var(--vidrio-brillo), var(--vidrio-sombra); -webkit-backdrop-filter: var(--blur); backdrop-filter: var(--blur) }
+.destacado { border-top: 3px solid var(--accent) }
+.in { background: var(--vidrio); border-color: var(--vidrio-borde); border-radius: 10px; box-shadow: var(--vidrio-brillo) }
+.btn { background: var(--vidrio-fuerte); border-color: var(--vidrio-borde); border-radius: 99px; padding: 5px 14px; box-shadow: var(--vidrio-brillo) }
+.modos { border-color: var(--vidrio-borde); border-radius: 99px; background: var(--vidrio); box-shadow: var(--vidrio-brillo); -webkit-backdrop-filter: var(--blur); backdrop-filter: var(--blur) }
+.modos button { background: transparent; border-radius: 99px }
+.modos button[aria-selected=true] { box-shadow: 0 1px 6px rgba(0,0,0,.18) }
+.resumen div { border-radius: 14px }
+.teoria .f { background: var(--vidrio); border-color: var(--vidrio-borde); border-radius: 12px }
+canvas { border-radius: 14px }
+@media (max-width: 900px) { .card, .modos { -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px) } }
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) { .card, .modos, header.top { background: var(--panel); -webkit-backdrop-filter: none; backdrop-filter: none } .in, .btn, .teoria .f { background: var(--panel) } }
+
+:root { --accent:#2a5db5; --accent-soft:color-mix(in srgb, #2a5db5 12%, #fff); --marca:#0d6b66 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --accent:#74a2f2; --accent-soft:color-mix(in srgb, #74a2f2 16%, #182025); --marca:#4dbcb0 } }
+:root[data-theme="dark"] { --accent:#74a2f2; --accent-soft:color-mix(in srgb, #74a2f2 16%, #182025); --marca:#4dbcb0 }
+header.top { display:flex; align-items:center; gap:8px 20px; flex-wrap:wrap; padding:12px clamp(16px,3vw,28px); position:sticky; top:10px; z-index:10; margin:10px clamp(10px,2vw,20px) 0; border:1px solid var(--vidrio-borde); border-radius:22px; background:var(--vidrio-fuerte); box-shadow:var(--vidrio-brillo),var(--vidrio-sombra); -webkit-backdrop-filter:var(--blur); backdrop-filter:var(--blur) }
+header.top .logo { font:600 18px var(--f-math); margin:0; white-space:nowrap; color:var(--ink); text-decoration:none } header.top .logo i { color:var(--marca) }
+header.top nav { display:flex; gap:4px 14px; font-size:14px; overflow-x:auto; max-width:100%; scrollbar-width:none }
+header.top nav a { white-space:nowrap; padding:2px 0; color:var(--muted); text-decoration:none } header.top nav a:hover { color:var(--ink) }
+header.top nav a[aria-current] { color:var(--ink); font-weight:600; box-shadow:inset 0 -2px 0 var(--accent) }
+header.top form { margin-left:auto; flex:0 1 170px; min-width:130px }
+header.top .foro { margin-left:auto; display:inline-flex; align-items:center; gap:6px; white-space:nowrap; font:600 14px var(--f-ui); color:var(--ink); text-decoration:none; border:1px solid var(--vidrio-borde); background:var(--vidrio); border-radius:99px; padding:6px 12px } header.top .foro:hover, header.top .foro[aria-current] { border-color:var(--accent); color:var(--accent) } header.top .foro + form { margin-left:0 } header.top > .foro ~ .tema { margin-left:0 }
+@media (min-width:701px) { header.top { flex-wrap:nowrap } header.top nav { min-width:0 } }
+header.top .buscar { font:14px var(--f-ui); color:var(--ink); border:1px solid var(--vidrio-borde); border-radius:99px; padding:7px 14px; width:100%; background:var(--vidrio) }
+header.top .buscar:focus-visible, header.top a:focus-visible { outline:2px solid var(--accent); outline-offset:1px }
+.miga { display:flex; align-items:center; flex-wrap:wrap; gap:8px; font-size:13.5px; color:var(--muted); margin:0 0 10px }
+.miga a { color:var(--accent); font-weight:600; text-decoration:none } .miga a:hover { text-decoration:underline }
+.miga-ico { display:inline-grid; place-items:center; width:22px; height:22px; border-radius:6px; background:var(--accent-soft); color:var(--accent); font:italic 600 13px var(--f-math) }
+.miga-der { margin-left:auto; display:flex; gap:8px } .miga-izq:empty, .miga-der:empty { display:none }
+.bib-btn, .prac-btn { border-radius:8px !important; padding:6px 12px !important }
+body.bib-ejemplos select[id^="ejemplo"] { display:none }
+@media print { header.top, .miga, .prac-btn { display:none !important } }
+:root { --vida:#6a4fc2 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --vida:#b39ff7 } }
+:root[data-theme="dark"] { --vida:#b39ff7 }
+.relacionadas { max-width:860px; margin:16px 0 0; background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--accent); border-radius:4px 12px 12px 4px; padding:12px 16px }
+.relacionadas h2 { font:600 12px/1.4 var(--f-ui); text-transform:uppercase; letter-spacing:.06em; color:var(--accent); margin:0 0 4px }
+.relacionadas a { display:flex; gap:10px; align-items:baseline; padding:5px 0; color:var(--ink); text-decoration:none; font-size:14px }
+.relacionadas a b { font-weight:600; white-space:nowrap } .relacionadas a span { color:var(--muted) } .relacionadas a:hover b { color:var(--accent); text-decoration:underline }
+.vida-real { max-width:860px; margin:28px 0 0; background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--vida); border-radius:4px 12px 12px 4px; padding:12px 16px }
+.vida-real h2 { font:600 12px/1.4 var(--f-ui); text-transform:uppercase; letter-spacing:.06em; color:var(--vida); margin:0 0 4px }
+.vida-real a { display:flex; gap:10px; align-items:baseline; padding:5px 0; color:var(--ink); text-decoration:none; font-size:14px }
+.vida-real a b { font-weight:600; white-space:nowrap } .vida-real a span { color:var(--muted) } .vida-real a:hover b { color:var(--vida); text-decoration:underline }
+@media (max-width:600px) { .vida-real a, .relacionadas a { display:block } .vida-real a b, .relacionadas a b { display:block; white-space:normal } }
+@media (max-width:700px) { header.top form { display:none } h1 { font-size:21px }
+  .miga-izq, .miga-der, .miga::after { order:-1 } .miga::after { content:''; flex-basis:100%; height:0 } }
+
+.tema { flex:0 0 auto; margin-left:auto; width:36px; height:36px; display:grid; place-items:center; padding:0; border:1px solid var(--vidrio-borde, var(--line)); border-radius:99px; background:var(--vidrio, var(--bg)); color:var(--ink); cursor:pointer }
+.buscar ~ .tema, form ~ .tema { margin-left:0 }
+.tema:hover { border-color:var(--accent); color:var(--accent) }
+.tema:focus-visible { outline:2px solid var(--accent); outline-offset:1px }
+.tema .sol { display:none }
+:root[data-theme="dark"] .tema .sol { display:block } :root[data-theme="dark"] .tema .luna { display:none }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .tema .sol { display:block } :root:not([data-theme="light"]) .tema .luna { display:none } }
+@media (max-width:700px) { .top > .tema { margin-left:auto } .top > nav { order:1 } }
+</style>
+<style>
+:root {
+  --serie-1: #2a5db5; --serie-2: #c2412a }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --serie-1: #74a2f2; --serie-2: #ef7a62 } }
+:root[data-theme="dark"] {
+  --serie-1: #74a2f2; --serie-2: #ef7a62 }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../../">Cienci<i>fy</i></a><nav aria-label="Subjects"><a href="../../../">Home</a><a href="../../electromagnetismo/">Electromagnetism</a><a href="../" aria-current="page">General physics</a><a href="../../quimica/">Chemistry</a><a href="../../matematicas/">Mathematics</a><a href="../../estadistica/">Statistics</a><a href="../../circuitos/">Circuits</a><a href="../../economia/">Economics</a><a href="../../fenomenos/">Real life</a></nav><a class="foro" href="../../foro/"><span aria-hidden="true">💬</span>Forum</a><form action="../../../" role="search"><input class="buscar" type="search" name="q" placeholder="Search: Biot-Savart, molarity…" aria-label="Search tools (shortcut: / key)" title="Shortcut: / or Ctrl+K"></form><style>
+.lg { position:relative; flex:0 0 auto }
+.lg-btn { display:inline-flex; align-items:center; gap:6px; height:36px; padding:0 12px; border:1px solid var(--vidrio-borde, var(--line)); border-radius:99px; background:var(--vidrio, var(--bg)); color:var(--ink); font:600 13px var(--f-ui, system-ui, sans-serif); cursor:pointer }
+.lg-btn:hover { border-color:var(--accent); color:var(--accent) }
+.lg-btn:focus-visible, .lg-pop a:focus-visible, .lg-ban button:focus-visible { outline:2px solid var(--accent); outline-offset:1px }
+.lg-pop { position:absolute; top:44px; right:0; z-index:50; min-width:210px; margin:0; padding:6px; list-style:none; border:1px solid var(--vidrio-borde, var(--line)); border-radius:16px; background:rgba(255,255,255,.98); color:var(--ink); box-shadow:0 12px 36px rgba(0,0,0,.22) }
+.lg-pop[hidden] { display:none }
+:root[data-theme="dark"] .lg-pop, :root[data-theme="dark"] .lg-ban { background:rgba(28,34,38,.98) }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .lg-pop, :root:not([data-theme="light"]) .lg-ban { background:rgba(28,34,38,.98) } }
+.lg-t { font:600 11px var(--f-ui, system-ui, sans-serif); text-transform:uppercase; letter-spacing:.06em; color:var(--muted); padding:6px 10px 4px }
+.lg-pop a { display:flex; justify-content:space-between; align-items:center; gap:14px; padding:8px 10px; border-radius:10px; color:var(--ink); text-decoration:none; font:500 14px var(--f-ui, system-ui, sans-serif) }
+.lg-pop a:hover { background:var(--accent-soft) }
+.lg-pop a > span { display:flex; align-items:center; gap:10px }
+.lg-pop a small { color:var(--muted); font-size:12px }
+.lg-pop a[aria-current="true"] { background:var(--accent-soft); font-weight:700 }
+.lg-pop a[aria-current="true"] small::after { content:' ✓'; color:var(--accent) }
+.lg-fl { flex:none; border-radius:50%; box-shadow:0 0 0 1px rgba(0,0,0,.18) }
+.lg-ban { position:fixed; left:50%; bottom:18px; z-index:60; transform:translateX(-50%); width:min(560px, calc(100vw - 24px)); box-sizing:border-box; display:flex; flex-wrap:wrap; align-items:center; gap:10px 12px; padding:12px 16px; border:1px solid var(--vidrio-borde, var(--line)); border-radius:18px; background:rgba(255,255,255,.98); color:var(--ink); box-shadow:0 12px 36px rgba(0,0,0,.25); font:14px var(--f-ui, system-ui, sans-serif) }
+.lg-ban p { flex:1 1 220px; margin:0 }
+.lg-ban button { font:600 13px var(--f-ui, system-ui, sans-serif); padding:7px 14px; border-radius:99px; border:1px solid var(--vidrio-borde, var(--line)); background:var(--vidrio, var(--bg)); color:var(--ink); cursor:pointer }
+.lg-ban button.lg-si { background:var(--accent); border-color:var(--accent); color:#fff }
+:root[data-theme="dark"] .lg-ban button.lg-si { color:#0d141a }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .lg-ban button.lg-si { color:#0d141a } }
+@media (max-width:700px) { .top > .lg { margin-left:auto } .top > .lg + .tema { margin-left:0 } }
+@media print { .lg, .lg-ban { display:none !important } }
+</style><div class="lg"><button class="lg-btn" type="button" aria-expanded="false" aria-controls="lg-lista" aria-label="Language: English" title="Language"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.8 3 2.8 15 0 18M12 3c-2.8 3-2.8 15 0 18"/></svg><span>EN</span><span aria-hidden="true">▾</span></button><ul class="lg-pop" id="lg-lista" hidden><li class="lg-t" aria-hidden="true">Language · Idioma</li><li><a href="../../../" hreflang="es" lang="es"><span><svg class="lg-fl" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false"><rect width="24" height="24" fill="#c60b1e"/><rect y="6" width="24" height="12" fill="#ffc400"/></svg>Español</span><small>ES</small></a></li><li><a href="../../../en/" hreflang="en" lang="en" aria-current="true"><span><svg class="lg-fl" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false"><rect width="24" height="24" fill="#012169"/><path d="M0 0L24 24M24 0L0 24" stroke="#fff" stroke-width="5"/><path d="M0 0L24 24M24 0L0 24" stroke="#c8102e" stroke-width="2"/><path d="M12 0V24M0 12H24" stroke="#fff" stroke-width="8"/><path d="M12 0V24M0 12H24" stroke="#c8102e" stroke-width="4.5"/></svg>English</span><small>EN</small></a></li></ul></div><script>(() => {
+  const L = [{"c":"es","d":"","n":"Español","a":["Esta página está disponible en español.","Cambiar a español","Seguir aquí"]},{"c":"en","d":"en/","n":"English","a":["This page is available in English.","Switch to English","Stay here"]}], ACTUAL = "en", K = 'simu-idioma';
+  const guarda = (c) => { try { localStorage.setItem(K, c); } catch (e) { /* sin almacenamiento */ } };
+  const lee = () => { try { return localStorage.getItem(K); } catch (e) { return null; } };
+  const resto = () => { let p = location.pathname; for (const i of L) if (i.d && p.startsWith('/' + i.d)) { p = '/' + p.slice(i.d.length + 1); break; } return p + location.search + location.hash; };
+  const destino = (i) => '/' + i.d + resto().replace(/^\//, '');
+  const btn = document.querySelector('.lg-btn'), pop = document.querySelector('.lg-pop');
+  if (!btn || !pop) return;
+  pop.querySelectorAll('a[hreflang]').forEach((a) => { const i = L.find((x) => x.c === a.hreflang); if (i && /^https?:$/.test(location.protocol)) a.href = destino(i); a.addEventListener('click', () => guarda(a.hreflang)); });
+  const abre = (v) => { pop.hidden = !v; btn.setAttribute('aria-expanded', String(v)); };
+  btn.addEventListener('click', (e) => { e.stopPropagation(); abre(pop.hidden); });
+  document.addEventListener('click', (e) => { if (!pop.hidden && !e.target.closest('.lg')) abre(false); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !pop.hidden) { abre(false); btn.focus(); } });
+  pop.addEventListener('focusout', (e) => { if (!pop.hidden && !e.relatedTarget?.closest?.('.lg')) abre(false); });
+  // aviso: una vez, sin elección guardada, con el idioma del navegador publicado y distinto del de la página
+  if (lee() || window.__sinAviso) return;
+  const pref = (navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language || '']).map((s) => String(s).toLowerCase().slice(0, 2));
+  const i = pref.map((c) => L.find((x) => x.c === c)).find(Boolean);
+  if (!i || i.c === ACTUAL) { return; }
+  const b = document.createElement('div'); b.className = 'lg-ban'; b.setAttribute('role', 'region'); b.setAttribute('aria-label', "Language"); b.lang = i.c;
+  const t = document.createElement('p'); t.textContent = i.a[0];
+  const si = document.createElement('button'); si.type = 'button'; si.className = 'lg-si'; si.textContent = i.a[1];
+  const no = document.createElement('button'); no.type = 'button'; no.textContent = i.a[2];
+  si.addEventListener('click', () => { guarda(i.c); const a = [...pop.querySelectorAll('a[hreflang]')].find((x) => x.hreflang === i.c); location.href = a ? a.href : destino(i); });
+  no.addEventListener('click', () => { guarda(ACTUAL); b.remove(); });
+  b.append(t, si, no); document.body.append(b);
+})();</script><button class="tema" type="button" title="Switch between light and dark mode" aria-label="Switch between light and dark mode"><svg class="luna" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.5A8.5 8.5 0 1 1 9.5 3.5a7 7 0 0 0 11 11z"/></svg><svg class="sol" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button></header>
+<main class="wrap">
+<nav class="miga" aria-label="You are here"><span class="miga-izq"></span><span class="miga-ico" aria-hidden="true">F</span><a href="../">General physics</a><span aria-hidden="true">›</span><span>Coupled oscillations</span><span class="miga-der"></span></nav>
+<h1>Coupled oscillations</h1>
+<p class="lead">Two masses joined by springs: calculate the frequencies of their normal modes, how each mass moves depending on how you release it, the beat that appears when the coupling is weak and how long the energy takes to pass from one mass to the other.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Data</h2>
+    <select id="ejemplos" class="in" aria-label="Examples" style="margin-bottom:12px"></select>
+    <div class="campos" id="campos"></div>
+    <p class="nota" id="nota"></p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card destacado"><h2>Results</h2><div class="resumen" id="resumen"></div></div>
+    <div class="card"><h2>Graph</h2>
+      <canvas id="grafica" aria-label="Position of the two masses as a function of time"></canvas>
+      <p class="leyenda" id="leyenda"></p>
+    </div>
+    <div class="card pasos"><h2>Working</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<div class="anuncio"><span>Advertising</span><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-6407501780492688" data-ad-slot="4415753033" data-ad-format="auto" data-full-width-responsive="true"></ins><script>(window.adsbygoogle = window.adsbygoogle || []).push({});</script></div>
+<section class="teoria">
+<h2>What a normal mode is</h2>
+<p class="m">In a system of two coupled masses, each pushes the other through the central spring, and the motions are not independent. But there are always two special ways of moving, the <b>normal modes</b>, in which both masses oscillate at once with the same frequency $ω$: $x_1 = a_1 cos(ω t)$ and $x_2 = a_2 cos(ω t)$. Substituting into the equations $m_1 x_1″ = −(k_1 + k_c) x_1 + k_c x_2$ and $m_2 x_2″ = k_c x_1 − (k_c + k_2) x_2$ gives a linear system whose solutions exist only if $(A − ω^2)(D − ω^2) − B C = 0$.</p>
+<h2>Two equal masses</h2>
+<p class="m">With $m_1 = m_2 = m$ and $k_1 = k_2 = k$ the modes are simple: in the first the masses move in phase, the central spring is not stretched and $ω_1 = √(k/m)$; in the second they move in antiphase and $ω_2 = √((k + 2 k_c)/m)$. Any motion is the sum of both, and so there are two constants of each kind (amplitude and phase) that are fixed by the four initial conditions.</p>
+<div class="anuncio"><span>Advertising</span><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-6407501780492688" data-ad-slot="4415753033" data-ad-format="auto" data-full-width-responsive="true"></ins><script>(window.adsbygoogle = window.adsbygoogle || []).push({});</script></div>
+<h2>Beats and energy transfer</h2>
+<p class="m">If only one mass is released, both modes are excited equally and $x_1 = A cos((ω_2 − ω_1) t/2) cos((ω_1 + ω_2) t/2)$: the amplitude of each mass slowly rises and falls (the beat) while they oscillate quickly. The energy passes completely from one mass to the other every $π/(ω_2 − ω_1)$; with weak coupling the two frequencies are similar and the exchange is slow, as with two pendulums joined by a thread.</p>
+</section>
+<section class="preguntas" aria-label="Frequently asked questions">
+<h2>Frequently asked questions</h2>
+<h3>What are the normal modes of two coupled masses?</h3>
+<p>They are the two ways of moving in which both masses oscillate at once with the same frequency. With m₁ = m₂ = 1 kg, k₁ = k₂ = 100 N/m and kc = 10 N/m, the in-phase mode has ω₁ = √(k/m) = 10 rad/s and the out-of-phase mode ω₂ = √((k + 2kc)/m) = √120 ≈ 10.95 rad/s.</p>
+<h3>Why does a beat appear and how long does the energy take to pass from one mass to the other?</h3>
+<p>If only one mass is released, both modes are excited equally and the amplitude of each mass slowly rises and falls. The energy passes completely from one to the other in π/(ω₂ − ω₁); with the frequencies above that is π/0.954 ≈ 3.29 s.</p>
+</section>
+<div class="anuncio"><span>Advertising</span><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-6407501780492688" data-ad-slot="4415753033" data-ad-format="auto" data-full-width-responsive="true"></ins><script>(window.adsbygoogle = window.adsbygoogle || []).push({});</script></div>
+<section class="relacionadas" aria-label="Related tools"><h2>Related tools</h2>
+<a href="../relatividad/"><b>Relativistic kinematics and Minkowski →</b><span>Lorentz transformation with a Minkowski diagram, velocity addition with rapidities and the interval between events.</span></a>
+<a href="../termo-estadistica/"><b>Statistical thermodynamics →</b><span>Partition function, Boltzmann populations, energy, entropy and heat capacity of two-level systems, Einstein oscillators and custom levels, and the entropy S = k·ln Ω of Einstein solids in contact.</span></a>
+<a href="../unidades/"><b>Unit converter and constants →</b><span>SI and technical units, with the CODATA constants.</span></a>
+<a href="../fisica-moderna/"><b>Modern physics: photoelectric effect and relativity →</b><span>Photoelectric effect, de Broglie wavelength, time dilation, length contraction and relativistic energy.</span></a>
+</section>
+</main>
+<footer><a href="../../../">Home</a>·<a href="../../contacto.html">Contact</a>·<a href="mailto:danijimzzz30@gmail.com?subject=Error%20en%20Oscilaciones%20acopladas&amp;body=Herramienta%3A%20Oscilaciones%20acopladas%20(fisica%2Fosc-acopladas)%0A%0AQu%C3%A9%20esperaba%20y%20qu%C3%A9%20ha%20pasado%3A%0A">Report an error</a>·<a href="../../aviso-legal.html">Legal notice</a>·<a href="../../privacidad.html">Privacy</a>·<a href="../../cookies.html">Cookies</a> · <a href="#" class="pref-cookies">Cookie preferences</a>· Coupled oscillations <span id="ver"></span> (beta)</footer>
+</body>
+<script>
+const Pagina = { carpeta: 'osc-acopladas', guarda: 'osc-acopladas-v1' };
+const Version = (() => { const registros = {"web":[{"v":"1.21"}],"control":[{"v":"0.2"}],"termo-estadistica":[{"v":"0.2"}],"markowitz":[{"v":"0.3"}],"cavidades":[{"v":"0.2"}],"organica":[{"v":"0.3"}],"transformada-z":[{"v":"0.2"}],"semiconductores":[{"v":"0.2"}],"relatividad":[{"v":"0.2"}],"osc-acopladas":[{"v":"0.2"}],"solubilidad":[{"v":"0.2"}],"lagrange":[{"v":"0.2"}],"series":[{"v":"0.3"}],"no-parametricos":[{"v":"0.3"}],"regresion-multiple":[{"v":"0.2"}],"anova":[{"v":"0.3"}],"black-scholes":[{"v":"0.3"}],"bonos":[{"v":"0.3"}],"solow":[{"v":"0.3"}],"integrales-multiples":[{"v":"0.1"}],"formulacion":[{"v":"0.2"}],"balance":[{"v":"0.2"}],"redox":[{"v":"0.2"}],"lineas-transmision":[{"v":"0.3"}],"superficies":[{"v":"0.2"}],"vsepr":[{"v":"0.2"}],"maxwell":[{"v":"0.3"}],"fresnel":[{"v":"0.2"}],"gravitacion":[{"v":"0.2"}],"convolucion":[{"v":"0.2"}],"laplace-numerica":[{"v":"0.2"}],"imagenes":[{"v":"0.2.1"}],"guias-onda":[{"v":"0.2"}],"antena":[{"v":"0.2"}],"bode":[{"v":"0.3"}],"optica":[{"v":"0.2"}],"simulador":[{"v":"0.4"}],"teoria-juegos":[{"v":"0.2"}],"puertas-logicas":[{"v":"0.4"}],"multiplicador":[{"v":"0.3"}],"is-lm":[{"v":"0.3"}],"choques":[{"v":"0.1"}],"termoquimica":[{"v":"0.3"}],"probabilidad":[{"v":"0.2"}],"unidades":[{"v":"0.2"}],"equilibrio":[{"v":"0.2"}],"oscilaciones":[{"v":"0.1"}],"beneficio":[{"v":"0.3"}],"costes":[{"v":"0.3"}],"sistemas-numericos":[{"v":"0.2"}],"excedentes":[{"v":"0.2"}],"oferta-demanda":[{"v":"0.2"}],"chi2-bondad":[{"v":"0.2"}],"contrastes":[{"v":"0.2"}],"errores":[{"v":"0.2"}],"graficador":[{"v":"0.2"}],"metodos-numericos":[{"v":"0.2"}],"fisica-moderna":[{"v":"0.2"}],"lorenz-gini":[{"v":"0.2"}],"phillips-okun":[{"v":"0.3"}],"tipos-cambio":[{"v":"0.3"}],"elasticidades":[{"v":"0.3"}],"pib-ipc":[{"v":"0.2"}],"numeros-indice":[{"v":"0.2"}],"ratios":[{"v":"0.2"}],"punto-muerto":[{"v":"0.2"}],"ahorro":[{"v":"0.3"}],"van-tir":[{"v":"0.3"}],"amortizacion-inmovilizado":[{"v":"0.2"}],"prestamos":[{"v":"0.3"}],"rentas":[{"v":"0.3"}],"interes":[{"v":"0.3"}],"descriptiva":[{"v":"0.2"}],"regresion-economia":[{"v":"0.2"}],"ajustador":[{"v":"0.2.1"}],"electrostatica":[{"v":"0.11"}],"magnetostatica":[{"v":"0.4"}],"tabla-periodica":[{"v":"0.2"}],"trabajo-y-energia":[{"v":"0.3"}],"masa-molar":[{"v":"0.2"}],"configuracion-electronica":[{"v":"0.2"}],"condensadores":[{"v":"0.4"}],"tiro-parabolico":[{"v":"0.4"}],"disoluciones":[{"v":"0.2"}],"calorimetria":[{"v":"0.2"}],"induccion":[{"v":"0.4"}],"matrices":[{"v":"0.3"}],"derivadas":[{"v":"0.3"}],"laplace":[{"v":"0.2"}],"interferencia":[{"v":"0.2"}],"ondas-em":[{"v":"0.4"}],"intervalos":[{"v":"0.3"}],"fuerza":[{"v":"0.3"}],"campos":[{"v":"0.2.1"}],"cinetica":[{"v":"0.2"}],"edos":[{"v":"0.2"}],"fourier":[{"v":"0.2"}],"taylor":[{"v":"0.3"}],"complejos":[{"v":"0.3"}],"sistemas":[{"v":"0.3"}],"regresion":[{"v":"0.3"}],"estadistica":[{"v":"0.3"}],"dinamica":[{"v":"0.3"}],"solido-rigido":[{"v":"0.3"}],"ondas":[{"v":"0.3"}],"gases":[{"v":"0.6"}],"ciclos":[{"v":"0.2"}],"ph":[{"v":"0.4"}],"fluidos":[{"v":"0.3"}],"doppler":[{"v":"0.2"}],"resistencias":[{"v":"0.3"}],"faraday":[{"v":"0.4"}],"fenomenos":[{"v":"0.9"}]}; const de = (h) => ({ current: registros[h][0].v, log: registros[h] }); return { registros, de }; })();
+
+</script>
+<script src="../../../js/en/herramienta.en.e2425303.js"></script>
+<script src="../../../js/en/enunciado.en.73e3a542.js"></script>
+<script src="../../../js/en/mates.en.fbd66204.js"></script>
+<script src="../../../js/en/calculadora.en.cc076887.js"></script>
+<script>
+const OscAcopladas = (() => {
+  const K = typeof Calculadora !== 'undefined' ? Calculadora : require('../calculadora.js');
+  const { lee, f } = K, n = f;
+  const TAU = 2 * Math.PI;
+
+  function independientes({ m1, m2, k1, k2, x10, x20, v10, v20, t }) {
+    if (!(k1 > 0) || !(k2 > 0)) throw new Error('Without a coupling spring (kc = 0) each mass needs its own spring to the wall: k₁ and k₂ must be greater than 0');
+    const wa = Math.sqrt(k1 / m1), wb = Math.sqrt(k2 / m2), primero = wa <= wb, w1 = primero ? wa : wb, w2 = primero ? wb : wa, T1 = TAU / w1, T2 = TAU / w2;
+    const osc = (x0, v0, w, tt) => [x0 * Math.cos(w * tt) + (v0 / w) * Math.sin(w * tt), -x0 * w * Math.sin(w * tt) + v0 * Math.cos(w * tt)];
+    const x = (tt) => [osc(x10, v10, wa, tt)[0], osc(x20, v20, wb, tt)[0]], v = (tt) => [osc(x10, v10, wa, tt)[1], osc(x20, v20, wb, tt)[1]];
+    const [xa, xb] = x(t), [va, vb] = v(t), A1 = Math.hypot(x10, v10 / wa), A2 = Math.hypot(x20, v20 / wb);
+    const E = 0.5 * m1 * v10 ** 2 + 0.5 * k1 * x10 ** 2 + 0.5 * m2 * v20 ** 2 + 0.5 * k2 * x20 ** 2;
+    const r1 = primero ? 0 : Infinity, r2 = primero ? Infinity : 0, q1 = primero ? x10 : x20, q2 = primero ? x20 : x10, p1 = primero ? v10 : v20, p2 = primero ? v20 : v10, C1 = primero ? A1 : A2, C2 = primero ? A2 : A1;
+    const pasos = [
+      { t: 'No coupling', html: `With $k_c = 0$ the equations separate: $m_1 x_1″ = −k_1 x_1$ and $m_2 x_2″ = −k_2 x_2$. They are two independent harmonic oscillators, with no beat or energy transfer.` },
+      { t: 'Frequencies', html: `$ω_a = √{k_1/m_1} = ${n(wa, 5)} "rad/s"$ ($T = ${n(TAU / wa, 5)} "s"$) for mass 1 and $ω_b = √{k_2/m_2} = ${n(wb, 5)} "rad/s"$ ($T = ${n(TAU / wb, 5)} "s"$) for mass 2. The normal modes are each mass on its own: in mode 1 only mass ${primero ? 1 : 2} moves and in mode 2 mass ${primero ? 2 : 1}.` },
+      { t: `At t = ${n(t)} s`, html: `$x_1 = ${n(xa, 5)} "m"$, $x_2 = ${n(xb, 5)} "m"$, $v_1 = ${n(va, 5)} "m/s"$ and $v_2 = ${n(vb, 5)} "m/s"$. Amplitudes: $A_1 = ${n(A1, 5)} "m"$ and $A_2 = ${n(A2, 5)} "m"$. Total energy conserved: $E = ${n(E, 5)} "J"$.` },
+    ];
+    return { m1, m2, k1, k2, kc: 0, x10, x20, v10, v20, t, w1, w2, T1, T2, r1, r2, q1, q2, p1, p2, C1, C2, x, v, xa, xb, va, vb, E, dw: Math.abs(w2 - w1), Tbat: Infinity, Ttrans: Infinity, independiente: true, pasos };
+  }
+
+  function resolver(sc) {
+    const m1 = lee(sc, 'm1', 'the mass m₁', { min: 0, minEx: true }), m2 = lee(sc, 'm2', 'the mass m₂', { min: 0, minEx: true });
+    const k1 = lee(sc, 'k1', 'the constant k₁', { min: 0 }), k2 = lee(sc, 'k2', 'the constant k₂', { min: 0 }), kc = lee(sc, 'kc', 'the constant of the coupling spring kc', { min: 0 });
+    if (k1 + k2 === 0) throw new Error('At least one of the springs k₁ and k₂ must hold a mass to the wall (otherwise the whole assembly moves bodily)');
+    const x10 = lee(sc, 'x10', 'the initial position x₁(0)', { def: 0 }), x20 = lee(sc, 'x20', 'the initial position x₂(0)', { def: 0 });
+    const v10 = lee(sc, 'v10', 'the initial velocity v₁(0)', { def: 0 }), v20 = lee(sc, 'v20', 'the initial velocity v₂(0)', { def: 0 }), t = lee(sc, 't', 'the instant', { def: 0 });
+    if (!x10 && !x20 && !v10 && !v20) throw new Error('With all initial conditions equal to zero the system does not move');
+    const pasos = [];
+    if (kc === 0) return independientes({ m1, m2, k1, k2, x10, x20, v10, v20, t });
+    pasos.push({ t: 'Equations of motion', html: `With $x_1$ and $x_2$ measured from equilibrium: $m_1 x_1″ = −(k_1 + k_c) x_1 + k_c x_2$ and $m_2 x_2″ = k_c x_1 − (k_c + k_2) x_2$. We look for solutions in which both masses oscillate at once with the same $ω$: $x_i = a_i cos(ω t)$.` });
+    const a = (k1 + kc) / m1, b = -kc / m1, c = -kc / m2, d = (kc + k2) / m2;
+    pasos.push({ t: 'Frequency equation', html: `With $A = (k_1 + k_c)/m_1 = ${n(a, 5)}$, $B = −k_c/m_1 = ${n(b, 5)}$, $C = −k_c/m_2 = ${n(c, 5)}$ and $D = (k_c + k_2)/m_2 = ${n(d, 5)}$ (in s$^{−2}$), $ω^2$ is an eigenvalue of the matrix: $(A − ω^2)(D − ω^2) − B C = 0$.` });
+    const med = (a + d) / 2, disc = Math.sqrt(((a - d) / 2) ** 2 + b * c), l1 = med - disc, l2 = med + disc;
+    const w1 = Math.sqrt(l1), w2 = Math.sqrt(l2), T1 = TAU / w1, T2 = TAU / w2;
+    pasos.push({ t: 'Normal-mode frequencies', html: `$ω^2 = (A + D)/2 ∓ √(((A − D)/2)^2 + B C) = ${n(med, 5)} ∓ ${n(disc, 5)}$, that is $ω_1 = ${n(w1, 5)} "rad/s"$ ($f_1 = ${n(w1 / TAU, 5)} "Hz"$, $T_1 = ${n(T1, 5)} "s"$) and $ω_2 = ${n(w2, 5)} "rad/s"$ ($f_2 = ${n(w2 / TAU, 5)} "Hz"$, $T_2 = ${n(T2, 5)} "s"$).` });
+    const r1 = (l1 - a) / b, r2 = (l2 - a) / b, simetrico = m1 === m2 && k1 === k2;
+    if (simetrico) pasos.push({ t: 'Symmetric case', html: `Since $m_1 = m_2 = m$ and $k_1 = k_2 = k$, the system is symmetric and the modes are exact: in phase ($x_2 = x_1$, the coupling spring is not stretched) with $ω_1^2 = k/m = ${n(k1 / m1, 5)}$, and in antiphase ($x_2 = −x_1$, the coupling is stretched twice as much) with $ω_2^2 = (k + 2k_c)/m = ${n((k1 + 2 * kc) / m1, 5)}$.` });
+    const desc = (r) => (r > 0 ? `the two masses move in phase (x₂ = ${n(r, 4)} x₁)` : `the masses move in antiphase (x₂ = ${n(r, 4)} x₁)`);
+    pasos.push({ t: 'Normal modes', html: `From the first equation, $a_2/a_1 = (ω^2 − A)/B$. Mode 1: $${n(r1, 5)}$, ${desc(r1)}. Mode 2: $${n(r2, 5)}$, ${desc(r2)}.` });
+    const det = r2 - r1;
+    const q1 = (r2 * x10 - x20) / det, q2 = (x20 - r1 * x10) / det, p1 = (r2 * v10 - v20) / det, p2 = (v20 - r1 * v10) / det;
+    const C1 = Math.hypot(q1, p1 / w1), C2 = Math.hypot(q2, p2 / w2);
+    pasos.push({ t: 'Initial conditions', html: `We write $x_1(0) = ${n(x10)}$, $x_2(0) = ${n(x20)}$, $v_1(0) = ${n(v10)}$ and $v_2(0) = ${n(v20)}$ as a sum of the two modes, $x_1 = q_1 cos(ω_1 t) + (p_1/ω_1) sin(ω_1 t) + q_2 cos(ω_2 t) + (p_2/ω_2) sin(ω_2 t)$ and $x_2 = r_1 (…)_1 + r_2 (…)_2$, with $q_1 = ${n(q1, 5)}$, $q_2 = ${n(q2, 5)}$, $p_1 = ${n(p1, 5)}$ and $p_2 = ${n(p2, 5)}$. Amplitude of each mode (in $x_1$): $${n(C1, 5)} "m"$ and $${n(C2, 5)} "m"$.` });
+    const x = (tt) => {
+      const g1 = q1 * Math.cos(w1 * tt) + (p1 / w1) * Math.sin(w1 * tt), g2 = q2 * Math.cos(w2 * tt) + (p2 / w2) * Math.sin(w2 * tt);
+      return [g1 + g2, r1 * g1 + r2 * g2];
+    };
+    const v = (tt) => {
+      const h1 = -q1 * w1 * Math.sin(w1 * tt) + p1 * Math.cos(w1 * tt), h2 = -q2 * w2 * Math.sin(w2 * tt) + p2 * Math.cos(w2 * tt);
+      return [h1 + h2, r1 * h1 + r2 * h2];
+    };
+    const [xa, xb] = x(t), [va, vb] = v(t);
+    pasos.push({ t: `At t = ${n(t)} s`, html: `$x_1 = ${n(xa, 5)} "m"$, $x_2 = ${n(xb, 5)} "m"$, $v_1 = ${n(va, 5)} "m/s"$ y $v_2 = ${n(vb, 5)} "m/s"$.` });
+    const energia = (xx, vv) => 0.5 * m1 * vv[0] ** 2 + 0.5 * m2 * vv[1] ** 2 + 0.5 * k1 * xx[0] ** 2 + 0.5 * kc * (xx[1] - xx[0]) ** 2 + 0.5 * k2 * xx[1] ** 2;
+    const E = energia([x10, x20], [v10, v20]);
+    pasos.push({ t: 'Energy', html: `$E = 1/2 m_1 v_1^2 + 1/2 m_2 v_2^2 + 1/2 k_1 x_1^2 + 1/2 k_c (x_2 − x_1)^2 + 1/2 k_2 x_2^2 = ${n(E, 5)} "J"$ is conserved (at t = ${n(t)} s it is ${n(energia([xa, xb], [va, vb]), 5)} J).` });
+    const dw = w2 - w1, Tbat = TAU / dw, Ttrans = Math.PI / dw;
+    pasos.push({ t: 'Beat and energy transfer', html: `The two frequencies add and subtract: $ω_2 − ω_1 = ${n(dw, 5)} "rad/s"$ gives a beat of period $T_b = 2π/(ω_2 − ω_1) = ${n(Tbat, 5)} "s"$. If only one mass starts moving, with the two modes equally excited, the energy passes completely to the other in $π/(ω_2 − ω_1) = ${n(Ttrans, 5)} "s"$. The weaker the coupling $k_c$, the closer $ω_1$ and $ω_2$ are and the slower the exchange.` });
+    return { m1, m2, k1, k2, kc, x10, x20, v10, v20, t, w1, w2, T1, T2, r1, r2, q1, q2, p1, p2, C1, C2, x, v, xa, xb, va, vb, E, dw, Tbat, Ttrans, pasos };
+  }
+
+  const ejemplos = [
+    { clave: 'sin-acoplo', nombre: 'No coupling spring (kc = 0): two independent oscillators', sc: { m1: '1', m2: '2', k1: '100', kc: '0', k2: '150', x10: '0,1', x20: '0,05', v10: '0', v20: '0', t: '0,5' } },
+    { clave: 'iguales', nombre: 'Two equal masses: one is released', sc: { m1: '1', m2: '1', k1: '100', kc: '10', k2: '100', x10: '0,1', x20: '0', v10: '0', v20: '0', t: '0,5' } },
+    { clave: 'modo1', nombre: 'Pure mode 1: both masses in phase', sc: { m1: '1', m2: '1', k1: '100', kc: '10', k2: '100', x10: '0,1', x20: '0,1', v10: '0', v20: '0', t: '0,3' } },
+    { clave: 'modo2', nombre: 'Pure mode 2: masses in antiphase', sc: { m1: '1', m2: '1', k1: '100', kc: '10', k2: '100', x10: '0,1', x20: '-0,1', v10: '0', v20: '0', t: '0,3' } },
+    { clave: 'carros', nombre: 'Two carts, one attached to the wall (2 kg and 1 kg)', sc: { m1: '2', m2: '1', k1: '100', kc: '50', k2: '0', x10: '0,1', x20: '0', v10: '0', v20: '0', t: '0,2' } },
+    { clave: 'debil', nombre: 'Weak coupling: the beat is slow', sc: { m1: '1', m2: '1', k1: '100', kc: '2', k2: '100', x10: '0,05', x20: '0', v10: '0', v20: '0', t: '1' } },
+    { clave: 'golpe', nombre: 'Strike on the second mass (v₂ = 1 m/s)', sc: { m1: '0,5', m2: '1', k1: '80', kc: '30', k2: '60', x10: '0', x20: '0', v10: '0', v20: '1', t: '0,4' } },
+  ];
+
+  const azar = () => {
+    const r = (a, b, d = 1) => (Math.round((a + Math.random() * (b - a)) * 10 ** d) / 10 ** d).toString().replace('.', '.');
+    return { m1: r(0.5, 2, 1), m2: r(0.5, 2, 1), k1: r(50, 200, 0), kc: r(5, 60, 0), k2: r(50, 200, 0), x10: r(0.05, 0.2, 2), x20: '0', v10: '0', v20: '0', t: r(0.1, 1, 1) };
+  };
+
+  return { resolver, ejemplos, azar, f };
+})();
+
+</script>
+<script src="../../../js/en/compartir.en.08e9415d.js"></script>
+<script>
+(() => {
+  const O = OscAcopladas, { f } = O;
+  const enunciado = (sc) => `Two masses of ${sc.m1} kg and ${sc.m2} kg, joined to each other by a spring of ${sc.kc} N/m and to the walls by springs of ${sc.k1} N/m and ${sc.k2} N/m, start from x₁ = ${sc.x10} m, x₂ = ${sc.x20} m, v₁ = ${sc.v10} m/s and v₂ = ${sc.v20} m/s. Calculate the frequencies of the normal modes and the position of each mass at t = ${sc.t} s.`;
+  Calculadora.monta({
+    C: O, carpeta: 'osc-acopladas', app: 'OscAcopladasApp', azar: O.azar, enunciado,
+    nota: 'Springs: wall — k₁ — m₁ — kc — m₂ — k₂ — wall. k₁ or k₂ may be 0 (free mass on that side), but not both. Positions are measured from equilibrium.',
+    campos: () => [
+      { sep: 'Masses and springs' }, { k: 'm1', nom: 'Mass m₁', un: 'kg' }, { k: 'm2', nom: 'Mass m₂', un: 'kg' },
+      { k: 'k1', nom: 'Spring k₁ (wall–m₁)', un: 'N/m' }, { k: 'kc', nom: 'Coupling spring kc', un: 'N/m' }, { k: 'k2', nom: 'Spring k₂ (m₂–wall)', un: 'N/m' },
+      { sep: 'Initial conditions' }, { k: 'x10', nom: 'Position x₁(0)', un: 'm' }, { k: 'x20', nom: 'Position x₂(0)', un: 'm' },
+      { k: 'v10', nom: 'Velocity v₁(0)', un: 'm/s' }, { k: 'v20', nom: 'Velocity v₂(0)', un: 'm/s' }, { k: 't', nom: 'Time t', un: 's' },
+    ],
+    resumen: (s) => [
+      ['Frequency ω₁', `${f(s.w1, 5)} rad/s`, true], ['Frequency ω₂', `${f(s.w2, 5)} rad/s`, true],
+      ['Mode 1 (x₂/x₁)', f(s.r1, 4)], ['Mode 2 (x₂/x₁)', f(s.r2, 4)],
+      ['Periods T₁ and T₂', `${f(s.T1, 4)} s y ${f(s.T2, 4)} s`], ['Beat period', `${f(s.Tbat, 4)} s`], ['Energy transfer', `${f(s.Ttrans, 4)} s`], ['Total energy', `${f(s.E, 4)} J`],
+      [`x₁ at t = ${f(s.t)} s`, `${f(s.xa, 4)} m`], [`x₂ at t = ${f(s.t)} s`, `${f(s.xb, 4)} m`],
+    ],
+    grafica: (s) => {
+      const tmax = Math.min(2 * (isFinite(s.Tbat) ? s.Tbat : 6 * Math.max(s.T1, s.T2)), 40 * s.T2), N = 700, p1 = [], p2 = []; let amp = 0;
+      for (let j = 0; j <= N; j++) { const t = (tmax * j) / N, [a, b] = s.x(t); p1.push([t, a]); p2.push([t, b]); amp = Math.max(amp, Math.abs(a), Math.abs(b)); }
+      const tt = Math.min(s.t, tmax), [a, b] = s.x(tt);
+      return { x: [0, tmax], y: [-amp * 1.15, amp * 1.15], fx: (v) => f(v, 3), ejeX: 'Time (s)', ejeY: 'Position (m)', series: [{ pts: p1, color: '--serie-1' }, { pts: p2, color: '--serie-2' }, { tipo: 'puntos', pts: [[tt, a]], color: '--serie-1', radio: 6 }, { tipo: 'puntos', pts: [[tt, b]], color: '--serie-2', radio: 6 }], horizontales: [{ y: 0 }] };
+    },
+    leyenda: (s) => '<b>Blue</b>: position of m₁. <b>Red</b>: position of m₂. The points mark the chosen instant. ' + (s && s.independiente ? 'With no coupling spring each mass oscillates on its own and there is no energy exchange.' : 'When one dies down, the other builds up: the energy passes from one mass to the other.'),
+  });
+})();
+
+</script>
+<script src="../../../js/en/biblioteca.en.5cb97548.js"></script>
+<script src="../../../js/en/practica.en.192a5c1e.js"></script>
+<script src="../../../js/en/personal.en.00676b87.js"></script>
+<script>
+Biblioteca.monta('osc-acopladas', 'osc-acopladas-v1');
+Practica.monta('osc-acopladas', 'osc-acopladas-v1');
+Enunciado.monta('osc-acopladas', 'osc-acopladas-v1');
+</script>
+</html>

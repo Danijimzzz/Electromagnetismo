@@ -257,7 +257,7 @@ const Taylor = (() => {
   // límite de una expresión en el punto pt (lado = ±1 si solo se llega por un lado), desarrollando numerador y denominador
   function limCociente(ast, a, lado, pasos, V, aTxt) {
     const q = cociente(ast), N = E.simp(q.N), D = E.simp(q.D), vx = V('x');
-    const ser = (n) => { try { return [...E.serie(n, a, 14)]; } catch (e) { const s2 = serieEvitable(n, a, 13); if (s2) return [...s2, 0]; throw new Error(`No se puede desarrollar ${V(E.texto(E.simp(n))).replace(/[{}]/g, '')} en ${vx} = ${f(a)} (${e.message.replace(/^La función no es derivable en x = a \(/, '').replace(/\).*$/, '')}): el límite no sale por Taylor; prueba a escribirlo de otra forma`); } };
+    const ser = (n) => { try { return [...E.serie(n, a, 14)]; } catch (e) { const s2 = serieEvitable(n, a, 13); if (s2) return [...s2, 0]; throw new Error(`No se puede desarrollar ${V(E.texto(E.simp(n))).replace(/[{}]/g, '')} en ${vx} = ${f(a)} (${e.detalle || e.message}): el límite no sale por Taylor; prueba a escribirlo de otra forma`); } };
     if (ast.t !== '/' && !(D.t === 'n' && D.v === 1)) pasos.push({ t: 'Se escribe como un cociente', html: `$${V(E.texto(E.simp(ast)))} = {${V(E.texto(N))}}/{${V(E.texto(D))}}$` });
     const sN = ser(N), sD = ser(D), esc = (s) => Math.max(1, ...s.map(Math.abs));
     const orden = (s) => s.findIndex((v) => Math.abs(v) > 1e-10 * esc(s));

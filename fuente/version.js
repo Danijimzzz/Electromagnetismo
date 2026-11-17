@@ -12,6 +12,19 @@
 const Version = (() => {
   const registros = {
     web: [
+      { v: '1.21', fecha: '2026-11-17', titulo: 'Ciencify también en inglés', subtitulo: 'Una primera versión en inglés con selector de idioma, y un buscador nuevo.', secciones: [
+        { icono: '🌐', titulo: 'Inglés (beta)', puntos: [
+          '**Selector de idioma** en la cabecera: botón con globo y lista con banderas. Nunca te cambia de idioma por tu cuenta, solo te avisa una vez.',
+          '**Herramientas de todas las asignaturas en inglés**, con su teoría, sus ejemplos, Mis ejercicios y el modo práctica. Los números salen con punto decimal.',
+          'La portada, las páginas de asignatura, las novedades y las páginas legales también tienen versión en inglés.',
+        ] },
+        { icono: '🔎', titulo: 'Buscador', puntos: [
+          '**Buscador global** con Ctrl+K o «/» en cualquier página, con estilo de cristal líquido, como la barra lateral.',
+        ] },
+      ] },
+      { v: '1.20.2', fecha: '2026-11-17', cambios: [
+        'El buscador (Ctrl+K o «/») tiene ya el mismo estilo de cristal líquido que la barra lateral: ventana translúcida con desenfoque, bordes de vidrio y esquinas más redondas, en claro, oscuro y móvil.',
+      ] },
       { v: '1.20.1', fecha: '2026-11-16', cambios: [
         'Electrostática tiene ya exactamente la misma barra «Mis ejercicios» que las demás herramientas: mismas pestañas Guardados y Ejemplos, mismo ⋮, mismo modo de selección, mismas carpetas y mismos nombres y colores. Antes conservaba una barra propia, un diálogo aparte para la «Hoja para imprimir» y los campos de carpeta y etiquetas bajo el título; todo eso desaparece. Imprimir varios ejercicios se hace como en el resto: ⋮ → «Seleccionar varios» → «Imprimir hoja».',
         'Lo que tenías guardado en Electrostática se pasa solo a la barra común (problemas, carpetas, enunciados y el ejercicio que tenías abierto), sin perder nada. Las copias de seguridad y los archivos .emsim.json hechos antes se siguen abriendo, y los enlaces con datos de antes también.',
