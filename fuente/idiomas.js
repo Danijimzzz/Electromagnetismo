@@ -60,6 +60,7 @@ function paginas(c) {
   if (fs.existsSync(dir)) {
     const Catalogo = require('./catalogo.js'), carpetas = fs.readdirSync(dir).filter((f) => f.endsWith('.json') && f[0] !== '_').map((f) => f.slice(0, -5).replace(/__/g, '/'));
     for (const a of Catalogo.asignaturas) for (const h of a.herramientas) if (carpetas.includes(h.carpeta || h.clave)) set.add(`${a.clave}/${h.clave}/`);
+    if (carpetas.includes('fenomenos')) set.add('fenomenos/'); // el índice /fenomenos/
     for (const f of Catalogo.fenomenos.lista) if (carpetas.includes(`fenomenos/${f.clave}`)) set.add(`fenomenos/${f.clave}/`);
   }
   return (_paginas[c] = set);

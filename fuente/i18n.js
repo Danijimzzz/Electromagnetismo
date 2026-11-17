@@ -195,7 +195,10 @@ function numeros(src, idioma) {
 const dicComun = (idioma) => leeDic(idioma, '_comun');
 const dicDe = (idioma, carpeta) => leeDic(idioma, carpeta.replace(/\//g, '__'));
 // Idiomas con dic de herramienta: las páginas que se generan
-const paginasTraducidas = (idioma) => Herramientas.lista().filter((h) => fs.existsSync(rutaDic(idioma, h.carpeta.replace(/\//g, '__'))));
+// el índice /fenomenos/ (lo genera portal.js; clave vacía → publico/fenomenos/index.html)
+const paginaIndice = { asignatura: 'fenomenos', clave: '', carpeta: 'fenomenos', scripts: [] };
+const rutaDe = (h) => [h.asignatura, h.clave].filter(Boolean).join('/');
+const paginasTraducidas = (idioma) => [...Herramientas.lista(), paginaIndice].filter((h) => fs.existsSync(rutaDic(idioma, h.carpeta.replace(/\//g, '__'))));
 
 // Ruta relativa de `desde` (carpeta, con barras) a `hasta`
 const rel = (desde, hasta) => { const r = path.posix.relative('/' + desde.replace(/\/$/, ''), '/' + hasta.replace(/\/$/, '')); return (r || '.') + (hasta.endsWith('/') || hasta === '' ? '/' : ''); };
@@ -205,7 +208,7 @@ function generarPagina(h, idioma, existentes, faltan, usadas) {
   const origen = path.join(publico, h.asignatura, h.clave, 'index.html');
   let html = fs.readFileSync(origen, 'utf8');
   const dics = [dicDe(idioma, h.carpeta), dicComun(idioma)];
-  const ruta = `${h.asignatura}/${h.clave}/`, aqui = `${idioma}/${ruta}`;
+  const ruta = rutaDe(h) + '/', aqui = `${idioma}/${ruta}`, subida = '../'.repeat(aqui.split('/').length - 1);
   html = html.replace(/<style>[^<]*<\/style><div class="lg">[\s\S]*?<\/script>/, '<!--LG-->'); // el selector se pinta al final, ya en el idioma
   // 1. scripts: los de la página en línea y las copias traducidas de los externos con huella
   html = html.replace(/<script(\s[^>]*)?>([\s\S]*?)<\/script>/g, (m, attrs = '', cuerpo) => {
@@ -216,7 +219,7 @@ function generarPagina(h, idioma, existentes, faltan, usadas) {
       const nuevo = numeros(traduceJS(cod, dics, faltan, usadas), idioma), hash = crypto.createHash('sha1').update(nuevo).digest('hex').slice(0, 8);
       const nombre = mm[1].replace(/\.[0-9a-f]{8}\.js$/, `.${idioma}.${hash}.js`);
       fs.mkdirSync(path.join(publico, 'js', idioma), { recursive: true }); fs.writeFileSync(path.join(publico, 'js', idioma, nombre), nuevo);
-      return `<script${attrs.replace(src[1], `../../../js/${idioma}/${nombre}`)}></script>`;
+      return `<script${attrs.replace(src[1], `${subida}js/${idioma}/${nombre}`)}></script>`;
     }
     if (/ld\+json/.test(attrs)) return m; // sus textos los traduce traduceHTML más abajo
     if (/pagead|adsbygoogle/.test(attrs + cuerpo)) return m;
@@ -238,8 +241,10 @@ function generarPagina(h, idioma, existentes, faltan, usadas) {
     const enIdioma = a === 'href' && (dest === '' || existentes.has(sitio + '/') || /^(?:[^/]+\/)?$/.test(dest) && false);
     return `${a}="${enIdioma ? rel(aqui, `${idioma}/${dest}`) : rel(aqui, dest)}${hash}"`;
   });
+  // 4b. el índice de fenómenos: las imágenes de sus tarjetas (clave/imagen.webp) siguen en la carpeta del español
+  if (!h.clave) html = html.replace(/\bsrc="([a-z0-9-]+\/imagen\.webp)"/g, (m, u) => `src="${rel(aqui, ruta + u)}"`);
   // 5. selector de idioma apuntando a esta página (idiomas publicados que la tienen)
-  html = html.replace('<!--LG-->', Idiomas.BOTON({ idioma, raiz: '../../../', ruta }));
+  html = html.replace('<!--LG-->', Idiomas.BOTON({ idioma, raiz: subida, ruta }));
   const out = path.join(publico, idioma, h.asignatura, h.clave, 'index.html');
   fs.mkdirSync(path.dirname(out), { recursive: true }); fs.writeFileSync(out, html);
   return out;
@@ -248,12 +253,12 @@ function generarPagina(h, idioma, existentes, faltan, usadas) {
 function generar(idioma) {
   const paginas = paginasTraducidas(idioma), faltan = new Set(), usadas = new Set();
   fs.rmSync(path.join(publico, idioma), { recursive: true, force: true }); fs.rmSync(path.join(publico, 'js', idioma), { recursive: true, force: true });
-  const existentes = new Set(paginas.map((h) => `${h.asignatura}/${h.clave}/`));
+  const existentes = new Set(paginas.map((h) => rutaDe(h) + '/'));
   for (const h of paginas) generarPagina(h, idioma, existentes, faltan, usadas);
   return { paginas: paginas.length, faltan: [...faltan], usadas };
 }
 
-if (typeof module !== 'undefined') module.exports = { generar, generarPagina, paginasTraducidas, numeros, literales, esTexto, unidadesHTML, edicionesJS, traduceJS, traduceHTML, candidatosHTML, candidatosJS, leeDic, guardaDic, DIR };
+if (typeof module !== 'undefined') module.exports = { rutaDe, generar, generarPagina, paginasTraducidas, numeros, literales, esTexto, unidadesHTML, edicionesJS, traduceJS, traduceHTML, candidatosHTML, candidatosJS, leeDic, guardaDic, DIR };
 
 if (require.main === module) {
   const [, , cmd, idioma, carpeta] = process.argv;
@@ -277,7 +282,7 @@ if (require.main === module) {
       textos = leer(h0).filter((t) => otros.has(t));
       for (const f of ficherosDe(h0)) if (!/^(choques)\//.test(f)) textos.push(...candidatosJS(script(f)));
     } else {
-      const h = lista().find((x) => x.carpeta === carpeta); if (!h) throw new Error('herramienta desconocida: ' + carpeta);
+      const h = [...lista(), paginaIndice].find((x) => x.carpeta === carpeta); if (!h) throw new Error('herramienta desconocida: ' + carpeta);
       const html = fs.readFileSync(path.join(publico, h.asignatura, h.clave, 'index.html'), 'utf8');
       textos = candidatosHTML(html);
       for (const f of h.scripts) textos.push(...candidatosJS(script(f)));
