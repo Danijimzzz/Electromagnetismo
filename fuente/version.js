@@ -12,6 +12,9 @@
 const Version = (() => {
   const registros = {
     web: [
+      { v: '1.20.2', fecha: '2026-11-17', cambios: [
+        'El buscador (Ctrl+K o «/») tiene ya el mismo estilo de cristal líquido que la barra lateral: ventana translúcida con desenfoque, bordes de vidrio y esquinas más redondas, en claro, oscuro y móvil.',
+      ] },
       { v: '1.20.1', fecha: '2026-11-16', cambios: [
         'Electrostática tiene ya exactamente la misma barra «Mis ejercicios» que las demás herramientas: mismas pestañas Guardados y Ejemplos, mismo ⋮, mismo modo de selección, mismas carpetas y mismos nombres y colores. Antes conservaba una barra propia, un diálogo aparte para la «Hoja para imprimir» y los campos de carpeta y etiquetas bajo el título; todo eso desaparece. Imprimir varios ejercicios se hace como en el resto: ⋮ → «Seleccionar varios» → «Imprimir hoja».',
         'Lo que tenías guardado en Electrostática se pasa solo a la barra común (problemas, carpetas, enunciados y el ejercicio que tenías abierto), sin perder nada. Las copias de seguridad y los archivos .emsim.json hechos antes se siguen abriendo, y los enlaces con datos de antes también.',
