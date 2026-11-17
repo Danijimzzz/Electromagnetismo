@@ -12,6 +12,12 @@
 const Version = (() => {
   const registros = {
     web: [
+      { v: '1.20.1', fecha: '2026-11-16', cambios: [
+        'Electrostática tiene ya exactamente la misma barra «Mis ejercicios» que las demás herramientas: mismas pestañas Guardados y Ejemplos, mismo ⋮, mismo modo de selección, mismas carpetas y mismos nombres y colores. Antes conservaba una barra propia, un diálogo aparte para la «Hoja para imprimir» y los campos de carpeta y etiquetas bajo el título; todo eso desaparece. Imprimir varios ejercicios se hace como en el resto: ⋮ → «Seleccionar varios» → «Imprimir hoja».',
+        'Lo que tenías guardado en Electrostática se pasa solo a la barra común (problemas, carpetas, enunciados y el ejercicio que tenías abierto), sin perder nada. Las copias de seguridad y los archivos .emsim.json hechos antes se siguen abriendo, y los enlaces con datos de antes también.',
+        'En Electrostática, Ctrl+K y «/» abren ahora el buscador de toda la web, como en las demás herramientas.',
+        'La guía de uso de Electrostática tiene capturas y texto nuevos con la barra común.',
+      ] },
       { v: '1.20', fecha: '2026-11-16', titulo: 'Mis ejercicios renovado y enunciados', subtitulo: 'Una barra lateral nueva en todas las herramientas, enunciados que salen al imprimir y la Hoja para imprimir también en Electrostática.', secciones: [
         { icono: '🗂', titulo: 'Mis ejercicios, de cristal y más clara', puntos: [
           '**Pestañas Guardados y Ejemplos** arriba: lo tuyo por un lado y los ejercicios de ejemplo por otro.',
@@ -1030,6 +1036,7 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-10-27', cambios: ['Primera versión: ajusta reacciones moleculares e iónicas por el método algebraico, con una incógnita por especie, el balance de cada elemento y de la carga, los coeficientes enteros y la comprobación átomo a átomo, con una gráfica de los átomos a cada lado y diez reacciones de ejemplo.'] },
     ],
     electrostatica: [
+      { v: '0.11', fecha: '2026-11-16', cambios: ['La barra de Mis ejercicios es exactamente la de las demás herramientas, sin barra propia ni diálogo para imprimir varios: se usa el modo «Seleccionar varios». Lo que tenías guardado se pasa solo.', 'Ctrl+K y «/» abren el buscador de toda la web.'] },
       { v: '0.10', fecha: '2026-11-16', cambios: ['«Hoja para imprimir…» en la barra lateral: elige varios ejercicios, tuyos o de ejemplo, y se imprimen juntos con su enunciado, resultados y desarrollo.'] },
       { v: '0.9', fecha: '2026-11-16', cambios: ['La barra lateral es la de Mis ejercicios de las demás herramientas: mismas acciones y nombres y aspecto de cristal, con «Copia de seguridad de todo», «Restaurar copia…» y «Copiar enlace con estos datos».'] },
       { v: '0.8', fecha: '2026-11-16', cambios: ['La página tiene ya pie con Contacto, Aviso legal, Privacidad y Cookies (antes solo estaban en la barra lateral, que en el móvil no se veía) y «Informar de un error» abre un correo con la herramienta ya escrita.', 'Aparece en «Tu espacio» de la portada (últimas visitadas) y tiene el botón ☆ Favorita.', 'Con el teclado, Tab empieza por la cabecera y el contenido, y la barra de Mis ejercicios queda después.', 'Si tu sistema pide reducir el movimiento, las cargas de prueba dibujan su trayectoria de golpe en vez de animarla.', 'La descripción y la teoría incluyen ya todas las fuentes (láminas, cascarones, anillos, discos, conductores, dipolos…).'] },

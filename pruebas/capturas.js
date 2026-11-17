@@ -23,17 +23,18 @@ im.save(sys.argv[2], 'WEBP', quality=82, method=6)`, png, path.join(guia, nombre
 (async () => {
   execFileSync('sh', [path.join(raiz, 'fuente', 'build.sh')]);
   const browser = require('./sin-anuncios.js')(await chromium.launch(exe ? { executablePath: exe } : {}));
-  const page = await browser.newPage({ viewport: { width: 1300, height: 836 }, deviceScaleFactor: 2 });
+  const page = await browser.newPage({ viewport: { width: 1400, height: 900 }, deviceScaleFactor: 2 });
   await page.goto('file://' + path.join(raiz, 'publico', 'electromagnetismo', 'electrostatica', 'index.html'));
   // biblioteca de ejemplo para la barra lateral: tres problemas propios, dos en una carpeta
   await page.evaluate(() => {
-    const it = (key, folder, tags) => { const p = Presets.list.find((x) => x.key === key); return { id: 'g' + key, title: p.title, statement: p.statement, scene: p.make(), origin: 'mio', folder, tags, updated: Date.now() }; };
-    localStorage.setItem('electro-sim-lib-v2', JSON.stringify({ items: [it('p5', '', ['gauss']), it('p3', 'Parcial 1', ['dipolos']), it('p7', 'Parcial 1', ['dipolos', 'examen'])] }));
-    localStorage.removeItem('electro-sim-cur-v2'); localStorage.removeItem('electro-sim-ui-v2');
+    const it = (key, carpeta) => { const p = Presets.list.find((x) => x.key === key); return { id: 'g' + key, titulo: p.title, carpeta, fijado: false, datos: JSON.stringify({ title: p.title, statement: p.statement, scene: p.make() }), actualizado: Date.now() }; };
+    localStorage.setItem('simu-ejercicios:electrostatica', JSON.stringify({ items: [it('p5', ''), it('p3', 'Parcial 1'), it('p7', 'Parcial 1')] }));
+    localStorage.removeItem('electrostatica-v1'); localStorage.removeItem('simu-ejercicios-ui'); sessionStorage.clear();
   });
   await page.reload();
-  await page.waitForSelector('#side-list .item');
-  const abrir = async (titulo) => { await page.locator('.sec', { hasText: 'Ejercicios de ejemplo' }).locator('.item .it', { hasText: titulo }).first().click(); await page.waitForTimeout(400); };
+  await page.waitForSelector('.bib .bib-it');
+  // los ejemplos están en la pestaña Ejemplos de «Mis ejercicios» (la barra común); se vuelve a Guardados para la captura de la barra
+  const abrir = async (titulo) => { await page.click('.bib [data-acc=pestana-ejemplos]'); await page.locator('.bib .bib-ej', { hasText: titulo }).first().click(); await page.waitForTimeout(400); };
   const foto = async (loc, nombre, ancho, alto) => {
     const f = path.join(tmp, nombre + '.png');
     await loc.scrollIntoViewIfNeeded();
@@ -45,7 +46,7 @@ im.save(sys.argv[2], 'WEBP', quality=82, method=6)`, png, path.join(guia, nombre
   // 1 · visión general con las cinco zonas numeradas
   await abrir('3 · Dipolo en equilibrio a 60°');
   await page.evaluate(() => {
-    const zonas = [['#side-list', 0.78, 0.02], ['.top', 0.62, 0.5], ['.stmt', 0.97, 0.18], ['#sources', 0.93, -0.06], ['#cv', 0.9, 0.12]];
+    const zonas = [['.bib-lista', 0.9, 0.05], ['.tools', 0.8, 0.5], ['.stmt', 0.97, 0.18], ['#sources', 0.93, -0.06], ['#cv', 0.9, 0.12]];
     zonas.forEach(([sel, fx, fy], i) => {
       const r = document.querySelector(sel).getBoundingClientRect(), d = document.createElement('div');
       d.textContent = i + 1;
@@ -58,11 +59,12 @@ im.save(sys.argv[2], 'WEBP', quality=82, method=6)`, png, path.join(guia, nombre
   await page.evaluate(() => document.querySelectorAll('.badge-guia').forEach((d) => d.remove()));
 
   // el resto son trozos de la página: con una ventana alta caben enteros
-  await page.setViewportSize({ width: 1300, height: 2400 });
+  await page.setViewportSize({ width: 1400, height: 2400 });
   await page.waitForTimeout(400);
 
   // 2 · barra lateral
-  await foto(page.locator('#side'), 'lateral', 414, 560);
+  await page.click('.bib [data-acc=pestana-guardados]');
+  await foto(page.locator('.bib'), 'lateral', 414, 560);
 
   // 3 · resultado con el desarrollo desplegado
   await page.evaluate(() => { document.querySelector('#steps-0').open = true; });
@@ -87,20 +89,20 @@ im.save(sys.argv[2], 'WEBP', quality=82, method=6)`, png, path.join(guia, nombre
   await foto(page.locator('.card.an[data-i="1"]'), 'grafica', 1023);
 
   // 6 · modo práctica con una respuesta comprobada
-  await page.check('#practice');
+  await page.check('#practice', { force: true });
   await page.waitForTimeout(300);
   const tarjeta = page.locator('.card.an[data-i="0"]');
   await tarjeta.locator('input').first().fill('(4+sqrt(2))*q^2/(8*pi*eps0*a)');
   await tarjeta.getByRole('button', { name: 'Comprobar' }).click();
   await page.waitForTimeout(200);
   await foto(tarjeta, 'practica', 1023);
-  await page.uncheck('#practice');
+  await page.uncheck('#practice', { force: true });
 
   // 7 · menú de exportar
   await page.click('#export');
   await page.waitForTimeout(200);
-  { const b = await page.locator('#save-cur').boundingBox(), m = await page.locator('#export-w .menu, #export-w [role=menu], #export-w div').last().boundingBox(), f = path.join(tmp, 'exportar.png');
-    await page.screenshot({ path: f, clip: { x: b.x + b.width + 8 - 560, y: b.y - 10, width: 560, height: m.y + m.height + 10 - (b.y - 10) } }); webp(f, 'exportar', 1100); }
+  { const b = await page.locator('#export').boundingBox(), m = await page.locator('#export-w .menu, #export-w [role=menu], #export-w div').last().boundingBox(), f = path.join(tmp, 'exportar.png');
+    await page.screenshot({ path: f, clip: { x: Math.max(0, b.x - 300), y: b.y - 10, width: 560, height: m.y + m.height + 10 - (b.y - 10) } }); webp(f, 'exportar', 1100); }
   await page.keyboard.press('Escape');
 
   // 8 · vista 3D

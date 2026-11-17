@@ -70,7 +70,7 @@ module.exports = ({ path, fuente, publico, mal: avisa, pagina }) => {
     // con file:// una carpeta no abre su index.html: se apunta al archivo para seguir el enlace
     await page.$eval('#abrir', (a) => a.setAttribute('href', a.getAttribute('href') + 'index.html'));
     await Promise.all([page.waitForEvent('load'), page.click('#abrir')]);
-    await page.waitForSelector('#side-list .item');
+    await page.waitForSelector('.bib .bib-acc');
     await page.waitForTimeout(300);
     const e = await page.evaluate(() => ({ titulo: document.querySelector('#title').value, inc: document.querySelector('#unknown').textContent, err: (() => { const x = document.querySelector('#errors'); return x && !x.hidden ? x.textContent : ''; })() }));
     if (!e.titulo.includes('San Telmo') || e.err) mal(`San Telmo: Electrostática no abre el ejercicio (${JSON.stringify(e)})`);
