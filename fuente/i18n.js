@@ -193,6 +193,7 @@ function numeros(src, idioma) {
 }
 
 const dicComun = (idioma) => leeDic(idioma, '_comun');
+const dicAsig = (idioma, asig) => leeDic(idioma, '_' + asig);
 const dicDe = (idioma, carpeta) => leeDic(idioma, carpeta.replace(/\//g, '__'));
 // Idiomas con dic de herramienta: las páginas que se generan
 const paginasTraducidas = (idioma) => Herramientas.lista().filter((h) => fs.existsSync(rutaDic(idioma, h.carpeta.replace(/\//g, '__'))));
@@ -204,7 +205,7 @@ function generarPagina(h, idioma, existentes, faltan, usadas) {
   const I = Idiomas.IDIOMAS.find((i) => i.c === idioma);
   const origen = path.join(publico, h.asignatura, h.clave, 'index.html');
   let html = fs.readFileSync(origen, 'utf8');
-  const dics = [dicDe(idioma, h.carpeta), dicComun(idioma)];
+  const dics = [dicDe(idioma, h.carpeta), dicAsig(idioma, h.asignatura), dicComun(idioma)];
   const ruta = `${h.asignatura}/${h.clave}/`, aqui = `${idioma}/${ruta}`;
   html = html.replace(/<style>[^<]*<\/style><div class="lg">[\s\S]*?<\/script>/, '<!--LG-->'); // el selector se pinta al final, ya en el idioma
   // 1. scripts: los de la página en línea y las copias traducidas de los externos con huella
@@ -277,7 +278,10 @@ if (require.main === module) {
     // textos de una herramienta (o 'comun') que faltan en su diccionario
     const { lista, ficherosDe, script } = Herramientas;
     let textos = [];
-    if (carpeta === '_comun') {
+    if (carpeta === '_matematicas') { // lo compartido por las herramientas de Matemáticas (álgebra, parámetros, expresiones)
+      for (const f of ['matematicas/algebra.js', 'matematicas/parametro.js', 'matematicas/expresion.js']) textos.push(...candidatosJS(script(f)));
+      textos = textos.filter((t) => busca([dicComun(idioma)], t) === undefined);
+    } else if (carpeta === '_comun') {
       const h0 = lista().find((h) => h.carpeta === 'choques');
       const h1 = lista().find((h) => h.carpeta !== 'choques' && h.asignatura === 'fisica');
       const leer = (h) => candidatosHTML(fs.readFileSync(path.join(publico, h.asignatura, h.clave, 'index.html'), 'utf8'));
@@ -289,7 +293,7 @@ if (require.main === module) {
       const html = fs.readFileSync(path.join(publico, h.asignatura, h.clave, 'index.html'), 'utf8');
       textos = candidatosHTML(html);
       for (const f of h.scripts) textos.push(...candidatosJS(script(f)));
-      textos = textos.filter((t) => busca([dicComun(idioma)], t) === undefined);
+      textos = textos.filter((t) => busca([dicAsig(idioma, h.asignatura), dicComun(idioma)], t) === undefined);
     }
     const nombre = carpeta.replace(/\//g, '__'), d = leeDic(idioma, nombre), nuevos = [...new Set(textos)].filter((t) => !(t in d));
     if (cmd === 'rellenar') { for (const t of nuevos) d[t] = ''; guardaDic(idioma, nombre, d); }
