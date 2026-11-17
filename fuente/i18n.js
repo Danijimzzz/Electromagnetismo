@@ -78,7 +78,7 @@ const ATRIBUTOS = ['title', 'aria-label', 'placeholder', 'alt', 'aria-descriptio
 function unidadesHTML(html, fino) {
   const out = []; const re = /<!--[\s\S]*?-->|<![^>]*>|<(script|style)\b[\s\S]*?<\/\1>|<\/?([A-Za-z][\w:-]*)((?:\s+[^\s=>\/]+(?:\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+))?)*)\s*\/?>|[^<]+|</g;
   let m, ini = -1, fin = -1;
-  const cierra = () => { if (ini >= 0) { const t = html.slice(ini, fin); if (/[A-Za-zÁÉÍÓÚáéíóúñÑ]{2}/.test(t.replace(/<[^>]*>/g, '').replace(/\$[^$]*\$/g, ''))) { const l = t.length - t.trimStart().length; out.push({ ini: ini + l, fin: ini + l + t.trim().length, texto: t.trim(), clase: 'html' }); } else if (/\$[^$]*"[^"$]*[A-Za-zÁÉÍÓÚáéíóúñÑ]{3}[^"$]*"[^$]*\$/.test(t)) { const l = t.length - t.trimStart().length; out.push({ ini: ini + l, fin: ini + l + t.trim().length, texto: t.trim(), clase: 'html', opt: true }); } } ini = fin = -1; }; // fórmula con texto entre comillas y nada más: se traduce solo si el diccionario lo pide
+  const cierra = () => { if (ini >= 0) { const t = html.slice(ini, fin); if (/[A-Za-zÁÉÍÓÚáéíóúñÑ]{2}/.test(t.replace(/<[^>]*>/g, '').replace(/\$[^$]*\$/g, ''))) { const l = t.length - t.trimStart().length; out.push({ ini: ini + l, fin: ini + l + t.trim().length, texto: t.trim(), clase: 'html' }); } else if (/\$[^$]*"[^"$]*[A-Za-zÁÉÍÓÚáéíóúñÑ]{3}[^"$]*"[^$]*\$/.test(t)) { const l = t.length - t.trimStart().length, e = t.slice(t.lastIndexOf('$')).includes('\u0001') ? t.lastIndexOf('$') + 1 : t.length; out.push({ ini: ini + l, fin: ini + e, texto: t.slice(l, e), clase: 'html', opt: true }); } } ini = fin = -1; }; // fórmula con texto entre comillas y nada más: se traduce solo si el diccionario lo pide
   let pre = 0, ctx = 0;
   while ((m = re.exec(html))) {
     const [t, scr, tag, attrs] = m;
@@ -206,7 +206,9 @@ const dicDe = (idioma, carpeta) => leeDic(idioma, carpeta.replace(/\//g, '__'));
 // el índice /fenomenos/ (lo genera portal.js; clave vacía → publico/fenomenos/index.html)
 const paginaIndice = { asignatura: 'fenomenos', clave: '', carpeta: 'fenomenos', scripts: [] };
 const rutaDe = (h) => [h.asignatura, h.clave].filter(Boolean).join('/');
-const paginasTraducidas = (idioma) => [...Herramientas.lista(), paginaIndice].filter((h) => fs.existsSync(rutaDic(idioma, h.carpeta.replace(/\//g, '__'))));
+// Electrostática no sale de la lista del catálogo (su página la hace build.sh con shell.html): se añade a mano
+const paginaElectro = { asignatura: 'electromagnetismo', clave: 'electrostatica', carpeta: 'electrostatica', scripts: ['engine.js', 'fmt.js', 'physics.js', 'presets.js', 'canvas.js', 'app.js'] };
+const paginasTraducidas = (idioma) => [...Herramientas.lista(), paginaElectro, paginaIndice].filter((h) => fs.existsSync(rutaDic(idioma, h.carpeta.replace(/\//g, '__'))));
 
 // Ruta relativa de `desde` (carpeta, con barras) a `hasta`
 const rel = (desde, hasta) => { const r = path.posix.relative('/' + desde.replace(/\/$/, ''), '/' + hasta.replace(/\/$/, '')); return (r || '.') + (hasta.endsWith('/') || hasta === '' ? '/' : ''); };
@@ -305,7 +307,7 @@ if (require.main === module) {
       textos = leer(h0).filter((t) => otros.has(t));
       for (const f of ficherosDe(h0)) if (!/^(choques)\//.test(f)) textos.push(...candidatosJS(script(f)));
     } else {
-      const h = [...lista(), paginaIndice].find((x) => x.carpeta === carpeta); if (!h) throw new Error('herramienta desconocida: ' + carpeta);
+      const h = [...lista(), paginaElectro, paginaIndice].find((x) => x.carpeta === carpeta); if (!h) throw new Error('herramienta desconocida: ' + carpeta);
       const html = fs.readFileSync(path.join(publico, h.asignatura, h.clave, 'index.html'), 'utf8');
       textos = candidatosHTML(html);
       for (const f of h.scripts) textos.push(...candidatosJS(script(f)));

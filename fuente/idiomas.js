@@ -119,7 +119,7 @@ const SCRIPT = (lista, actual, etiqueta) => `(() => {
   const destino = (i) => '/' + i.d + resto().replace(/^\\//, '');
   const btn = document.querySelector('.lg-btn'), pop = document.querySelector('.lg-pop');
   if (!btn || !pop) return;
-  pop.querySelectorAll('a[hreflang]').forEach((a) => { const i = L.find((x) => x.c === a.hreflang); if (i) a.href = destino(i); a.addEventListener('click', () => guarda(a.hreflang)); });
+  pop.querySelectorAll('a[hreflang]').forEach((a) => { const i = L.find((x) => x.c === a.hreflang); if (i && /^https?:$/.test(location.protocol)) a.href = destino(i); a.addEventListener('click', () => guarda(a.hreflang)); });
   const abre = (v) => { pop.hidden = !v; btn.setAttribute('aria-expanded', String(v)); };
   btn.addEventListener('click', (e) => { e.stopPropagation(); abre(pop.hidden); });
   document.addEventListener('click', (e) => { if (!pop.hidden && !e.target.closest('.lg')) abre(false); });
@@ -134,7 +134,7 @@ const SCRIPT = (lista, actual, etiqueta) => `(() => {
   const t = document.createElement('p'); t.textContent = i.a[0];
   const si = document.createElement('button'); si.type = 'button'; si.className = 'lg-si'; si.textContent = i.a[1];
   const no = document.createElement('button'); no.type = 'button'; no.textContent = i.a[2];
-  si.addEventListener('click', () => { guarda(i.c); location.href = destino(i); });
+  si.addEventListener('click', () => { guarda(i.c); const a = pop.querySelector('a[hreflang="' + i.c + '"]'); location.href = a ? a.href : destino(i); });
   no.addEventListener('click', () => { guarda(ACTUAL); b.remove(); });
   b.append(t, si, no); document.body.append(b);
 })();`;

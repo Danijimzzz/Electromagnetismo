@@ -12,6 +12,16 @@
 const Version = (() => {
   const registros = {
     web: [
+      { v: '1.21', fecha: '2026-11-17', titulo: 'Ciencify también en inglés', subtitulo: 'Una primera versión en inglés con selector de idioma, y un buscador nuevo.', secciones: [
+        { icono: '🌐', titulo: 'Inglés (beta)', puntos: [
+          '**Selector de idioma** en la cabecera: botón con globo y lista con banderas. Nunca te cambia de idioma por tu cuenta, solo te avisa una vez.',
+          '**Herramientas de todas las asignaturas en inglés**, con su teoría, sus ejemplos, Mis ejercicios y el modo práctica. Los números salen con punto decimal.',
+          'La portada, las páginas de asignatura, las novedades y las páginas legales también tienen versión en inglés.',
+        ] },
+        { icono: '🔎', titulo: 'Buscador', puntos: [
+          '**Buscador global** con Ctrl+K o «/» en cualquier página, con estilo de cristal líquido, como la barra lateral.',
+        ] },
+      ] },
       { v: '1.20.2', fecha: '2026-11-17', cambios: [
         'El buscador (Ctrl+K o «/») tiene ya el mismo estilo de cristal líquido que la barra lateral: ventana translúcida con desenfoque, bordes de vidrio y esquinas más redondas, en claro, oscuro y móvil.',
       ] },
