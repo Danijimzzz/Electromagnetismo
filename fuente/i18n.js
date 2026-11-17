@@ -78,7 +78,7 @@ const ATRIBUTOS = ['title', 'aria-label', 'placeholder', 'alt', 'aria-descriptio
 function unidadesHTML(html) {
   const out = []; const re = /<!--[\s\S]*?-->|<![^>]*>|<(script|style)\b[\s\S]*?<\/\1>|<\/?([A-Za-z][\w:-]*)((?:\s+[^\s=>\/]+(?:\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+))?)*)\s*\/?>|[^<]+|</g;
   let m, ini = -1, fin = -1;
-  const cierra = () => { if (ini >= 0) { const t = html.slice(ini, fin); if (/[A-Za-zÁÉÍÓÚáéíóúñÑ]{2}/.test(t.replace(/<[^>]*>/g, '').replace(/\$[^$]*\$/g, (f) => /"[^"$]*[A-Za-zÁÉÍÓÚáéíóúñÑ]{3}[^"$]*\s[^"$]*"/.test(f) ? f : ''))) { const l = t.length - t.trimStart().length; out.push({ ini: ini + l, fin: ini + l + t.trim().length, texto: t.trim(), clase: 'html' }); } } ini = fin = -1; };
+  const cierra = () => { if (ini >= 0) { const t = html.slice(ini, fin); if (/[A-Za-zÁÉÍÓÚáéíóúñÑ]{2}/.test(t.replace(/<[^>]*>/g, '').replace(/\$[^$]*\$/g, ''))) { const l = t.length - t.trimStart().length; out.push({ ini: ini + l, fin: ini + l + t.trim().length, texto: t.trim(), clase: 'html' }); } else if (/\$[^$]*"[^"$]*[A-Za-zÁÉÍÓÚáéíóúñÑ]{3}[^"$]*"[^$]*\$/.test(t)) { const l = t.length - t.trimStart().length; out.push({ ini: ini + l, fin: ini + l + t.trim().length, texto: t.trim(), clase: 'html', opt: true }); } } ini = fin = -1; }; // fórmula con texto entre comillas y nada más: se traduce solo si el diccionario lo pide
   let pre = 0, ctx = 0;
   while ((m = re.exec(html))) {
     const [t, scr, tag, attrs] = m;
@@ -134,14 +134,14 @@ function edicionesJS(src) {
   const ls = literales(src), eds = [];
   for (const l of ls.filter((x) => x.nivel === 0)) {
     const m = mascara(l.texto);
-    if (m.includes('<') && /<\/?[a-zA-Z]/.test(m)) { for (const u of unidadesHTML(m)) eds.push({ ini: l.ini + u.ini, fin: l.ini + u.fin, texto: l.texto.slice(u.ini, u.fin), tipo: l.tipo, clase: u.clase }); }
+    if (m.includes('<') && /<\/?[a-zA-Z]/.test(m)) { for (const u of unidadesHTML(m)) eds.push({ ini: l.ini + u.ini, fin: l.ini + u.fin, texto: l.texto.slice(u.ini, u.fin), tipo: l.tipo, clase: u.clase, opt: u.opt }); }
     else if (conLetras(m) || /^-?\d+,\d+$/.test(m)) eds.push({ ini: l.ini, fin: l.fin, texto: l.texto, tipo: l.tipo, clase: 'js', opt: !esTexto(l.texto) });
   }
   const dentro = (e) => eds.some((x) => e.ini >= x.ini && e.fin <= x.fin);
   for (const l of ls.filter((x) => x.nivel > 0)) {
     const m = mascara(l.texto);
-    const parte = (ini, fin, texto, clase) => { const e = { ini, fin, texto, tipo: l.tipo, clase }; if (!dentro(e)) eds.push(e); };
-    if (/<\/?[a-zA-Z]/.test(m)) for (const u of unidadesHTML(m)) parte(l.ini + u.ini, l.ini + u.fin, l.texto.slice(u.ini, u.fin), u.clase);
+    const parte = (ini, fin, texto, clase, opt) => { const e = { ini, fin, texto, tipo: l.tipo, clase, opt }; if (!dentro(e)) eds.push(e); };
+    if (/<\/?[a-zA-Z]/.test(m)) for (const u of unidadesHTML(m)) parte(l.ini + u.ini, l.ini + u.fin, l.texto.slice(u.ini, u.fin), u.clase, u.opt);
     else if (conLetras(m)) { parte(l.ini, l.fin, l.texto, 'js'); if (!esTexto(l.texto) && eds.length) { const u = eds[eds.length - 1]; if (u.ini === l.ini && u.fin === l.fin) u.opt = true; } }
   }
   return eds.sort((a, b) => a.ini - b.ini);
@@ -176,7 +176,7 @@ function aplica(src, eds, dics, faltan, usadas) {
 const traduceJS = (src, dics, faltan, usadas) => aplica(src, edicionesJS(src), dics, faltan, usadas);
 const traduceHTML = (html, dics, faltan, usadas) => aplica(html, unidadesHTML(html).map((u) => ({ ...u, tipo: u.clase === 'json' ? 'json' : '' })), dics, faltan, usadas);
 const sinSelector = (html) => html.replace(/<style>[^<]*<\/style><div class="lg">[\s\S]*?<\/script>/, '');
-const candidatosHTML = (html) => [...new Set(unidadesHTML(sinSelector(html)).map((u) => u.texto))];
+const candidatosHTML = (html) => [...new Set(unidadesHTML(sinSelector(html)).filter((u) => !u.opt).map((u) => u.texto))];
 const candidatosJS = (src) => [...new Set(edicionesJS(src).filter((u) => !u.opt).map((u) => u.texto))];
 
 /* ---------- Generar publico/<idioma>/ ---------- */
