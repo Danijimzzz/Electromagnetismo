@@ -10,10 +10,10 @@
    También acepta <sup>, <sub> y las etiquetas que devuelve f().
    ===================================================================== */
 const Mates = (() => {
-  const FUNC = new Set(['sen', 'cos', 'tg', 'tan', 'ln', 'log', 'exp', 'arcsen', 'arccos', 'arctg', 'máx', 'mín', 'lím', 'senh', 'cosh', 'tgh', 'sin', 'arcsin', 'arctan', 'sinh', 'tanh', 'max', 'min', 'lim']);
-  // Cómo se escribe cada función en pantalla (el idioma lo cambia en la traducción: sen → sin, tg → tan…)
+  // Cómo se escribe cada función en pantalla (el idioma lo cambia en la traducción: sen → sin, tg → tan…); las claves son los nombres internos
   const VISTA_FN = Object.fromEntries('sen=sen tg=tg arcsen=arcsen arctg=arctg senh=senh tgh=tgh máx=máx mín=mín lím=lím'.split(' ').map((x) => x.split('=')));
   const nombreFn = (f) => VISTA_FN[f] || f;
+  const FUNC = new Set(['cos', 'tan', 'ln', 'log', 'exp', 'arccos', 'cosh', 'sin', 'arcsin', 'arctan', 'sinh', 'tanh', 'max', 'min', 'lim', ...Object.keys(VISTA_FN)]);
   const OPS = '+-−=·×÷⇒⇔→←↔≈≠<>≤≥±∓,;:!∝∈∼≡∑∏∫∂∇⊥∥';
   const escH = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
