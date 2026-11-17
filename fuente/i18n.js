@@ -78,7 +78,7 @@ const ATRIBUTOS = ['title', 'aria-label', 'placeholder', 'alt', 'aria-descriptio
 function unidadesHTML(html) {
   const out = []; const re = /<!--[\s\S]*?-->|<![^>]*>|<(script|style)\b[\s\S]*?<\/\1>|<\/?([A-Za-z][\w:-]*)((?:\s+[^\s=>\/]+(?:\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+))?)*)\s*\/?>|[^<]+|</g;
   let m, ini = -1, fin = -1;
-  const cierra = () => { if (ini >= 0) { const t = html.slice(ini, fin); if (/[A-Za-zÁÉÍÓÚáéíóúñÑ]{2}/.test(t.replace(/<[^>]*>/g, '').replace(/\$[^$]*\$/g, ''))) { const l = t.length - t.trimStart().length; out.push({ ini: ini + l, fin: ini + l + t.trim().length, texto: t.trim(), clase: 'html' }); } } ini = fin = -1; };
+  const cierra = () => { if (ini >= 0) { const t = html.slice(ini, fin); if (/[A-Za-zÁÉÍÓÚáéíóúñÑ]{2}/.test(t.replace(/<[^>]*>/g, '').replace(/\$[^$]*\$/g, (f) => /"[^"$]*[A-Za-zÁÉÍÓÚáéíóúñÑ]{3}[^"$]*\s[^"$]*"/.test(f) ? f : ''))) { const l = t.length - t.trimStart().length; out.push({ ini: ini + l, fin: ini + l + t.trim().length, texto: t.trim(), clase: 'html' }); } } ini = fin = -1; };
   let pre = 0, ctx = 0;
   while ((m = re.exec(html))) {
     const [t, scr, tag, attrs] = m;
