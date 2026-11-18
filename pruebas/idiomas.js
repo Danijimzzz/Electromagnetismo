@@ -76,7 +76,24 @@ async function navegador(browser, { mal }) {
   await ctx.close();
 }
 
-module.exports = async (browser, ctx) => { nodo(ctx.mal); if (browser) await navegador(browser, ctx); };
+// 3. Páginas reales de publico/: la lista abierta queda por encima de la barra de asignaturas y de todo lo demás
+async function real(browser, { mal }) {
+  const fs = require('fs'), path = require('path');
+  const base = path.join(__dirname, '..', 'publico');
+  const paginas = ['index.html', 'fisica/index.html', 'fisica/choques/index.html'].filter((f) => fs.existsSync(path.join(base, f)));
+  if (!paginas.length) return;
+  for (const [ancho, alto] of [[390, 800], [1200, 800]]) for (const esquema of ['light', 'dark']) for (const f of paginas) {
+    const ctx = await browser.newContext({ viewport: { width: ancho, height: alto }, colorScheme: esquema });
+    const p = await ctx.newPage(); await p.goto('file://' + path.join(base, f));
+    if (!await p.locator('.lg-btn').count()) { await ctx.close(); continue; }
+    await p.click('.lg-btn');
+    const mala = await p.evaluate(() => [...document.querySelectorAll('.lg-pop a')].filter((a) => { const r = a.getBoundingClientRect(), x = r.left + r.width / 2, y = r.top + r.height / 2, t = document.elementFromPoint(x, y); return !(t && (t === a || a.contains(t))); }).map((a) => a.textContent.trim()));
+    if (mala.length) mal(`idiomas.js (real): ${f} a ${ancho}px (${esquema}): opciones tapadas por otro elemento: ${mala.join(', ')}`);
+    await ctx.close();
+  }
+}
+
+module.exports = async (browser, ctx) => { nodo(ctx.mal); if (browser) { await navegador(browser, ctx); await real(browser, ctx); } };
 if (require.main === module) (async () => {
   let fallos = 0; const mal = (m) => { fallos++; console.error('  ✗ ' + m); };
   const { chromium } = require('playwright'); const b = await chromium.launch();
