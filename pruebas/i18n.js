@@ -33,7 +33,7 @@ const ESPANOL_EN = pal('el|los|las|una|del|para|con|que|por|desde|sobre|cuando|c
 // francés y alemán llevan é/è/à/ç/ä/ö/ü legítimos: solo cuentan las marcas que ellos no tienen (á í ó ú ñ ¿ ¡) y palabras sueltas muy españolas
 const ESPANOL_FR = pal('los|las|una|del|para|con|desde|sobre|cuando|como|más', '[áíóúñ¿¡]'), ESPANOL_DE_ = pal('el|las|una|del|para|con|que|por|desde|sobre|cuando|como|más', '[áéíóúñ¿¡]');
 // subíndices «máx»/«mín» dentro de fórmulas: pendiente de traducir en las fórmulas, no cuentan como texto en español
-const sinSub = (l) => l.replace(/^para$|(?<=\()para(?=\))|(?<![\p{L}])para(?= \(1,4\))|(?<=(?:méta|meta|et|und|ou|oder|,) )para(?![\p{L}])/giu, 'p').replace(/\bm[áí][xn]\b|(?<=[_,\s])m[áí][xn](?![\p{L}])/gu, 'max');
+const sinSub = (l) => l.replace(/^para$|(?<=\()para(?=\))|(?<=; )para(?= = 1,4)|(?<![\p{L}])para(?= \(1,4\))|(?<=(?:méta|meta|et|und|ou|oder|,) )para(?![\p{L}])/giu, 'p').replace(/\bm[áí][xn]\b|(?<=[_,\s])m[áí][xn](?![\p{L}])/gu, 'max');
 // notación de las funciones: sen/sin y tg/tan son la misma cosa dentro de un «${…}» que en realidad es texto con llaves
 const NOTACION = /\b(sen|sin|tg|tan)\b/g, norm = (w) => (w === 'sen' || w === 'sin' ? 'sin' : 'tan');
 const espanolDe = (c) => c === 'fr' ? ESPANOL_FR : c === 'de' ? ESPANOL_DE_ : ESPANOL_EN;
