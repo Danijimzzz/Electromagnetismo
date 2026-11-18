@@ -27,7 +27,12 @@ const formulas = (t) => (t.replace(/\$\{[^}]*\}/g, '').match(/\$[^$]+\$/g) || []
 const sinNombres = (l) => l.replace(/\p{Lu}[\p{L}'-]*/gu, (w) => (/[áéíóúñ]/i.test(w) ? ' ' : w)).replace(/élektron|El Alamein|olla exprés/g, ' ');
 // Nombres propios con tilde que no son español (Thévenin, Scheffé…); en las páginas generales también García, Jiménez…
 const NOMBRES = /Th[ée]venin|Scheff[ée]|Cram[ée]r|Kolmog[oó]rov|Fr[ée]chet|Poincar[ée]|Gram-Schmidt|Rouché|Ampère|García|Jiménez|Fresnel|Kutta|Bézout|Hölder|Möbius|Lévy|Gödel|Lagrangiano/g, ESPANOL_G = /[¿¡ñáíóú]|\b(los|las|una|del|desde|sobre|cuando|más)\b/i;
-const ESPANOL = /[áéíóúñ¿¡]|\b(el|los|las|una|del|para|con|que|por|desde|sobre|cuando|como|más)\b/i;
+const ESPANOL_EN = /[áéíóúñ¿¡]|\b(el|los|las|una|del|para|con|que|por|desde|sobre|cuando|como|más)\b/i;
+// francés y alemán llevan é/è/à/ç/ä/ö/ü legítimos: solo cuentan las marcas que ellos no tienen (á í ó ú ñ ¿ ¡) y palabras sueltas muy españolas
+const ESPANOL_FR = /[áíóúñ¿¡]|\b(los|las|una|del|para|con|desde|sobre|cuando|como|más)\b/i, ESPANOL_DE = /[áéíóúñ¿¡]|\b(el|los|las|una|del|para|con|que|por|desde|sobre|cuando|como|más)\b/i;
+const ESPANOL_DE_ = ESPANOL_DE;
+const espanolDe = (c) => c === 'fr' ? ESPANOL_FR : c === 'de' ? ESPANOL_DE_ : ESPANOL_EN;
+const ESPANOL = ESPANOL_EN;
 
 function nodo(mal) {
   const e = (c, ok) => { if (!ok) mal(`i18n (Node): ${c}`); };
@@ -87,7 +92,7 @@ async function navegador(browser, { mal }) {
         await ctx.route(/googlesyndication|googletagmanager|google-analytics|workers\.dev/, (r) => r.abort());
         p.on('pageerror', (er) => errores.push(er.message)); p.on('response', (r) => { if (r.status() >= 400) errores.push(`${r.status()} ${r.url()}`); });
         await p.goto(`${base}/${I.c}/${I18n.rutaDe(h)}/`); await p.waitForTimeout(600);
-        const espanol = async (donde) => { const t = await p.evaluate(() => [...document.querySelectorAll('body *')].filter((x) => !x.closest('.lg-pop, script, style, template, [hidden]') && x.offsetParent !== null).flatMap((x) => [...x.childNodes].filter((c) => c.nodeType === 3).map((c) => c.textContent.trim())).filter(Boolean)); const mal2 = t.filter((l) => ESPANOL.test(sinNombres(l.replace(NOMBRES, "")))); e(`${n}: español visible ${donde}: ${mal2.slice(0, 3).join(' | ').slice(0, 160)}`, mal2.length === 0); };
+        const espanol = async (donde) => { const t = await p.evaluate(() => [...document.querySelectorAll('body *')].filter((x) => !x.closest('.lg-pop, script, style, template, [hidden]') && x.offsetParent !== null).flatMap((x) => [...x.childNodes].filter((c) => c.nodeType === 3).map((c) => c.textContent.trim())).filter(Boolean)); const mal2 = t.filter((l) => espanolDe(I.c).test(sinNombres(l.replace(NOMBRES, "")))); e(`${n}: español visible ${donde}: ${mal2.slice(0, 3).join(' | ').slice(0, 160)}`, mal2.length === 0); };
         await espanol('al abrir');
         // la barra Mis ejercicios: pestaña Ejemplos y menú ⋮
         await p.evaluate(() => document.querySelector('.bib-btn')?.click()); await p.waitForTimeout(300);
@@ -121,7 +126,7 @@ async function navegador(browser, { mal }) {
         if (g.ruta === '') { // buscador: se abre con «/» y no muestra español; Tu espacio con datos
           await p.keyboard.press('Escape'); await p.evaluate(() => { localStorage.setItem('simu-favoritos', JSON.stringify(['fisica/choques'])); localStorage.setItem('simu-recientes', JSON.stringify([{ r: 'fisica/choques', t: Date.now() - 600000 }])); }); await p.reload(); await p.waitForTimeout(400);
           const espacio = await p.evaluate(() => document.getElementById('tu-espacio')?.innerText || '');
-          e(`${n}: «Tu espacio» en el idioma (sale «${espacio.replace(/\s+/g, ' ').slice(0, 120)}»)`, /Your space/.test(espacio) && !ESPANOL.test(espacio));
+          e(`${n}: «Tu espacio» en el idioma (sale «${espacio.replace(/\s+/g, ' ').slice(0, 120)}»)`, !/Tu espacio/.test(espacio) && espacio.length > 10 && !espanolDe(I.c).test(espacio));
         }
         e(`${n}: errores en la consola o recursos que faltan: ${errores.join(' | ').slice(0, 200)}`, errores.length === 0);
         await ctx.close();

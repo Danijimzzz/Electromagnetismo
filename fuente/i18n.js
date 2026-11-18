@@ -241,7 +241,7 @@ function generarPagina(h, idioma, existentes, faltan, usadas) {
   // 2. HTML (texto y atributos)
   html = traduceHTML(html, dics, faltan, usadas);
   // 3. lang, canonical, hreflang, robots y selector
-  html = html.replace('<html lang="es">', `<html lang="${I.html}">`);
+  html = html.replace('<html lang="es">', `<html lang="${I.html}">`).replace(/"inLanguage":"es"/g, `"inLanguage":"${I.html}"`);
   html = html.replace(/<link rel="canonical" href="[^"]*">/, `<link rel="canonical" href="${Catalogo.web}/${aqui}">` + (I.indexar ? '' : '\n' + Idiomas.ROBOTS(idioma)));
   html = html.replace(/<meta property="og:image"/, `<meta property="og:locale" content="${I.html.replace('-', '_')}">\n<meta property="og:image"`);
   // 4. enlaces y recursos relativos: la página baja un nivel (/en/…); lo que existe en este idioma se queda en él

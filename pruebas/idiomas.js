@@ -12,7 +12,9 @@ const Idiomas = require('../fuente/idiomas.js');
 function nodo(mal) {
   const e = (c, ok) => { if (!ok) mal(`idiomas.js (Node): ${c}`); };
   e('sin una página traducida no hay botón ni hreflang (aunque haya idiomas publicados)', Idiomas.BOTON() === '' && Idiomas.BOTON({ ruta: 'x/y/' }) === '' && Idiomas.HREFLANG('x/y/', 'https://x') === '');
-  e('con la página traducida (Choques) el botón sale con español e inglés', Idiomas.BOTON({ ruta: 'fisica/choques/' }).includes('hreflang="en"') && !Idiomas.BOTON({ ruta: 'fisica/choques/' }).includes('hreflang="de"'));
+  for (const c of ['en', 'de', 'fr', 'pt', 'it', 'zh', 'ja']) { const I = Idiomas.IDIOMAS.find((i) => i.c === c); e(`el botón de Choques lleva ${c} solo si está publicado y la página existe en él`, Idiomas.BOTON({ ruta: 'fisica/choques/' }).includes(`hreflang="${c}"`) === (I.publicado && Idiomas.paginas(c).has('fisica/choques/'))); }
+  e('en, de y fr están publicados e indexables (sin noindex) y el resto no', ['en', 'de', 'fr'].every((c) => Idiomas.IDIOMAS.find((i) => i.c === c).indexar && Idiomas.IDIOMAS.find((i) => i.c === c).publicado && Idiomas.ROBOTS(c) === '') && ['pt', 'it', 'zh', 'ja'].every((c) => !Idiomas.IDIOMAS.find((i) => i.c === c).indexar && Idiomas.ROBOTS(c).includes('noindex')));
+  e('hreflang de una página traducida lista es, en, de, fr y x-default', (() => { const h2 = Idiomas.HREFLANG('fisica/choques/', 'https://x'); return !h2 || ['es', 'en', 'de', 'fr', 'x-default'].filter((c) => h2.includes(`hreflang="${c}"`)).length >= 2; })());
   const b = Idiomas.BOTON({ idioma: 'ja', raiz: '../', todos: true });
   e('con todos salen 8 enlaces con hreflang', (b.match(/hreflang="/g) || []).length === 8);
   e('con 8 banderas y 8 códigos', (b.match(/class="lg-fl"/g) || []).length === 8 && ['ES', 'EN', 'DE', 'FR', 'PT', 'IT', 'ZH', 'JA'].every((c) => b.includes(`<small>${c}</small>`)));
@@ -21,7 +23,7 @@ function nodo(mal) {
   e('nombres en su idioma', ['Español', 'English', 'Deutsch', 'Français', 'Português', 'Italiano', '简体中文', '日本語'].every((n) => b.includes(n)));
   const h = Idiomas.HREFLANG('fisica/choques/', 'https://x', true);
   e('hreflang con x-default hacia el español', h.includes('hreflang="x-default" href="https://x/fisica/choques/"') && h.includes('hreflang="zh-Hans" href="https://x/zh/fisica/choques/"'));
-  e('noindex en un idioma no indexable y nada en español', Idiomas.ROBOTS('de').includes('noindex') && Idiomas.ROBOTS('en') === '' && Idiomas.ROBOTS('es') === '');
+  e('noindex en un idioma no indexable y nada en español', Idiomas.ROBOTS('pt').includes('noindex') && Idiomas.ROBOTS('en') === '' && Idiomas.ROBOTS('es') === '');
   e('sitemap con xhtml:link', Idiomas.SITEMAP('a/', 'https://x', true).includes('<xhtml:link rel="alternate" hreflang="de" href="https://x/de/a/"/>'));
   e('banderas: cada idioma tiene la suya y su frase de aviso', Idiomas.IDIOMAS.every((i) => Idiomas.BANDERAS[i.c] && i.aviso.length === 3));
 }

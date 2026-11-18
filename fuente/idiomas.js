@@ -36,8 +36,8 @@ const bandera = (c, t) => `<svg class="lg-fl" viewBox="0 0 24 24" width="${t}" h
 const IDIOMAS = [
   { c: 'es', etiqueta: 'Idioma', nombre: 'Español', carpeta: '', html: 'es', publicado: true, indexar: true, num: { dec: ',', miles: '' }, aviso: ['Esta página está disponible en español.', 'Cambiar a español', 'Seguir aquí'] },
   { c: 'en', etiqueta: 'Language', nombre: 'English', carpeta: 'en/', html: 'en', publicado: true, indexar: true, num: { dec: '.', miles: ',' }, aviso: ['This page is available in English.', 'Switch to English', 'Stay here'] },
-  { c: 'de', nombre: 'Deutsch', carpeta: 'de/', html: 'de', publicado: false, indexar: false, num: { dec: ',', miles: '.' }, aviso: ['Diese Seite ist auf Deutsch verfügbar.', 'Auf Deutsch ansehen', 'Hier bleiben'] },
-  { c: 'fr', nombre: 'Français', carpeta: 'fr/', html: 'fr', publicado: false, indexar: false, num: { dec: ',', miles: ' ' }, aviso: ['Cette page est disponible en français.', 'Passer en français', 'Rester ici'] },
+  { c: 'de', etiqueta: 'Sprache', nombre: 'Deutsch', carpeta: 'de/', html: 'de', publicado: true, indexar: true, num: { dec: ',', miles: '.' }, aviso: ['Diese Seite ist auf Deutsch verfügbar.', 'Auf Deutsch ansehen', 'Hier bleiben'] },
+  { c: 'fr', etiqueta: 'Langue', nombre: 'Français', carpeta: 'fr/', html: 'fr', publicado: true, indexar: true, num: { dec: ',', miles: ' ' }, aviso: ['Cette page est disponible en français.', 'Passer en français', 'Rester ici'] },
   { c: 'pt', nombre: 'Português', carpeta: 'pt/', html: 'pt', publicado: false, indexar: false, num: { dec: ',', miles: '.' }, aviso: ['Esta página está disponível em português.', 'Mudar para português', 'Ficar aqui'] },
   { c: 'it', nombre: 'Italiano', carpeta: 'it/', html: 'it', publicado: false, indexar: false, num: { dec: ',', miles: '.' }, aviso: ['Questa pagina è disponibile in italiano.', 'Passa all’italiano', 'Resta qui'] },
   { c: 'zh', nombre: '简体中文', carpeta: 'zh/', html: 'zh-Hans', publicado: false, indexar: false, num: { dec: '.', miles: ',' }, aviso: ['本页面提供简体中文版本。', '切换到简体中文', '留在此页'] },
@@ -147,7 +147,7 @@ function BOTON({ idioma = 'es', raiz = './', todos, ruta } = {}) {
   const act = lista.find((i) => i.c === idioma) || lista[0], etiqueta = act.etiqueta;
   const filas = lista.map((i) => `<li><a href="${esc(raiz + i.carpeta)}" hreflang="${i.c}" lang="${i.html}"${i.c === act.c ? ' aria-current="true"' : ''}><span>${bandera(i.c, 22)}${esc(i.nombre)}</span><small>${i.c.toUpperCase()}</small></a></li>`).join('');
   return `<style>${CSS(true)}</style><div class="lg"><button class="lg-btn" type="button" aria-expanded="false" aria-controls="lg-lista" aria-label="${esc(etiqueta)}: ${esc(act.nombre)}" title="${esc(etiqueta)}">${globo}<span>${act.c.toUpperCase()}</span><span aria-hidden="true">▾</span></button>`
-    + `<ul class="lg-pop" id="lg-lista" hidden><li class="lg-t" aria-hidden="true">${act.c === 'es' ? 'Idioma · Language' : 'Language · Idioma'}</li>${filas}</ul></div><script>${SCRIPT(lista, act.c, etiqueta)}</script>`;
+    + `<ul class="lg-pop" id="lg-lista" hidden><li class="lg-t" aria-hidden="true">${act.c === 'es' ? 'Idioma · Language' : act.c === 'en' ? 'Language · Idioma' : act.etiqueta + ' · Language'}</li>${filas}</ul></div><script>${SCRIPT(lista, act.c, etiqueta)}</script>`;
 }
 
 // ruta: ruta de la página en español sin barra inicial ('fisica/choques/'). Solo idiomas publicados e indexables.
