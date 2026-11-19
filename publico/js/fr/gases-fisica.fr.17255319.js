@@ -124,7 +124,7 @@ const Gases = (() => {
     if (ciclo) {
       rend = Qabs > 0 ? Wt / Qabs : null;
       const Tmax = Math.max(...est.map((e) => e.T)), Tmin = Math.min(...est.map((e) => e.T));
-      pasos.push({ t: 'Bilan du cycle', html: `$ΔU = 0$ (retour à l’état A) ⇒ $W_{net} = Q_{net}$ = <b>${f(Wt)} J</b><br>Chaleur absorbée : $Q_{abs} = ${f(Qabs)}$ J ; cédée : ${f(Qced)} J${rend !== null ? `<br>${Wt > 0 ? 'Rendement' : 'C’est un cycle frigorifique (W &lt; 0) ; en tant que moteur'} : $η = W/Q_{abs}$ = <b>${f(100 * rend, 3)} %</b> ; un cycle de Carnot entre ${f(Tmax)} K et ${f(Tmin)} K donnerait $1 − T_{"mín"}/T_{"máx"} = ${f(100 * (1 - Tmin / Tmax), 3)}$ %. Pour voir aussi le cycle dans le diagramme T-S, ouvre-le dans Cycles thermodynamiques (cycle personnalisé).` : ''}` });
+      pasos.push({ t: 'Bilan du cycle', html: `$ΔU = 0$ (retour à l’état A) ⇒ $W_{net} = Q_{net}$ = <b>${f(Wt)} J</b><br>Chaleur absorbée : $Q_{abs} = ${f(Qabs)}$ J ; cédée : ${f(Qced)} J${rend !== null ? `<br>${Wt > 0 ? 'Rendement' : 'C’est un cycle frigorifique (W &lt; 0) ; en tant que moteur'} : $η = W/Q_{abs}$ = <b>${f(100 * rend, 3)} %</b> ; un cycle de Carnot entre ${f(Tmax)} K et ${f(Tmin)} K donnerait $1 − T_{"min"}/T_{"max"} = ${f(100 * (1 - Tmin / Tmax), 3)}$ %. Pour voir aussi le cycle dans le diagramme T-S, ouvre-le dans Cycles thermodynamiques (cycle personnalisé).` : ''}` });
     } else pasos.push({ t: 'Totaux', html: `$W = ${f(Wt)}$ J, $Q = ${f(Qt)}$ J, $ΔU = ${f(Ut)}$ J ($Q − W = ${f(Qt - Wt)}$ J)` });
     return { modo: 'procesos', G, u, n, est, tramos, Wt, Qt, Ut, ciclo, rend, Qabs, Qced, pasos };
   }

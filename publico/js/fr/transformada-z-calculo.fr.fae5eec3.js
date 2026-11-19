@@ -159,7 +159,7 @@ const TransformadaZ = (() => {
     if (S.nulo) pasos.push({ t: 'Système nul', html: 'Le numérateur vaut 0 : $H(z) = 0$, la sortie est toujours 0 et $h[n] = 0$ pour tout $n$. Il n\'y a pas de réponse à analyser ; vérifiez les coefficients de $b$.' });
     if (S.cancel.length) pasos.push({ t: 'Simplification pôle-zéro', html: `${S.cancel.map((c) => `Le pôle $${fc(c.p)}$ coïncide avec un zéro (${c.m} ${c.m === 1 ? 'fois' : 'fois'}) : ils se simplifient`).join(' ; ')}. La stabilité et $h[n]$ sont ceux du système restant${S.polosEf.length ? `, avec les pôles $${conjuntos(S.polosEf)}$` : ', sans pôles (il reste un système RIF)'}. Attention : dans un système réel, la simplification n'est exacte que sur le papier ; un pôle instable simplifié reste dangereux.` });
     const lec = { estable: 'Tous les pôles sont à l\'intérieur du cercle unité ($|p| < 1$) : le système causal est <b>stable</b> et la réponse impulsionnelle s\'amortit.', marginal: 'Le pôle de plus grand module est sur le cercle unité ($|p| = 1$) : le système est <b>marginalement stable</b> (la réponse ne croît ni ne s\'annule).', inestable: 'Un pôle est à l\'extérieur du cercle unité (ou répété sur celui-ci) : le système causal est <b>instable</b> et la réponse croît sans limite.' };
-    pasos.push({ t: 'Stabilité', html: `$|p|_{"máx"} = ${f(S.rmax, 5)}$. ${lec[S.estab]}` });
+    pasos.push({ t: 'Stabilité', html: `$|p|_{"max"} = ${f(S.rmax, 5)}$. ${lec[S.estab]}` });
     if (S.cerr) {
       const c = S.cerr, trozos = [];
       if (c.d) trozos.push(`${f(c.d)}·δ[n]`);
