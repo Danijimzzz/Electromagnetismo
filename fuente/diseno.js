@@ -13,7 +13,7 @@
    (fenómenos también) el de «Herramientas relacionadas» (o «Más fenómenos»):
      node diseno.js ASIGNATURA HERRAMIENTA < pagina.html
    ===================================================================== */
-const Limites = require('./limites.js'), Catalogo = require('./catalogo.js'), Tema = require('./tema.js'), Idiomas = require('./idiomas.js'), Accesibilidad = require('./accesibilidad.js'), Buscador = require('./buscador.js'), Llama = require('./llama.js'), Anuncios = require('./anuncios.js'), Pwa = require('./pwa.js'), Preguntas = require('./preguntas.js');
+const Limites = require('./limites.js'), Catalogo = require('./catalogo.js'), Tema = require('./tema.js'), Idiomas = require('./idiomas.js'), Accesibilidad = require('./accesibilidad.js'), Buscador = require('./buscador.js'), Llama = require('./llama.js'), Anuncios = require('./anuncios.js'), Pwa = require('./pwa.js'), Preguntas = require('./preguntas.js'), Imprimir = require('./imprimir-css.js'), Version = require('./version.js');
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
 // Hoja común de las herramientas (estilos.css) y la cabecera del portal, que comparten con el simulador de
@@ -57,7 +57,7 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
 @media (max-width:600px) { .vida-real a, .relacionadas a { display:block } .vida-real a b, .relacionadas a b { display:block; white-space:normal } }
 @media (max-width:700px) { header.top form { display:none } h1 { font-size:21px }
   .miga-izq, .miga-der, .miga::after { order:-1 } .miga::after { content:''; flex-basis:100%; height:0 } }
-${Tema.CSS}`;
+${Tema.CSS}${Imprimir.CSS}`;
 // el simulador de electrostática no usa estilos.css: solo los colores, la cabecera y el aspecto de sus tarjetas
 const css = (a) => `
 :root { --bg:#eef1ee; --panel:#fff; --ink:#1a2128; --muted:#5b6670; --line:#d5dbd5 }
@@ -149,7 +149,7 @@ footer { text-align:center; font-size:12.5px; color:var(--muted); padding:20px 1
   const pie = `<footer><a href="../../">Inicio</a>·<a href="../../contacto.html">Contacto</a>·${enlaceError('Electrostática', 'electromagnetismo', 'electrostatica')}·<a href="../../aviso-legal.html">Aviso legal</a>·<a href="../../privacidad.html">Privacidad</a>·<a href="../../cookies.html">Cookies</a>· <button id="ver" class="linkbtn" title="Ver las novedades">Electrostática <span class="ver-n"></span></button></footer>\n`;
   return html.replace(lateral, '').replace(scrim, '').replace(inicio, '').replace(btnLado, '').replace(practica, '')
     .replace('<main class="main">', `<main class="main">\n${cab}\n<div class="wrap">\n<h1 class="solo-lector">Simulador de electrostática</h1>\n${migaE}`).replace('</main>', `${TEORIA_ELECTRO}${Preguntas.html('electrostatica')}${Anuncios.hueco()}${vidaReal('electromagnetismo/electrostatica')}${relacionadas('electromagnetismo', 'electrostatica')}</div>\n${pie}</main>\n`)
-    .replace('<div class="app"', `<style>${css(a)}${extra}</style>\n<div class="app"`);
+    .replace('<div class="app"', `<style>${css(a)}${extra}${Imprimir.PAGINA(Catalogo.web.replace(/^https?:\/\//, '') + '/electromagnetismo/electrostatica/', Version.registros.electrostatica[0].v)}</style>\n<div class="app"`);
 }
 
 // con anuncios.js activo: su código en la cabeza, «Preferencias de cookies» en el pie y los huecos (en las
@@ -176,10 +176,11 @@ function aplicaHerramienta(html, clave, herramienta) {
   if (vida && !html.includes('<footer')) throw new Error('diseno.js: la página no tiene <footer>');
   // el contenido de la página es el «main» (accesibilidad): <div class="wrap"> … </div> antes del pie
   if (!/<div class="wrap[^"]*"[^>]*>/.test(html) || !/<\/div>\s*<footer/.test(html)) throw new Error('diseno.js: la página no tiene <div class="wrap"> cerrado justo antes del <footer>');
-  const main = (x) => x.replace(/<div class="(wrap[^"]*)"([^>]*)>/, '<main class="$1"$2>').replace(/<\/div>(\s*)<footer/, '</main>$1<footer');
+  const main = (x) => x.replace(/<div class="(wrap[^"]*)"([^>]*)>/, '<main class="$1"$2>' + marca).replace(/<\/div>(\s*)<footer/, '</main>$1<footer');
   // «Informar de un error»: enlace de correo en el pie, con la herramienta en el asunto y su ruta en el cuerpo
   const error = (x) => x.replace(/(>Contacto<\/a>)/, `$1·${enlaceError(nombre, clave, herramienta)}`);
-  return error(main(html.replace(m[0], cab).replace(/<div class="fen-etiquetas"|<h1/, (x) => miga + '\n' + x).replace(/^<style>/m, `<style>${ESTILOS}${acento(a)}${cabecera}${propios}</style>\n<style>`)
+  const pag = Imprimir.PAGINA(Catalogo.web.replace(/^https?:\/\//, '') + `/${clave}/${herramienta}/`, (Version.registros[herramienta] || [])[0]?.v), marca = `<div class="imp-marca" aria-hidden="true"><div class="mk">${Catalogo.marca[0]}<i>${Catalogo.marca[1]}</i></div><div class="as">${esc(a.nombre)}</div></div>`;
+  return error(main(html.replace(m[0], cab).replace(/<div class="fen-etiquetas"|<h1/, (x) => miga + '\n' + x).replace(/^<style>/m, `<style>${ESTILOS}${acento(a)}${cabecera}${propios}${pag}</style>\n<style>`)
     .replace(/(<\/div>\s*)?<footer/, (x) => (vida ? vida + x : x)).replace(TEORIA.test(html) ? TEORIA : /(<\/div>\s*)?<section class="(preguntas|vida-real|relacionadas)"|(<\/div>\s*)?<footer/, (x) => Anuncios.hueco() + x)
     // en las herramientas con teoría, otros dos huecos: en mitad de la teoría (antes de su tercer apartado) y
     // al final, antes de «Herramientas relacionadas» (o del pie); nunca pegados a otro anuncio

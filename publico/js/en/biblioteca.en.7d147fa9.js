@@ -8,7 +8,7 @@ const Biblioteca = (() => {
   const FORMATO_COPIA = 'simulaciencia-copia', PREF = 'simu-ejercicios:', K_ELECTRO = 'electro-sim-lib-v2';
   const idAzar = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
   const leeAlm = (alm, k) => { try { const v = JSON.parse(alm.getItem(k)); return v ?? null; } catch (e) { return null; } };
-  const deElectro = (e) => ({ id: typeof e.id === 'string' && e.id ? e.id : idAzar(), titulo: String(e.title || e.titulo || 'Aufgabe ohne Titel').slice(0, 120), carpeta: String(e.folder || e.carpeta || '').slice(0, 60), fijado: false, datos: JSON.stringify({ title: e.title || e.titulo || 'Aufgabe ohne Titel', statement: e.statement || e.enunciado || '', scene: e.scene || e.escena }), actualizado: Number(e.updated || e.actualizado) || Date.now() });
+  const deElectro = (e) => ({ id: typeof e.id === 'string' && e.id ? e.id : idAzar(), titulo: String(e.title || e.titulo || 'Untitled problem').slice(0, 120), carpeta: String(e.folder || e.carpeta || '').slice(0, 60), fijado: false, datos: JSON.stringify({ title: e.title || e.titulo || 'Untitled problem', statement: e.statement || e.enunciado || '', scene: e.scene || e.escena }), actualizado: Number(e.updated || e.actualizado) || Date.now() });
   function migraElectro(alm = localStorage) {
     let el = null; try { el = JSON.parse(alm.getItem(K_ELECTRO)); } catch (e) { return 0; }
     if (!Array.isArray(el?.items) || !el.items.length) return 0;
@@ -36,7 +36,7 @@ const Biblioteca = (() => {
     return { formato: FORMATO_COPIA, version: 1, guardado: new Date().toISOString(), herramientas, total };
   }
   function restaura(d, alm = localStorage) {
-    if (d?.formato !== FORMATO_COPIA || typeof d.herramientas !== 'object' || !d.herramientas) throw new Error('ist keine Ciencify-Sicherung');
+    if (d?.formato !== FORMATO_COPIA || typeof d.herramientas !== 'object' || !d.herramientas) throw new Error('is not a Ciencify backup');
     let nuevos = 0, repetidos = 0, herr = 0;
     const hs = { ...d.herramientas };
     if (Array.isArray(d.electrostatica)) hs.electrostatica = [...(Array.isArray(hs.electrostatica) ? hs.electrostatica : []), ...d.electrostatica.filter((e) => e?.scene).map(deElectro)];
@@ -46,7 +46,7 @@ const Biblioteca = (() => {
       let suma = 0;
       for (const e of its) {
         if (typeof e?.datos !== 'string') continue;
-        const titulo = String(e.titulo || 'Importierte Aufgabe').slice(0, 120);
+        const titulo = String(e.titulo || 'Imported exercise').slice(0, 120);
         if (lib.items.some((x) => x.titulo === titulo && x.datos === e.datos)) { repetidos++; continue; }
         const id = typeof e.id === 'string' && e.id && !lib.items.some((x) => x.id === e.id) ? e.id : idAzar();
         lib.items.push({ id, titulo, carpeta: String(e.carpeta || '').slice(0, 60), fijado: !!e.fijado, datos: e.datos, actualizado: Number(e.actualizado) || Date.now() }); suma++;
@@ -86,6 +86,7 @@ const Biblioteca = (() => {
 .bib-x, .bib-dots { border: 0; background: none; color: var(--muted); cursor: pointer; display: grid; place-items: center; border-radius: 50% }
 .bib-x { width: 28px; height: 28px; background: color-mix(in srgb, var(--ink) 9%, transparent) } .bib-x .bib-i { width: 13px; height: 13px }
 .bib-dots { width: 30px; height: 30px; flex: 0 0 auto } .bib-dots:hover, .bib-dots[aria-expanded=true] { background: color-mix(in srgb, var(--ink) 9%, transparent); color: var(--accent) } .bib-dots .bib-i { width: 17px; height: 17px }
+.bib-dots:disabled { opacity: .4; cursor: default; pointer-events: none }
 .bib-h .bib-dots { background: var(--vidrio, var(--bg)); border: 1px solid var(--vidrio-borde, var(--line)) }
 .bib-seg { display: grid; grid-template-columns: 1fr 1fr; margin: 0 14px 10px; padding: 3px; border-radius: 99px; background: color-mix(in srgb, var(--ink) 8%, transparent) }
 .bib-seg button { border: 0; background: none; color: var(--muted); font: 500 13px var(--f-ui, system-ui); padding: 6px; border-radius: 99px; cursor: pointer }
@@ -135,7 +136,21 @@ const Biblioteca = (() => {
 .bib-pop { position: absolute; right: 12px; z-index: 5; width: 240px; max-width: calc(100% - 24px); max-height: calc(100% - 20px); overflow-y: auto; padding: 8px; border-radius: 20px; background: var(--vidrio-fuerte, var(--panel)); border: 1px solid var(--vidrio-borde, var(--line)); box-shadow: var(--vidrio-brillo, none), 0 14px 40px rgba(0,0,0,.28); -webkit-backdrop-filter: var(--blur, none); backdrop-filter: var(--blur, none) }
 #hoja-imp { display: none }
 @media print { .bib, .bib-scrim, .bib-aviso, .bib-btn { display: none !important } body.bib-fija { padding-left: 0 !important } }
-@media print { body.hoja-imprimiendo > *:not(#hoja-imp) { display: none !important } body.hoja-imprimiendo #hoja-imp { display: block !important } body.hoja-imprimiendo { padding: 0 !important; background: #fff !important } #hoja-imp { color: #000; font: 11pt/1.4 var(--f-ui, system-ui) } #hoja-imp h1 { font-size: 17pt; margin: 0 0 4px } #hoja-imp .hoja-sub { color: #555; margin: 0 0 14px } #hoja-imp section.hoja-ej { margin: 0 0 18px; padding-top: 10px; border-top: 1px solid #999 } #hoja-imp h2 { font-size: 13pt; margin: 0 0 8px; break-after: avoid } #hoja-imp .card { box-shadow: none !important; border: 0 !important; padding: 0 0 6px !important; background: none !important; break-inside: avoid } #hoja-imp img { max-width: 100%; max-height: 9cm; object-fit: contain } #hoja-imp .pasos li { break-inside: avoid } #hoja-imp .hoja-enun h3 { font-size: 11pt; margin: 0 0 4px } #hoja-imp .enun-imp { white-space: pre-wrap } }
+@media print { body.hoja-imprimiendo > *:not(#hoja-imp) { display: none !important } body.hoja-imprimiendo #hoja-imp { display: block !important } body.hoja-imprimiendo { padding: 0 !important; background: #fff !important }
+  #hoja-imp { color: #222; font: 10pt/1.45 "IBM Plex Sans", system-ui, sans-serif; --i-serif: "IBM Plex Serif", Georgia, serif; --i-mono: "IBM Plex Mono", ui-monospace, monospace }
+  #hoja-imp .hoja-marca { display: flex; align-items: baseline; justify-content: space-between; padding-bottom: 10pt; margin-bottom: 14pt; border-bottom: 1.5pt solid var(--accent, #555) }
+  #hoja-imp .hoja-marca .mk { font: 600 15pt var(--i-serif); color: #111 } #hoja-imp .hoja-marca .mk i { color: var(--marca, #0d6b66) }
+  #hoja-imp .hoja-marca .as { font: 500 7.5pt var(--i-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--accent, #555) }
+  #hoja-imp h1 { font: italic 400 24pt/1.2 var(--i-serif); letter-spacing: -.01em; margin: 0 0 10pt }
+  #hoja-imp .hoja-sub { color: #666; font-size: 9pt; margin: -4pt 0 16pt }
+  #hoja-imp section.hoja-ej { margin: 0 0 22pt; padding-top: 14pt; border-top: .5pt solid #bbb } #hoja-imp section.hoja-ej:first-of-type { border-top: 0; padding-top: 0 }
+  #hoja-imp h2 { font: 500 7.5pt var(--i-mono); text-transform: uppercase; letter-spacing: .14em; color: #222; border-bottom: .5pt solid var(--accent, #555); padding-bottom: 3pt; margin: 12pt 0 6pt; break-after: avoid }
+  #hoja-imp h2.hoja-tit { font: italic 400 17pt var(--i-serif); text-transform: none; letter-spacing: 0; border: 0; padding: 0; margin: 0 0 6pt; display: flex; gap: 8pt; align-items: baseline } #hoja-imp h2.hoja-tit b { font: 600 17pt var(--f-ui, system-ui); font-style: normal; color: var(--accent, #555) } #hoja-imp h2.hoja-tit small { font: 8pt var(--f-ui, system-ui); font-style: normal; color: #777 }
+  #hoja-imp h3 { font: 600 10.5pt var(--f-ui, system-ui); margin: 0 0 2pt } #hoja-imp h4 { font: 600 8pt var(--f-ui, system-ui); text-transform: uppercase; letter-spacing: .1em; color: #777; margin: 8pt 0 3pt }
+  #hoja-imp .card { box-shadow: none !important; border: 0 !important; border-radius: 0 !important; padding: 0 0 6pt !important; background: none !important; break-inside: avoid }
+  #hoja-imp .hoja-enun, #hoja-imp .stmt { border-left: 2pt solid var(--accent, #555) !important; background: none !important; padding: 0 0 0 12pt !important; margin: 0 0 12pt; font: italic 10.5pt/1.5 var(--i-serif); white-space: pre-wrap } #hoja-imp .hoja-enun h3 { font: 700 7.5pt var(--f-ui, system-ui); font-style: normal; text-transform: uppercase; letter-spacing: .12em; color: var(--accent, #555); margin: 0 0 3pt }
+  #hoja-imp .result, #hoja-imp .destacado { border-left: 3pt solid var(--accent, #555); padding-left: 10pt }
+  #hoja-imp img { max-width: 100%; max-height: 9cm; object-fit: contain } #hoja-imp .pasos li, #hoja-imp .steps-b { break-inside: avoid } #hoja-imp .enun-imp { white-space: pre-wrap } }
 `;
 
   function monta(herramienta, clave, opts = {}) {
@@ -148,7 +163,7 @@ const Biblioteca = (() => {
     let activo = null; try { activo = sessionStorage.getItem(K_ACT); } catch (e) { /* sin almacenamiento */ }
     if (activo && !lib.items.some((x) => x.id === activo)) activo = null;
     let busca = '', form = null, borrando = null, sel = null, pestana = 'guardados', menu = null;
-    const guardaLib = () => escribe(K, lib) || aviso('Speichern nicht möglich: Der Browser erlaubt die Nutzung des Speichers nicht');
+    const guardaLib = () => escribe(K, lib) || aviso('Could not save: the browser does not allow storage');
     const guardaUI = () => escribe(K_UI, ui);
     const refresca = () => { const l = lee(K, null); if (l && Array.isArray(l.items)) lib = l; if (activo && !lib.items.some((x) => x.id === activo)) activo = null; };
     window.addEventListener('storage', (e) => { if (e.key === K && !form) { refresca(); pinta(); } });
@@ -180,11 +195,11 @@ const Biblioteca = (() => {
 
     const st = document.createElement('style'); st.textContent = CSS; document.head.appendChild(st);
     const btn = document.createElement('button');
-    btn.className = 'bib-btn'; btn.type = 'button'; btn.setAttribute('aria-controls', 'bib'); btn.title = 'Deine Aufgaben speichern, öffnen, exportieren und importieren';
-    btn.innerHTML = '<span aria-hidden="true">☰</span> Meine Aufgaben';
+    btn.className = 'bib-btn'; btn.type = 'button'; btn.setAttribute('aria-controls', 'bib'); btn.title = 'Save, open, export and import your exercises';
+    btn.innerHTML = '<span aria-hidden="true">☰</span> My exercises';
     const izq = document.querySelector('.miga-izq'), ini = cab.querySelector('.a-inicio');
     if (izq) izq.append(btn); else (ini ? ini.after(btn) : cab.prepend(btn));
-    const panel = document.createElement('aside'); panel.className = 'bib'; panel.id = 'bib'; panel.setAttribute('aria-label', 'Meine Aufgaben');
+    const panel = document.createElement('aside'); panel.className = 'bib'; panel.id = 'bib'; panel.setAttribute('aria-label', 'My exercises');
     const scrim = document.createElement('div'); scrim.className = 'bib-scrim'; scrim.hidden = true;
     const archivo = document.createElement('input'); archivo.type = 'file'; archivo.accept = '.json,application/json'; archivo.multiple = true; archivo.hidden = true;
     document.body.append(panel, scrim, archivo);
@@ -201,9 +216,9 @@ const Biblioteca = (() => {
       scrim.hidden = !v || window.innerWidth >= ANCHO;
     }
     function descargaCopia() {
-      const c = copia(); if (!c.total) { aviso('Du hast in keinem Werkzeug schon Aufgaben gespeichert'); return; }
+      const c = copia(); if (!c.total) { aviso('You have no saved exercises in any tool yet'); return; }
       delete c.total; descarga(`ciencify-copia-${c.guardado.slice(0, 10)}.copia.json`, c);
-      aviso('Sicherung heruntergeladen');
+      aviso('Backup downloaded');
     }
     function descarga(nombreArch, datos) {
       const url = URL.createObjectURL(new Blob([JSON.stringify(datos, null, 2)], { type: 'application/json' }));
@@ -217,24 +232,24 @@ const Biblioteca = (() => {
       const d = JSON.parse(texto);
       if (d?.formato === FORMATO_COPIA) {
         const r = restaura(d); lib = lee(K, { items: [] }); if (!Array.isArray(lib.items)) lib = { items: [] };
-        importa.aviso = r.nuevos ? `Sicherung wiederhergestellt: ${r.nuevos} Aufgabe${r.nuevos === 1 ? '' : 'n'} in ${r.herramientas} Werkzeug${r.herramientas === 1 ? '' : 'en'}${r.repetidos ? ` (${r.repetidos} waren schon vorhanden)` : ''}` : 'Die Sicherung enthielt nichts Neues: Du hattest schon alles';
+        importa.aviso = r.nuevos ? `Backup restored: ${r.nuevos} exercise${r.nuevos === 1 ? '' : 's'} in ${r.herramientas} tool${r.herramientas === 1 ? '' : 's'}${r.repetidos ? ` (${r.repetidos} already there)` : ''}` : 'The backup had nothing new: you already had everything';
         return r.nuevos;
       }
       importa.aviso = '';
       if (herramienta === 'electrostatica' && ((d?.formato === 'simulador-electrostatica' && Array.isArray(d.problemas)) || Array.isArray(d?.sources))) {
         let m = 0;
-        for (const p of Array.isArray(d.sources) ? [{ titulo: 'Szene importiert', escena: d }] : d.problemas) {
+        for (const p of Array.isArray(d.sources) ? [{ titulo: 'Scene imported', escena: d }] : d.problemas) {
           if (!p?.escena) continue;
           const it = deElectro(p); it.id = nuevoId(); it.etiquetas = undefined; lib.items.push(it); m++;
         }
         return m;
       }
-      if (d?.formato !== FORMATO || !Array.isArray(d.ejercicios)) throw new Error('ist keine Ciencify-Aufgabendatei');
-      if (d.herramienta !== herramienta) throw new Error(`gehört zu einem anderen Werkzeug (${d.herramienta})`);
+      if (d?.formato !== FORMATO || !Array.isArray(d.ejercicios)) throw new Error('is not a Ciencify exercise file');
+      if (d.herramienta !== herramienta) throw new Error(`is from another tool (${d.herramienta})`);
       let n = 0;
       for (const e of d.ejercicios) {
         if (typeof e?.datos !== 'string') continue;
-        lib.items.push({ id: nuevoId(), titulo: String(e.titulo || 'Importierte Aufgabe').slice(0, 120), carpeta: String(e.carpeta || '').slice(0, 60), fijado: !!e.fijado, datos: e.datos, actualizado: Date.now() }); n++;
+        lib.items.push({ id: nuevoId(), titulo: String(e.titulo || 'Imported exercise').slice(0, 120), carpeta: String(e.carpeta || '').slice(0, 60), fijado: !!e.fijado, datos: e.datos, actualizado: Date.now() }); n++;
       }
       return n;
     }
@@ -242,12 +257,12 @@ const Biblioteca = (() => {
       refresca();
       let n = 0;
       for (const f of files) {
-        try { n += importa(await f.text()); } catch (err) { aviso(`${f.name} konnte nicht importiert werden: ${err.message}`); return; }
+        try { n += importa(await f.text()); } catch (err) { aviso(`Could not import ${f.name}: ${err.message}`); return; }
       }
-      guardaLib(); pinta(); aviso(importa.aviso || (n === 1 ? 'Importierte Aufgabe' : `${n} Aufgaben importiert`));
+      guardaLib(); pinta(); aviso(importa.aviso || (n === 1 ? 'Imported exercise' : `${n} exercises imported`));
     }
     function carga(it) {
-      if (!escribe(clave, it.datos)) { aviso('Öffnen nicht möglich: Der Browser erlaubt die Nutzung des Speichers nicht'); return; }
+      if (!escribe(clave, it.datos)) { aviso('Could not open: the browser does not allow storage'); return; }
       ponActivo(it.id);
       try {
         const pon = Storage.prototype.setItem, quita = Storage.prototype.removeItem;
@@ -260,24 +275,24 @@ const Biblioteca = (() => {
     }
     function guardaForm() {
       refresca();
-      const c = panel.querySelector('#bib-c')?.value.trim() ?? '', tEl = panel.querySelector('#bib-t'), t = tEl ? tEl.value.trim() || 'Aufgabe ohne Titel' : '';
+      const c = panel.querySelector('#bib-c')?.value.trim() ?? '', tEl = panel.querySelector('#bib-t'), t = tEl ? tEl.value.trim() || 'Untitled exercise' : '';
       if (form.renombra !== undefined) {
-        if (!c) { aviso('Gib dem Ordner einen Namen'); return; }
+        if (!c) { aviso('Give the folder a name'); return; }
         for (const x of lib.items) if (x.carpeta === form.renombra) x.carpeta = c;
       } else if (form.ids) { for (const x of lib.items) if (form.ids.includes(x.id)) x.carpeta = c; sel = null; }
       else if (form.id) { const it = lib.items.find((x) => x.id === form.id); if (it) Object.assign(it, { titulo: t, carpeta: c, actualizado: Date.now() }); }
       else {
         const datos = estado();
-        if (datos == null) { aviso('Es gibt noch nichts zu speichern: Ändere zuerst eine Angabe'); return; }
+        if (datos == null) { aviso('There is nothing to save yet: change some data first'); return; }
         const it = { id: nuevoId(), titulo: t, carpeta: c, fijado: false, datos, actualizado: Date.now() };
-        lib.items.push(it); ponActivo(it.id); aviso('In „Meine Aufgaben“ gespeichert');
+        lib.items.push(it); ponActivo(it.id); aviso('Saved in My exercises');
       }
       form = null; guardaLib(); pinta();
     }
     function actualiza() {
       const it = lib.items.find((x) => x.id === activo), datos = estado();
       if (!it || datos == null) return;
-      it.datos = datos; it.actualizado = Date.now(); guardaLib(); pinta(); aviso(`Änderungen in „${it.titulo}“ gespeichert`);
+      it.datos = datos; it.actualizado = Date.now(); guardaLib(); pinta(); aviso(`Changes saved in “${it.titulo}”`);
     }
 
     const b64 = (t) => btoa(unescape(encodeURIComponent(t))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
@@ -291,11 +306,11 @@ const Biblioteca = (() => {
     const enlaceDe = (datos) => location.href.split('#')[0] + (datos ? `#d=${b64(datos)}` : '');
     async function copiaEnlace(datos) {
       const url = datos === undefined ? enlace() : enlaceDe(datos), ok = await copiaTexto(url);
-      aviso(!ok ? 'Der Link konnte nicht kopiert werden' : !url.includes('#d=') ? 'Link kopiert, aber es gibt noch keine Daten zum Mitnehmen' : url.length > 8000 ? 'Link kopiert (er ist sehr lang: Manche Programme schneiden ihn ab)' : 'Link kopiert: Er öffnet das Werkzeug mit diesen Daten');
+      aviso(!ok ? 'Could not copy the link' : !url.includes('#d=') ? 'Link copied, but there is no data to carry yet' : url.length > 8000 ? 'Link copied (it is very long: some programs cut it)' : 'Link copied: it opens the tool with this data');
     }
     async function copiaEnlaces(its) {
       const ok = await copiaTexto(its.map((i) => `${i.titulo}\n${enlaceDe(i.datos)}`).join('\n\n'));
-      aviso(ok ? `${its.length} Link${its.length === 1 ? '' : 's'} kopiert: Jede${its.length === 1 ? 'r öffnet' : ' öffnen'} das Werkzeug mit seiner Aufgabe` : 'Die Links konnten nicht kopiert werden');
+      aviso(ok ? `${its.length} link${its.length === 1 ? '' : 's'} copied: each one opens the tool with its exercise` : 'Could not copy the links');
     }
 
     const valorDe = (el) => el.tagName === 'SELECT' ? [...el.selectedOptions].map((o) => o.textContent.trim()).join(', ') : el.type === 'checkbox' || el.type === 'radio' ? (el.checked ? '✓' : '—') : el.value;
@@ -306,36 +321,44 @@ const Biblioteca = (() => {
       if (!nodos.length) { const w = d.querySelector('.wrap') || d.body; nodos = [w]; }
       const out = d.createElement('div');
       const enun = d.querySelector('.enun-bloque .enun-imp');
-      if (enun && enun.textContent.trim()) { const c = d.createElement('div'); c.className = 'card hoja-enun'; const t = d.createElement('h3'); t.textContent = 'Aufgabenstellung'; c.append(t, enun.cloneNode(true)); out.appendChild(c); }
+      if (enun && enun.textContent.trim()) { const c = d.createElement('div'); c.className = 'card hoja-enun'; const t = d.createElement('h3'); t.textContent = 'Statement'; c.append(t, enun.cloneNode(true)); out.appendChild(c); }
       for (const n of nodos) {
         const c = n.cloneNode(true);
         const o = [...n.querySelectorAll('input, select, textarea')], k = [...c.querySelectorAll('input, select, textarea')];
         k.forEach((e, i) => { if (e.type === 'hidden' || e.type === 'file' || /^ejemplo/.test(e.id)) { (e.closest('label') || e).remove(); return; } const sp = d.createElement('b'); sp.textContent = valorDe(o[i]); e.replaceWith(sp); });
         const lo = [...n.querySelectorAll('canvas')], lk = [...c.querySelectorAll('canvas')];
-        lk.forEach((e, i) => { try { const im = d.createElement('img'); im.src = lo[i].toDataURL('image/png'); im.alt = 'Grafik der Aufgabe'; e.replaceWith(im); } catch (x) { e.remove(); } });
+        lk.forEach((e, i) => { try { const im = d.createElement('img'); im.src = lo[i].toDataURL('image/png'); im.alt = 'Exercise chart'; e.replaceWith(im); } catch (x) { e.remove(); } });
         c.querySelectorAll('button, .controles, .compartir, .tools, .chips, .teoria, footer, header.top, nav, script, style, [hidden]').forEach((e) => e.remove());
         c.querySelectorAll('[id]').forEach((e) => e.removeAttribute('id'));
         c.querySelectorAll('details').forEach((e) => { e.open = true; });
+        c.dataset.h = n.querySelector('.campos') ? 'datos' : n.classList.contains('pasos') ? 'desarrollo' : n.querySelector('canvas, img') ? 'escena' : 'resultados';
         c.classList.add('card'); out.appendChild(c);
       }
       return out.innerHTML;
     }
-    async function imprimeHoja(its) {
+    function exporta(its, accion, origen) {
       if (!its.length) return;
-      aviso('Blatt wird vorbereitet …');
+      if (typeof Biblioteca.abrirVentanaExportar === 'function') { Biblioteca.abrirVentanaExportar({ ids: its.map((x) => x.id), accion, origen }); return; }
+      if (accion === 'pdf') aviso('In the print window choose “Save as PDF”');
+      imprimeHoja(its);
+    }
+    async function imprimeHoja(its, op = {}) {
+      if (!its.length) return;
+      op = { ...(typeof VentanaImprimir !== 'undefined' ? VentanaImprimir.BASE : {}), indice: false, ...op };
+      aviso('Preparing the sheet…');
       let original = null; try { original = localStorage.getItem(clave); } catch (e) { /* sin almacenamiento */ }
       const fr = document.createElement('iframe');
-      fr.style.cssText = 'position:fixed;left:-10000px;top:0;width:1200px;height:900px;border:0'; fr.setAttribute('aria-hidden', 'true'); fr.tabIndex = -1; fr.title = 'Blatt wird vorbereitet';
+      fr.style.cssText = 'position:fixed;left:-10000px;top:0;width:1200px;height:900px;border:0'; fr.setAttribute('aria-hidden', 'true'); fr.tabIndex = -1; fr.title = 'Preparing the sheet';
       document.body.appendChild(fr);
       const trozos = [];
       try {
         for (const it of its) {
-          if (!escribe(clave, it.datos)) throw new Error('der Browser erlaubt die Nutzung des Speichers nicht');
+          if (!escribe(clave, it.datos)) throw new Error('the browser does not allow storage');
           await new Promise((ok) => { fr.onload = ok; fr.src = location.pathname + location.search; });
           await new Promise((ok) => setTimeout(ok, 400));
           trozos.push({ it, html: extrae(fr.contentDocument) });
         }
-      } catch (err) { aviso(`Das Blatt konnte nicht vorbereitet werden: ${err.message}`); }
+      } catch (err) { aviso(`Could not prepare the sheet: ${err.message}`); }
       finally {
         try { if (original === null) localStorage.removeItem(clave); else localStorage.setItem(clave, original); } catch (e) { /* sin almacenamiento */ }
         fr.remove();
@@ -344,13 +367,25 @@ const Biblioteca = (() => {
       document.getElementById('hoja-imp')?.remove();
       const cont = document.createElement('div'); cont.id = 'hoja-imp';
       const fecha = new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
-      cont.innerHTML = `<h1>${esc(nombre)}</h1><p class="hoja-sub">Aufgabenblatt · ${its.length} Aufgabe${its.length === 1 ? '' : 'n'} · ${esc(fecha)} · Ciencify</p>`
-        + trozos.map((t, i) => `<section class="hoja-ej"><h2>${i + 1}. ${esc(t.it.titulo)}${t.it.carpeta ? ` <small>(${esc(t.it.carpeta)})</small>` : ''}</h2>${t.html}</section>`).join('');
+      const marca = `<div class="hoja-marca"><span class="mk">${document.querySelector('header.top .logo')?.innerHTML || 'Cienci<i>fy</i>'}</span><span class="as">${esc(document.querySelector('.miga a')?.textContent || '')}</span></div>`;
+      const uno = its.length === 1, tituloHoja = op.titulo || (uno ? trozos[0].it.titulo : nombre);
+      const enunDe = (html) => { const d = new DOMParser().parseFromString(html, 'text/html'), e = d.querySelector('.stmt, .hoja-enun .enun-imp, .hoja-enun'); return (e ? e.textContent.replace(/^\s*Enunciado\s*/, '').trim() : '').replace(/\s+/g, ' ').slice(0, 150); };
+      const indice = !uno && op.indice && (typeof VentanaImprimir !== 'undefined') ? VentanaImprimir.indiceHTML(tituloHoja, `${its.length} exercises · ${fecha}`, trozos.map((t) => ({ titulo: t.it.titulo, carpeta: t.it.carpeta, enun: op.estilo === 'enunciado' ? enunDe(t.html) : '' })), op.estilo === 'enunciado') : '';
+      cont.innerHTML = uno
+        ? `${marca}<h1>${esc(tituloHoja)}</h1>${trozos[0].html}<div class="hoja-fin"></div>`
+        : `${marca}${indice ? '' : `<h1>${esc(tituloHoja)}</h1><p class="hoja-sub">Exercise sheet · ${its.length} exercises · ${esc(fecha)}</p>`}${indice}`
+          + trozos.map((t, i) => `<section class="hoja-ej" id="hoja-ej-${i + 1}"><h2 class="hoja-tit"><b>${i + 1}</b>${esc(t.it.titulo)}${t.it.carpeta ? ` <small>(${esc(t.it.carpeta)})</small>` : ''}</h2>${t.html}</section>`).join('');
+      cont.classList.toggle('uno', uno); cont.classList.toggle('hoja-sep', !uno && op.disposicion === 'paginas');
+      cont.classList.toggle('sin-enun', op.enun === false); cont.classList.toggle('sin-datos', op.datos === false);
+      cont.classList.toggle('sin-res', op.res === false || op.tipo === 'enunciados'); cont.classList.toggle('sin-des', op.des === false || op.tipo === 'enunciados' || op.tipo === 'resultados');
+      cont.classList.toggle('sin-esc', op.esc === false); cont.classList.toggle('solo-enun', op.tipo === 'enunciados'); cont.classList.toggle('bn', op.tinta === 'bn');
+      if ((typeof VentanaImprimir !== 'undefined')) VentanaImprimir.estilos();
+      const tituloAntes = document.title; if (op.titulo) document.title = op.titulo;
       document.body.appendChild(cont);
       const tema = document.documentElement.getAttribute('data-theme');
       const fin = () => {
         removeEventListener('afterprint', fin);
-        document.body.classList.remove('hoja-imprimiendo'); cont.remove();
+        document.body.classList.remove('hoja-imprimiendo'); cont.remove(); document.title = tituloAntes;
         if (tema === null) document.documentElement.removeAttribute('data-theme'); else document.documentElement.setAttribute('data-theme', tema);
       };
       addEventListener('afterprint', fin);
@@ -362,7 +397,7 @@ const Biblioteca = (() => {
 
     function fila(it) {
       if (sel) { const m = sel.has(it.id); return `<div class="bib-it${m ? ' marc' : ''}" data-id="${it.id}"><button class="bib-abre" data-acc="marcar" role="checkbox" aria-checked="${m}"><span class="bib-chk${m ? ' on' : ''}" aria-hidden="true">${m ? ico('ok') : ''}</span><span class="bib-tt">${esc(it.titulo)}</span></button></div>`; }
-      return `<div class="bib-it${it.id === activo ? ' activo' : ''}" data-id="${it.id}"><button class="bib-abre" data-acc="abrir" title="„${esc(it.titulo)}“ öffnen"><span class="bib-tt">${esc(it.titulo)}</span>${it.fijado ? `<span class="bib-fv" title="Angeheftet">${ico('star')}</span>` : ''}</button><button class="bib-dots" data-acc="menu-fila" aria-haspopup="menu" aria-expanded="${menu?.id === it.id}" aria-label="Optionen für „${esc(it.titulo)}“" title="Optionen">${ico('dots')}</button></div>`;
+      return `<div class="bib-it${it.id === activo ? ' activo' : ''}" data-id="${it.id}"><button class="bib-abre" data-acc="abrir" title="Open “${esc(it.titulo)}”"><span class="bib-tt">${esc(it.titulo)}</span>${it.fijado ? `<span class="bib-fv" title="Pinned">${ico('star')}</span>` : ''}</button><button class="bib-dots" data-acc="menu-fila" aria-haspopup="menu" aria-expanded="${menu?.id === it.id}" aria-label="Options for “${esc(it.titulo)}”" title="Options">${ico('dots')}</button></div>`;
     }
     const mi = (acc, ic, col, txt, sub = '', extra = '') => `<button class="bib-mi${extra}" role="menuitem" data-acc="${acc}"><span class="bib-sq" style="--c:var(--ic-${col})">${ico(ic)}</span><span>${txt}${sub ? `<small>${sub}</small>` : ''}</span><span class="bib-ch" aria-hidden="true">${ico('chev')}</span></button>`;
     function menuHTML() {
@@ -371,15 +406,15 @@ const Biblioteca = (() => {
       if (menu.tipo === 'fila') {
         const it = lib.items.find((x) => x.id === menu.id); if (!it) return '';
         g = borrando === it.id
-          ? `<div class="bib-grp"><button class="bib-mi peligro" role="menuitem" data-acc="si-borrar"><span class="bib-sq" style="--c:var(--ic-rojo)">${ico('trash')}</span><span>Ja, „${esc(it.titulo.length > 20 ? it.titulo.slice(0, 19) + '…' : it.titulo)}“ löschen</span></button>${mi('no-borrar', 'x', 'cielo', 'No borrar')}</div>`
-          : `<div class="bib-grp">${mi('abrir', 'open', 'azul', 'Öffnen')}${mi('seleccionar', 'sel', 'violeta', 'Auswählen', 'um mehrere zu drucken oder zu teilen')}${mi('editar', 'pencil', 'naranja', 'Titel und Ordner')}${mi('mover', 'move', 'cielo', 'In Ordner verschieben')}${mi('fijar', 'pin', 'Gold', it.fijado ? 'Nicht mehr anheften' : 'Oben anheften')}</div><div class="bib-grp">${mi('enlace-fila', 'link', 'verde', 'Link kopieren')}${mi('exportar', 'exp', 'cielo', 'Exportieren')}${mi('borrar', 'trash', 'rojo', 'Löschen', '', ' peligro')}</div>`;
+          ? `<div class="bib-grp"><button class="bib-mi peligro" role="menuitem" data-acc="si-borrar"><span class="bib-sq" style="--c:var(--ic-rojo)">${ico('trash')}</span><span>Yes, delete “${esc(it.titulo.length > 20 ? it.titulo.slice(0, 19) + '…' : it.titulo)}”</span></button>${mi('no-borrar', 'x', 'cielo', 'No borrar')}</div>`
+          : `<div class="bib-grp">${mi('abrir', 'open', 'azul', 'Open')}${mi('seleccionar', 'sel', 'violeta', 'Select', 'to print or share several')}${mi('editar', 'pencil', 'naranja', 'Title and folder')}${mi('mover', 'move', 'cielo', 'Move to folder')}${mi('fijar', 'pin', 'gold', it.fijado ? 'Unpin' : 'Pin to top')}</div><div class="bib-grp">${mi('imprimir', 'print', 'naranja', 'Print')}${mi('pdf', 'exp', 'rosa', 'Download PDF')}${mi('enlace-fila', 'link', 'verde', 'Copy link')}${mi('exportar', 'exp', 'cielo', 'Export')}${mi('borrar', 'trash', 'rojo', 'Delete', '', ' peligro')}</div>`;
       } else if (menu.tipo === 'carpeta') {
-        g = `<div class="bib-grp">${mi('sel-carpeta', 'sel', 'violeta', 'Den Ordner auswählen')}${mi('carp-renombrar', 'pencil', 'naranja', 'Ordner umbenennen')}${mi('carp-quitar', 'folder', 'cielo', 'Ordner entfernen', 'die Aufgaben bleiben ohne Ordner erhalten')}</div>`;
+        g = `<div class="bib-grp">${mi('sel-carpeta', 'sel', 'violeta', 'Select the folder')}${mi('carp-renombrar', 'pencil', 'naranja', 'Rename folder')}${mi('carp-quitar', 'folder', 'cielo', 'Remove folder', 'the exercises stay without a folder')}</div>`;
       } else {
         const n = lib.items.length;
-        g = `<div class="bib-grp">${mi('enlace', 'link', 'azul', 'Link mit diesen Daten kopieren')}<button class="bib-mi" role="menuitem" data-acc="sel-modo"${n ? '' : ' disabled'}><span class="bib-sq" style="--c:var(--ic-violeta)">${ico('sel')}</span><span>Mehrere auswählen<small>drucken, teilen, exportieren …</small></span><span class="bib-ch" aria-hidden="true">${ico('chev')}</span></button></div>`
-          + `<div class="bib-grp">${mi('copia', 'shield', 'verde', 'Sicherung von allem', 'eine Datei mit allen deinen Werkzeugen')}${mi('restaurar', 'rest', 'violeta', 'Sicherung wiederherstellen …')}</div>`
-          + `<div class="bib-grp">${mi('importar', 'imp', 'cielo', 'Datei importieren …')}<button class="bib-mi" role="menuitem" data-acc="exportar-todo"${n ? '' : ' disabled'}><span class="bib-sq" style="--c:var(--ic-rosa)">${ico('exp')}</span><span>Alle exportieren</span><span class="bib-ch" aria-hidden="true">${ico('chev')}</span></button></div>`;
+        g = `<div class="bib-grp">${mi('enlace', 'link', 'azul', 'Copy link with this data')}<button class="bib-mi" role="menuitem" data-acc="sel-modo"${n ? '' : ' disabled'}><span class="bib-sq" style="--c:var(--ic-violeta)">${ico('sel')}</span><span>Select several<small>print, share, export…</small></span><span class="bib-ch" aria-hidden="true">${ico('chev')}</span></button></div>`
+          + `<div class="bib-grp">${mi('copia', 'shield', 'verde', 'Back up everything', 'one file with all your tools')}${mi('restaurar', 'rest', 'violeta', 'Restore backup…')}</div>`
+          + `<div class="bib-grp">${mi('importar', 'imp', 'cielo', 'Import file…')}<button class="bib-mi" role="menuitem" data-acc="exportar-todo"${n ? '' : ' disabled'}><span class="bib-sq" style="--c:var(--ic-rosa)">${ico('exp')}</span><span>Export all</span><span class="bib-ch" aria-hidden="true">${ico('chev')}</span></button></div>`;
       }
       return `<div class="bib-dim" data-acc="cierra-menu"></div><div class="bib-pop" role="menu" data-tipo="${menu.tipo}">${g}</div>`;
     }
@@ -403,36 +438,36 @@ const Biblioteca = (() => {
       const orden = (a, b) => a.titulo.localeCompare(b.titulo, 'es', { numeric: true });
       let lista = '';
       if (pestana === 'ejemplos') {
-        lista = ejemplosHTML(q) || '<p class="bib-vacio">Kein Beispiel passt zur Suche.</p>';
+        lista = ejemplosHTML(q) || '<p class="bib-vacio">No example matches your search.</p>';
       } else {
         const fij = vis.filter((i) => i.fijado).sort(orden), resto = vis.filter((i) => !i.fijado), sueltos = resto.filter((i) => !i.carpeta).sort(orden), carpetas = {};
         for (const i of resto) if (i.carpeta) (carpetas[i.carpeta] ||= []).push(i);
-        if (fij.length) lista += `<p class="bib-sec">Angeheftet</p>${fij.map(fila).join('')}`;
+        if (fij.length) lista += `<p class="bib-sec">Pinned</p>${fij.map(fila).join('')}`;
         for (const c of Object.keys(carpetas).sort((a, b) => a.localeCompare(b, 'es'))) {
           const ab = q || !ui.cerradas[`${herramienta}/${c}`];
-          lista += `<div class="bib-carpfila" data-carpeta="${esc(c)}"><button class="bib-carp" data-carpeta="${esc(c)}" aria-expanded="${!!ab}">${ico('folder')}${esc(c)}<span class="n">${carpetas[c].length}</span></button>${sel ? '' : `<button class="bib-dots" data-acc="menu-carpeta" aria-haspopup="menu" aria-expanded="${menu?.carpeta === c}" aria-label="Optionen für den Ordner ${esc(c)}" title="Optionen für den Ordner">${ico('dots')}</button>`}</div>${ab ? `<div class="bib-carpd">${carpetas[c].sort(orden).map(fila).join('')}</div>` : ''}`;
+          lista += `<div class="bib-carpfila" data-carpeta="${esc(c)}"><button class="bib-carp" data-carpeta="${esc(c)}" aria-expanded="${!!ab}">${ico('folder')}${esc(c)}<span class="n">${carpetas[c].length}</span></button>${sel ? '' : `<button class="bib-dots" data-acc="menu-carpeta" aria-haspopup="menu" aria-expanded="${menu?.carpeta === c}" aria-label="Options for folder ${esc(c)}" title="Folder options">${ico('dots')}</button>`}</div>${ab ? `<div class="bib-carpd">${carpetas[c].sort(orden).map(fila).join('')}</div>` : ''}`;
         }
-        if (sueltos.length) lista += `${fij.length || Object.keys(carpetas).length ? '<p class="bib-sec">Ohne Ordner</p>' : ''}${sueltos.map(fila).join('')}`;
-        if (!vis.length) lista = `<p class="bib-vacio">${n ? 'Keine Aufgabe passt zur Suche.' : 'Du hast noch keine Aufgabe gespeichert. Bereite die Daten vor und klicke auf „Aktuelle speichern“.'}</p>`;
+        if (sueltos.length) lista += `${fij.length || Object.keys(carpetas).length ? '<p class="bib-sec">No folder</p>' : ''}${sueltos.map(fila).join('')}`;
+        if (!vis.length) lista = `<p class="bib-vacio">${n ? 'No exercise matches your search.' : 'You have not saved any exercise yet. Set up the data and press “Save current”.'}</p>`;
       }
       const it = lib.items.find((x) => x.id === activo), carps = [...new Set(lib.items.map((x) => x.carpeta).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'es'));
       let f = null;
       if (form) {
         const valor = form.renombra !== undefined ? form.renombra : form.ids ? '' : form.id ? lib.items.find((x) => x.id === form.id)?.carpeta || '' : it?.carpeta || '';
-        const tit = form.id ? lib.items.find((x) => x.id === form.id)?.titulo : ejemplo() || `Aufgabe ${n + 1}`;
-        const chips = form.renombra !== undefined || !carps.length ? '' : `<div class="bib-chips" role="group" aria-label="Ordner, die du schon hast">${['', ...carps].map((c) => `<button type="button" class="bib-chip${c === valor ? ' on' : ''}" data-acc="carpeta-elige" data-c="${esc(c)}">${c ? esc(c) : 'Ohne Ordner'}</button>`).join('')}</div>`;
-        const campoT = form.renombra !== undefined || form.ids ? '' : `<label>Titel<input id="bib-t" value="${esc(tit)}" maxlength="120" autocomplete="off"></label>`;
-        f = `<div class="bib-form">${campoT}<label>${form.renombra !== undefined ? 'Name des Ordners' : form.ids ? `${form.ids.length} Aufgabe${form.ids.length === 1 ? '' : 'n'} in den Ordner verschieben` : 'Ordner (optional)'}<input id="bib-c" value="${esc(valor)}" maxlength="60" placeholder="${form.renombra !== undefined ? '' : 'ohne Ordner: oder schreibe einen Namen, um einen neuen anzulegen'}" autocomplete="off"></label>${chips}<div class="fila"><button data-acc="cancelar">Abbrechen</button><button class="si" data-acc="guardar">Speichern</button></div></div>`;
+        const tit = form.id ? lib.items.find((x) => x.id === form.id)?.titulo : ejemplo() || `Exercise ${n + 1}`;
+        const chips = form.renombra !== undefined || !carps.length ? '' : `<div class="bib-chips" role="group" aria-label="Your existing folders">${['', ...carps].map((c) => `<button type="button" class="bib-chip${c === valor ? ' on' : ''}" data-acc="carpeta-elige" data-c="${esc(c)}">${c ? esc(c) : 'No folder'}</button>`).join('')}</div>`;
+        const campoT = form.renombra !== undefined || form.ids ? '' : `<label>Title<input id="bib-t" value="${esc(tit)}" maxlength="120" autocomplete="off"></label>`;
+        f = `<div class="bib-form">${campoT}<label>${form.renombra !== undefined ? 'Folder name' : form.ids ? `Move ${form.ids.length} exercise${form.ids.length === 1 ? '' : 's'} to the folder` : 'Folder (optional)'}<input id="bib-c" value="${esc(valor)}" maxlength="60" placeholder="${form.renombra !== undefined ? '' : 'no folder: or type a name to create a new one'}" autocomplete="off"></label>${chips}<div class="fila"><button data-acc="cancelar">Cancel</button><button class="si" data-acc="guardar">Save</button></div></div>`;
       }
       const cab = sel
-        ? `<div class="bib-h bib-hsel"><button class="bib-lnk" data-acc="sel-cancelar">Abbrechen</button><b>${sel.size ? `${sel.size} seleccionado${sel.size === 1 ? '' : 's'}` : 'Aufgaben auswählen'}</b><button class="bib-lnk" data-acc="sel-todos">${vis.length && vis.every((i) => sel.has(i.id)) ? 'Keine' : 'Alle'}</button></div>`
-        : `<div class="bib-h"><b>Meine Aufgaben</b><span class="bib-n">${n}</span><button class="bib-dots" data-acc="menu-general" aria-haspopup="menu" aria-expanded="${menu?.tipo === 'general'}" aria-label="Weitere Optionen" title="Weitere Optionen: Sicherung, Import, mehrere auswählen …">${ico('dots')}</button><button class="bib-x" data-acc="cerrar" title="Schließen" aria-label="„Meine Aufgaben“ schließen">${ico('x')}</button></div>`;
-      const tabs = sel || !hayEj ? '' : `<div class="bib-seg" role="tablist"><button role="tab" data-acc="pestana-guardados" aria-selected="${pestana === 'guardados'}">Gespeichert</button><button role="tab" data-acc="pestana-ejemplos" aria-selected="${pestana === 'ejemplos'}">Beispiele</button></div>`;
-      const cta = sel || pestana !== 'guardados' ? '' : `<div class="bib-cta"><button class="bib-prim" data-acc="nuevo">${ico('plus')} Aktuelle speichern</button><button class="bib-circ" data-acc="actualizar"${it ? '' : ' disabled'} aria-label="${it ? `Änderungen in „${esc(it.titulo)}“ speichern` : 'Änderungen speichern'}" title="${it ? `Die aktuellen Daten in „${esc(it.titulo)}“ speichern` : 'Öffne oder speichere zuerst eine Aufgabe'}">${ico('refresh')}</button></div>`;
-      const buscar = (pestana === 'ejemplos' ? selsEj().some((s) => s.options.length > 5) : n > 3) ? `<input type="search" class="bib-busca" placeholder="${pestana === 'ejemplos' ? 'Beispiel suchen …' : 'Nach Titel oder Ordner suchen …'}" aria-label="Suchen" value="${esc(busca)}">` : '';
+        ? `<div class="bib-h bib-hsel"><button class="bib-lnk" data-acc="sel-cancelar">Cancel</button><b>${sel.size ? `${sel.size} seleccionado${sel.size === 1 ? '' : 's'}` : 'Choose exercises'}</b><button class="bib-lnk" data-acc="sel-todos">${vis.length && vis.every((i) => sel.has(i.id)) ? 'None' : 'All'}</button></div>`
+        : `<div class="bib-h"><b>My exercises</b><span class="bib-n">${n}</span><button class="bib-dots" data-acc="sel-modo"${n ? '' : ' disabled'} aria-label="Select" title="Select">${ico('sel')}</button><button class="bib-dots" data-acc="menu-general" aria-haspopup="menu" aria-expanded="${menu?.tipo === 'general'}" aria-label="More options" title="More options: backup, import, select several…">${ico('dots')}</button><button class="bib-x" data-acc="cerrar" title="Close" aria-label="Close My exercises">${ico('x')}</button></div>`;
+      const tabs = sel || !hayEj ? '' : `<div class="bib-seg" role="tablist"><button role="tab" data-acc="pestana-guardados" aria-selected="${pestana === 'guardados'}">Saved</button><button role="tab" data-acc="pestana-ejemplos" aria-selected="${pestana === 'ejemplos'}">Examples</button></div>`;
+      const cta = sel || pestana !== 'guardados' ? '' : `<div class="bib-cta"><button class="bib-prim" data-acc="nuevo">${ico('plus')} Save current</button><button class="bib-circ" data-acc="actualizar"${it ? '' : ' disabled'} aria-label="${it ? `Save changes to “${esc(it.titulo)}”` : 'Save changes'}" title="${it ? `Save the current data to “${esc(it.titulo)}”` : 'Open or save an exercise first'}">${ico('refresh')}</button></div>`;
+      const buscar = (pestana === 'ejemplos' ? selsEj().some((s) => s.options.length > 5) : n > 3) ? `<input type="search" class="bib-busca" placeholder="${pestana === 'ejemplos' ? 'Search example…' : 'Search by title or folder…'}" aria-label="Search" value="${esc(busca)}">` : '';
       const nSel = sel ? sel.size : 0, conf = borrando === '#sel';
-      const barra = sel ? `<div class="bib-selbar"><div class="bib-grp">${mi('sel-imprimir', 'print', 'naranja', `Blatt drucken${nSel ? ` (${nSel})` : ''}`).replace('<button', nSel ? '<button' : '<button disabled')}${mi('sel-enlaces', 'link', 'azul', 'Links kopieren').replace('<button', nSel ? '<button' : '<button disabled')}${mi('sel-exportar', 'exp', 'cielo', 'Auswahl exportieren').replace('<button', nSel ? '<button' : '<button disabled')}${mi('sel-mover', 'move', 'verde', 'In Ordner verschieben …').replace('<button', nSel ? '<button' : '<button disabled')}${conf ? `<button class="bib-mi peligro" data-acc="sel-si-borrar"><span class="bib-sq" style="--c:var(--ic-rojo)">${ico('trash')}</span><span>Ja, ${nSel} löschen</span></button>${mi('no-borrar', 'x', 'cielo', 'No borrar')}` : mi('sel-borrar', 'trash', 'rojo', 'Löschen', '', ' peligro').replace('<button', nSel ? '<button' : '<button disabled')}</div></div>` : '';
-      const pie = sel || pestana !== 'guardados' ? '' : '<div class="bib-pie"><p>Sie werden in diesem Browser gespeichert. Mach ab und zu eine Sicherung (⋮ oben): Wenn du die Browserdaten löschst, gehen sie verloren. Du kannst auch eine <code>.simu.json</code>-Datei hierher ziehen.</p></div>';
+      const barra = sel ? `<div class="bib-selbar"><div class="bib-grp">${mi('sel-imprimir', 'print', 'naranja', `Print sheet${nSel ? ` (${nSel})` : ''}`).replace('<button', nSel ? '<button' : '<button disabled')}${mi('sel-pdf', 'exp', 'rosa', `Download PDF${nSel ? ` (${nSel})` : ''}`).replace('<button', nSel ? '<button' : '<button disabled')}${mi('sel-enlaces', 'link', 'azul', 'Copy links').replace('<button', nSel ? '<button' : '<button disabled')}${mi('sel-exportar', 'exp', 'cielo', 'Export selection').replace('<button', nSel ? '<button' : '<button disabled')}${mi('sel-mover', 'move', 'verde', 'Move to folder…').replace('<button', nSel ? '<button' : '<button disabled')}${conf ? `<button class="bib-mi peligro" data-acc="sel-si-borrar"><span class="bib-sq" style="--c:var(--ic-rojo)">${ico('trash')}</span><span>Yes, delete ${nSel}</span></button>${mi('no-borrar', 'x', 'cielo', 'No borrar')}` : mi('sel-borrar', 'trash', 'rojo', 'Delete', '', ' peligro').replace('<button', nSel ? '<button' : '<button disabled')}</div></div>` : '';
+      const pie = sel || pestana !== 'guardados' ? '' : '<div class="bib-pie"><p>They are saved in this browser. Make a backup now and then (⋮ above): if you clear the browser data, they are lost. You can also drag a <code>.simu.json</code> file here.</p></div>';
       panel.innerHTML = `${cab}${tabs}<div class="bib-acc">${cta}${f || ''}${buscar}</div><div class="bib-lista">${lista}</div>${pie}${barra}${menuHTML()}`;
       if (f) { const t = panel.querySelector('#bib-t') || panel.querySelector('#bib-c'); t.focus(); t.select(); }
       if (menu) posicionaMenu();
@@ -460,6 +495,8 @@ const Biblioteca = (() => {
         case 'copia': descargaCopia(); break;
         case 'exportar-todo': descarga(nombreArchivo(nombre + ' ejercicios'), archivoDe(lib.items)); break;
         case 'enlace': copiaEnlace(); break;
+        case 'imprimir': if (it) exporta([it], 'imprimir', 'menu-fila'); break;
+        case 'pdf': if (it) exporta([it], 'pdf', 'menu-fila'); break;
         case 'enlace-fila': if (it) copiaEnlace(it.datos); break;
         case 'sel-modo': sel = new Set(); form = null; pestana = 'guardados'; break;
         case 'seleccionar': if (it) { sel = new Set([it.id]); form = null; } break;
@@ -467,17 +504,18 @@ const Biblioteca = (() => {
         case 'sel-cancelar': sel = null; borrando = null; break;
         case 'sel-todos': { const q = norm(busca), vis = lib.items.filter((i) => !q || norm(i.titulo + ' ' + (i.carpeta || '')).includes(q)); if (vis.every((i) => sel.has(i.id))) vis.forEach((i) => sel.delete(i.id)); else vis.forEach((i) => sel.add(i.id)); break; }
         case 'marcar': if (it) { if (sel.has(it.id)) sel.delete(it.id); else sel.add(it.id); pinta(); [...panel.querySelectorAll('.bib-it')].find((x) => x.dataset.id === it.id)?.querySelector('.bib-abre')?.focus(); } return;
-        case 'sel-imprimir': { const its = itemsSel(); if (its.length) imprimeHoja(its); break; }
+        case 'sel-imprimir': { const its = itemsSel(); if (its.length) exporta(its, 'imprimir', 'seleccion'); break; }
+        case 'sel-pdf': { const its = itemsSel(); if (its.length) exporta(its, 'pdf', 'seleccion'); break; }
         case 'sel-enlaces': { const its = itemsSel(); if (its.length) copiaEnlaces(its); break; }
         case 'sel-exportar': { const its = itemsSel(); if (its.length) descarga(nombreArchivo(nombre + ' seleccion'), archivoDe(its)); break; }
         case 'sel-mover': if (sel.size) form = { ids: [...sel] }; break;
         case 'sel-borrar': borrando = '#sel'; break;
-        case 'sel-si-borrar': { const ids = sel; lib.items = lib.items.filter((x) => !ids.has(x.id)); if (ids.has(activo)) ponActivo(null); sel = null; borrando = null; guardaLib(); aviso(`${ids.size} Aufgabe${ids.size === 1 ? '' : 'n'} ${ids.size === 1 ? 'wurde' : 'wurden'} gelöscht`); break; }
+        case 'sel-si-borrar': { const ids = sel; lib.items = lib.items.filter((x) => !ids.has(x.id)); if (ids.has(activo)) ponActivo(null); sel = null; borrando = null; guardaLib(); aviso(`${ids.size} exercise${ids.size === 1 ? '' : 's'} deleted`); break; }
         case 'guardar': guardaForm(); break;
         case 'cancelar': form = null; break;
         case 'carpeta-elige': { const inp = panel.querySelector('#bib-c'); if (inp) { inp.value = b.dataset.c; inp.focus(); } for (const c of panel.querySelectorAll('.bib-chip')) c.classList.toggle('on', c === b); return; }
         case 'carp-renombrar': form = { renombra: carpeta }; break;
-        case 'carp-quitar': for (const x of lib.items) if (x.carpeta === carpeta) x.carpeta = ''; guardaLib(); aviso(`Ordner „${carpeta}“ entfernt: Seine Aufgaben bleiben in der Liste`); break;
+        case 'carp-quitar': for (const x of lib.items) if (x.carpeta === carpeta) x.carpeta = ''; guardaLib(); aviso(`Folder “${carpeta}” removed: its exercises are still in the list`); break;
         case 'abrir': if (it) carga(it); break;
         case 'ejemplo': {
           const s = selsEj()[+b.dataset.sel]; if (!s) break;
@@ -491,7 +529,7 @@ const Biblioteca = (() => {
         case 'exportar': if (it) descarga(nombreArchivo(it.titulo), archivoDe([it])); break;
         case 'borrar': borrando = id; pinta(); return;
         case 'no-borrar': borrando = null; break;
-        case 'si-borrar': if (it) { lib.items = lib.items.filter((x) => x.id !== id); if (activo === id) ponActivo(null); borrando = null; guardaLib(); aviso('Aufgabe gelöscht'); } break;
+        case 'si-borrar': if (it) { lib.items = lib.items.filter((x) => x.id !== id); if (activo === id) ponActivo(null); borrando = null; guardaLib(); aviso('Exercise deleted'); } break;
       }
       pinta();
     });
@@ -512,8 +550,19 @@ const Biblioteca = (() => {
     document.addEventListener('change', sigue); document.addEventListener('input', sigue);
     pinta(); abre(!!ui.abierta);
     if (selsEj().some((s) => s.options.length > 1)) document.body.classList.add('bib-ejemplos');
-    return { get items() { return lib.items; }, abre, importa: (t) => { const n = importa(t); guardaLib(); pinta(); return n; }, archivoDe };
+    function abrirVentanaExportar({ ids, accion = 'imprimir', origen = '' } = {}) {
+      refresca();
+      const its = ids && ids.length ? ids.map((id) => lib.items.find((x) => x.id === id)).filter(Boolean) : (sel && sel.size ? itemsSel() : lib.items);
+      if (!its.length) { aviso('There are no saved exercises to print'); return; }
+      if (typeof VentanaImprimir === 'undefined') { imprimeHoja(its); return; }
+      sel = null; menu = null; pinta();
+      VentanaImprimir.abre({ titulo: nombre, items: its, accion, origen, imprime: (op) => imprimeHoja(its, op) });
+    }
+    const inst = { get items() { return lib.items; }, abre, abrirVentanaExportar, importa: (t) => { const n = importa(t); guardaLib(); pinta(); return n; }, archivoDe };
+    ultima = inst; return inst;
   }
-  return { monta, FORMATO, FORMATO_COPIA, copia, restaura, migraElectro };
+  let ultima = null;
+  const abrirVentanaExportar = (a) => (ultima ? ultima.abrirVentanaExportar(a) : null);
+  return { monta, abrirVentanaExportar, FORMATO, FORMATO_COPIA, copia, restaura, migraElectro };
 })();
 

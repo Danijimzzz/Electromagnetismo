@@ -85,14 +85,15 @@ module.exports = async function barraElectrostatica(browser, { publico, path, ma
 
   // 4 · imprimir varios con el modo selección de la barra (no hay ventana propia)
   const antes = await p.evaluate(() => localStorage.getItem('electrostatica-v1'));
-  await p.click('.bib [data-acc=menu-general]'); await p.click('.bib [data-acc=sel-modo]'); await p.click('.bib [data-acc=sel-todos]');
+  await p.click('.bib [data-acc=sel-modo]'); await p.click('.bib [data-acc=sel-todos]');
   await p.evaluate(() => { window.print = () => { window.__hoja = document.getElementById('hoja-imp').innerHTML; }; });
   await p.click('.bib [data-acc=sel-imprimir]');
+  await p.waitForSelector('form.vi .vi-ok'); await p.click('form.vi .vi-ok');
   await p.waitForFunction(() => window.__hoja, null, { timeout: 40000 });
   const hoja = await p.evaluate(() => window.__hoja);
-  if ((hoja.match(/<section class="hoja-ej">/g) || []).length !== 3) mal('Electrostática: la hoja no trae los tres ejercicios guardados');
-  if (!/Enunciado dos|Enunciado uno/.test(hoja) || !/<h2>Datos<\/h2>/.test(hoja) || !/Preguntas/.test(hoja)) mal('Electrostática: la hoja no trae el enunciado, los datos y las preguntas de cada ejercicio');
-  if (!/1\. /.test(hoja) || !/2\. /.test(hoja)) mal('Electrostática: la hoja no numera los ejercicios');
+  if ((hoja.match(/<section class="hoja-ej"/g) || []).length !== 3) mal('Electrostática: la hoja no trae los tres ejercicios guardados');
+  if (!/Enunciado dos|Enunciado uno/.test(hoja) || !/Datos/.test(hoja) || !/Preguntas/.test(hoja)) mal('Electrostática: la hoja no trae el enunciado, los datos y las preguntas de cada ejercicio');
+  if (!/<b>1<\/b>/.test(hoja) || !/<b>2<\/b>/.test(hoja)) mal('Electrostática: la hoja no numera los ejercicios');
   if ((await p.evaluate(() => localStorage.getItem('electrostatica-v1'))) !== antes) mal('Electrostática: la hoja no devuelve el estado de antes');
   await p.evaluate(() => dispatchEvent(new Event('afterprint')));
 

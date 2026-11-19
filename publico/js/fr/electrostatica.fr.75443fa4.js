@@ -1,4 +1,4 @@
-const Version = (() => { const log = [{"v":"0.11","fecha":"2026-11-16","cambios":["La barra de Mis ejercicios es exactamente la de las demás herramientas, sin barra propia ni diálogo para imprimir varios: se usa el modo «Seleccionar varios». Lo que tenías guardado se pasa solo.","Ctrl+K y «/» abren el buscador de toda la web."]},{"v":"0.10","fecha":"2026-11-16","cambios":["«Hoja para imprimir…» en la barra lateral: elige varios ejercicios, tuyos o de ejemplo, y se imprimen juntos con su enunciado, resultados y desarrollo."]},{"v":"0.9","fecha":"2026-11-16","cambios":["La barra lateral es la de Mis ejercicios de las demás herramientas: mismas acciones y nombres y aspecto de cristal, con «Copia de seguridad de todo», «Restaurar copia…» y «Copiar enlace con estos datos»."]},{"v":"0.8","fecha":"2026-11-16","cambios":["La página tiene ya pie con Contacto, Aviso legal, Privacidad y Cookies (antes solo estaban en la barra lateral, que en el móvil no se veía) y «Informar de un error» abre un correo con la herramienta ya escrita.","Aparece en «Tu espacio» de la portada (últimas visitadas) y tiene el botón ☆ Favorita.","Con el teclado, Tab empieza por la cabecera y el contenido, y la barra de Mis ejercicios queda después.","Si tu sistema pide reducir el movimiento, las cargas de prueba dibujan su trayectoria de golpe en vez de animarla.","La descripción y la teoría incluyen ya todas las fuentes (láminas, cascarones, anillos, discos, conductores, dipolos…)."]},{"v":"0.7","fecha":"2026-11-08","cambios":["El modo práctica comprueba las dimensiones: si tu respuesta no sale en N/C, V, N, J… te lo dice, y si sumas términos con unidades distintas señala cuál falla."]},{"v":"0.6","fecha":"2026-10-26","cambios":["Tubo cilíndrico con carga superficial σ y cilindros huecos (con radio interior), para resolver cables coaxiales.","Densidades que no son uniformes en esferas y cilindros (ρ₀·r/R, ρ₀·R/r, ρ₀(1 − r/R) y ρ₀(1 − r²/R²)) y en varillas (λ que crece o decrece a lo largo), con Gauss y la carga encerrada.","Arcos cargados: semicircunferencias, cuartos de anillo o cualquier ángulo, con el campo y el potencial en el centro.","Corteza esférica conductora con radio interior y exterior: si dentro hay una carga centrada, se induce −q en la cara interior y +q en la exterior.","Seis ejercicios de ejemplo nuevos con todo esto.","La guía enlaza con la herramienta de Condensadores."]},{"v":"0.5.1","fecha":"2026-10-23","cambios":["El simulador tiene ahora su propia dirección, /electromagnetismo/electrostatica/. Tus problemas guardados siguen ahí. El botón «Todas las herramientas» de la barra lateral vuelve a la portada."]},{"v":"0.5","fecha":"2026-10-23","cambios":["Doce ejercicios de ejemplo con enunciados propios: los mismos tipos de pregunta que en clase, con otras figuras y otros números. La guía de uso tiene capturas nuevas hechas con ellos.","La web tiene icono propio: un dipolo con sus líneas de campo, en la pestaña del navegador, en la pantalla de inicio del móvil y en la vista previa al compartir el enlace.","Páginas de aviso legal, privacidad, cookies y contacto, enlazadas al pie de la barra lateral."]},{"v":"0.4","fecha":"2026-10-22","cambios":["Número de versión visible y este apartado de novedades.","Arreglo: en la vista 3D los cilindros se dibujan con su radio real, aparecen las superficies de Gauss, y las esferas, cascarones y conductores tienen volumen en lugar de parecer círculos planos."]},{"v":"0.3","fecha":"2026-10-22","cambios":["Guía de uso con capturas (botón ?, barra lateral o F1).","Los resultados se escriben con la misma forma que el solucionario oficial: perfiles por tramos, factor común en logaritmos y radicales, y la pregunta V_A − V_B."]},{"v":"0.2","fecha":"2026-10-22","cambios":["Anillos, discos, cortezas y conductores.","Varias incógnitas, modo numérico SI, flujo de Gauss y gráficas E(z) y V(z).","Modo práctica, exportar la solución, deshacer y rehacer, mapa de color y vista 3D.","Búsqueda, carpetas y etiquetas en la barra lateral."]},{"v":"0.1","fecha":"2026-10-22","cambios":["Primera versión: cargas, hilos, planos y esferas con el desarrollo paso a paso y 12 ejercicios resueltos.","Barra lateral con tus problemas, los importados y los ejercicios; título y enunciado editables; archivos .emsim.json."]}]; return { current: log[0].v, log }; })();
+const Version = (() => { const log = [{"v":"0.11","fecha":"2026-11-16","cambios":["La barre Mes exercices est exactement celle des autres outils, sans barre propre ni boîte de dialogue pour imprimer plusieurs exercices : utilisez le mode « Sélectionner plusieurs ». Ce que vous aviez enregistré est repris automatiquement.","Ctrl+K et « / » ouvrent la recherche de tout le site."]},{"v":"0.10","fecha":"2026-11-16","cambios":["« Imprimer la feuille… » dans la barre latérale : choisissez plusieurs exercices, les vôtres ou des exemples, et ils s'impriment ensemble avec leur énoncé, leurs résultats et leur développement."]},{"v":"0.9","fecha":"2026-11-16","cambios":["La barre latérale est celle de Mes exercices des autres outils : mêmes actions, mêmes noms et même aspect en verre, avec « Sauvegarde de tout », « Restaurer une sauvegarde… » et « Copier le lien avec ces données »."]},{"v":"0.8","fecha":"2026-11-16","cambios":["La page a maintenant un pied de page avec Contact, Mentions légales, Confidentialité et Cookies (auparavant ils n'étaient que dans la barre latérale, invisible sur mobile), et « Signaler une erreur » ouvre un e-mail avec l'outil déjà indiqué.","Il apparaît dans « Votre espace » de l'accueil (derniers consultés) et possède le bouton ☆ Favori.","Au clavier, la touche Tab commence par l'en-tête et le contenu, et la barre Mes exercices vient ensuite.","Si votre système demande de réduire les animations, les charges d'essai tracent leur trajectoire d'un seul coup au lieu de l'animer.","La description et la théorie incluent désormais toutes les sources (plaques, coques, anneaux, disques, conducteurs, dipôles…)."]},{"v":"0.7","fecha":"2026-11-08","cambios":["Le mode entraînement vérifie les dimensions : si votre réponse n'est pas en N/C, V, N, J…, il vous le signale, et si vous additionnez des termes d'unités différentes, il indique lequel est faux."]},{"v":"0.6","fecha":"2026-10-26","cambios":["Tube cylindrique à charge surfacique σ et cylindres creux (avec rayon intérieur), pour résoudre les câbles coaxiaux.","Densités non uniformes dans les sphères et les cylindres (ρ₀·r/R, ρ₀·R/r, ρ₀(1 − r/R) et ρ₀(1 − r²/R²)) et dans les tiges (λ croissant ou décroissant le long de la tige), avec Gauss et la charge enfermée.","Arcs chargés : demi-cercles, quarts d'anneau ou tout angle, avec le champ et le potentiel au centre.","Coque sphérique conductrice de rayons intérieur et extérieur : si elle renferme une charge centrée, une charge −q est induite sur la face intérieure et +q sur la face extérieure.","Six nouveaux exercices d'exemple avec tout cela.","Le guide renvoie vers l'outil Condensateurs."]},{"v":"0.5.1","fecha":"2026-10-23","cambios":["Le simulateur a maintenant sa propre adresse, /electromagnetismo/electrostatica/. Vos problèmes enregistrés y sont toujours. Le bouton « Tous les outils » de la barre latérale revient à l'accueil."]},{"v":"0.5","fecha":"2026-10-23","cambios":["Douze exercices d'exemple avec leurs propres énoncés : les mêmes types de questions qu'en cours, avec d'autres figures et d'autres nombres. Le guide d'utilisation a de nouvelles captures d'écran réalisées avec eux.","Le site a sa propre icône : un dipôle avec ses lignes de champ, dans l'onglet du navigateur, sur l'écran d'accueil du mobile et dans l'aperçu lors du partage du lien.","Pages de mentions légales, de confidentialité, de cookies et de contact, liées en bas de la barre latérale."]},{"v":"0.4","fecha":"2026-10-22","cambios":["Numéro de version visible et cette section des nouveautés.","Correction : dans la vue 3D, les cylindres sont dessinés avec leur rayon réel, les surfaces de Gauss apparaissent, et les sphères, coques et conducteurs ont un volume au lieu de ressembler à des cercles plats."]},{"v":"0.3","fecha":"2026-10-22","cambios":["Guide d'utilisation avec captures d'écran (bouton ?, barre latérale ou F1).","Les résultats s'écrivent sous la même forme que le corrigé officiel : profils par morceaux, facteur commun dans les logarithmes et les radicaux, et la question V_A − V_B."]},{"v":"0.2","fecha":"2026-10-22","cambios":["Anneaux, disques, coques et conducteurs.","Plusieurs inconnues, mode numérique SI, flux de Gauss et graphiques E(z) et V(z).","Mode entraînement, export de la solution, annuler et rétablir, carte de couleurs et vue 3D.","Recherche, dossiers et étiquettes dans la barre latérale."]},{"v":"0.1","fecha":"2026-10-22","cambios":["Première version : charges, fils, plans et sphères avec le développement pas à pas et 12 exercices résolus.","Barre latérale avec vos problèmes, les problèmes importés et les exercices ; titre et énoncé modifiables ; fichiers .emsim.json."]}]; return { current: log[0].v, log }; })();
 
 /* =====================================================================
    Motor de cálculo (sin DOM). Unidades: longitud en unidades de "a",
@@ -15,7 +15,7 @@ const Engine = (() => {
   function parseExpr(src, unit, vars) {
     if (typeof src === 'number') return src;
     let s = String(src ?? '').trim();
-    if (!s) throw new Error('vacío');
+    if (!s) throw new Error('vide');
     s = s.replace(/π/g, 'pi').replace(/λ/g, 'lambda').replace(/σ/g, 'sigma').replace(/ρ/g, 'rho').replace(/ε₀|ε0|ε/g, 'eps0').replace(/[₀₁₂₃₄₅₆₇₈₉]/g, (c) => '₀₁₂₃₄₅₆₇₈₉'.indexOf(c)).replace(/²/g, '^2').replace(/³/g, '^3').replace(/[−–]/g, '-').replace(/[·×]/g, '*').replace(/,/g, '.');
     const toks = [];
     const re = /\s*(\d+\.?\d*(?:[eE][+-]?\d+)?|\.\d+|[A-Za-z_][A-Za-z_0-9]*|√|[-+*/^()])/y;
@@ -24,7 +24,7 @@ const Engine = (() => {
     while (re.lastIndex < s.length) {
       const at = re.lastIndex;
       m = re.exec(s);
-      if (!m) { if (/^\s*$/.test(s.slice(at))) break; throw new Error('símbolo no válido: ' + s.slice(at, at + 3)); }
+      if (!m) { if (/^\s*$/.test(s.slice(at))) break; throw new Error('symbole non valide : ' + s.slice(at, at + 3)); }
       toks.push(m[1]);
     }
     let i = 0;
@@ -58,7 +58,7 @@ const Engine = (() => {
     }
     function primary() {
       const t = toks[i++];
-      if (t === undefined) throw new Error('expresión incompleta');
+      if (t === undefined) throw new Error('expression incomplète');
       if (t === '(') { const v = expr(); eat(')'); return v; }
       if (t === '√') return power();
       if (/^[\d.]/.test(t)) return parseFloat(t);
@@ -75,7 +75,7 @@ const Engine = (() => {
     }
     const v = expr();
     if (i < toks.length) throw new Error('sobra: ' + toks[i]);
-    if (!isFinite(v)) throw new Error('no es un número finito');
+    if (!isFinite(v)) throw new Error('n\'est pas un nombre fini');
     return v;
   }
 
@@ -228,11 +228,11 @@ const Engine = (() => {
   /* ---------- Tipos de símbolo (dimensiones) ---------- */
   // m: exponente tal que símbolo·a^m es una carga
   const KINDS = {
-    q: { m: 0, label: 'Carga', hint: 'q', si: 'C' },
-    lambda: { m: 1, label: 'Densidad lineal', hint: 'λ', si: 'C/m' },
-    sigma: { m: 2, label: 'Densidad superficial', hint: 'σ', si: 'C/m²' },
-    rho: { m: 3, label: 'Densidad volumétrica', hint: 'ρ', si: 'C/m³' },
-    p: { m: -1, label: 'Momento dipolar', hint: 'p', si: 'C·m' },
+    q: { m: 0, label: 'Charge', hint: 'q', si: 'C' },
+    lambda: { m: 1, label: 'Densité linéique', hint: 'λ', si: 'C/m' },
+    sigma: { m: 2, label: 'Densité surfacique', hint: 'σ', si: 'C/m²' },
+    rho: { m: 3, label: 'Densité volumique', hint: 'ρ', si: 'C/m³' },
+    p: { m: -1, label: 'Moment dipolaire', hint: 'p', si: 'C·m' },
   };
   // exponente de longitud de cada magnitud física (con ε₀ dividiendo)
   const QTY = {
@@ -639,9 +639,9 @@ const Physics = (() => {
     };
     d.explainE = function (g, X, nm) {
       const r = dentro(X), L = r < ind.R1 - 1e-12 ? def.explainE.call(this, g, X, nm) : [];
-      L.push(r < ind.R1 - 1e-12 ? `Está dentro del hueco de la corteza conductora: la carga inducida en su cara interior (−Q) no crea campo en el hueco porque la carga está centrada.`
-        : r < ind.R2 - 1e-12 ? `P está dentro del conductor: la carga −Q inducida en la cara interior anula el campo de ${nm} (E = 0).`
-          : `Fuera de la corteza conductora, ${nm} y la carga −Q inducida en la cara interior se anulan; queda la +Q de la cara exterior: ${vecE()} = ${F.frac('Q', `4π${eps}r<sup>2</sup>`)} û<sub>r</sub>, con Q = ${F.num(ind.Q / (ind.Q || 1))}·(carga de ${nm}).`);
+      L.push(r < ind.R1 - 1e-12 ? `Il est dans la cavité de l'enveloppe conductrice : la charge induite sur sa face intérieure (−Q) ne crée pas de champ dans la cavité car la charge est centrée.`
+        : r < ind.R2 - 1e-12 ? `P est à l'intérieur du conducteur : la charge −Q induite sur la face intérieure annule le champ de ${nm} (E = 0).`
+          : `À l'extérieur de l'enveloppe conductrice, ${nm} et la charge −Q induite sur la face intérieure s'annulent ; il reste la charge +Q de la face extérieure : ${vecE()} = ${F.frac('Q', `4π${eps}r<sup>2</sup>`)} û<sub>r</sub>, avec Q = ${F.num(ind.Q / (ind.Q || 1))}·(charge de ${nm}).`);
       return L;
     };
     return d;
@@ -667,8 +667,8 @@ const Physics = (() => {
   /* --------------------------- FUENTES --------------------------- */
   const SOURCES = {
     point: {
-      label: 'Carga puntual', short: 'Carga', kind: 'q', prefix: 'q', absV: true,
-      fields: [{ k: 'pos', t: 'vec3', label: 'Posición' }],
+      label: 'Charge ponctuelle', short: 'Charge', kind: 'q', prefix: 'q', absV: true,
+      fields: [{ k: 'pos', t: 'vec3', label: 'Position' }],
       defaults: () => ({ pos: ['0', '0', '0'], s: { c: '1', sym: 'q' } }),
       geom: (src, P) => ({ pos: src.pos.map(P) }),
       E(g, X) {
@@ -689,20 +689,20 @@ const Physics = (() => {
     },
 
     line: {
-      label: 'Hilo infinito', short: 'Hilo', kind: 'lambda', prefix: 'λ', absV: false,
+      label: 'Fil infini', short: 'Fil', kind: 'lambda', prefix: 'λ', absV: false,
       fields: [
-        { k: 'pos', t: 'vec3', label: 'Pasa por' },
-        { k: 'dir', t: 'select', label: 'Paralelo a', options: [['z', 'eje Z'], ['y', 'eje Y'], ['x', 'eje X']] },
-        { k: 'mode', t: 'select', label: 'Carga', structural: true, options: [['lambda', 'lineal λ (hilo fino)'], ['rho', 'volumétrica ρ (cilindro de radio R)'], ['sigma', 'superficial σ (tubo de radio R)']] },
-        { k: 'R', t: 'expr', label: 'Radio R', show: (s) => s.mode === 'rho' || s.mode === 'sigma' },
-        { k: 'R1', t: 'expr', label: 'Radio interior (0 = macizo)', show: (s) => s.mode === 'rho', optional: true },
-        { k: 'perfil', t: 'select', label: 'Densidad', options: PERF_OPC, show: (s) => s.mode === 'rho' },
+        { k: 'pos', t: 'vec3', label: 'Passe par' },
+        { k: 'dir', t: 'select', label: 'Parallèle à', options: [['z', 'eje Z'], ['y', 'eje Y'], ['x', 'eje X']] },
+        { k: 'mode', t: 'select', label: 'Charge', structural: true, options: [['lambda', 'linéique λ (fil fin)'], ['rho', 'volumique ρ (cylindre de rayon R)'], ['sigma', 'surfacique σ (tube de rayon R)']] },
+        { k: 'R', t: 'expr', label: 'Rayon R', show: (s) => s.mode === 'rho' || s.mode === 'sigma' },
+        { k: 'R1', t: 'expr', label: 'Rayon intérieur (0 = plein)', show: (s) => s.mode === 'rho', optional: true },
+        { k: 'perfil', t: 'select', label: 'Densité', options: PERF_OPC, show: (s) => s.mode === 'rho' },
       ],
       defaults: () => ({ pos: ['0', '0', '0'], dir: 'z', mode: 'lambda', R: '1', s: { c: '1', sym: 'lambda' } }),
       kindOf: (src) => (src.mode === 'rho' ? 'rho' : src.mode === 'sigma' ? 'sigma' : 'lambda'),
       geom(src, P) {
         const g = { pos: src.pos.map(P), u: AX[src.dir], dir: src.dir, mode: src.mode, R: src.mode === 'rho' || src.mode === 'sigma' ? P(src.R) : 0, R1: src.mode === 'rho' && String(src.R1 ?? '').trim() ? P(src.R1) : 0, pf: perfil(src) };
-        if (g.R1 >= g.R && g.R1 > 0) throw new Error('el radio interior debe ser menor que R');
+        if (g.R1 >= g.R && g.R1 > 0) throw new Error('le rayon intérieur doit être inférieur à R');
         return g;
       },
       // carga por unidad de longitud dentro de un radio d (ρ = 1 o σ = 1)
@@ -741,36 +741,36 @@ const Physics = (() => {
       },
       explainE(g, X) {
         const pv = this.perp(g, X), d = V3.norm(pv);
-        const L = [`Distancia perpendicular al eje: <span class="vv">d</span> = ${F.vecNum(pv)}, &nbsp;d = ${F.num(d)}`];
+        const L = [`Distance perpendiculaire à l'axe : <span class="vv">d</span> = ${F.vecNum(pv)}, &nbsp;d = ${F.num(d)}`];
         if (g.mode === 'sigma') {
-          L.push(d < g.R ? `P está dentro del tubo (d &lt; R = ${F.num(g.R)}): el cilindro de Gauss no encierra carga, ${vecE()} = 0`
-            : `P está fuera del tubo (d &gt; R = ${F.num(g.R)}). Gauss: λ = 2πRσ y ${vecE()} = ${F.frac('σ R', `${eps}d`)} û<sub>d</sub>`);
+          L.push(d < g.R ? `P est à l'intérieur du tube (d &lt; R = ${F.num(g.R)}) : le cylindre de Gauss ne renferme aucune charge, ${vecE()} = 0`
+            : `P est à l'extérieur du tube (d &gt; R = ${F.num(g.R)}). Gauss : λ = 2πRσ et ${vecE()} = ${F.frac('σ R', `${eps}d`)} û<sub>d</sub>`);
         } else if (g.mode === 'rho' && (g.pf !== PERFILES.uniforme || g.R1 > 0)) {
-          const zona = d < g.R1 ? 'en el hueco' : d <= g.R ? 'dentro del cilindro' : 'fuera del cilindro';
-          L.push(`ρ(r) = ${g.pf.txt}${g.R1 ? `, entre R<sub>1</sub> = ${F.num(g.R1)} y R = ${F.num(g.R)}` : ''}. P está ${zona} (d = ${F.num(d)}).`);
-          L.push(`Gauss en un cilindro de radio d y altura h: ${vecE()} 2π d h = ${F.frac('h', eps)} ∫ ρ(r) 2π r dr ⇒ λ<sub>enc</sub> = ${F.num(this.lam(g, d) / PI)}π (por unidad de ρ<sub>0</sub>) y ${vecE()} = ${F.frac('λ<sub>enc</sub>', `2π${eps}d`)} û<sub>d</sub>`);
+          const zona = d < g.R1 ? 'en el hueco' : d <= g.R ? 'à l\'intérieur du cylindre' : 'à l\'extérieur du cylindre';
+          L.push(`ρ(r) = ${g.pf.txt}${g.R1 ? `, entre R<sub>1</sub> = ${F.num(g.R1)} et R = ${F.num(g.R)}` : ''}. P est ${zona} (d = ${F.num(d)}).`);
+          L.push(`Gauss sur un cylindre de rayon d et de hauteur h : ${vecE()} 2π d h = ${F.frac('h', eps)} ∫ ρ(r) 2π r dr ⇒ λ<sub>enc</sub> = ${F.num(this.lam(g, d) / PI)}π (par unité de ρ<sub>0</sub>) et ${vecE()} = ${F.frac('λ<sub>enc</sub>', `2π${eps}d`)} û<sub>d</sub>`);
         } else if (g.mode === 'rho') {
           L.push(d <= g.R
-            ? `P está dentro del cilindro (d ≤ R = ${F.num(g.R)}). Gauss: ${vecE()} = ${F.frac('ρ d', `2${eps}`)} û<sub>d</sub>`
-            : `P está fuera del cilindro (d &gt; R = ${F.num(g.R)}). Gauss: ${vecE()} = ${F.frac('ρ R<sup>2</sup>', `2${eps}d`)} û<sub>d</sub>`);
+            ? `P est à l'intérieur du cylindre (d ≤ R = ${F.num(g.R)}). Gauss : ${vecE()} = ${F.frac('ρ d', `2${eps}`)} û<sub>d</sub>`
+            : `P est à l'extérieur du cylindre (d &gt; R = ${F.num(g.R)}). Gauss : ${vecE()} = ${F.frac('ρ R<sup>2</sup>', `2${eps}d`)} û<sub>d</sub>`);
         } else L.push(`${vecE()} = ${F.frac('λ', `2π${eps}d`)} û<sub>d</sub>`);
         return L;
       },
       explainV(g, A, B) {
         const dA = V3.norm(this.perp(g, A)), dB = V3.norm(this.perp(g, B));
         const ds = `d<sub>A</sub> = ${F.num(dA)}, d<sub>B</sub> = ${F.num(dB)}`;
-        if (g.mode === 'sigma') return `V constante dentro del tubo y V<sub>B</sub> − V<sub>A</sub> = −${F.frac('σR', eps)} ln${F.frac('d<sub>B</sub>', 'd<sub>A</sub>')} fuera; ${ds}`;
-        if (g.mode === 'rho') return `Integrando ${vecE()} de A a B (${g.pf === PERFILES.uniforme && !g.R1 ? `dentro: ${F.frac('ρd', `2${eps}`)}, fuera: ${F.frac('ρR<sup>2</sup>', `2${eps}d`)}` : `con ρ(r) = ${g.pf.txt}`}); ${ds}`;
+        if (g.mode === 'sigma') return `V constant à l'intérieur du tube et V<sub>B</sub> − V<sub>A</sub> = −${F.frac('σR', eps)} ln${F.frac('d<sub>B</sub>', 'd<sub>A</sub>')} à l'extérieur ; ${ds}`;
+        if (g.mode === 'rho') return `En intégrant ${vecE()} de A à B (${g.pf === PERFILES.uniforme && !g.R1 ? `à l'intérieur : ${F.frac('ρd', `2${eps}`)}, à l'extérieur : ${F.frac('ρR<sup>2</sup>', `2${eps}d`)}` : `avec ρ(r) = ${g.pf.txt}`}) ; ${ds}`;
         return `V<sub>B</sub> − V<sub>A</sub> = −${F.frac('λ', `2π${eps}`)} ln${F.frac('d<sub>B</sub>', 'd<sub>A</sub>')}, &nbsp; ${ds}`;
       },
       anchors: (src, g) => [{ path: ['pos'], at: g.pos }],
     },
 
     plane: {
-      label: 'Plano infinito', short: 'Plano', kind: 'sigma', prefix: 'σ', absV: false,
+      label: 'Plan infini', short: 'Plan', kind: 'sigma', prefix: 'σ', absV: false,
       fields: [
-        { k: 'axis', t: 'select', label: 'Perpendicular a', options: [['x', 'eje X (plano x = cte)'], ['y', 'eje Y (plano y = cte)'], ['z', 'eje Z (plano z = cte)']] },
-        { k: 'at', t: 'expr', label: 'Posición (cte)' },
+        { k: 'axis', t: 'select', label: 'Perpendiculaire à', options: [['x', 'eje X (plano x = cte)'], ['y', 'eje Y (plano y = cte)'], ['z', 'eje Z (plano z = cte)']] },
+        { k: 'at', t: 'expr', label: 'Position (cste)' },
       ],
       defaults: () => ({ axis: 'x', at: '0', s: { c: '1', sym: 'sigma' } }),
       geom: (src, P) => ({ k: src.axis, i: AXI[src.axis], c: P(src.at) }),
@@ -782,7 +782,7 @@ const Physics = (() => {
       V(g, X) { return new Ex(-Math.abs(X[g.i] - g.c) / 2); },
       explainE(g, X) {
         const dn = X[g.i] - g.c;
-        return [`P está en ${g.k} = ${F.num(X[g.i])}, ${dn > 0 ? 'por encima' : 'por debajo'} del plano ${g.k} = ${F.num(g.c)}`,
+        return [`P est en ${g.k} = ${F.num(X[g.i])}, ${dn > 0 ? 'au-dessus' : 'au-dessous'} du plan ${g.k} = ${F.num(g.c)}`,
           `${vecE()} = ${F.frac('σ', `2${eps}`)} (${uvAxis(g.k, Math.sign(dn))})`];
       },
       explainV(g, A, B) {
@@ -792,11 +792,11 @@ const Physics = (() => {
     },
 
     slab: {
-      label: 'Lámina gruesa', short: 'Lámina', kind: 'rho', prefix: 'ρ', absV: false,
+      label: 'Plaque épaisse', short: 'Plaque', kind: 'rho', prefix: 'ρ', absV: false,
       fields: [
-        { k: 'axis', t: 'select', label: 'Perpendicular a', options: [['x', 'eje X'], ['y', 'eje Y'], ['z', 'eje Z']] },
-        { k: 'at', t: 'expr', label: 'Plano central' },
-        { k: 'w', t: 'expr', label: 'Anchura' },
+        { k: 'axis', t: 'select', label: 'Perpendiculaire à', options: [['x', 'eje X'], ['y', 'eje Y'], ['z', 'eje Z']] },
+        { k: 'at', t: 'expr', label: 'Plan central' },
+        { k: 'w', t: 'expr', label: 'Largeur' },
       ],
       defaults: () => ({ axis: 'x', at: '0', w: '2', s: { c: '1', sym: 'rho' } }),
       geom: (src, P) => ({ k: src.axis, i: AXI[src.axis], c: P(src.at), w: P(src.w) }),
@@ -812,23 +812,23 @@ const Physics = (() => {
       explainE(g, X) {
         const dn = X[g.i] - g.c;
         const inside = Math.abs(dn) <= g.w / 2;
-        return [`Distancia al plano central: ${g.k} − ${F.num(g.c)} = ${F.num(dn)} (semianchura ${F.num(g.w / 2)})`,
-          inside ? `P está dentro: ${vecE()} = ${F.frac('ρ d', eps)} ${F.uv(g.k)} con d = ${F.num(dn)}`
-            : `P está fuera: ${vecE()} = ${F.frac('ρ w', `2${eps}`)} (${uvAxis(g.k, Math.sign(dn))})`];
+        return [`Distance au plan central : ${g.k} − ${F.num(g.c)} = ${F.num(dn)} (demi-largeur ${F.num(g.w / 2)})`,
+          inside ? `P est à l'intérieur : ${vecE()} = ${F.frac('ρ d', eps)} ${F.uv(g.k)} avec d = ${F.num(dn)}`
+            : `P est à l'extérieur : ${vecE()} = ${F.frac('ρ w', `2${eps}`)} (${uvAxis(g.k, Math.sign(dn))})`];
       },
       explainV(g, A, B) {
-        return `Integrando ${vecE()} a lo largo de ${g.k} (dentro ${F.frac('ρd', eps)}, fuera ${F.frac('ρw', `2${eps}`)})`;
+        return `En intégrant ${vecE()} le long de ${g.k} (à l'intérieur ${F.frac('ρd', eps)}, à l'extérieur ${F.frac('ρw', `2${eps}`)})`;
       },
       anchors: () => [],
     },
 
     sphere: {
-      label: 'Esfera / corona', short: 'Esfera', kind: 'rho', prefix: 'ρ', absV: true,
+      label: 'Sphère / couronne', short: 'Sphère', kind: 'rho', prefix: 'ρ', absV: true,
       fields: [
-        { k: 'pos', t: 'vec3', label: 'Centro' },
-        { k: 'R1', t: 'expr', label: 'Radio interior (0 = maciza)' },
-        { k: 'R2', t: 'expr', label: 'Radio exterior' },
-        { k: 'perfil', t: 'select', label: 'Densidad', options: PERF_OPC },
+        { k: 'pos', t: 'vec3', label: 'Centre' },
+        { k: 'R1', t: 'expr', label: 'Rayon intérieur (0 = pleine)' },
+        { k: 'R2', t: 'expr', label: 'Rayon extérieur' },
+        { k: 'perfil', t: 'select', label: 'Densité', options: PERF_OPC },
       ],
       defaults: () => ({ pos: ['0', '0', '0'], R1: '0', R2: '1', perfil: 'uniforme', s: { c: '1', sym: 'rho' } }),
       geom: (src, P) => ({ pos: src.pos.map(P), R1: P(src.R1), R2: P(src.R2), pf: perfil(src) }),
@@ -849,19 +849,19 @@ const Physics = (() => {
       explainE(g, X) {
         const r = V3.norm(V3.sub(X, g.pos));
         const zone = r >= g.R2 ? 'exterior' : r >= g.R1 ? (g.R1 ? 'dentro de la corona' : 'interior') : 'hueco interior';
-        return [`r = |P − C| = ${F.num(r)} → región: ${zone}`,
-          g.pf === PERFILES.uniforme ? `Gauss: ${vecE()} = ${F.frac('Q<sub>enc</sub>(r)', `4π${eps}r<sup>2</sup>`)} û<sub>r</sub>, &nbsp;Q<sub>enc</sub> = ρ·${F.frac('4π', '3')}(r<sub>c</sub><sup>3</sup> − R<sub>1</sub><sup>3</sup>) = ${F.num(this.Q(g, r) / PI)}π ρ`
-            : `Densidad no uniforme ρ(r) = ${g.pf.txt.replace(/R/g, 'R<sub>2</sub>')}. Gauss: ${vecE()} = ${F.frac('Q<sub>enc</sub>(r)', `4π${eps}r<sup>2</sup>`)} û<sub>r</sub>, &nbsp;Q<sub>enc</sub> = ∫ ρ(rʹ) 4π rʹ<sup>2</sup> drʹ = ${F.num(this.Q(g, r) / PI)}π ρ<sub>0</sub>`];
+        return [`r = |P − C| = ${F.num(r)} → région : ${zone}`,
+          g.pf === PERFILES.uniforme ? `Gauss : ${vecE()} = ${F.frac('Q<sub>enc</sub>(r)', `4π${eps}r<sup>2</sup>`)} û<sub>r</sub>, &nbsp;Q<sub>enc</sub> = ρ·${F.frac('4π', '3')}(r<sub>c</sub><sup>3</sup> − R<sub>1</sub><sup>3</sup>) = ${F.num(this.Q(g, r) / PI)}π ρ`
+            : `Densité non uniforme ρ(r) = ${g.pf.txt.replace(/R/g, 'R<sub>2</sub>')}. Gauss : ${vecE()} = ${F.frac('Q<sub>enc</sub>(r)', `4π${eps}r<sup>2</sup>`)} û<sub>r</sub>, &nbsp;Q<sub>enc</sub> = ∫ ρ(rʹ) 4π rʹ<sup>2</sup> drʹ = ${F.num(this.Q(g, r) / PI)}π ρ<sub>0</sub>`];
       },
       explainV(g, A, B) {
-        return `V(r) por Gauss (V(∞) = 0), &nbsp; r<sub>A</sub> = ${F.num(V3.norm(V3.sub(A, g.pos)))}, r<sub>B</sub> = ${F.num(V3.norm(V3.sub(B, g.pos)))}`;
+        return `V(r) par Gauss (V(∞) = 0), &nbsp; r<sub>A</sub> = ${F.num(V3.norm(V3.sub(A, g.pos)))}, r<sub>B</sub> = ${F.num(V3.norm(V3.sub(B, g.pos)))}`;
       },
       anchors: (src, g) => [{ path: ['pos'], at: g.pos }],
     },
 
     shell: {
-      label: 'Esfera hueca (σ)', short: 'Cascarón', kind: 'sigma', prefix: 'σ', absV: true,
-      fields: [{ k: 'pos', t: 'vec3', label: 'Centro' }, { k: 'R', t: 'expr', label: 'Radio R' }],
+      label: 'Sphère creuse (σ)', short: 'Coque', kind: 'sigma', prefix: 'σ', absV: true,
+      fields: [{ k: 'pos', t: 'vec3', label: 'Centre' }, { k: 'R', t: 'expr', label: 'Rayon R' }],
       defaults: () => ({ pos: ['0', '0', '0'], R: '1', s: { c: '1', sym: 'sigma' } }),
       geom: (src, P) => ({ pos: src.pos.map(P), R: P(src.R) }),
       E(g, X) {
@@ -874,15 +874,15 @@ const Physics = (() => {
       explainE(g, X) {
         const r = V3.norm(V3.sub(X, g.pos));
         return [`r = |P − C| = ${F.num(r)}, R = ${F.num(g.R)} → ${r < g.R ? 'dentro' : 'fuera'}`,
-          r < g.R ? `Gauss: no hay carga encerrada → ${vecE()} = 0` : `Gauss: ${vecE()} = ${F.frac('σR<sup>2</sup>', `${eps}r<sup>2</sup>`)} û<sub>r</sub> &nbsp;(Q = 4πR²σ)`];
+          r < g.R ? `Gauss : aucune charge renfermée → ${vecE()} = 0` : `Gauss : ${vecE()} = ${F.frac('σR<sup>2</sup>', `${eps}r<sup>2</sup>`)} û<sub>r</sub> &nbsp;(Q = 4πR²σ)`];
       },
-      explainV() { return `V = ${F.frac('σR<sup>2</sup>', `${eps}r`)} fuera, V = ${F.frac('σR', eps)} dentro (constante)`; },
+      explainV() { return `V = ${F.frac('σR<sup>2</sup>', `${eps}r`)} à l'extérieur, V = ${F.frac('σR', eps)} à l'intérieur (constant)`; },
       anchors: (src, g) => [{ path: ['pos'], at: g.pos }],
     },
 
     conductor: {
-      label: 'Esfera conductora (Q)', short: 'Conductor', kind: 'q', prefix: 'Q', absV: true,
-      fields: [{ k: 'pos', t: 'vec3', label: 'Centro' }, { k: 'R', t: 'expr', label: 'Radio R' }],
+      label: 'Sphère conductrice (Q)', short: 'Conducteur', kind: 'q', prefix: 'Q', absV: true,
+      fields: [{ k: 'pos', t: 'vec3', label: 'Centre' }, { k: 'R', t: 'expr', label: 'Rayon R' }],
       defaults: () => ({ pos: ['0', '0', '0'], R: '1', s: { c: '1', sym: 'q' } }),
       geom: (src, P) => ({ pos: src.pos.map(P), R: P(src.R) }),
       E(g, X) {
@@ -894,16 +894,16 @@ const Physics = (() => {
       Qtot: () => 1,
       explainE(g, X) {
         const r = V3.norm(V3.sub(X, g.pos));
-        return [`Conductor en equilibrio: la carga se reparte por la superficie y el interior es equipotencial.`,
+        return [`Conducteur à l'équilibre : la charge se répartit sur la surface et l'intérieur est équipotentiel.`,
           r < g.R ? `r = ${F.num(r)} &lt; R → ${vecE()} = 0` : `r = ${F.num(r)} ≥ R → ${vecE()} = ${F.frac('Q', `4π${eps}r<sup>2</sup>`)} û<sub>r</sub>`];
       },
-      explainV() { return `V = ${F.frac('Q', `4π${eps}r`)} fuera; V = ${F.frac('Q', `4π${eps}R`)} en todo el conductor`; },
+      explainV() { return `V = ${F.frac('Q', `4π${eps}r`)} à l'extérieur ; V = ${F.frac('Q', `4π${eps}R`)} dans tout le conducteur`; },
       anchors: (src, g) => [{ path: ['pos'], at: g.pos }],
     },
 
     ring: {
-      label: 'Anillo (λ)', short: 'Anillo', kind: 'lambda', prefix: 'λ', absV: true,
-      fields: [{ k: 'pos', t: 'vec3', label: 'Centro' }, { k: 'axis', t: 'select', label: 'Eje del anillo', options: [['z', 'eje Z'], ['y', 'eje Y'], ['x', 'eje X']] }, { k: 'R', t: 'expr', label: 'Radio R' }],
+      label: 'Anneau (λ)', short: 'Anneau', kind: 'lambda', prefix: 'λ', absV: true,
+      fields: [{ k: 'pos', t: 'vec3', label: 'Centre' }, { k: 'axis', t: 'select', label: 'Axe de l\'anneau', options: [['z', 'eje Z'], ['y', 'eje Y'], ['x', 'eje X']] }, { k: 'R', t: 'expr', label: 'Rayon R' }],
       defaults: () => ({ pos: ['0', '0', '0'], axis: 'z', R: '1', s: { c: '1', sym: 'lambda' } }),
       geom: (src, P) => ({ pos: src.pos.map(P), n: AX[src.axis], axis: src.axis, R: P(src.R) }),
       Qtot: (g) => 2 * PI * g.R,
@@ -911,16 +911,16 @@ const Physics = (() => {
       V(g, X) { const r = ringAt(g.R, 2 * PI * g.R, g, X); return r && new Ex(r.V); },
       explainE(g, X) {
         const { z, rho } = local(g, X);
-        return rho < 1e-9 ? [`P está sobre el eje, a z = ${F.num(z)} del centro`, `${vecE()} = ${F.frac('λR z', `2${eps}(z<sup>2</sup> + R<sup>2</sup>)<sup>3/2</sup>`)} n̂`]
-          : [`P está fuera del eje (ρ = ${F.num(rho)}, z = ${F.num(z)}): el campo se obtiene con integrales elípticas K(m), E(m) (resultado numérico).`];
+        return rho < 1e-9 ? [`P est sur l'axe, à z = ${F.num(z)} du centre`, `${vecE()} = ${F.frac('λR z', `2${eps}(z<sup>2</sup> + R<sup>2</sup>)<sup>3/2</sup>`)} n̂`]
+          : [`P est hors de l'axe (ρ = ${F.num(rho)}, z = ${F.num(z)}) : le champ s'obtient avec les intégrales elliptiques K(m), E(m) (résultat numérique).`];
       },
-      explainV() { return `En el eje: V = ${F.frac('λR', `2${eps}√(z<sup>2</sup> + R<sup>2</sup>)`)}`; },
+      explainV() { return `Sur l'axe : V = ${F.frac('λR', `2${eps}√(z<sup>2</sup> + R<sup>2</sup>)`)}`; },
       anchors: (src, g) => [{ path: ['pos'], at: g.pos }],
     },
 
     disk: {
-      label: 'Disco (σ)', short: 'Disco', kind: 'sigma', prefix: 'σ', absV: true,
-      fields: [{ k: 'pos', t: 'vec3', label: 'Centro' }, { k: 'axis', t: 'select', label: 'Eje del disco', options: [['z', 'eje Z'], ['y', 'eje Y'], ['x', 'eje X']] }, { k: 'R', t: 'expr', label: 'Radio R' }],
+      label: 'Disque (σ)', short: 'Disque', kind: 'sigma', prefix: 'σ', absV: true,
+      fields: [{ k: 'pos', t: 'vec3', label: 'Centre' }, { k: 'axis', t: 'select', label: 'Axe du disque', options: [['z', 'eje Z'], ['y', 'eje Y'], ['x', 'eje X']] }, { k: 'R', t: 'expr', label: 'Rayon R' }],
       defaults: () => ({ pos: ['0', '0', '0'], axis: 'z', R: '1', s: { c: '1', sym: 'sigma' } }),
       geom: (src, P) => ({ pos: src.pos.map(P), n: AX[src.axis], axis: src.axis, R: P(src.R) }),
       Qtot: (g) => PI * g.R * g.R,
@@ -928,16 +928,16 @@ const Physics = (() => {
       V(g, X) { const r = diskAt(g, X, false); return r && new Ex(r.V); },
       explainE(g, X) {
         const { z, rho } = local(g, X);
-        return rho < 1e-9 ? [`P está sobre el eje, a z = ${F.num(z)} del centro`, `${vecE()} = ${F.frac('σ', `2${eps}`)}(1 − ${F.frac('|z|', '√(z<sup>2</sup> + R<sup>2</sup>)')}) (±n̂)`]
-          : [`P está fuera del eje (ρ = ${F.num(rho)}, z = ${F.num(z)}): se suman anillos de radio r′ (integración numérica).`];
+        return rho < 1e-9 ? [`P est sur l'axe, à z = ${F.num(z)} du centre`, `${vecE()} = ${F.frac('σ', `2${eps}`)}(1 − ${F.frac('|z|', '√(z<sup>2</sup> + R<sup>2</sup>)')}) (±n̂)`]
+          : [`P est hors de l'axe (ρ = ${F.num(rho)}, z = ${F.num(z)}) : on somme des anneaux de rayon r′ (intégration numérique).`];
       },
-      explainV() { return `En el eje: V = ${F.frac('σ', `2${eps}`)}(√(z<sup>2</sup> + R<sup>2</sup>) − |z|)`; },
+      explainV() { return `Sur l'axe : V = ${F.frac('σ', `2${eps}`)}(√(z<sup>2</sup> + R<sup>2</sup>) − |z|)`; },
       anchors: (src, g) => [{ path: ['pos'], at: g.pos }],
     },
 
     rod: {
-      label: 'Varilla finita', short: 'Varilla', kind: 'lambda', prefix: 'λ', absV: true,
-      fields: [{ k: 'A', t: 'vec3', label: 'Extremo 1' }, { k: 'B', t: 'vec3', label: 'Extremo 2' }, { k: 'perfil', t: 'select', label: 'Densidad', options: [['uniforme', 'uniforme λ'], ['lineal', 'λ₀·s/L (0 en el extremo 1)'], ['resta', 'λ₀·(1 − s/L)']] }],
+      label: 'Tige finie', short: 'Tige', kind: 'lambda', prefix: 'λ', absV: true,
+      fields: [{ k: 'A', t: 'vec3', label: 'Extrémité 1' }, { k: 'B', t: 'vec3', label: 'Extrémité 2' }, { k: 'perfil', t: 'select', label: 'Densité', options: [['uniforme', 'uniforme λ'], ['lineal', 'λ₀·s/L (0 à l\'extrémité 1)'], ['resta', 'λ₀·(1 − s/L)']] }],
       defaults: () => ({ A: ['0', '0', '0'], B: ['0', '1', '0'], perfil: 'uniforme', s: { c: '1', sym: 'lambda' } }),
       geom(src, P) {
         const A = src.A.map(P), B = src.B.map(P), L = V3.norm(V3.sub(B, A)), perfil = ['lineal', 'resta'].includes(src.perfil) ? src.perfil : 'uniforme';
@@ -970,24 +970,24 @@ const Physics = (() => {
         return Ex.ln(1 / (4 * PI), n / m);
       },
       explainE(g, X) {
-        if (g.perfil !== 'uniforme') return [`Densidad no uniforme λ(s) = ${g.perfil === 'lineal' ? 'λ<sub>0</sub> s/L' : 'λ<sub>0</sub>(1 − s/L)'}, con s medido desde el extremo 1 (L = ${F.num(g.L)}).`, `d<span class="vv">E</span> = ${F.frac('λ(s) ds', `4π${eps}r<sup>2</sup>`)} û<sub>r</sub>: se integra a lo largo de la varilla (con λ(s) lineal, cada componente es una integral elemental; aquí se hace numéricamente).`];
+        if (g.perfil !== 'uniforme') return [`Densité non uniforme λ(s) = ${g.perfil === 'lineal' ? 'λ<sub>0</sub> s/L' : 'λ<sub>0</sub>(1 − s/L)'}, avec s mesuré depuis l'extrémité 1 (L = ${F.num(g.L)}).`, `d<span class="vv">E</span> = ${F.frac('λ(s) ds', `4π${eps}r<sup>2</sup>`)} û<sub>r</sub> : on intègre le long de la tige (avec λ(s) linéaire, chaque composante est une intégrale élémentaire ; ici elle est calculée numériquement).`];
         
         const { s, d, rA, rB } = this.loc(g, X);
-        return [`Longitud L = ${F.num(g.L)}; proyección de P sobre la varilla s = ${F.num(s)}, distancia d = ${F.num(d)}, r<sub>1</sub> = ${F.num(rA)}, r<sub>2</sub> = ${F.num(rB)}`,
-          `Integrando d<span class="vv">E</span> = ${F.frac('λ dl', `4π${eps}r<sup>2</sup>`)}: E<sub>∥</sub> = ${F.frac('λ', `4π${eps}`)}(${F.frac(1, 'r<sub>2</sub>')} − ${F.frac(1, 'r<sub>1</sub>')}), E<sub>⊥</sub> = ${F.frac('λ', `4π${eps}d`)}(${F.frac('s', 'r<sub>1</sub>')} − ${F.frac('s − L', 'r<sub>2</sub>')})`];
+        return [`Longueur L = ${F.num(g.L)} ; projection de P sur la tige s = ${F.num(s)}, distance d = ${F.num(d)}, r<sub>1</sub> = ${F.num(rA)}, r<sub>2</sub> = ${F.num(rB)}`,
+          `En intégrant d<span class="vv">E</span> = ${F.frac('λ dl', `4π${eps}r<sup>2</sup>`)} : E<sub>∥</sub> = ${F.frac('λ', `4π${eps}`)}(${F.frac(1, 'r<sub>2</sub>')} − ${F.frac(1, 'r<sub>1</sub>')}), E<sub>⊥</sub> = ${F.frac('λ', `4π${eps}d`)}(${F.frac('s', 'r<sub>1</sub>')} − ${F.frac('s − L', 'r<sub>2</sub>')})`];
       },
-      explainV(g) { return g.perfil !== 'uniforme' ? `V = ∫ ${F.frac('λ(s) ds', `4π${eps}r`)} con λ(s) = ${g.perfil === 'lineal' ? 'λ<sub>0</sub> s/L' : 'λ<sub>0</sub>(1 − s/L)'} (integral numérica)` : `V = ${F.frac('λ', `4π${eps}`)} ln${F.frac('r<sub>1</sub> + s', 'r<sub>2</sub> + s − L')}`; },
+      explainV(g) { return g.perfil !== 'uniforme' ? `V = ∫ ${F.frac('λ(s) ds', `4π${eps}r`)} avec λ(s) = ${g.perfil === 'lineal' ? 'λ<sub>0</sub> s/L' : 'λ<sub>0</sub>(1 − s/L)'} (intégrale numérique)` : `V = ${F.frac('λ', `4π${eps}`)} ln${F.frac('r<sub>1</sub> + s', 'r<sub>2</sub> + s − L')}`; },
       anchors: (src, g) => [{ path: ['A'], at: g.A }, { path: ['B'], at: g.B }],
     },
 
     arc: {
-      label: 'Arco (λ)', short: 'Arco', kind: 'lambda', prefix: 'λ', absV: true,
-      fields: [{ k: 'pos', t: 'vec3', label: 'Centro' }, { k: 'axis', t: 'select', label: 'Perpendicular a', options: [['z', 'eje Z (en el plano XY)'], ['y', 'eje Y (en el plano ZX)'], ['x', 'eje X (en el plano YZ)']] }, { k: 'R', t: 'expr', label: 'Radio R' }, { k: 't1', t: 'expr', label: 'Desde el ángulo (°)' }, { k: 't2', t: 'expr', label: 'Hasta el ángulo (°)' }],
+      label: 'Arc (λ)', short: 'Arc', kind: 'lambda', prefix: 'λ', absV: true,
+      fields: [{ k: 'pos', t: 'vec3', label: 'Centre' }, { k: 'axis', t: 'select', label: 'Perpendiculaire à', options: [['z', 'eje Z (en el plano XY)'], ['y', 'eje Y (en el plano ZX)'], ['x', 'eje X (en el plano YZ)']] }, { k: 'R', t: 'expr', label: 'Rayon R' }, { k: 't1', t: 'expr', label: 'À partir de l\'angle (°)' }, { k: 't2', t: 'expr', label: 'Jusqu\'à l\'angle (°)' }],
       defaults: () => ({ pos: ['0', '0', '0'], axis: 'z', R: '1', t1: '0', t2: '180', s: { c: '1', sym: 'lambda' } }),
       geom(src, P) {
         const base = { z: [[1, 0, 0], [0, 1, 0]], y: [[0, 0, 1], [1, 0, 0]], x: [[0, 1, 0], [0, 0, 1]] }[src.axis] || [[1, 0, 0], [0, 1, 0]];
         const t1 = (+String(src.t1).replace(',', '.') * PI) / 180, t2 = (+String(src.t2).replace(',', '.') * PI) / 180;
-        if (!isFinite(t1) || !isFinite(t2) || Math.abs(t2 - t1) < 1e-9) throw new Error('los ángulos del arco deben ser números distintos');
+        if (!isFinite(t1) || !isFinite(t2) || Math.abs(t2 - t1) < 1e-9) throw new Error('les angles de l\'arc doivent être des nombres différents');
         return { pos: src.pos.map(P), axis: src.axis, n: AX[src.axis], e1: base[0], e2: base[1], R: P(src.R), t1: Math.min(t1, t2), t2: Math.max(t1, t2) };
       },
       Qtot: (g) => g.R * (g.t2 - g.t1),
@@ -996,18 +996,18 @@ const Physics = (() => {
       V(g, X) { const c = this.at(g, X); return c && new Ex(c.V); },
       explainE(g, X) {
         const dc = V3.norm(V3.sub(X, g.pos)), ang = F.num(((g.t2 - g.t1) * 180) / PI);
-        return dc < 1e-9 ? [`Arco de radio R = ${F.num(g.R)} y ${ang}°; P está en el centro: todos los dl están a la misma distancia R.`, `d<span class="vv">E</span> = ${F.frac('λ R dθ', `4π${eps}R<sup>2</sup>`)}(−û<sub>r</sub>) ⇒ ${vecE()} = ${F.frac('λ', `4π${eps}R`)} ∫(−cos θ, −sen θ) dθ entre ${F.num((g.t1 * 180) / PI)}° y ${F.num((g.t2 * 180) / PI)}°`]
-          : [`Arco de radio R = ${F.num(g.R)} y ${ang}°: se suman las contribuciones d<span class="vv">E</span> = ${F.frac('λ dl', `4π${eps}r<sup>2</sup>`)} û<sub>r</sub> a lo largo del arco (integral numérica).`];
+        return dc < 1e-9 ? [`Arc de rayon R = ${F.num(g.R)} et ${ang}° ; P est au centre : tous les dl sont à la même distance R.`, `d<span class="vv">E</span> = ${F.frac('λ R dθ', `4π${eps}R<sup>2</sup>`)}(−û<sub>r</sub>) ⇒ ${vecE()} = ${F.frac('λ', `4π${eps}R`)} ∫(−cos θ, −sin θ) dθ entre ${F.num((g.t1 * 180) / PI)}° et ${F.num((g.t2 * 180) / PI)}°`]
+          : [`Arc de rayon R = ${F.num(g.R)} et ${ang}° : on somme les contributions d<span class="vv">E</span> = ${F.frac('λ dl', `4π${eps}r<sup>2</sup>`)} û<sub>r</sub> le long de l'arc (intégrale numérique).`];
       },
-      explainV(g) { return `V = ∫ ${F.frac('λ dl', `4π${eps}r`)}; en el centro, V = ${F.frac('λ θ', `4π${eps}`)} con θ = ${F.num(g.t2 - g.t1)} rad`; },
+      explainV(g) { return `V = ∫ ${F.frac('λ dl', `4π${eps}r`)} ; au centre, V = ${F.frac('λ θ', `4π${eps}`)} avec θ = ${F.num(g.t2 - g.t1)} rad`; },
       anchors: (src, g) => [{ path: ['pos'], at: g.pos }],
     },
 
     hollow: {
-      label: 'Corteza conductora (R₁–R₂)', short: 'Corteza', kind: 'q', prefix: 'Q', absV: true,
-      fields: [{ k: 'pos', t: 'vec3', label: 'Centro' }, { k: 'R1', t: 'expr', label: 'Radio interior R₁' }, { k: 'R2', t: 'expr', label: 'Radio exterior R₂' }],
+      label: 'Coque conductrice (R₁–R₂)', short: 'Coque', kind: 'q', prefix: 'Q', absV: true,
+      fields: [{ k: 'pos', t: 'vec3', label: 'Centre' }, { k: 'R1', t: 'expr', label: 'Rayon intérieur R₁' }, { k: 'R2', t: 'expr', label: 'Rayon extérieur R₂' }],
       defaults: () => ({ pos: ['0', '0', '0'], R1: '1', R2: '2', s: { c: '1', sym: 'q' } }),
-      geom(src, P) { const g = { pos: src.pos.map(P), R1: P(src.R1), R2: P(src.R2) }; if (!(g.R2 > g.R1 && g.R1 > 0)) throw new Error('debe ser 0 < R₁ < R₂'); return g; },
+      geom(src, P) { const g = { pos: src.pos.map(P), R1: P(src.R1), R2: P(src.R2) }; if (!(g.R2 > g.R1 && g.R1 > 0)) throw new Error('il faut 0 < R₁ < R₂'); return g; },
       Qtot: () => 1,
       E(g, X) {
         const rv = V3.sub(X, g.pos), r = V3.norm(rv);
@@ -1017,16 +1017,16 @@ const Physics = (() => {
       V(g, X) { const r = V3.norm(V3.sub(X, g.pos)); return new Ex(1 / (4 * PI * Math.max(r, g.R2))); },
       explainE(g, X) {
         const r = V3.norm(V3.sub(X, g.pos));
-        return [`Corteza conductora en equilibrio: su carga neta Q va a la cara exterior (R<sub>2</sub> = ${F.num(g.R2)}); en la interior (R<sub>1</sub> = ${F.num(g.R1)}) solo aparece la carga inducida por lo que haya en el hueco.`,
-          r < g.R2 ? `r = ${F.num(r)} &lt; R<sub>2</sub> → la carga neta de la cara exterior no crea campo dentro` : `r = ${F.num(r)} ≥ R<sub>2</sub> → ${vecE()} = ${F.frac('Q', `4π${eps}r<sup>2</sup>`)} û<sub>r</sub>`];
+        return [`Coque conductrice à l'équilibre : sa charge nette Q va sur la face extérieure (R<sub>2</sub> = ${F.num(g.R2)}) ; sur la face intérieure (R<sub>1</sub> = ${F.num(g.R1)}) n'apparaît que la charge induite par ce qui se trouve dans la cavité.`,
+          r < g.R2 ? `r = ${F.num(r)} &lt; R<sub>2</sub> → la charge nette de la face extérieure ne crée pas de champ à l'intérieur` : `r = ${F.num(r)} ≥ R<sub>2</sub> → ${vecE()} = ${F.frac('Q', `4π${eps}r<sup>2</sup>`)} û<sub>r</sub>`];
       },
-      explainV() { return `V = ${F.frac('Q', `4π${eps}r`)} fuera; V = ${F.frac('Q', `4π${eps}R<sub>2</sub>`)} en el conductor y en el hueco (por su carga neta)`; },
+      explainV() { return `V = ${F.frac('Q', `4π${eps}r`)} à l'extérieur ; V = ${F.frac('Q', `4π${eps}R<sub>2</sub>`)} dans le conducteur et dans la cavité (due à sa charge nette)`; },
       anchors: (src, g) => [{ path: ['pos'], at: g.pos }],
     },
 
     dipole: {
-      label: 'Dipolo (fuente)', short: 'Dipolo', kind: 'p', prefix: 'p', absV: true,
-      fields: [{ k: 'pos', t: 'vec3', label: 'Posición' }, { k: 'p', t: 'vec3', label: 'Dirección de p (× símbolo)' }],
+      label: 'Dipôle (source)', short: 'Dipôle', kind: 'p', prefix: 'p', absV: true,
+      fields: [{ k: 'pos', t: 'vec3', label: 'Position' }, { k: 'p', t: 'vec3', label: 'Direction de p (× symbole)' }],
       defaults: () => ({ pos: ['0', '0', '0'], p: ['1', '0', '0'], s: { c: '1', sym: 'p' } }),
       geom: (src, P) => ({ pos: src.pos.map(P), p: src.p.map(P) }),
       E(g, X) {
@@ -1123,7 +1123,7 @@ const Physics = (() => {
         if (o === h || !o.g || !o.g.pos) continue;
         const t = o.src.type, dc = V3.norm(V3.sub(o.g.pos, h.g.pos)), Rs = t === 'sphere' ? o.g.R2 : t === 'point' ? 0 : o.g.R;
         if (!['point', 'sphere', 'shell', 'conductor'].includes(t) || !(dc + Rs < h.g.R1 + 1e-9)) continue;
-        if (dc > 1e-9) { errors.push(`${o.name}: dentro de la corteza ${h.name} solo se resuelven cargas centradas (la carga inducida no sería uniforme)`); continue; }
+        if (dc > 1e-9) { errors.push(`${o.name} : à l'intérieur de la coque ${h.name}, seules les charges centrées se résolvent (la charge induite ne serait pas uniforme)`); continue; }
         const Q = t === 'point' ? 1 : t === 'sphere' ? o.def.Q(o.g, o.g.R2) : o.def.Qtot(o.g);
         o.def = conInduccion(o.def, { pos: h.g.pos, R1: h.g.R1, R2: h.g.R2, Q });
         o.inducida = h;
@@ -1205,23 +1205,23 @@ const Physics = (() => {
   }
 
   function singularWarn(list) {
-    return list.length ? `<div class="warn">El punto está sobre ${list.map(nameHTML).join(', ')}: ahí el campo no está definido y se ha omitido esa contribución.</div>` : '';
+    return list.length ? `<div class="warn">Le point est sur ${list.map(nameHTML).join(', ')} : le champ n'y est pas défini et cette contribution a été omise.</div>` : '';
   }
   function fieldSteps(ctx, X, F0) {
     const rows = F0.parts.map(({ s, Ep }) => `<li><div class="st-h">${headHTML(s)} <span class="tag">${s.def.label}</span></div>
       ${s.def.explainE(s.g, X, s.name).map((l) => `<div>${l}</div>`).join('')}
       <div class="st-r">${vecE(s.name.replace(/\D/g, '') || '')} = ${F.vec(Ep, 'E')}</div></li>`);
-    return `<p>Principio de superposición: ${vecE()}(P) = Σ ${vecE('i')}, con P = ${F.pt(X)}·${F.esc(ctx.unit)}.</p><ol class="steps">${rows.join('')}</ol>
-      <div class="st-r">Suma: ${vecE()}(P) = ${F.vec(F0.E, 'E')}</div>`;
+    return `<p>Principe de superposition : ${vecE()}(P) = Σ ${vecE('i')}, avec P = ${F.pt(X)}·${F.esc(ctx.unit)}.</p><ol class="steps">${rows.join('')}</ol>
+      <div class="st-r">Somme : ${vecE()}(P) = ${F.vec(F0.E, 'E')}</div>`;
   }
 
   /* --------------------------- INCÓGNITA --------------------------- */
   const CONDS = {
-    Ecomp: { label: 'Una componente de E es nula en P', fields: [{ k: 'P', t: 'vec3', label: 'Punto P' }, { k: 'comp', t: 'select', label: 'Componente nula', options: [['x', 'E_x = 0'], ['y', 'E_y = 0'], ['z', 'E_z = 0']] }] },
-    Epar: { label: 'E en P paralelo a una dirección (dipolo en equilibrio, fuerza paralela…)', fields: [{ k: 'P', t: 'vec3', label: 'Punto P' }, { k: 'd', t: 'vec3', label: 'Dirección' }] },
-    Ezero: { label: 'E = 0 en P (campo nulo)', fields: [{ k: 'P', t: 'vec3', label: 'Punto P' }] },
-    dV: { label: 'V_B − V_A tiene un valor dado', fields: [{ k: 'A', t: 'vec3', label: 'Punto A' }, { k: 'B', t: 'vec3', label: 'Punto B' }, { k: 'val', t: 'value', label: 'V_B − V_A =' }] },
-    V: { label: 'V en P tiene un valor dado', fields: [{ k: 'P', t: 'vec3', label: 'Punto P' }, { k: 'val', t: 'value', label: 'V(P) =' }] },
+    Ecomp: { label: 'Une composante de E est nulle en P', fields: [{ k: 'P', t: 'vec3', label: 'Point P' }, { k: 'comp', t: 'select', label: 'Composante nulle', options: [['x', 'E_x = 0'], ['y', 'E_y = 0'], ['z', 'E_z = 0']] }] },
+    Epar: { label: 'E en P parallèle à une direction (dipôle en équilibre, force parallèle…)', fields: [{ k: 'P', t: 'vec3', label: 'Point P' }, { k: 'd', t: 'vec3', label: 'Direction' }] },
+    Ezero: { label: 'E = 0 en P (campo nulo)', fields: [{ k: 'P', t: 'vec3', label: 'Point P' }] },
+    dV: { label: 'V_B − V_A a une valeur donnée', fields: [{ k: 'A', t: 'vec3', label: 'Point A' }, { k: 'B', t: 'vec3', label: 'Point B' }, { k: 'val', t: 'value', label: 'V_B − V_A =' }] },
+    V: { label: 'V en P a une valeur donnée', fields: [{ k: 'P', t: 'vec3', label: 'Point P' }, { k: 'val', t: 'value', label: 'V(P) =' }] },
   };
   // admite el formato antiguo {src, cond} y el nuevo {srcs: [...], conds: [...]}
   function normUnknown(scen) {
@@ -1236,8 +1236,8 @@ const Physics = (() => {
     if (!u || !u.srcs?.length) return null;
     const us = u.srcs.map((id) => ctx.sources.find((x) => x.id === id)).filter(Boolean);
     if (!us.length) return null;
-    if (us.some((s) => !s.g)) return { error: 'Alguna fuente incógnita no está bien definida.' };
-    if (!u.conds.length) return { error: 'Añade al menos una condición para despejar la incógnita.' };
+    if (us.some((s) => !s.g)) return { error: 'Une source inconnue n\'est pas bien définie.' };
+    if (!u.conds.length) return { error: 'Ajoutez au moins une condition pour déterminer l\'inconnue.' };
     const P = ctx.P;
     const xP = (j, b) => Poly.sym('§' + us[j].name, b);
     const sumX = (bs) => bs.reduce((acc, b, j) => acc.add(xP(j, 1).scale(b)), Poly.zero());
@@ -1249,7 +1249,7 @@ const Physics = (() => {
           const X = c.P.map(P);
           const F0 = field(ctx, X);
           const bs = us.map((s) => s.def.E(s.g, X));
-          if (bs.some((b) => !b)) return { error: 'Un punto de condición está sobre una fuente incógnita.' };
+          if (bs.some((b) => !b)) return { error: 'Un point de condition est sur une source inconnue.' };
           const Ex3 = [0, 1, 2].map((k) => F0.E[k].add(sumX(bs.map((b) => b[k]))));
           const tot = `${vecE()}(${F.pt(X)}) = ${F.vec(Ex3, 'E')}`;
           if (c.type === 'Ecomp') {
@@ -1264,7 +1264,7 @@ const Physics = (() => {
             const A = VP.cross(dv, F0.E), bb = bs.map((b) => V3.cross(d, b));
             for (let k = 0; k < 3; k++) rows.push({ A: A[k], b: bb.map((b) => b[k]), t: Poly.zero() });
             const lhs = [0, 1, 2].map((k) => A[k].add(sumX(bb.map((b) => b[k]))));
-            eqs.push(`${tot}<br>Paralelo a ${F.vecNum(c.d.map(P))} ⇔ û × ${vecE()} = <span class="vv">0</span>: ${F.vec(lhs, 'E')} = <span class="vv">0</span>`);
+            eqs.push(`${tot}<br>Parallèle à ${F.vecNum(c.d.map(P))} ⇔ û × ${vecE()} = <span class="vv">0</span> : ${F.vec(lhs, 'E')} = <span class="vv">0</span>`);
           }
         } else {
           const val = c.val?.sym ? Poly.sym(c.val.sym, P(c.val.c || '0')) : Poly.num(P(c.val?.c || '0'));
@@ -1272,15 +1272,15 @@ const Physics = (() => {
             const Av = c.A.map(P), Bv = c.B.map(P);
             const A = diffV(ctx, Av, Bv).dV;
             const bs = us.map((s) => { const vb = s.def.V(s.g, Bv), va = s.def.V(s.g, Av); return vb && va ? vb.sub(va) : null; });
-            if (bs.some((b) => !b)) return { error: 'A o B están sobre una fuente incógnita.' };
+            if (bs.some((b) => !b)) return { error: 'A ou B sont sur une source inconnue.' };
             rows.push({ A, b: bs, t: val });
             eqs.push(`V<sub>B</sub> − V<sub>A</sub> = ${F.poly(A.add(sumX(bs)), 'V')} = ${F.poly(val, 'V')}`);
           } else {
             const X = c.P.map(P);
             const pot = potential(ctx, X);
-            if (!pot.absolute || us.some((s) => !s.def.absV)) return { error: 'Hay hilos o planos infinitos: el potencial absoluto no está definido. Usa la condición V_B − V_A.' };
+            if (!pot.absolute || us.some((s) => !s.def.absV)) return { error: 'Il y a des fils ou des plans infinis : le potentiel absolu n\'est pas défini. Utilisez la condition V_B − V_A.' };
             const bs = us.map((s) => s.def.V(s.g, X));
-            if (bs.some((b) => !b)) return { error: 'El punto está sobre una fuente incógnita.' };
+            if (bs.some((b) => !b)) return { error: 'Le point est sur une source inconnue.' };
             rows.push({ A: pot.V, b: bs, t: val });
             eqs.push(`V(${F.pt(X)}) = ${F.poly(pot.V.add(sumX(bs)), 'V')} = ${F.poly(val, 'V')}`);
           }
@@ -1319,11 +1319,11 @@ const Physics = (() => {
       }
     }
     if (!out[0]) {
-      if (live.length < n) return { error: `Hay ${n} incógnitas pero solo ${live.length} ecuación(es) útiles: añade condiciones.` };
+      if (live.length < n) return { error: `Il y a ${n} inconnues mais seulement ${live.length} équation(s) utile(s) : ajoutez des conditions.` };
       const B = live.map((r) => r.b.map((b) => (b instanceof Ex && !b.L.length ? b.a : bnum(b))));
       const M = Array.from({ length: n }, (_, i) => Array.from({ length: n }, (_, j) => B.reduce((s, row) => s + row[i] * row[j], 0)));
       const Mi = invert(M);
-      if (!Mi) return { error: 'Las condiciones no son independientes: no bastan para determinar las incógnitas.' };
+      if (!Mi) return { error: 'Les conditions ne sont pas indépendantes : elles ne suffisent pas à déterminer les inconnues.' };
       for (let j = 0; j < n; j++) {
         let x = Poly.zero();
         live.forEach((row, i) => {
@@ -1335,13 +1335,13 @@ const Physics = (() => {
       }
       const res = live.reduce((s, r, i) => s + (r.A.value() + B[i].reduce((a, b, j) => a + b * out[j].value(), 0) - r.t.value()) ** 2, 0);
       const scale = live.reduce((s, r) => s + r.A.value() ** 2 + r.t.value() ** 2, 0) + 1e-30;
-      if (res > 1e-10 * scale) check = `<div class="warn">Las condiciones no se pueden cumplir todas a la vez; se muestra la solución que mejor se aproxima (mínimos cuadrados).</div>`;
+      if (res > 1e-10 * scale) check = `<div class="warn">Les conditions ne peuvent pas être toutes satisfaites à la fois ; la solution qui s'en approche le mieux est affichée (moindres carrés).</div>`;
     }
     us.forEach((s, j) => { s.S = out[j]; s.unknownSolved = true; });
     const lines = us.map((s, j) => `${nameHTML(s)} = ${xHTML?.[j] || F.poly(out[j], s.kind)}`);
     return {
       html: lines.join('<br>'),
-      steps: `<p>Incógnitas: ${us.map(nameHTML).join(', ')}. Cada condición da una o varias ecuaciones lineales en ellas:</p>${eqs.map((e) => `<div class="eq">${e}</div>`).join('')}${check}<div class="st-r">⇒ ${lines.join(', &nbsp;')}</div>`,
+      steps: `<p>Inconnues : ${us.map(nameHTML).join(', ')}. Chaque condition donne une ou plusieurs équations linéaires en elles :</p>${eqs.map((e) => `<div class="eq">${e}</div>`).join('')}${check}<div class="st-r">⇒ ${lines.join(', &nbsp;')}</div>`,
       answers: us.map((s, j) => ({ label: s.name, qty: s.kind, val: out[j] })),
     };
   }
@@ -1498,7 +1498,7 @@ const Physics = (() => {
       for (let k = 0; k < 3; k++) if (!(tiny(r0[k]) && tiny(r1[k]))) pieces.push({ k, S, c: 1, num: lin(r0[k], r1[k]), den });
       items.push(() => pieces);
     }
-    if (!items.length) return other.length ? `<div class="sub hint">Sin fórmula cerrada para ${other.join(', ')}: mira la gráfica.</div>` : '';
+    if (!items.length) return other.length ? `<div class="sub hint">Pas de formule fermée pour ${other.join(', ')} : voyez le graphique.</div>` : '';
 
     const bps = cuts.sort((x, y) => x - y).filter((c, i, arr) => !i || c - arr[i - 1] > 1e-9);
     const ivs = [];
@@ -1548,7 +1548,7 @@ const Physics = (() => {
     }
     const E = (l) => `${vecE()}(${l})`;
     const lines = [...seen].map(([html, ls]) => `<div>${E(ls[0])} = ${html}${ls.slice(1).map((l) => ` = ${E(l)}`).join('')}</div>`).join('');
-    return lines + (other.length ? `<div class="sub hint">Sin fórmula cerrada para ${other.join(', ')}: mira la gráfica.</div>` : '');
+    return lines + (other.length ? `<div class="sub hint">Pas de formule fermée pour ${other.join(', ')} : voyez le graphique.</div>` : '');
   }
 
   /* --------- ES-3: comprobación dimensional de la respuesta del alumno --------- */
@@ -1585,12 +1585,12 @@ const Physics = (() => {
     if (ds.some((x) => x === null)) return '';
     if (piezas.length > 1) {
       const i = ds.findIndex((x, j) => j && (x === 'mixta' || ds[0] === 'mixta' || x.some((n, k) => Math.abs(n - ds[0][k]) > 1e-7)));
-      if (i > 0) return `Los sumandos no tienen las mismas dimensiones: «${piezas[0]}» sale en ${ds[0] === 'mixta' ? '¿?' : dimTxt(ds[0])} y «${piezas[i]}» en ${ds[i] === 'mixta' ? '¿?' : dimTxt(ds[i])}.`;
+      if (i > 0) return `Les termes n'ont pas les mêmes dimensions : « ${piezas[0]} » est en ${ds[0] === 'mixta' ? '¿?' : dimTxt(ds[0])} et « ${piezas[i]} » en ${ds[i] === 'mixta' ? '¿?' : dimTxt(ds[i])}.`;
     }
     const d = dimension(raw, ctx); if (d === null) return '';
-    if (d === 'mixta') return 'Las dimensiones de la expresión no cuadran: hay sumandos o funciones con unidades que no se pueden combinar.';
-    if (d.some((n, k) => Math.abs(n - esp[k]) > 1e-7)) return `Las dimensiones no cuadran: tu expresión sale en ${dimTxt(d)} y debería salir en ${dimTxt(esp)}.`;
-    return 'Las dimensiones sí cuadran: revisa el coeficiente.';
+    if (d === 'mixta') return 'Les dimensions de l\'expression ne concordent pas : certains termes ou fonctions ont des unités impossibles à combiner.';
+    if (d.some((n, k) => Math.abs(n - esp[k]) > 1e-7)) return `Les dimensions ne concordent pas : votre expression est en ${dimTxt(d)} et devrait être en ${dimTxt(esp)}.`;
+    return 'Les dimensions concordent : vérifiez le coefficient.';
   }
 
   /* --------- Modo práctica: comprobar la respuesta del alumno --------- */
@@ -1613,21 +1613,21 @@ const Physics = (() => {
         }
         const raw = String(inputs[k] ?? '').trim();
         let got;
-        try { got = raw === '' ? 0 : Engine.parseExpr(raw, null, vars); } catch (e) { return { ok: false, msg: 'No entiendo la expresión: ' + e.message }; }
+        try { got = raw === '' ? 0 : Engine.parseExpr(raw, null, vars); } catch (e) { return { ok: false, msg: 'Je ne comprends pas l\'expression : ' + e.message }; }
         const scale = Math.max(Math.abs(exp), ...comps.map(() => 0)) || 1;
         if (Math.abs(got - exp) > 2e-3 * Math.max(Math.abs(exp), 1e-12) && !(Math.abs(exp) < 1e-12 && Math.abs(got) < 1e-9 * scale)) return { ok: false, msg: (ans.vec ? `La componente ${'xyz'[k]} no coincide.` : 'No coincide.') + ' ' + checkDim(raw, ans, ctx) };
       }
     }
-    return { ok: true, msg: 'Correcto' };
+    return { ok: true, msg: 'Correct' };
   }
 
   /* --------------------------- PREGUNTAS --------------------------- */
   // con una incógnita despejada, cada pregunta puede usarla con su valor o como símbolo
-  const UNK = { k: 'unk', t: 'select', label: 'Incógnita', options: [['sust', 'con su valor despejado'], ['libre', 'como símbolo (apartado independiente)']], show: (a, sc) => !!sc?.unknown?.srcs?.length };
+  const UNK = { k: 'unk', t: 'select', label: 'Inconnue', options: [['sust', 'avec sa valeur déterminée'], ['libre', 'comme symbole (question indépendante)']], show: (a, sc) => !!sc?.unknown?.srcs?.length };
   const ANALYSES = {
     E: {
-      label: 'Campo eléctrico en un punto', short: 'Campo E',
-      fields: [{ k: 'P', t: 'vec3', label: 'Punto P' }, UNK],
+      label: 'Champ électrique en un point', short: 'Champ E',
+      fields: [{ k: 'P', t: 'vec3', label: 'Point P' }, UNK],
       defaults: () => ({ P: ['1', '1', '0'] }),
       run(an, ctx) {
         const X = an.P.map(ctx.P), F0 = field(ctx, X);
@@ -1641,24 +1641,24 @@ const Physics = (() => {
       },
     },
     V: {
-      label: 'Potencial en un punto', short: 'Potencial V',
-      fields: [{ k: 'P', t: 'vec3', label: 'Punto P' }],
+      label: 'Potentiel en un point', short: 'Potentiel V',
+      fields: [{ k: 'P', t: 'vec3', label: 'Point P' }],
       defaults: () => ({ P: ['1', '0', '0'] }),
       run(an, ctx) {
         const X = an.P.map(ctx.P), pot = potential(ctx, X);
-        if (!pot.absolute) return { res: `<div class="warn">Hay hilos o planos infinitos: el potencial absoluto no está definido (no se puede tomar V(∞) = 0). Usa “Diferencia de potencial”.</div>`, marks: [{ key: 'P', at: X, label: 'P' }] };
+        if (!pot.absolute) return { res: `<div class="warn">Il y a des fils ou des plans infinis : le potentiel absolu n'est pas défini (on ne peut pas prendre V(∞) = 0). Utilisez « Différence de potentiel ».</div>`, marks: [{ key: 'P', at: X, label: 'P' }] };
         const rows = pot.parts.map(({ s, Vp }) => `<li><div class="st-h">${headHTML(s)}</div><div>${s.def.explainV(s.g, X, X)}</div><div class="st-r">V<sub>${F.esc(s.name)}</sub> = ${F.poly(Vp, 'V')}</div></li>`);
         return {
           res: `V(P) = ${F.poly(pot.V, 'V')}`,
-          steps: singularWarn(pot.singular) + `<p>Superposición con V(∞) = 0.</p><ol class="steps">${rows.join('')}</ol><div class="st-r">V(P) = ${F.poly(pot.V, 'V')}</div>`,
+          steps: singularWarn(pot.singular) + `<p>Superposition avec V(∞) = 0.</p><ol class="steps">${rows.join('')}</ol><div class="st-r">V(P) = ${F.poly(pot.V, 'V')}</div>`,
           marks: [{ key: 'P', at: X, label: 'P' }],
           answers: [{ label: 'V(P)', qty: 'V', val: pot.V }],
         };
       },
     },
     dV: {
-      label: 'Diferencia de potencial V_B − V_A', short: 'V_B − V_A',
-      fields: [{ k: 'A', t: 'vec3', label: 'Punto A' }, { k: 'B', t: 'vec3', label: 'Punto B' }, { k: 'sense', t: 'select', label: 'Calcular', options: [['BA', 'V_B − V_A'], ['AB', 'V_A − V_B']] }, UNK],
+      label: 'Différence de potentiel V_B − V_A', short: 'V_B − V_A',
+      fields: [{ k: 'A', t: 'vec3', label: 'Point A' }, { k: 'B', t: 'vec3', label: 'Point B' }, { k: 'sense', t: 'select', label: 'Calculer', options: [['BA', 'V_B − V_A'], ['AB', 'V_A − V_B']] }, UNK],
       defaults: () => ({ A: ['1', '0', '0'], B: ['2', '0', '0'], sense: 'BA' }),
       run(an, ctx) {
         const A = an.A.map(ctx.P), B = an.B.map(ctx.P), d = diffV(ctx, A, B);
@@ -1667,15 +1667,15 @@ const Physics = (() => {
         const rows = d.parts.map(({ s, dV }) => `<li><div class="st-h">${headHTML(s)}</div><div>${s.def.explainV(s.g, A, B)}</div><div class="st-r">ΔV<sub>${F.esc(s.name)}</sub> = ${F.poly(dV, 'V')}</div></li>`);
         return {
           res: `${lab} = ${F.poly(D, 'V')}`,
-          steps: singularWarn(d.singular) + `<p>V<sub>B</sub> − V<sub>A</sub> = −∫<sub>A</sub><sup>B</sup> ${vecE()}·d<span class="vv">l</span>, sumando la contribución de cada fuente.</p><ol class="steps">${rows.join('')}</ol><div class="st-r">V<sub>B</sub> − V<sub>A</sub> = ${F.poly(d.dV, 'V')}</div>${ab ? `<div class="st-r">${lab} = −(V<sub>B</sub> − V<sub>A</sub>) = ${F.poly(D, 'V')}</div>` : ''}`,
+          steps: singularWarn(d.singular) + `<p>V<sub>B</sub> − V<sub>A</sub> = −∫<sub>A</sub><sup>B</sup> ${vecE()}·d<span class="vv">l</span>, en sommant la contribution de chaque source.</p><ol class="steps">${rows.join('')}</ol><div class="st-r">V<sub>B</sub> − V<sub>A</sub> = ${F.poly(d.dV, 'V')}</div>${ab ? `<div class="st-r">${lab} = −(V<sub>B</sub> − V<sub>A</sub>) = ${F.poly(D, 'V')}</div>` : ''}`,
           marks: [{ key: 'A', at: A, label: 'A' }, { key: 'B', at: B, label: 'B' }],
           answers: [{ label: ab ? 'V_A − V_B' : 'V_B − V_A', qty: 'V', val: D }],
         };
       },
     },
     force: {
-      label: 'Fuerza sobre una carga', short: 'Fuerza',
-      fields: [{ k: 'P', t: 'vec3', label: 'Punto P' }, { k: 'Q', t: 'charge', label: 'Carga de prueba' }],
+      label: 'Force sur une charge', short: 'Force',
+      fields: [{ k: 'P', t: 'vec3', label: 'Point P' }, { k: 'Q', t: 'charge', label: 'Charge d\'essai' }],
       defaults: () => ({ P: ['1', '1', '0'], Q: { c: '1', sym: 'q' } }),
       run(an, ctx) {
         const X = an.P.map(ctx.P), F0 = field(ctx, X), Q = Poly.sym(an.Q.sym, ctx.P(an.Q.c));
@@ -1690,14 +1690,14 @@ const Physics = (() => {
       },
     },
     work: {
-      label: 'Trabajo para mover una carga de A a B', short: 'Trabajo',
-      fields: [{ k: 'A', t: 'vec3', label: 'Desde A' }, { k: 'B', t: 'vec3', label: 'Hasta B' }, { k: 'Q', t: 'charge', label: 'Carga' }],
+      label: 'Travail pour déplacer une charge de A à B', short: 'Travail',
+      fields: [{ k: 'A', t: 'vec3', label: 'Depuis A' }, { k: 'B', t: 'vec3', label: 'Jusqu\'à B' }, { k: 'Q', t: 'charge', label: 'Charge' }],
       defaults: () => ({ A: ['1', '0', '0'], B: ['2', '0', '0'], Q: { c: '1', sym: 'q' } }),
       run(an, ctx) {
         const A = an.A.map(ctx.P), B = an.B.map(ctx.P), d = diffV(ctx, A, B), Q = Poly.sym(an.Q.sym, ctx.P(an.Q.c));
         const W = Q.mul(d.dV);
         return {
-          res: `<div>W<sub>ext</sub> = Q(V<sub>B</sub> − V<sub>A</sub>) = ${F.poly(W, 'U')}</div><div class="sub">Trabajo del campo: W<sub>campo</sub> = −W<sub>ext</sub> = ${F.poly(W.scale(-1), 'U')}</div>`,
+          res: `<div>W<sub>ext</sub> = Q(V<sub>B</sub> − V<sub>A</sub>) = ${F.poly(W, 'U')}</div><div class="sub">Travail du champ : W<sub>champ</sub> = −W<sub>ext</sub> = ${F.poly(W.scale(-1), 'U')}</div>`,
           steps: singularWarn(d.singular) + d.parts.map(({ s, dV }) => `<div>${nameHTML(s)}: ${s.def.explainV(s.g, A, B)} → ΔV = ${F.poly(dV, 'V')}</div>`).join('') +
             `<div class="st-r">V<sub>B</sub> − V<sub>A</sub> = ${F.poly(d.dV, 'V')}</div><div class="st-r">W<sub>ext</sub> = (${F.poly(Q, 'q')})·(V<sub>B</sub> − V<sub>A</sub>) = ${F.poly(W, 'U')}</div>`,
           marks: [{ key: 'A', at: A, label: 'A' }, { key: 'B', at: B, label: 'B' }],
@@ -1706,8 +1706,8 @@ const Physics = (() => {
       },
     },
     dipole: {
-      label: 'Dipolo en un punto (par, energía, equilibrio)', short: 'Dipolo en P',
-      fields: [{ k: 'P', t: 'vec3', label: 'Posición' }, { k: 'p', t: 'vec3', label: 'Momento p (× símbolo)' }, { k: 'sym', t: 'sym', label: 'Símbolo' }, { k: 'rot', t: 'vec3opt', label: 'Girarlo hasta (opcional)' }],
+      label: 'Dipôle en un point (couple, énergie, équilibre)', short: 'Dipôle en P',
+      fields: [{ k: 'P', t: 'vec3', label: 'Position' }, { k: 'p', t: 'vec3', label: 'Moment p (× symbole)' }, { k: 'sym', t: 'sym', label: 'Symbole' }, { k: 'rot', t: 'vec3opt', label: 'Le faire tourner jusqu\'à (facultatif)' }],
       defaults: () => ({ P: ['0', '0', '0'], p: ['1', '0', '0'], sym: 'p', rot: ['', '', ''] }),
       run(an, ctx) {
         const X = an.P.map(ctx.P), F0 = field(ctx, X);
@@ -1718,32 +1718,32 @@ const Physics = (() => {
         const En = VP.value(F0.E), pm = V3.norm(pn), Em = V3.norm(En);
         const crossN = V3.norm(V3.cross(pn, En)), dotN = V3.dot(pn, En);
         let eqTxt;
-        if (Em < 1e-14) eqTxt = `<span class="pill"><span class="vv">E</span> = 0 en P: cualquier orientación es de equilibrio (indiferente)</span>`;
-        else if (crossN < 1e-9 * pm * Em) eqTxt = dotN > 0 ? `<span class="pill ok">Equilibrio estable</span> <span class="vv">p</span> apunta como ${vecE()} (U mínima)` : `<span class="pill bad">Equilibrio inestable</span> <span class="vv">p</span> apunta contra ${vecE()} (U máxima)`;
-        else eqTxt = `<span class="pill">No está en equilibrio</span> el par lo gira hacia ${vecE()}`;
+        if (Em < 1e-14) eqTxt = `<span class="pill"><span class="vv">E</span> = 0 en P : toute orientation est d'équilibre (indifférent)</span>`;
+        else if (crossN < 1e-9 * pm * Em) eqTxt = dotN > 0 ? `<span class="pill ok">Équilibre stable</span> <span class="vv">p</span> pointe comme ${vecE()} (U minimale)` : `<span class="pill bad">Équilibre instable</span> <span class="vv">p</span> pointe contre ${vecE()} (U maximale)`;
+        else eqTxt = `<span class="pill">Pas à l'équilibre</span> le couple le fait tourner vers ${vecE()}`;
         let rotHTML = '';
         const hasRot = an.rot && an.rot.some((v) => String(v).trim() !== '');
         if (hasRot) {
           const d = V3.unit(an.rot.map((v) => (String(v).trim() === '' ? 0 : ctx.P(v))));
           const pf = d.map((v) => pS.scale(v * pm));
           const Uf = VP.dot(pf, F0.E).scale(-1);
-          rotHTML = `<div class="sub">Girándolo hasta ${F.vecNum(d)} (mismo |<span class="vv">p</span>|): U<sub>f</sub> = ${F.poly(Uf, 'U')}, &nbsp;W<sub>ext</sub> = U<sub>f</sub> − U<sub>i</sub> = <b>${F.poly(Uf.sub(U), 'U')}</b></div>`;
+          rotHTML = `<div class="sub">En le faisant tourner jusqu'à ${F.vecNum(d)} (même |<span class="vv">p</span>|) : U<sub>f</sub> = ${F.poly(Uf, 'U')}, &nbsp;W<sub>ext</sub> = U<sub>f</sub> − U<sub>i</sub> = <b>${F.poly(Uf.sub(U), 'U')}</b></div>`;
         }
         const pmod = pm === 1 ? '' : F.num(pm);
         return {
           res: `<div><span class="vv">M</span> = <span class="vv">p</span> × ${vecE()} = ${F.vec(tau, 'T')}</div><div>U = −<span class="vv">p</span>·${vecE()} = ${F.poly(U, 'U')}</div><div class="sub">${eqTxt}</div>${rotHTML}`,
           steps: singularWarn(F0.singular.filter((s) => s.src.type !== 'dipole')) + fieldSteps(ctx, X, F0) +
             `<div class="st-r"><span class="vv">p</span> = ${F.vec(pv, 'p')} &nbsp;(|<span class="vv">p</span>| = ${pmod}${F.sym(an.sym)})</div>
-             <div class="st-r">Momento de fuerzas: <span class="vv">M</span> = <span class="vv">p</span> × ${vecE()} = ${F.vec(tau, 'T')}</div>
-             <div class="st-r">Energía potencial: U = −<span class="vv">p</span>·${vecE()} = ${F.poly(U, 'U')}</div>
-             <p>Equilibrio cuando <span class="vv">M</span> = 0 (<span class="vv">p</span> ∥ ${vecE()}). Estable si <span class="vv">p</span> tiene el mismo sentido que ${vecE()}; inestable si es opuesto.</p>`,
+             <div class="st-r">Moment des forces : <span class="vv">M</span> = <span class="vv">p</span> × ${vecE()} = ${F.vec(tau, 'T')}</div>
+             <div class="st-r">Énergie potentielle : U = −<span class="vv">p</span>·${vecE()} = ${F.poly(U, 'U')}</div>
+             <p>Équilibre quand <span class="vv">M</span> = 0 (<span class="vv">p</span> ∥ ${vecE()}). Stable si <span class="vv">p</span> a le même sens que ${vecE()} ; instable s'il est opposé.</p>`,
           marks: [{ key: 'P', at: X, label: 'p', vec: En, dip: pn }],
           answers: [{ label: 'M⃗', qty: 'T', vec: tau }, { label: 'U', qty: 'U', val: U }],
         };
       },
     },
     energy: {
-      label: 'Energía electrostática del sistema de cargas', short: 'Energía',
+      label: 'Énergie électrostatique du système de charges', short: 'Énergie',
       fields: [],
       defaults: () => ({}),
       run(an, ctx) {
@@ -1759,25 +1759,25 @@ const Physics = (() => {
         const others = ctx.sources.length - pts.length;
         return {
           res: `U = ${F.poly(U, 'U')}`,
-          steps: `<p>U = Σ<sub>i&lt;j</sub> ${F.frac('q<sub>i</sub>q<sub>j</sub>', `4π${eps}r<sub>ij</sub>`)} (una vez cada pareja).</p><ol class="steps">${rows.join('')}</ol>${others ? `<div class="warn">Solo se cuentan las cargas puntuales (${others} fuente(s) de otro tipo ignoradas).</div>` : ''}`,
+          steps: `<p>U = Σ<sub>i&lt;j</sub> ${F.frac('q<sub>i</sub>q<sub>j</sub>', `4π${eps}r<sub>ij</sub>`)} (une fois chaque paire).</p><ol class="steps">${rows.join('')}</ol>${others ? `<div class="warn">Seules les charges ponctuelles sont comptées (${others} source(s) d'un autre type ignorée(s)).</div>` : ''}`,
           marks: [],
           answers: [{ label: 'U', qty: 'U', val: U }],
         };
       },
     },
     findDipole: {
-      label: 'Hallar el momento dipolar a partir del par y/o la energía', short: 'Hallar p',
+      label: 'Trouver le moment dipolaire à partir du couple et/ou de l\'énergie', short: 'Trouver p',
       fields: [
-        { k: 'P', t: 'vec3', label: 'Posición' }, { k: 'sym', t: 'sym', label: 'Símbolo de p' },
-        { k: 'tau', t: 'vec3opt', label: 'Par M dado (coeficientes)' },
+        { k: 'P', t: 'vec3', label: 'Position' }, { k: 'sym', t: 'sym', label: 'Symbole de p' },
+        { k: 'tau', t: 'vec3opt', label: 'Couple M donné (coefficients)' },
         { k: 'U', t: 'expr', label: 'U dada (mismo convenio, opcional)', optional: true },
-        { k: 'plane', t: 'select', label: 'Restricción', options: [['none', 'ninguna'], ['z', 'en el plano XY (p_z = 0)'], ['y', 'en el plano XZ (p_y = 0)'], ['x', 'en el plano YZ (p_x = 0)']] },
+        { k: 'plane', t: 'select', label: 'Contrainte', options: [['none', 'ninguna'], ['z', 'en el plano XY (p_z = 0)'], ['y', 'en el plano XZ (p_y = 0)'], ['x', 'en el plano YZ (p_x = 0)']] },
       ],
       defaults: () => ({ P: ['1', '0', '0'], sym: 'b', tau: ['', '', ''], U: '', plane: 'z' }),
       run(an, ctx) {
         const X = an.P.map(ctx.P), F0 = field(ctx, X);
         const keys = VP.keys(F0.E);
-        if (keys.length !== 1) return { res: `<div class="warn">Este cálculo necesita que el campo en P dependa de un solo símbolo (ahora depende de ${keys.length}).</div>` };
+        if (keys.length !== 1) return { res: `<div class="warn">Ce calcul exige que le champ en P dépende d'un seul symbole (il dépend maintenant de ${keys.length}).</div>` };
         const e = F0.E.map((p) => p.coef(keys[0]).value());
         const rows = [], rhs = [];
         const has = (v) => String(v ?? '').trim() !== '';
@@ -1788,35 +1788,35 @@ const Physics = (() => {
         }
         if (has(an.U)) { rows.push([-e[0], -e[1], -e[2]]); rhs.push(ctx.P(an.U)); }
         if (an.plane !== 'none') { const r = [0, 0, 0]; r[AXI[an.plane]] = 1; rows.push(r); rhs.push(0); }
-        if (!rows.length) return { res: `<div class="warn">Introduce el par <span class="vv">M</span> y/o la energía U.</div>` };
+        if (!rows.length) return { res: `<div class="warn">Saisissez le couple <span class="vv">M</span> et/ou l'énergie U.</div>` };
         // mínimos cuadrados: (AᵀA) p = Aᵀ b
         const M = [[0, 0, 0], [0, 0, 0], [0, 0, 0]], v = [0, 0, 0];
         rows.forEach((r, k) => { for (let i = 0; i < 3; i++) { v[i] += r[i] * rhs[k]; for (let j = 0; j < 3; j++) M[i][j] += r[i] * r[j]; } });
         const p = solve3(M, v);
-        if (!p) return { res: `<div class="warn">Faltan datos: con lo introducido <span class="vv">p</span> no queda determinado. Añade U o una restricción.</div>` };
+        if (!p) return { res: `<div class="warn">Il manque des données : avec ce qui est saisi, <span class="vv">p</span> n'est pas déterminé. Ajoutez U ou une contrainte.</div>` };
         const res = rows.reduce((s, r, k) => s + (r[0] * p[0] + r[1] * p[1] + r[2] * p[2] - rhs[k]) ** 2, 0);
         const pS = Poly.sym(an.sym, 1), pv = p.map((x) => pS.scale(x));
         const Eu = V3.unit(VP.value(F0.E));
         const pm = V3.norm(p);
         return {
-          res: `<div><span class="vv">p</span> = ${F.vec(pv, 'p', { unitForm: true })}</div><div class="sub">|<span class="vv">p</span>| = ${F.num(pm)}${F.sym(an.sym)}</div>${res > 1e-12 ? '<div class="warn">Los datos no son del todo compatibles; se muestra la mejor aproximación.</div>' : ''}`,
-          steps: fieldSteps(ctx, X, F0) + `<p>Incógnita <span class="vv">p</span> = (p<sub>x</sub>, p<sub>y</sub>, p<sub>z</sub>). Ecuaciones: <span class="vv">M</span> = <span class="vv">p</span> × ${vecE()} (3 ecuaciones), U = −<span class="vv">p</span>·${vecE()} y la restricción elegida. Resolviendo el sistema lineal:</p><div class="st-r"><span class="vv">p</span> = ${F.vec(pv, 'p')}</div>`,
+          res: `<div><span class="vv">p</span> = ${F.vec(pv, 'p', { unitForm: true })}</div><div class="sub">|<span class="vv">p</span>| = ${F.num(pm)}${F.sym(an.sym)}</div>${res > 1e-12 ? '<div class="warn">Les données ne sont pas tout à fait compatibles ; la meilleure approximation est affichée.</div>' : ''}`,
+          steps: fieldSteps(ctx, X, F0) + `<p>Inconnue <span class="vv">p</span> = (p<sub>x</sub>, p<sub>y</sub>, p<sub>z</sub>). Équations : <span class="vv">M</span> = <span class="vv">p</span> × ${vecE()} (3 équations), U = −<span class="vv">p</span>·${vecE()} et la contrainte choisie. En résolvant le système linéaire :</p><div class="st-r"><span class="vv">p</span> = ${F.vec(pv, 'p')}</div>`,
           marks: [{ key: 'P', at: X, label: 'p', vec: VP.value(F0.E), dip: p }],
           answers: [{ label: 'p⃗', qty: 'p', vec: pv }],
           action: {
-            label: 'Añadir este dipolo como fuente, ya en equilibrio estable',
+            label: 'Ajouter ce dipôle comme source, déjà en équilibre stable',
             make: () => ({ type: 'dipole', name: 'p', pos: an.P.slice(), p: Eu.map((x) => trimNum(x * pm)), s: { c: '1', sym: an.sym } }),
           },
         };
       },
     },
     flux: {
-      label: 'Flujo de E por una superficie cerrada (Gauss)', short: 'Flujo (Gauss)',
+      label: 'Flux de E à travers une surface fermée (Gauss)', short: 'Flux (Gauss)',
       fields: [
-        { k: 'shape', t: 'select', label: 'Superficie', structural: true, options: [['sphere', 'esfera'], ['cyl', 'cilindro']] },
-        { k: 'C', t: 'vec3', label: 'Centro' }, { k: 'R', t: 'expr', label: 'Radio' },
-        { k: 'axis', t: 'select', label: 'Eje', options: [['z', 'eje Z'], ['y', 'eje Y'], ['x', 'eje X']], show: (a) => a.shape === 'cyl' },
-        { k: 'h', t: 'expr', label: 'Altura', show: (a) => a.shape === 'cyl' },
+        { k: 'shape', t: 'select', label: 'Surface', structural: true, options: [['sphere', 'esfera'], ['cyl', 'cilindro']] },
+        { k: 'C', t: 'vec3', label: 'Centre' }, { k: 'R', t: 'expr', label: 'Rayon' },
+        { k: 'axis', t: 'select', label: 'Axe', options: [['z', 'eje Z'], ['y', 'eje Y'], ['x', 'eje X']], show: (a) => a.shape === 'cyl' },
+        { k: 'h', t: 'expr', label: 'Hauteur', show: (a) => a.shape === 'cyl' },
       ],
       defaults: () => ({ shape: 'sphere', C: ['0', '0', '0'], R: '2', axis: 'z', h: '2' }),
       run(an, ctx) {
@@ -1826,15 +1826,15 @@ const Physics = (() => {
         for (const s of ctx.sources) {
           if (!s.g || !s.S) continue;
           let q = qencExact(s, surf), how = 'exacto';
-          if (q === null) { q = fluxNum(s.def, s.g, surf); how = 'integración numérica de E·dA'; }
+          if (q === null) { q = fluxNum(s.def, s.g, surf); how = 'intégration numérique de E·dA'; }
           const Qi = s.S.scale(q);
           Q = Q.add(Qi);
-          rows.push(`<li><div class="st-h">${headHTML(s)}</div><div>Carga encerrada (${how}): ${F.poly(Qi, 'q')}</div></li>`);
+          rows.push(`<li><div class="st-h">${headHTML(s)}</div><div>Charge renfermée (${how}) : ${F.poly(Qi, 'q')}</div></li>`);
         }
         const Phi = Q.clean();
         return {
           res: `<div>Φ = ∮${vecE()}·d<span class="vv">A</span> = ${F.frac('Q<sub>enc</sub>', eps)} = ${F.poly(Phi, 'Phi')}</div><div class="sub">Q<sub>enc</sub> = ${F.poly(Phi, 'q')}</div>`,
-          steps: `<p>Ley de Gauss: el flujo por una superficie cerrada solo depende de la carga encerrada. Superficie: ${an.shape === 'sphere' ? `esfera de radio ${F.num(surf.R)}` : `cilindro de radio ${F.num(surf.R)} y altura ${F.num(surf.h)}, eje ${an.axis.toUpperCase()}`} centrada en ${F.pt(surf.C)}.</p><ol class="steps">${rows.join('')}</ol><div class="st-r">Φ = ${F.poly(Phi, 'Phi')}</div>`,
+          steps: `<p>Loi de Gauss : le flux à travers une surface fermée ne dépend que de la charge renfermée. Surface : ${an.shape === 'sphere' ? `sphère de rayon ${F.num(surf.R)}` : `cylindre de rayon ${F.num(surf.R)} et de hauteur ${F.num(surf.h)}, axe ${an.axis.toUpperCase()}`} centrée en ${F.pt(surf.C)}.</p><ol class="steps">${rows.join('')}</ol><div class="st-r">Φ = ${F.poly(Phi, 'Phi')}</div>`,
           marks: [{ key: 'C', at: surf.C, label: 'C' }],
           surf,
           answers: [{ label: 'Φ', qty: 'Phi', val: Phi }],
@@ -1842,11 +1842,11 @@ const Physics = (() => {
       },
     },
     profile: {
-      label: 'Perfil a lo largo de una recta: E y V en función de una variable', short: 'E(z), V(z)',
+      label: 'Profil le long d\'une droite : E et V en fonction d\'une variable', short: 'E(z), V(z)',
       fields: [
-        { k: 'P0', t: 'vec3', label: 'Punto de la recta' }, { k: 'd', t: 'vec3', label: 'Dirección' },
-        { k: 'var', t: 'sym', label: 'Variable' }, { k: 't0', t: 'expr', label: 'Desde' }, { k: 't1', t: 'expr', label: 'Hasta' },
-        { k: 'at', t: 'expr', label: 'Valor exacto en', optional: true }, UNK,
+        { k: 'P0', t: 'vec3', label: 'Point de la droite' }, { k: 'd', t: 'vec3', label: 'Direction' },
+        { k: 'var', t: 'sym', label: 'Variable' }, { k: 't0', t: 'expr', label: 'De' }, { k: 't1', t: 'expr', label: 'À' },
+        { k: 'at', t: 'expr', label: 'Valeur exacte en', optional: true }, UNK,
       ],
       defaults: () => ({ P0: ['0', '0', '0'], d: ['0', '0', '1'], var: 'z', t0: '-3', t1: '3', at: '' }),
       run(an, ctx) {
@@ -1871,12 +1871,12 @@ const Physics = (() => {
         let exact = '';
         if (String(an.at ?? '').trim() !== '') {
           const tv = ctx.P(an.at), X = at(tv), F0 = field(ctx, X), pot = potential(ctx, X);
-          exact = `<div class="sub">En ${F.sym(vname)} = ${F.num(tv)}: ${vecE()} = ${F.vec(F0.E, 'E')}${pot.absolute ? `, &nbsp;V = ${F.poly(pot.V, 'V')}` : ''}</div>`;
+          exact = `<div class="sub">En ${F.sym(vname)} = ${F.num(tv)} : ${vecE()} = ${F.vec(F0.E, 'E')}${pot.absolute ? `, &nbsp;V = ${F.poly(pot.V, 'V')}` : ''}</div>`;
         }
-        const yl = si ? 'N/C y V' : '×(símbolo)/(πε₀)';
+        const yl = si ? 'N/C y V' : '×(symbole)/(πε₀)';
         return {
-          res: `${formula}${exact}<canvas class="chart" aria-label="Gráfica de E y V"></canvas><div class="chart-l"></div>`,
-          steps: `<p>Puntos de la recta: P(${F.sym(vname)}) = ${F.pt(P0)} + ${F.sym(vname)}·${F.vecNum(d)}. La gráfica es numérica tomando todos los símbolos = 1 ${si ? '' : '(eje vertical en unidades de símbolo/(πε₀aⁿ))'}${absV ? '' : '; V se mide respecto al primer punto porque hay hilos o planos infinitos'}.</p>`,
+          res: `${formula}${exact}<canvas class="chart" aria-label="Graphique de E et V"></canvas><div class="chart-l"></div>`,
+          steps: `<p>Points de la droite : P(${F.sym(vname)}) = ${F.pt(P0)} + ${F.sym(vname)}·${F.vecNum(d)}. Le graphique est numérique en prenant tous les symboles = 1 ${si ? '' : '(axe vertical en unités de symbole/(πε₀aⁿ))'}${absV ? '' : '; V est mesuré par rapport au premier point car il y a des fils ou des plans infinis'}.</p>`,
           marks: [{ key: 'P0', at: P0, label: 'P₀' }],
           seg: [at(t0), at(t1)],
           chart: { xs, xlabel: vname, ylabel: yl, series: [
@@ -1938,7 +1938,7 @@ const Presets = (() => {
 
   const list = [
     {
-      key: 'p1', statement: "Cuatro partículas con la misma carga q están en los vértices de un cuadrado de lado 2a en el plano XY, en (±a, ±a, 0). Determinar: 1) la energía electrostática del sistema; 2) el campo eléctrico en cualquier punto del eje Z; 3) el momento de fuerzas sobre un dipolo p = b(u_x + u_y + u_z), que solo puede rotar, colocado en (0, 0, a).", title: '1 · Cuadrado de cuatro cargas',
+      key: 'p1', statement: "Quatre particules de même charge q sont aux sommets d'un carré de côté 2a dans le plan XY, en (±a, ±a, 0). Déterminer : 1) l'énergie électrostatique du système ; 2) le champ électrique en tout point de l'axe Z ; 3) le moment des forces sur un dipôle p = b(u_x + u_y + u_z), qui ne peut que tourner, placé en (0, 0, a).", title: '1 · Carré de quatre charges',
       make: () => scen({
         view: { plane: 'xz', cut: '0' },
         sources: [S('point', 'q1', { pos: ['1', '1', '0'] }, '1', 'q'), S('point', 'q2', { pos: ['-1', '1', '0'] }, '1', 'q'), S('point', 'q3', { pos: ['-1', '-1', '0'] }, '1', 'q'), S('point', 'q4', { pos: ['1', '-1', '0'] }, '1', 'q')],
@@ -1946,14 +1946,14 @@ const Presets = (() => {
       }),
     },
     {
-      key: 'p2', statement: "Tres cargas puntuales q1 = 2q, q2 = −q y q3 = q están en los vértices de un triángulo rectángulo: q1 en el origen, q2 en (3a, 0) y q3 en (0, 4a). Obtener: 1) la energía electrostática del sistema; 2) la energía potencial de un dipolo p = p0(3u_x + 4u_y) situado en (3a, 4a).", title: '2 · Triángulo rectángulo de cargas',
+      key: 'p2', statement: "Trois charges ponctuelles q1 = 2q, q2 = −q et q3 = q sont aux sommets d'un triangle rectangle : q1 à l'origine, q2 en (3a, 0) et q3 en (0, 4a). Déterminer : 1) l'énergie électrostatique du système ; 2) l'énergie potentielle d'un dipôle p = p0(3u_x + 4u_y) situé en (3a, 4a).", title: '2 · Triangle rectangle de charges',
       make: () => scen({
         sources: [S('point', 'q1', { pos: ['0', '0', '0'] }, '2', 'q'), S('point', 'q2', { pos: ['3', '0', '0'] }, '-1', 'q'), S('point', 'q3', { pos: ['0', '4', '0'] }, '1', 'q')],
         analyses: [A('energy', {}), A('dipole', { P: ['3', '4', '0'], p: ['3', '4', '0'], sym: 'p0', rot: ['', '', ''] })],
       }),
     },
     {
-      key: 'p3', statement: "Una carga q1 = −2q0 está en (0, 2a) y una segunda carga q2, desconocida, en (3a, 0). Un dipolo p = p0(1/2 u_x + √3/2 u_y), que solo puede rotar y está en el origen, se encuentra en equilibrio. Determinar: 1) el valor de q2; 2) si el equilibrio es estable o inestable; 3) el trabajo de un agente externo para colocar el dipolo paralelo a +u_y.", title: '3 · Dipolo en equilibrio a 60°',
+      key: 'p3', statement: "Une charge q1 = −2q0 est en (0, 2a) et une seconde charge q2, inconnue, en (3a, 0). Un dipôle p = p0(1/2 u_x + √3/2 u_y), qui ne peut que tourner et se trouve à l'origine, est en équilibre. Déterminer : 1) la valeur de q2 ; 2) si l'équilibre est stable ou instable ; 3) le travail d'un opérateur extérieur pour placer le dipôle parallèle à +u_y.", title: '3 · Dipôle en équilibre à 60°',
       make: () => {
         const q2 = S('point', 'q2', { pos: ['3', '0', '0'] }, '1', 'q0');
         return scen({
@@ -1965,7 +1965,7 @@ const Presets = (() => {
       },
     },
     {
-      key: 'p4', statement: "Un plano uniformemente cargado coincide con el plano XZ. Dos hilos indefinidos paralelos al eje Z cortan al plano XY en (3a, 4a), con λ1 = 2λ, y en (−3a, 4a), con λ2 = −λ. Obtener la densidad de carga del plano sabiendo que un dipolo situado en (0, a, 0) estaría en equilibrio orientado según u_x, y el campo eléctrico en ese punto.", title: '4 · Plano XZ y dos hilos',
+      key: 'p4', statement: "Un plan uniformément chargé coïncide avec le plan XZ. Deux fils indéfinis parallèles à l'axe Z coupent le plan XY en (3a, 4a), avec λ1 = 2λ, et en (−3a, 4a), avec λ2 = −λ. Déterminer la densité de charge du plan sachant qu'un dipôle situé en (0, a, 0) serait en équilibre orienté selon u_x, ainsi que le champ électrique en ce point.", title: '4 · Plan XZ et deux fils',
       make: () => {
         const pl = S('plane', 'σ', { axis: 'y', at: '0' }, '1', 'sigma');
         return scen({
@@ -1976,7 +1976,7 @@ const Presets = (() => {
       },
     },
     {
-      key: 'p5', statement: "Un cilindro indefinido de radio 2a, uniformemente cargado y coaxial con el eje Z, y un plano cargado con densidad σ en y = −5a. Si en (4a, 3a, 0) se situara una carga puntual, la fuerza sería paralela al eje X. Determinar: 1) la densidad volumétrica de carga del cilindro; 2) V_B − V_A entre A(0, a, 0) y B(0, 3a, 0).", title: '5 · Cilindro grueso y plano',
+      key: 'p5', statement: "Un cylindre indéfini de rayon 2a, uniformément chargé et coaxial avec l'axe Z, et un plan chargé avec la densité σ en y = −5a. Si l'on plaçait une charge ponctuelle en (4a, 3a, 0), la force serait parallèle à l'axe X. Déterminer : 1) la densité volumique de charge du cylindre ; 2) V_B − V_A entre A(0, a, 0) et B(0, 3a, 0).", title: '5 · Cylindre épais et plan',
       make: () => {
         const cyl = S('line', 'ρ', { pos: ['0', '0', '0'], dir: 'z', mode: 'rho', R: '2' }, '1', 'rho');
         return scen({
@@ -1987,7 +1987,7 @@ const Presets = (() => {
       },
     },
     {
-      key: 'p6', statement: "Una carga puntual q está en el origen y una esfera de radio a, uniformemente cargada, tiene su centro en (2a, 0, 0). Si el potencial en (3a, 0, 0) es q/(3πε0a), determinar la densidad de carga de la esfera y la energía potencial de un dipolo p = p(u_x + u_y) situado en (2a, 2a, 0).", title: '6 · Esfera desplazada y carga puntual',
+      key: 'p6', statement: "Une charge ponctuelle q est à l'origine et une sphère de rayon a, uniformément chargée, a son centre en (2a, 0, 0). Si le potentiel en (3a, 0, 0) est q/(3πε0a), déterminer la densité de charge de la sphère et l'énergie potentielle d'un dipôle p = p(u_x + u_y) situé en (2a, 2a, 0).", title: '6 · Sphère décalée et charge ponctuelle',
       make: () => {
         const sph = S('sphere', 'ρ', { pos: ['2', '0', '0'], R1: '0', R2: '1' }, '1', 'rho');
         return scen({
@@ -1998,7 +1998,7 @@ const Presets = (() => {
       },
     },
     {
-      key: 'p7', statement: "Un hilo indefinido con densidad λ, paralelo al eje X, pasa por (0, 6a, 0). Determinar la carga que debe situarse en (0, −3a, 0) para que un dipolo p = p u_x, situado en (4a, 0, 0) y que solo puede rotar, permanezca en equilibrio. Justificar si el equilibrio es estable o inestable y obtener su energía potencial.", title: '7 · Hilo paralelo a X y carga desconocida',
+      key: 'p7', statement: "Un fil indéfini de densité λ, parallèle à l'axe X, passe par (0, 6a, 0). Déterminer la charge à placer en (0, −3a, 0) pour qu'un dipôle p = p u_x, situé en (4a, 0, 0) et qui ne peut que tourner, reste en équilibre. Justifier si l'équilibre est stable ou instable et obtenir son énergie potentielle.", title: '7 · Fil parallèle à X et charge inconnue',
       make: () => {
         const Q = S('point', 'Q', { pos: ['0', '-3', '0'] }, '1', 'q');
         return scen({
@@ -2010,7 +2010,7 @@ const Presets = (() => {
       },
     },
     {
-      key: 'p8', statement: "Una lámina indefinida de anchura 2b, uniformemente cargada, ocupa la región −b < y < b. Un hilo indefinido con densidad λ, paralelo al eje Z, pasa por (0, 4b, 0). Sabiendo que el campo eléctrico es nulo en la recta x = 0, y = 2b, obtener la densidad de la lámina y V_B − V_A entre A(0, 0, 0) y B(0, 3b, 0).", title: '8 · Lámina gruesa y campo nulo',
+      key: 'p8', statement: "Une plaque indéfinie de largeur 2b, uniformément chargée, occupe la région −b < y < b. Un fil indéfini de densité λ, parallèle à l'axe Z, passe par (0, 4b, 0). Sachant que le champ électrique est nul sur la droite x = 0, y = 2b, déterminer la densité de la plaque et V_B − V_A entre A(0, 0, 0) et B(0, 3b, 0).", title: '8 · Plaque épaisse et champ nul',
       make: () => {
         const sl = S('slab', 'ρ', { axis: 'y', at: '-1', w: '2' }, '1', 'rho');
         return scen({
@@ -2022,7 +2022,7 @@ const Presets = (() => {
       },
     },
     {
-      key: 'p9', statement: "Dos planos indefinidos, y = 0 con densidad 2σ e y = 2b con densidad −σ, y un hilo indefinido con densidad λ, paralelo al eje X, que pasa por (0, b, 0). Obtener: 1) el campo eléctrico en cualquier punto del plano XY; 2) la relación entre σ y λ para que V_B − V_A sea nula, con A(0, b/2, 0) y B(0, 3b, 0).", title: '9 · Dos planos distintos y un hilo', note: 'Apartado 1: el perfil a lo largo de Y usa λ como símbolo (no depende del apartado 2); en el plano XY el campo solo depende de y.',
+      key: 'p9', statement: "Deux plans indéfinis, y = 0 de densité 2σ et y = 2b de densité −σ, et un fil indéfini de densité λ, parallèle à l'axe X, qui passe par (0, b, 0). Déterminer : 1) le champ électrique en tout point du plan XY ; 2) la relation entre σ et λ pour que V_B − V_A soit nulle, avec A(0, b/2, 0) et B(0, 3b, 0).", title: '9 · Deux plans différents et un fil', note: 'Question 1 : le profil le long de Y utilise λ comme symbole (il ne dépend pas de la question 2) ; dans le plan XY, le champ ne dépend que de y.',
       make: () => {
         const ln = S('line', 'λ', { pos: ['0', '1', '0'], dir: 'x', mode: 'lambda', R: '1' }, '1', 'lambda');
         return scen({
@@ -2034,7 +2034,7 @@ const Presets = (() => {
       },
     },
     {
-      key: 'p10', statement: "Una carga puntual Q está en el origen, centro de una corona esférica de radios R y 2R cargada con densidad ρ = 3Q/(28πR³). Obtener el trabajo realizado en contra del campo para desplazar una carga q desde (R/2, 0, 0) hasta (3R, 0, 0).", title: '10 · Carga dentro de una corona esférica',
+      key: 'p10', statement: "Une charge ponctuelle Q est à l'origine, centre d'une couronne sphérique de rayons R et 2R chargée avec la densité ρ = 3Q/(28πR³). Déterminer le travail effectué contre le champ pour déplacer une charge q de (R/2, 0, 0) à (3R, 0, 0).", title: '10 · Charge dans une couronne sphérique',
       make: () => scen({
         unit: 'R', order: ['q', 'Q'],
         sources: [S('point', 'Q', { pos: ['0', '0', '0'] }, '1', 'Q'), S('sphere', 'ρ', { pos: ['0', '0', '0'], R1: '1', R2: '2' }, '3/(28*pi)', 'Q')],
@@ -2042,8 +2042,8 @@ const Presets = (() => {
       }),
     },
     {
-      key: 'p11', statement: "Un hilo indefinido con densidad λ está sobre el eje X. En (a, 2a, 0) se coloca un dipolo contenido en el plano XY que solo puede rotar; inicialmente su energía potencial es −bλ/(πaε0) y sobre él actúa un momento 3bλ/(4πaε0) u_z. 1) Determinar el momento dipolar inicial. Con el dipolo ya en equilibrio estable: 2) el campo en A(a, 4a, 0); 3) la diferencia de potencial entre A y B(a, 6a, 0).", title: '11 · Hilo en el eje X y dipolo',
-      note: 'El dipolo fuente ya está en su posición de equilibrio estable (p = 5b, en la dirección +Y). Bórralo para ver solo el apartado 1.',
+      key: 'p11', statement: "Un fil indéfini de densité λ est sur l'axe X. En (a, 2a, 0) on place un dipôle contenu dans le plan XY qui ne peut que tourner ; au départ son énergie potentielle est −bλ/(πaε0) et il subit un moment 3bλ/(4πaε0) u_z. 1) Déterminer le moment dipolaire initial. Avec le dipôle déjà en équilibre stable : 2) le champ en A(a, 4a, 0) ; 3) la différence de potentiel entre A et B(a, 6a, 0).", title: '11 · Fil sur l\'axe X et dipôle',
+      note: 'Le dipôle source est déjà dans sa position d\'équilibre stable (p = 5b, dans la direction +Y). Supprimez-le pour ne voir que la question 1.',
       make: () => scen({
         sources: [S('line', 'λ', { pos: ['0', '0', '0'], dir: 'x', mode: 'lambda', R: '1' }, '1', 'lambda'), S('dipole', 'p', { pos: ['1', '2', '0'], p: ['0', '5', '0'] }, '1', 'b')],
         analyses: [
@@ -2053,21 +2053,21 @@ const Presets = (() => {
       }),
     },
     {
-      key: 'p12', statement: "Una varilla de longitud 4a con densidad λ está en el plano XY, sobre la recta y = 3a, de x = 0 a x = 4a. 1) Campo eléctrico en el origen. 2) En el origen se coloca un dipolo contenido en el plano YZ: obtener p si el momento de fuerzas es p0λ/(30πε0a)(2u_x − u_y + 3u_z).", title: '12 · Varilla finita y dipolo en YZ',
+      key: 'p12', statement: "Une tige de longueur 4a de densité λ est dans le plan XY, sur la droite y = 3a, de x = 0 à x = 4a. 1) Champ électrique à l'origine. 2) À l'origine on place un dipôle contenu dans le plan YZ : déterminer p si le moment des forces est p0λ/(30πε0a)(2u_x − u_y + 3u_z).", title: '12 · Tige finie et dipôle dans YZ',
       make: () => scen({
         sources: [S('rod', 'λ', { A: ['0', '3', '0'], B: ['4', '3', '0'] }, '1', 'lambda')],
         analyses: [A('E', { P: ['0', '0', '0'] }), A('findDipole', { P: ['0', '0', '0'], sym: 'p0', tau: ['1/(15*pi)', '-1/(30*pi)', '1/(10*pi)'], U: '', plane: 'x' })],
       }),
     },
     {
-      key: 'p13', statement: "Un hilo indefinido con densidad λ coincide con el eje Z y está rodeado por un tubo cilíndrico coaxial de radio 2a con densidad superficial σ = −λ/(4πa). Obtener: 1) el campo eléctrico en (a, 0, 0); 2) el campo en (3a, 0, 0); 3) la diferencia de potencial V(a, 0, 0) − V(2a, 0, 0).", title: '13 · Hilo dentro de un tubo cargado',
+      key: 'p13', statement: "Un fil indéfini de densité λ coïncide avec l'axe Z et est entouré d'un tube cylindrique coaxial de rayon 2a de densité surfacique σ = −λ/(4πa). Déterminer : 1) le champ électrique en (a, 0, 0) ; 2) le champ en (3a, 0, 0) ; 3) la différence de potentiel V(a, 0, 0) − V(2a, 0, 0).", title: '13 · Fil à l\'intérieur d\'un tube chargé',
       make: () => scen({
         sources: [S('line', 'λ', { pos: ['0', '0', '0'], dir: 'z', mode: 'lambda', R: '1' }, '1', 'lambda'), S('line', 'σ', { pos: ['0', '0', '0'], dir: 'z', mode: 'sigma', R: '2' }, '-1/(4*pi)', 'lambda')],
         analyses: [A('E', { P: ['1', '0', '0'] }), A('E', { P: ['3', '0', '0'] }), A('dV', { A: ['2', '0', '0'], B: ['1', '0', '0'] })],
       }),
     },
     {
-      key: 'p14', statement: "Una esfera de radio a centrada en el origen tiene una densidad de carga que crece con la distancia al centro, ρ = ρ0 r/a. Obtener: 1) el campo eléctrico en (a/2, 0, 0); 2) el campo en (2a, 0, 0); 3) el potencial en el centro.", title: '14 · Esfera con ρ = ρ0 r/a',
+      key: 'p14', statement: "Une sphère de rayon a centrée à l'origine a une densité de charge qui croît avec la distance au centre, ρ = ρ0 r/a. Déterminer : 1) le champ électrique en (a/2, 0, 0) ; 2) le champ en (2a, 0, 0) ; 3) le potentiel au centre.", title: '14 · Sphère avec ρ = ρ0 r/a',
       make: () => scen({
         sources: [S('sphere', 'ρ', { pos: ['0', '0', '0'], R1: '0', R2: '1', perfil: 'lineal' }, '1', 'rho0')],
         kinds: { rho0: 'rho' },
@@ -2075,7 +2075,7 @@ const Presets = (() => {
       }),
     },
     {
-      key: 'p15', statement: "Un cilindro indefinido de radio 2a, coaxial con el eje Z, tiene una densidad de carga ρ = ρ0(1 − r/(2a)), máxima en el eje y nula en la superficie. Obtener el campo eléctrico en (a, 0, 0) y en (0, 4a, 0).", title: '15 · Cilindro con ρ = ρ0(1 − r/R)',
+      key: 'p15', statement: "Un cylindre indéfini de rayon 2a, coaxial avec l'axe Z, a une densité de charge ρ = ρ0(1 − r/(2a)), maximale sur l'axe et nulle à la surface. Déterminer le champ électrique en (a, 0, 0) et en (0, 4a, 0).", title: '15 · Cylindre avec ρ = ρ0(1 − r/R)',
       make: () => scen({
         sources: [S('line', 'ρ', { pos: ['0', '0', '0'], dir: 'z', mode: 'rho', R: '2', R1: '', perfil: 'resta' }, '1', 'rho0')],
         kinds: { rho0: 'rho' },
@@ -2083,21 +2083,21 @@ const Presets = (() => {
       }),
     },
     {
-      key: 'p16', statement: "Una semicircunferencia de radio a, con densidad lineal λ, está en el plano XY, centrada en el origen y en la región y > 0. Obtener: 1) el campo eléctrico en el centro; 2) el potencial en el centro; 3) el campo en (0, 0, a).", title: '16 · Semicircunferencia cargada',
+      key: 'p16', statement: "Un demi-cercle de rayon a, de densité linéique λ, est dans le plan XY, centré à l'origine et dans la région y > 0. Déterminer : 1) le champ électrique au centre ; 2) le potentiel au centre ; 3) le champ en (0, 0, a).", title: '16 · Demi-cercle chargé',
       make: () => scen({
         sources: [S('arc', 'λ', { pos: ['0', '0', '0'], axis: 'z', R: '1', t1: '0', t2: '180' }, '1', 'lambda')],
         analyses: [A('E', { P: ['0', '0', '0'] }), A('V', { P: ['0', '0', '0'] }), A('E', { P: ['0', '0', '1'] })],
       }),
     },
     {
-      key: 'p17', statement: "Una carga puntual q está en el centro de una corteza esférica conductora de radios a y 2a, con carga neta 2q. Obtener: 1) el campo eléctrico en (a/2, 0, 0), en (3a/2, 0, 0) y en (3a, 0, 0); 2) el potencial de la corteza.", title: '17 · Carga dentro de una corteza conductora',
+      key: 'p17', statement: "Une charge ponctuelle q est au centre d'une coque sphérique conductrice de rayons a et 2a, de charge nette 2q. Déterminer : 1) le champ électrique en (a/2, 0, 0), en (3a/2, 0, 0) et en (3a, 0, 0) ; 2) le potentiel de la coque.", title: '17 · Charge à l\'intérieur d\'une coque conductrice',
       make: () => scen({
         sources: [S('point', 'q', { pos: ['0', '0', '0'] }, '1', 'q'), S('hollow', 'Q', { pos: ['0', '0', '0'], R1: '1', R2: '2' }, '2', 'q')],
         analyses: [A('E', { P: ['1/2', '0', '0'] }), A('E', { P: ['3/2', '0', '0'] }), A('E', { P: ['3', '0', '0'] }), A('V', { P: ['3/2', '0', '0'] })],
       }),
     },
     {
-      key: 'p18', statement: "Una varilla de longitud 2a sobre el eje X, de x = a a x = 3a, tiene una densidad que crece linealmente desde 0, λ = λ0 (x − a)/(2a). Obtener el campo eléctrico y el potencial en el origen.", title: '18 · Varilla con densidad lineal',
+      key: 'p18', statement: "Une tige de longueur 2a sur l'axe X, de x = a à x = 3a, a une densité qui croît linéairement à partir de 0, λ = λ0 (x − a)/(2a). Déterminer le champ électrique et le potentiel à l'origine.", title: '18 · Tige à densité linéique',
       make: () => scen({
         sources: [S('rod', 'λ', { A: ['1', '0', '0'], B: ['3', '0', '0'], perfil: 'lineal' }, '1', 'lambda0')],
         kinds: { lambda0: 'lambda' },
@@ -2105,7 +2105,7 @@ const Presets = (() => {
       }),
     },
   ];
-  return { section: 'Ejercicios de ejemplo', list, newId: id };
+  return { section: 'Exercices d\'exemple', list, newId: id };
 })();
 
 
@@ -2150,7 +2150,7 @@ const Canvas = (() => {
     cv.addEventListener('pointerleave', () => { hover = null; if (!drag) redraw(); });
     // con teclado: Intro elige el siguiente punto movible, flechas lo mueven, Esc lo suelta (ver «teclado» más abajo)
     cv.tabIndex = 0; cv.setAttribute('role', 'application'); cv.setAttribute('aria-describedby', 'cv-estado');
-    cv.setAttribute('aria-label', 'Lienzo del campo. Intro elige el siguiente punto movible, las flechas lo mueven (con Mayús, paso fino) y Esc lo suelta. Sin punto elegido, las flechas desplazan la vista, más y menos acercan o alejan, y 0 encuadra.');
+    cv.setAttribute('aria-label', 'Canevas du champ. Entrée choisit le point déplaçable suivant, les flèches le déplacent (avec Maj, pas fin) et Échap le lâche. Sans point choisi, les flèches déplacent la vue, plus et moins zooment ou dézooment, et 0 cadre.');
     cv.addEventListener('keydown', teclado);
     cv.addEventListener('blur', () => { if (foco) { foco = null; redraw(); } });
     cv.addEventListener('wheel', (e) => { if (!e.ctrlKey && !e.metaKey) return; e.preventDefault(); zoom(e.deltaY < 0 ? 1.15 : 0.87); }, { passive: false });
@@ -2459,7 +2459,7 @@ const Canvas = (() => {
     g.textAlign = 'left'; g.fillText(fm(legend.lo) + u, x, y + 12);
     g.textAlign = 'right'; g.fillText(fm(legend.hi) + u, x + w, y + 12);
     g.textAlign = 'left'; g.textBaseline = 'bottom';
-    g.fillText(legend.q === 'V' ? (legend.absV ? 'V' : 'V − V_medio') + (legend.si ? '' : ' ·πε₀a/símb.') : '|E|' + (legend.si ? '' : ' ·πε₀a²/símb.') + ' (log)', x, y - 3);
+    g.fillText(legend.q === 'V' ? (legend.absV ? 'V' : 'V − V_medio') + (legend.si ? '' : ' ·πε₀a/symb.') : '|E|' + (legend.si ? '' : ' ·πε₀a²/symb.') + ' (log)', x, y - 3);
   }
 
   function colorOf(s, C) { return !s.S ? C.axis : s.Snum >= 0 ? C.pos : C.neg; }
@@ -2750,7 +2750,7 @@ const Canvas = (() => {
       g.font = '600 12px "IBM Plex Sans", system-ui, sans-serif'; g.fillStyle = C.mark; g.textAlign = 'left'; g.textBaseline = 'top'; g.fillText(m.label || m.key || '', p[0] + 7, p[1] + 3);
     }
     g.font = '11px "IBM Plex Sans", system-ui, sans-serif'; g.fillStyle = C.axis; g.textAlign = 'left'; g.textBaseline = 'bottom';
-    g.fillText('Arrastra para girar · Ctrl + rueda o +/− para acercar', 10, H - 8);
+    g.fillText('Faites glisser pour tourner · Ctrl + molette ou +/− pour zoomer', 10, H - 8);
   }
   function drawLines3D(ctx, C, L) {
     const lim = L * 1.2;
@@ -2887,7 +2887,7 @@ const Canvas = (() => {
     place = spec ? { ...spec, pts: [] } : null;
     cv.classList.toggle('placing', !!place);
     redraw();
-    if (place) decir(`${place.hint || 'Colocar'}. Con teclado: flechas para mover la vista e Intro para colocarlo en el centro del lienzo.`);
+    if (place) decir(`${place.hint || 'Placer'}. Con teclado: flechas para mover la vista e Intro para colocarlo en el centro del lienzo.`);
   }
   function down(e) {
     const p = pos(e);
@@ -2952,10 +2952,10 @@ const Canvas = (() => {
   }
   function elegido() { return foco ? anchors.find((an) => clave(an) === foco) : null; }
   function elige(dir) {
-    if (!anchors.length) { decir('No hay ningún punto que se pueda mover.'); return; }
+    if (!anchors.length) { decir('Aucun point ne peut être déplacé.'); return; }
     const i = anchors.findIndex((an) => clave(an) === foco), j = ((i < 0 ? (dir > 0 ? -1 : 0) : i) + dir + anchors.length) % anchors.length;
     foco = clave(anchors[j]); redraw();
-    decir(`Punto ${j + 1} de ${anchors.length}: ${dondeEsta(anchors[j])}. Flechas para moverlo.`);
+    decir(`Point ${j + 1} sur ${anchors.length} : ${dondeEsta(anchors[j])}. Flèches pour le déplacer.`);
   }
   function teclado(e) {
     if (e.ctrlKey || e.metaKey || e.altKey) return;
@@ -2970,8 +2970,8 @@ const Canvas = (() => {
         const w = toW(W / 2, H / 2), [a, b] = ax();
         for (const c of [a, b]) w[c] = +(Math.round(w[c] / 0.25) * 0.25).toFixed(2);
         place.pts.push(w);
-        if (place.pts.length >= place.n) { const sp = place; place = null; cv.classList.remove('placing'); sp.done(sp.pts); decir('Punto colocado.'); }
-        else { redraw(); decir(`Punto ${place.pts.length} de ${place.n} colocado.`); }
+        if (place.pts.length >= place.n) { const sp = place; place = null; cv.classList.remove('placing'); sp.done(sp.pts); decir('Point placé.'); }
+        else { redraw(); decir(`Point ${place.pts.length} sur ${place.n} placé.`); }
         return;
       }
     }
@@ -2986,7 +2986,7 @@ const Canvas = (() => {
         setTimeout(() => { const nu = anchors.find((x) => clave(x) === ant); if (nu) decir(`${coma(nu.at[a])}${lastOut?.ctx?.unit || 'a'}, ${coma(nu.at[b])}${lastOut?.ctx?.unit || 'a'}`); }, 150);
       } else { view.cx += (flecha[0] * 30) / view.s; view.cy += (flecha[1] * 30) / view.s; redraw(); }
     } else if (k === 'Enter' || k === ' ') { e.preventDefault(); elige(e.shiftKey ? -1 : 1); }
-    else if (k === 'Escape' && foco) { foco = null; redraw(); decir('Punto soltado.'); }
+    else if (k === 'Escape' && foco) { foco = null; redraw(); decir('Point lâché.'); }
     else if (k === '+' || k === '=') { e.preventDefault(); zoom(1.15); }
     else if (k === '-' || k === '_') { e.preventDefault(); zoom(0.87); }
     else if (k === '0' || k === 'Home') { e.preventDefault(); fit(); redraw(); }
@@ -3052,7 +3052,7 @@ const Canvas = (() => {
   const saveUI = () => store.set(K_UI, ui);
 
   function validScene(s) {
-    if (!s || !Array.isArray(s.sources)) throw new Error('falta la lista de fuentes');
+    if (!s || !Array.isArray(s.sources)) throw new Error('la liste des sources manque');
     const sc = { ...blankScene(), ...s };
     sc.view = { plane: 'xy', cut: '0', ...(s.view || {}) };
     sc.kinds = s.kinds || {};
@@ -3073,7 +3073,7 @@ const Canvas = (() => {
   let ejSel = null; // <select id="ejemplos"> oculto: los ejemplos de la barra «Mis ejercicios»
   function ponCur(o, key = null) {
     cancelPlace();
-    cur = { key, title: o.title || 'Problema sin título', statement: o.statement || '', note: o.note || '', scene: validScene(o.scene) };
+    cur = { key, title: o.title || 'Problème sans titre', statement: o.statement || '', note: o.note || '', scene: validScene(o.scene) };
     scen = cur.scene; cur.base = firma();
     guardaCur();
     resetHistory();
@@ -3127,7 +3127,7 @@ const Canvas = (() => {
       h('button', { class: 'sec-h' }, h('span', {}, Presets.section), h('span', { class: 'count' }, String(pres.length))),
       h('div', { class: 'sec-l', role: 'list' }, pres.map((p) => h('div', { class: 'item' + (cur && cur.key === p.key ? ' active' : ''), role: 'listitem' },
         h('button', { class: 'it', title: p.title, onclick: () => openPreset(p.key) }, h('span', { class: 'it-t' }, p.title)))))),
-      query && !pres.length ? h('p', { class: 'side-empty' }, `Nada coincide con «${$('#search').value}».`) : null);
+      query && !pres.length ? h('p', { class: 'side-empty' }, `Rien ne correspond à « ${$('#search').value} ».`) : null);
   }
 
   /* ---------------- archivos ---------------- */
@@ -3136,14 +3136,14 @@ const Canvas = (() => {
   async function saveFile(filename, text, mime) {
     const dl = await Promise.race([dlPromise, new Promise((r) => setTimeout(() => r(null), 1500))]);
     if (dl) {
-      try { await dl.save({ filename, data: text }); flash('Archivo guardado: ' + filename); }
-      catch (e) { flash(e?.code === 'declined' ? 'Guardado cancelado' : 'No se pudo guardar el archivo aquí (' + (e?.code || 'error') + ')'); }
+      try { await dl.save({ filename, data: text }); flash('Fichier enregistré : ' + filename); }
+      catch (e) { flash(e?.code === 'declined' ? 'Enregistrement annulé' : 'Impossible d\'enregistrer le fichier ici (' + (e?.code || 'error') + ')'); }
       return;
     }
     // fuera del visor de Claude (archivo abierto en un navegador normal)
     const a = h('a', { href: URL.createObjectURL(new Blob([text], { type: mime })), download: filename });
     document.body.append(a); a.click(); a.remove();
-    flash('Archivo guardado: ' + filename);
+    flash('Fichier enregistré : ' + filename);
   }
 
   /* ---------------- campos de formulario ---------------- */
@@ -3171,11 +3171,11 @@ const Canvas = (() => {
       case 'vec3':
       case 'vec3opt':
         return fieldRow(f.label, h('span', { class: 'vec' }, ['x', 'y', 'z'].map((c, i) => h('span', { class: 'vc' }, h('i', {}, c), input([...p, i], { cls: 'num', ph: f.t === 'vec3opt' ? '—' : '0', aria: `${f.label} ${c}` })))));
-      case 'expr': return fieldRow(f.label, input(p, { cls: 'num', ph: f.optional ? 'opcional' : '0' }));
+      case 'expr': return fieldRow(f.label, input(p, { cls: 'num', ph: f.optional ? 'facultatif' : '0' }));
       case 'sym': return fieldRow(f.label, input(p, { cls: 'sym', ph: 'p' }));
       case 'select': return fieldRow(f.label, select(p, f.options, { structural: !!f.structural }));
-      case 'charge': return fieldRow(f.label, h('span', { class: 'chg' }, input([...p, 'c'], { cls: 'num', aria: 'coeficiente' }), h('span', { class: 'x' }, '×'), input([...p, 'sym'], { cls: 'sym', ph: 'q', aria: 'símbolo' })));
-      case 'value': return fieldRow(f.label, h('span', { class: 'chg' }, input([...p, 'c'], { cls: 'num', aria: 'coeficiente' }), h('span', { class: 'x' }, '×'), input([...p, 'sym'], { cls: 'sym', ph: 'q', aria: 'símbolo' }), h('span', { class: 'x tail' }, scen.mode === 'si' ? 'SI' : '/(ε₀ aⁿ)')));
+      case 'charge': return fieldRow(f.label, h('span', { class: 'chg' }, input([...p, 'c'], { cls: 'num', aria: 'coeficiente' }), h('span', { class: 'x' }, '×'), input([...p, 'sym'], { cls: 'sym', ph: 'q', aria: 'symbole' })));
+      case 'value': return fieldRow(f.label, h('span', { class: 'chg' }, input([...p, 'c'], { cls: 'num', aria: 'coeficiente' }), h('span', { class: 'x' }, '×'), input([...p, 'sym'], { cls: 'sym', ph: 'q', aria: 'symbole' }), h('span', { class: 'x tail' }, scen.mode === 'si' ? 'SI' : '/(ε₀ aⁿ)')));
     }
     return null;
   }
@@ -3212,16 +3212,16 @@ const Canvas = (() => {
     const fs = def ? placeFields(def) : [{ label: 'punto de salida' }];
     const n = planeLike ? 1 : fs.length;
     if (scen.view.plane === '3d') {
-      if (kind === 'probe') return flash('Las cargas de prueba se sueltan en una vista 2D (XY, XZ o YZ).');
+      if (kind === 'probe') return flash('Les charges d\'essai se lâchent dans une vue 2D (XY, XZ ou YZ).');
       return make(null);
     }
     if (!n) return make(null);
     placing = { kind, type };
     markChips();
     $('#cv').scrollIntoView({ block: 'nearest', behavior: 'instant' });
-    const what = planeLike ? 'un punto del plano' : fs.map((f) => f.label.toLowerCase()).join(', luego ');
+    const what = planeLike ? 'un point du plan' : fs.map((f) => f.label.toLowerCase()).join(', luego ');
     Canvas.setPlace({
-      hint: `Clic en el lienzo: ${what}` + (kind === 'probe' ? ' · Esc: cancelar' : ' · Esc: cancelar, botón otra vez: por defecto'),
+      hint: `Clic sur le canevas : ${what}` + (kind === 'probe' ? ' · Échap : annuler' : ' · Échap : annuler, bouton à nouveau : par défaut'),
       n, done: (pts) => { placing = null; markChips(); make(pts); },
     });
   }
@@ -3259,13 +3259,13 @@ const Canvas = (() => {
         h('div', { class: 'card-h' },
           h('span', { class: 'badge b-' + src.type }, def.label),
           input([...base, 'name'], { cls: 'name', aria: 'nombre' }),
-          h('button', { class: 'icon', title: 'Duplicar fuente', 'aria-label': 'Duplicar fuente', onclick: () => addSource(src.type, src) }, '⧉'),
-          h('button', { class: 'icon del', title: 'Eliminar fuente', 'aria-label': 'Eliminar fuente', onclick: () => { if (unk) scen.unknown.srcs = scen.unknown.srcs.filter((x) => x !== src.id); scen.sources.splice(i, 1); renderAll(); } }, '×')),
-        unk ? h('div', { class: 'row unkrow' }, h('span', { class: 'lab' }, 'Valor'), h('span', { class: 'ctl' }, h('span', { class: 'pill' }, 'incógnita'))) :
-          fieldRow('Valor', h('span', { class: 'chg' }, input([...base, 's', 'c'], { cls: 'num', aria: 'coeficiente' }), h('span', { class: 'x' }, '×'), input([...base, 's', 'sym'], { cls: 'sym', aria: 'símbolo', ph: scen.mode === 'si' ? '(nada)' : '' }), scen.mode === 'si' ? h('span', { class: 'x tail' }, KINDS[def.kindOf ? def.kindOf(src) : def.kind]?.si || '') : null)),
+          h('button', { class: 'icon', title: 'Dupliquer la source', 'aria-label': 'Dupliquer la source', onclick: () => addSource(src.type, src) }, '⧉'),
+          h('button', { class: 'icon del', title: 'Supprimer la source', 'aria-label': 'Supprimer la source', onclick: () => { if (unk) scen.unknown.srcs = scen.unknown.srcs.filter((x) => x !== src.id); scen.sources.splice(i, 1); renderAll(); } }, '×')),
+        unk ? h('div', { class: 'row unkrow' }, h('span', { class: 'lab' }, 'Valeur'), h('span', { class: 'ctl' }, h('span', { class: 'pill' }, 'inconnue'))) :
+          fieldRow('Valeur', h('span', { class: 'chg' }, input([...base, 's', 'c'], { cls: 'num', aria: 'coeficiente' }), h('span', { class: 'x' }, '×'), input([...base, 's', 'sym'], { cls: 'sym', aria: 'symbole', ph: scen.mode === 'si' ? '(nada)' : '' }), scen.mode === 'si' ? h('span', { class: 'x tail' }, KINDS[def.kindOf ? def.kindOf(src) : def.kind]?.si || '') : null)),
         def.fields.map((f) => buildField({ ...f, structural: f.structural || f.k === 'mode' }, base, src))));
     });
-    if (!scen.sources.length) box.append(h('p', { class: 'empty' }, 'Aún no hay fuentes. Pulsa un botón de arriba (Carga, Hilo, Plano…) y haz clic en el lienzo para colocarla.'));
+    if (!scen.sources.length) box.append(h('p', { class: 'empty' }, 'Il n\'y a pas encore de sources. Cliquez sur un bouton ci-dessus (Charge, Fil, Plan…) puis sur le canevas pour la placer.'));
   }
 
   /* ---------------- incógnitas ---------------- */
@@ -3273,9 +3273,9 @@ const Canvas = (() => {
   function renderUnknown() {
     const box = $('#unknown');
     box.replaceChildren();
-    if (!scen.sources.length) { box.append(h('p', { class: 'empty' }, 'Añade primero las fuentes.')); return; }
+    if (!scen.sources.length) { box.append(h('p', { class: 'empty' }, 'Ajoutez d\'abord les sources.')); return; }
     const u = scen.unknown;
-    const list = h('div', { class: 'unk-list', role: 'group', 'aria-label': 'Fuentes desconocidas' }, scen.sources.map((s) => {
+    const list = h('div', { class: 'unk-list', role: 'group', 'aria-label': 'Sources inconnues' }, scen.sources.map((s) => {
       const cb = h('input', { type: 'checkbox', id: 'unk-' + s.id, checked: isUnk(s.id) });
       cb.addEventListener('change', () => {
         scen.unknown ||= { srcs: [], conds: [] };
@@ -3286,7 +3286,7 @@ const Canvas = (() => {
       });
       return h('label', { class: 'unk-o' }, cb, h('span', { class: 'math', html: Fmt.sym(s.name || SOURCES[s.type].prefix) }), h('span', { class: 'it-s' }, SOURCES[s.type].label));
     }));
-    box.append(h('div', { class: 'lab' }, 'Fuentes cuyo valor es desconocido:'), list);
+    box.append(h('div', { class: 'lab' }, 'Sources dont la valeur est inconnue :'), list);
     if (!u || !u.srcs.length) return;
     u.conds.forEach((c, j) => {
       for (const k of ['P', 'd', 'A', 'B']) c[k] ??= ['0', '0', '0'];
@@ -3294,17 +3294,17 @@ const Canvas = (() => {
       c.comp ??= 'x';
       const base = ['unknown', 'conds', j];
       box.append(h('div', { class: 'card cond' },
-        h('div', { class: 'card-h' }, h('h3', {}, 'Condición ' + (j + 1)), h('button', { class: 'icon del', title: 'Quitar condición', 'aria-label': 'Quitar condición', onclick: () => { u.conds.splice(j, 1); renderAll(); } }, '×')),
-        fieldRow('Tipo', select([...base, 'type'], Object.entries(CONDS).map(([k, v]) => [k, v.label]))),
+        h('div', { class: 'card-h' }, h('h3', {}, 'Condition ' + (j + 1)), h('button', { class: 'icon del', title: 'Retirer la condition', 'aria-label': 'Retirer la condition', onclick: () => { u.conds.splice(j, 1); renderAll(); } }, '×')),
+        fieldRow('Type', select([...base, 'type'], Object.entries(CONDS).map(([k, v]) => [k, v.label]))),
         CONDS[c.type].fields.map((f) => buildField(f, base, c))));
     });
     box.append(h('div', { class: 'tools' },
-      h('button', { class: 'chip', onclick: () => { u.conds.push(defaultCond()); renderAll(); } }, '+ Añadir condición'),
-      h('span', { class: 'hint' }, `${u.srcs.length} incógnita${u.srcs.length > 1 ? 's' : ''}: hacen falta otras tantas ecuaciones (E = 0 cuenta como tres).`)));
+      h('button', { class: 'chip', onclick: () => { u.conds.push(defaultCond()); renderAll(); } }, '+ Ajouter une condition'),
+      h('span', { class: 'hint' }, `${u.srcs.length} inconnue${u.srcs.length > 1 ? 's' : ''} : il faut autant d'équations (E = 0 compte pour trois).`)));
     box.append(h('div', { class: 'card an unk-card', id: 'unk-card' },
       h('div', { class: 'result', id: 'unk-res' }),
       h('div', { class: 'prac', id: 'prac-unk' }),
-      h('details', { class: 'steps-d', id: 'unk-steps' }, h('summary', {}, 'Ver desarrollo'), h('div', { class: 'steps-b' }))));
+      h('details', { class: 'steps-d', id: 'unk-steps' }, h('summary', {}, 'Voir le développement'), h('div', { class: 'steps-b' }))));
   }
 
   /* ---------------- símbolos ---------------- */
@@ -3312,9 +3312,9 @@ const Canvas = (() => {
     const box = $('#symbols');
     box.replaceChildren();
     const names = Object.keys(ctx.kinds).filter((k) => !k.startsWith('§') && k);
-    if (!names.length) box.append(h('p', { class: 'empty' }, scen.mode === 'si' ? 'En modo SI no hacen falta símbolos: escribe los valores numéricos.' : 'Aparecerán aquí cuando uses símbolos (q, λ, σ…).'));
+    if (!names.length) box.append(h('p', { class: 'empty' }, scen.mode === 'si' ? 'En mode SI, les symboles ne sont pas nécessaires : écrivez les valeurs numériques.' : 'Ils apparaîtront ici quand vous utiliserez des symboles (q, λ, σ…).'));
     names.forEach((n) => {
-      const sel = h('select', { class: 'in', id: 'kind-' + n, 'aria-label': 'Tipo de ' + n }, Object.entries(KINDS).map(([k, v]) => h('option', { value: k, selected: ctx.kinds[n] === k }, `${v.label} (${v.hint})`)));
+      const sel = h('select', { class: 'in', id: 'kind-' + n, 'aria-label': 'Type de ' + n }, Object.entries(KINDS).map(([k, v]) => h('option', { value: k, selected: ctx.kinds[n] === k }, `${v.label} (${v.hint})`)));
       sel.addEventListener('change', () => { scen.kinds[n] = sel.value; schedule(); });
       box.append(h('label', { class: 'row' }, h('span', { class: 'lab math', html: Fmt.sym(n) }), h('span', { class: 'ctl' }, sel)));
     });
@@ -3328,14 +3328,14 @@ const Canvas = (() => {
       const def = ANALYSES[an.type];
       const base = ['analyses', i];
       box.append(h('section', { class: 'card an', 'data-i': i, 'data-id': an.id },
-        h('div', { class: 'card-h' }, h('h3', {}, def.label), h('button', { class: 'icon del', title: 'Quitar pregunta', 'aria-label': 'Quitar pregunta', onclick: () => { scen.analyses.splice(i, 1); renderAll(); } }, '×')),
+        h('div', { class: 'card-h' }, h('h3', {}, def.label), h('button', { class: 'icon del', title: 'Retirer la question', 'aria-label': 'Retirer la question', onclick: () => { scen.analyses.splice(i, 1); renderAll(); } }, '×')),
         def.fields.length ? h('div', { class: 'an-f' }, def.fields.map((f) => buildField(f, base, an))) : null,
         h('div', { class: 'result math', id: 'res-' + i }),
         h('div', { class: 'prac', id: 'prac-' + i }),
         h('div', { class: 'act', id: 'act-' + i }),
-        h('details', { class: 'steps-d', id: 'steps-' + i }, h('summary', {}, 'Ver desarrollo paso a paso'), h('div', { class: 'steps-b math' }))));
+        h('details', { class: 'steps-d', id: 'steps-' + i }, h('summary', {}, 'Voir le développement pas à pas'), h('div', { class: 'steps-b math' }))));
     });
-    if (!scen.analyses.length) box.append(h('p', { class: 'empty' }, 'Aún no hay preguntas. Elige arriba qué quieres calcular: campo, potencial, fuerza, dipolo, flujo, perfil…'));
+    if (!scen.analyses.length) box.append(h('p', { class: 'empty' }, 'Il n\'y a pas encore de questions. Choisissez ci-dessus ce que vous voulez calculer : champ, potentiel, force, dipôle, flux, profil…'));
   }
 
   /* ---------------- modo práctica ---------------- */
@@ -3372,11 +3372,11 @@ const Canvas = (() => {
       box.append(h('div', { class: 'prac-r' },
         h('span', { class: 'lab math', html: arrows(ans.label) + ' =' }),
         h('span', { class: n > 1 ? 'vec' : 'one' }, ins),
-        h('span', { class: 'tools' }, h('button', { class: 'btn', onclick: check }, 'Comprobar'), msg)));
+        h('span', { class: 'tools' }, h('button', { class: 'btn', onclick: check }, 'Vérifier'), msg)));
     });
     box.append(h('div', { class: 'tools' },
-      h('button', { class: 'btn ghost', onclick: (e) => { const on = card.classList.toggle('reveal'); e.target.textContent = on ? 'Ocultar solución' : 'Mostrar solución'; } }, card.classList.contains('reveal') ? 'Ocultar solución' : 'Mostrar solución'),
-      h('span', { class: 'hint' }, si ? 'Admite 8.99e9, 2/3…' : 'Escribe con q, lambda, sigma, rho, a, eps0, pi, sqrt(…); no importa el orden.')));
+      h('button', { class: 'btn ghost', onclick: (e) => { const on = card.classList.toggle('reveal'); e.target.textContent = on ? 'Masquer la solution' : 'Afficher la solution'; } }, card.classList.contains('reveal') ? 'Masquer la solution' : 'Afficher la solution'),
+      h('span', { class: 'hint' }, si ? 'Accepte 8.99e9, 2/3…' : 'Écrivez avec q, lambda, sigma, rho, a, eps0, pi, sqrt(…) ; l\'ordre n\'a pas d\'importance.')));
   }
 
   /* ---------------- gráficas E(z), V(z) ---------------- */
@@ -3463,9 +3463,9 @@ const Canvas = (() => {
   function schedule() { if (!pending) pending = requestAnimationFrame(() => { pending = 0; compute(); }); }
   function compute() {
     persist();
-    try { out = Physics.run(scen); } catch (e) { out = null; $('#errors').textContent = 'Error: ' + e.message; $('#errors').hidden = false; return; }
+    try { out = Physics.run(scen); } catch (e) { out = null; $('#errors').textContent = 'Erreur : ' + e.message; $('#errors').hidden = false; return; }
     const { ctx, unknown, results } = out;
-    $('#errors').textContent = ctx.errors.length ? 'Revisa: ' + ctx.errors.join(' · ') : '';
+    $('#errors').textContent = ctx.errors.length ? 'Vérifiez : ' + ctx.errors.join(' · ') : '';
     $('#errors').hidden = !ctx.errors.length;
     if (unknown && $('#unk-res')) {
       $('#unk-res').innerHTML = unknown.error ? `<div class="warn">${unknown.error}</div>` : `<div class="math big">${unknown.html}</div>`;
@@ -3476,7 +3476,7 @@ const Canvas = (() => {
     results.forEach((res, i) => {
       const r = $('#res-' + i), st = $('#steps-' + i + ' .steps-b'), act = $('#act-' + i);
       if (!r) return;
-      r.innerHTML = res.error ? `<div class="warn">No se pudo calcular: ${Fmt.esc(res.error)}</div>` : res.res;
+      r.innerHTML = res.error ? `<div class="warn">Calcul impossible : ${Fmt.esc(res.error)}</div>` : res.res;
       st.innerHTML = res.steps || '';
       $('#steps-' + i).hidden = !res.steps;
       act.replaceChildren();
@@ -3509,11 +3509,11 @@ const Canvas = (() => {
     $('#unit').value = si ? 'm' : scen.unit || 'a';
     $('#unit').disabled = si;
     $('#hint-src').innerHTML = si
-      ? 'Modo numérico SI: longitudes en metros y valores en unidades SI (C, C/m, C/m²…), p. ej. <code>2e-9</code>. Deja el símbolo vacío.'
-      : 'Longitudes en unidades de la escala (<code>a</code>). Admite <code>5/2</code>, <code>2*sqrt(3)</code>, <code>√7</code>, <code>pi</code>. Valor = coeficiente × símbolo.';
+      ? 'Mode numérique SI : longueurs en mètres et valeurs en unités SI (C, C/m, C/m²…), p. ex. <code>2e-9</code>. Laissez le symbole vide.'
+      : 'Longueurs en unités de l\'échelle (<code>a</code>). Accepte <code>5/2</code>, <code>2*sqrt(3)</code>, <code>√7</code>, <code>pi</code>. Valeur = coefficient × symbole.';
     $('#hint-an').textContent = si
-      ? 'Resultados numéricos en unidades SI (ε₀ = 8,854·10⁻¹² F/m).'
-      : 'Resultados exactos en la forma del libro: coeficiente · símbolos / (π ε₀ aⁿ). Abre “Ver desarrollo” para seguir cada paso.';
+      ? 'Résultats numériques en unités SI (ε₀ = 8,854·10⁻¹² F/m).'
+      : 'Résultats exacts sous la forme du manuel : coefficient · symboles / (π ε₀ aⁿ). Ouvrez « Voir le développement » pour suivre chaque étape.';
     const plane = scen.view?.plane || 'xy';
     $('#plane').value = plane;
     $('#cut').value = scen.view?.cut ?? '0';
@@ -3542,8 +3542,8 @@ const Canvas = (() => {
   }
   function scheduleCommit() { clearTimeout(commitT); commitT = setTimeout(commit, 450); }
   function restore(s) { cur.scene = scen = JSON.parse(s); hist.last = s; renderAll(); updateHistBtns(); }
-  function undo() { commit(); if (!hist.past.length) return flash('Nada que deshacer'); hist.future.push(hist.last); restore(hist.past.pop()); }
-  function redo() { commit(); if (!hist.future.length) return flash('Nada que rehacer'); hist.past.push(hist.last); restore(hist.future.pop()); }
+  function undo() { commit(); if (!hist.past.length) return flash('Rien à annuler'); hist.future.push(hist.last); restore(hist.past.pop()); }
+  function redo() { commit(); if (!hist.future.length) return flash('Rien à rétablir'); hist.past.push(hist.last); restore(hist.future.pop()); }
   function updateHistBtns() { $('#undo').disabled = !hist.past.length; $('#redo').disabled = !hist.future.length; }
 
   /* ---------------- exportar la solución ---------------- */
@@ -3583,14 +3583,14 @@ const Canvas = (() => {
   function exportMD() {
     const L = [`# ${cur.title}`, ''];
     if (cur.statement.trim()) L.push(...cur.statement.trim().split('\n').map((l) => '> ' + l), '');
-    L.push(`*Unidad de longitud: ${scen.mode === 'si' ? 'm (modo numérico SI)' : scen.unit || 'a'}*`, '', '## Datos', '');
+    L.push(`*Unité de longueur : ${scen.mode === 'si' ? 'm (mode numérique SI)' : scen.unit || 'a'}*`, '', '## Datos', '');
     for (const s of scen.sources) {
       const def = SOURCES[s.type];
       L.push(`- **${s.name}** (${def.label}): ${isUnk(s.id) ? 'valor desconocido' : `valor = ${s.s.c}${s.s.sym ? '·' + s.s.sym : ''}`}; ${describe(def, s)}`);
     }
     if (out?.unknown) {
       L.push('', '## Incógnitas', '');
-      scen.unknown.conds.forEach((c, j) => L.push(`- Condición ${j + 1}: ${CONDS[c.type].label}; ${describe(CONDS[c.type], c)}`));
+      scen.unknown.conds.forEach((c, j) => L.push(`- Condition ${j + 1} : ${CONDS[c.type].label} ; ${describe(CONDS[c.type], c)}`));
       L.push('', '**Resultado:** ' + (out.unknown.error || htmlText(out.unknown.html)).replace(/\n/g, '; '), '');
       if (out.unknown.steps) L.push('**Desarrollo**', '', htmlText(out.unknown.steps), '');
     }
@@ -3600,31 +3600,31 @@ const Canvas = (() => {
       L.push('', `### ${i + 1}. ${def.label}`, '');
       const d = describe(def, an);
       if (d) L.push(d, '');
-      L.push('**Resultado:**', '', res.error ? 'No se pudo calcular: ' + res.error : htmlText(res.res), '');
+      L.push('**Resultado:**', '', res.error ? 'Calcul impossible : ' + res.error : htmlText(res.res), '');
       if (res.steps) L.push('**Desarrollo**', '', htmlText(res.steps), '');
     });
-    L.push('', '---', `*Generado con el Simulador de Electrostática · ${new Date().toLocaleString('es-ES')}*`, '');
+    L.push('', '---', `*Généré avec le Simulateur d'électrostatique · ${new Date().toLocaleString('fr-FR')}*`, '');
     saveFile(slug(cur.title) + '-solucion.md', L.join('\n'), 'text/markdown');
   }
   // la solución de un ejercicio como HTML (datos, incógnitas y preguntas con su desarrollo): la usan «Exportar solución» y la hoja para imprimir.
   // Usa la escena y los resultados de ahora (scen, out); la hoja los cambia un momento con conEscena.
   function fichaHTML(titulo, enunciado, { img = '', charts = {}, h1 = 'h1' } = {}) {
     const esc = Fmt.esc;
-    const srcRows = scen.sources.map((s) => { const def = SOURCES[s.type]; return `<li><b>${esc(s.name)}</b> (${esc(def.label)}): ${isUnk(s.id) ? '<i>valor desconocido</i>' : `valor = ${esc(s.s.c)}${s.s.sym ? '·' + esc(s.s.sym) : ''}`}; ${esc(describe(def, s))}</li>`; }).join('');
+    const srcRows = scen.sources.map((s) => { const def = SOURCES[s.type]; return `<li><b>${esc(s.name)}</b> (${esc(def.label)}): ${isUnk(s.id) ? '<i>valeur inconnue</i>' : `valor = ${esc(s.s.c)}${s.s.sym ? '·' + esc(s.s.sym) : ''}`}; ${esc(describe(def, s))}</li>`; }).join('');
     let unk = '';
     if (out?.unknown) {
-      unk = `<section class="card"><h2>Incógnitas</h2><ul>${scen.unknown.conds.map((c, j) => `<li>Condición ${j + 1}: ${esc(CONDS[c.type].label)}; ${esc(describe(CONDS[c.type], c))}</li>`).join('')}</ul>
-        <div class="result math">${out.unknown.error ? `<div class="warn">${out.unknown.error}</div>` : out.unknown.html}</div>${out.unknown.steps ? `<h4>Desarrollo</h4><div class="steps-b math">${out.unknown.steps}</div>` : ''}</section>`;
+      unk = `<section class="card" data-h="resultados"><h2>Inconnues</h2><ul>${scen.unknown.conds.map((c, j) => `<li>Condition ${j + 1} : ${esc(CONDS[c.type].label)} ; ${esc(describe(CONDS[c.type], c))}</li>`).join('')}</ul>
+        <div class="result math">${out.unknown.error ? `<div class="warn">${out.unknown.error}</div>` : out.unknown.html}</div>${out.unknown.steps ? `<h4>Développement</h4><div class="steps-b math">${out.unknown.steps}</div>` : ''}</section>`;
     }
     const qs = scen.analyses.map((an, i) => {
       const def = ANALYSES[an.type], res = out?.results[i] || {};
-      const body = res.error ? `<div class="warn">No se pudo calcular: ${esc(res.error)}</div>` : String(res.res || '').replace(/<canvas class="chart"[^>]*><\/canvas><div class="chart-l"><\/div>/, charts[i] ? `<img class="chart-img" alt="Gráfica" src="${charts[i]}">` : '');
-      return `<section class="card"><h3>${i + 1}. ${esc(def.label)}</h3><p class="hint">${esc(describe(def, an))}</p><div class="result math">${body}</div>${res.steps ? `<h4>Desarrollo</h4><div class="steps-b math">${res.steps}</div>` : ''}</section>`;
+      const body = res.error ? `<div class="warn">Calcul impossible : ${esc(res.error)}</div>` : String(res.res || '').replace(/<canvas class="chart"[^>]*><\/canvas><div class="chart-l"><\/div>/, charts[i] ? `<img class="chart-img" alt="Graphique" src="${charts[i]}">` : '');
+      return `<section class="card"><h3>${i + 1}. ${esc(def.label)}</h3><p class="hint">${esc(describe(def, an))}</p><div class="result math">${body}</div>${res.steps ? `<h4>Développement</h4><div class="steps-b math">${res.steps}</div>` : ''}</section>`;
     }).join('');
     return `${h1 ? `<${h1}>${esc(titulo)}</${h1}>` : ''}${enunciado.trim() ? `<div class="stmt">${esc(enunciado.trim())}</div>` : ''}
-<p class="hint">Unidad de longitud: ${scen.mode === 'si' ? 'm (modo numérico SI)' : esc(scen.unit || 'a')}</p>
-${img ? `<img class="snap" alt="Esquema del problema" src="${img}">` : ''}
-<section class="card"><h2>Datos</h2><ul>${srcRows}</ul></section>${unk}<h2>Preguntas</h2>${qs}`;
+<p class="hint">Unité de longueur : ${scen.mode === 'si' ? 'm (mode numérique SI)' : esc(scen.unit || 'a')}</p>
+${img ? `<img class="snap" alt="Schéma du problème" src="${img}">` : ''}
+<section class="card" data-h="datos"><h2>Données</h2><ul>${srcRows}</ul></section>${unk}<h2>Questions</h2>${qs}`;
   }
   function exportHTML() {
     const esc = Fmt.esc;
@@ -3632,7 +3632,7 @@ ${img ? `<img class="snap" alt="Esquema del problema" src="${img}">` : ''}
     const img = Canvas.snapshot();
     const charts = {};
     scen.analyses.forEach((an, i) => { const c = $(`#res-${i} canvas.chart`); if (c) charts[i] = c.toDataURL('image/png'); });
-    const doc = `<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>${esc(cur.title)} · solución</title>
+    const doc = `<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>${esc(cur.title)} · solution</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400;1,600&display=swap">
 <style>${styles}
 body { max-width: 860px; margin: 0 auto; padding: 24px 16px 60px; font: 14px/1.5 var(--f-ui) }
@@ -3641,15 +3641,15 @@ h1 { font: 600 26px var(--f-math); margin: 0 0 8px } h2 { font: 600 13px var(--f
 .snap { width: 100%; border: 1px solid var(--line); border-radius: 8px } .chart-img { width: 100%; max-width: 640px; display: block } .printbar { display: flex; gap: 8px; margin: 10px 0 }
 @media print { .printbar { display: none } body { padding: 0 } :root { --bg: #fff } }
 </style></head><body>
-<div class="printbar"><button class="btn ghost" onclick="print()">Imprimir o guardar como PDF</button></div>
+<div class="printbar"><button class="btn ghost" onclick="print()">Imprimer ou enregistrer en PDF</button></div>
 ${fichaHTML(cur.title, cur.statement, { img, charts })}
-<p class="hint">Generado con el Simulador de Electrostática · ${esc(new Date().toLocaleString('es-ES'))}</p></body></html>`;
+<p class="hint">Généré avec le Simulateur d'électrostatique · ${esc(new Date().toLocaleString('fr-FR'))}</p></body></html>`;
     saveFile(slug(cur.title) + '-solucion.html', doc, 'text/html');
   }
 
   // La hoja para imprimir varios ejercicios es la de «Mis ejercicios» (biblioteca.js): abre cada ejercicio en un marco oculto
   // de esta misma página y pide su ficha con window.simuFicha (el título y el número los pone la hoja).
-  window.simuFicha = () => (out ? fichaHTML(cur.title, cur.statement, { h1: null }) : '');
+  window.simuFicha = () => (out ? fichaHTML(cur.title, cur.statement, { h1: null, img: Canvas.snapshot() }) : '');
 
   /* ---------------- controles fijos ---------------- */
   const typing = (t) => !!t && (t.id === 'title' || t.id === 'statement' || t.id === 'search' || !!t.closest?.('.prac'));
@@ -3678,7 +3678,7 @@ ${fichaHTML(cur.title, cur.statement, { img, charts })}
       mayores.at(-1).rs.push(r);
     }
     $('#ver-log').replaceChildren(...mayores.map((g, i) => h('details', { open: i === 0 },
-      h('summary', {}, g.m === '0' ? 'Beta (0.x)' : `Versión ${g.m}`, h('span', { class: 'ver-c' }, g.rs.length === 1 ? '1 versión' : `${g.rs.length} versiones`)),
+      h('summary', {}, g.m === '0' ? 'Bêta (0.x)' : `Version ${g.m}`, h('span', { class: 'ver-c' }, g.rs.length === 1 ? '1 version' : `${g.rs.length} versiones`)),
       ...g.rs.map((r) => h('details', { class: 'ver-sub', open: r.v === Version.current }, h('summary', {}, `${r.v} · ${r.fecha.split('-').reverse().join('/')}`), h('ul', {}, r.cambios.map((c) => h('li', {}, c))))))));
     $('#guide-x').addEventListener('click', () => $('#guide').close());
     $('#guide').addEventListener('click', (e) => { if (e.target === e.currentTarget) e.currentTarget.close(); });
@@ -3690,21 +3690,21 @@ ${fichaHTML(cur.title, cur.statement, { img, charts })}
       markGuide(id || 'g-vista');
     }, { passive: true });
     $('#export').addEventListener('click', (e) => { e.stopPropagation(); openMenu($('#export-w'), 'export', [
-      { label: 'Página para imprimir o PDF (.html)', run: exportHTML },
-      { label: 'Texto Markdown (.md)', run: exportMD },
+      { label: 'Page à imprimer ou PDF (.html)', run: exportHTML },
+      { label: 'Texte Markdown (.md)', run: exportMD },
     ]); });
     $('#title').addEventListener('input', (e) => { cur.title = e.target.value; persist(); });
     $('#statement').addEventListener('input', (e) => { cur.statement = e.target.value; autosize(e.target); persist(); });
     $('#search')?.addEventListener('input', (e) => { query = norm(e.target.value.trim()); renderSidebar(); });
     $('#unit').addEventListener('input', (e) => { scen.unit = e.target.value.trim() || 'a'; schedule(); });
-    $('#mode').addEventListener('change', (e) => { scen.mode = e.target.value; renderAll(); flash(scen.mode === 'si' ? 'Modo numérico SI: usa valores en unidades SI y longitudes en metros' : 'Modo simbólico'); });
+    $('#mode').addEventListener('change', (e) => { scen.mode = e.target.value; renderAll(); flash(scen.mode === 'si' ? 'Mode numérique SI : utilisez des valeurs en unités SI et des longueurs en mètres' : 'Mode symbolique'); });
     $('#practice').addEventListener('change', (e) => { ui.practice = e.target.checked; saveUI(); document.querySelectorAll('.card.reveal').forEach((c) => c.classList.remove('reveal')); renderAll(); });
     $('#undo').addEventListener('click', undo);
     $('#redo').addEventListener('click', redo);
     $('#plane').addEventListener('change', (e) => { cancelPlace(); scen.view.plane = e.target.value; Canvas.fit(); renderAll(); });
     $('#cut').addEventListener('input', (e) => { scen.view.cut = e.target.value; schedule(); });
     const chipsS = $('#chips-src');
-    for (const [k, d] of Object.entries(SOURCES)) chipsS.append(h('button', { class: 'chip', 'data-place': 'src:' + k, title: 'Añadir ' + d.label.toLowerCase() + ' (clic en el lienzo para colocarla)', onclick: () => chipAdd('src', k) }, '+ ' + (d.short || d.label)));
+    for (const [k, d] of Object.entries(SOURCES)) chipsS.append(h('button', { class: 'chip', 'data-place': 'src:' + k, title: 'Ajouter ' + d.label.toLowerCase() + ' (clic sur le canevas pour la placer)', onclick: () => chipAdd('src', k) }, '+ ' + (d.short || d.label)));
     const chipsA = $('#chips-an');
     for (const [k, d] of Object.entries(ANALYSES)) chipsA.append(h('button', { class: 'chip', 'data-place': 'an:' + k, title: d.label, onclick: () => chipAdd('an', k) }, '+ ' + (d.short || d.label)));
     $('#probe-p').addEventListener('click', () => chipAdd('probe', '+'));
@@ -3751,7 +3751,7 @@ ${fichaHTML(cur.title, cur.statement, { img, charts })}
   window.App = { onDrag, endDrag: () => setTimeout(commit, 30), get scen() { return scen; } };
   // Ejemplos de la barra «Mis ejercicios»: un <select id="ejemplos"> oculto con los problemas de presets.js (biblioteca.js lee sus opciones)
   if (WEB) {
-    ejSel = h('select', { id: 'ejemplos', hidden: true, tabindex: '-1', 'aria-hidden': 'true' }, h('option', { value: '' }, 'Ejemplos…'), Presets.list.map((p) => h('option', { value: p.key }, p.title)));
+    ejSel = h('select', { id: 'ejemplos', hidden: true, tabindex: '-1', 'aria-hidden': 'true' }, h('option', { value: '' }, 'Exemples…'), Presets.list.map((p) => h('option', { value: p.key }, p.title)));
     document.body.append(ejSel);
     ejSel.addEventListener('change', () => { if (ejSel.value) openPreset(ejSel.value); });
   }
@@ -3764,7 +3764,7 @@ ${fichaHTML(cur.title, cur.statement, { img, charts })}
   if (dEnlace) {
     try {
       const d = JSON.parse(decodeURIComponent(escape(atob(dEnlace[1].replace(/-/g, '+').replace(/_/g, '/')))));
-      if (d?.scene) { store.set(CLAVE, { title: String(d.title || 'Ejercicio compartido'), statement: String(d.statement || ''), scene: d.scene }); try { sessionStorage.removeItem(claveActivo); } catch (e) { /* sin almacenamiento */ } }
+      if (d?.scene) { store.set(CLAVE, { title: String(d.title || 'Exercice partagé'), statement: String(d.statement || ''), scene: d.scene }); try { sessionStorage.removeItem(claveActivo); } catch (e) { /* sin almacenamiento */ } }
     } catch (e) { /* enlace roto: se ignora */ }
     try { history.replaceState(null, '', location.pathname + location.search); } catch (e) { /* file:// */ }
   }
@@ -3814,11 +3814,11 @@ const Personal = (() => {
   // «hace 5 min», «hace 3 h», «ayer», «hace 4 días»
   function hace(t, ahora = Date.now()) {
     const m = Math.max(0, Math.round((ahora - t) / 60000));
-    if (m < 2) return 'justo ahora';
+    if (m < 2) return 'à l\'instant';
     if (m < 60) return `hace ${m} min`;
     if (m < 60 * 24) return `hace ${Math.round(m / 60)} h`;
     const d = Math.round(m / 1440);
-    return d === 1 ? 'ayer' : `hace ${d} días`;
+    return d === 1 ? 'hier' : `il y a ${d} jours`;
   }
 
   const CSS = '.fav-btn { display: inline-flex; align-items: center; gap: 6px; font: 600 13.5px var(--f-ui, system-ui); color: var(--ink); background: var(--vidrio, var(--panel)); -webkit-backdrop-filter: var(--blur, none); backdrop-filter: var(--blur, none); border: 1px solid var(--vidrio-borde, var(--line)); border-radius: 999px; padding: 5px 12px; cursor: pointer; white-space: nowrap } .fav-btn:hover, .fav-btn[aria-pressed=true] { border-color: var(--accent); color: var(--accent) } @media print { .fav-btn { display: none !important } }';
@@ -3829,7 +3829,7 @@ const Personal = (() => {
     const sitio = document.querySelector('.miga-der'); if (!sitio || sitio.querySelector('.fav-btn')) return;
     const st = document.createElement('style'); st.textContent = CSS; document.head.appendChild(st);
     const b = document.createElement('button'); b.type = 'button'; b.className = 'fav-btn';
-    const pinta = () => { const on = esFavorita(ruta); b.setAttribute('aria-pressed', String(on)); b.title = on ? 'Quitar de tus favoritas (portada)' : 'Añadir a tus favoritas (portada)'; b.innerHTML = `<span aria-hidden="true">${on ? '★' : '☆'}</span> Favorita`; };
+    const pinta = () => { const on = esFavorita(ruta); b.setAttribute('aria-pressed', String(on)); b.title = on ? 'Retirer de vos favoris (accueil)' : 'Ajouter à vos favoris (accueil)'; b.innerHTML = `<span aria-hidden="true">${on ? '★' : '☆'}</span> Favori`; };
     b.addEventListener('click', () => { alterna(ruta); pinta(); });
     pinta(); sitio.append(b);
   }

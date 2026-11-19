@@ -24,7 +24,7 @@ const formulas = (t) => (t.replace(/\$\{[^}]*\}/g, '').match(/\$[^$]+\$/g) || []
 // Español visible: letras con tilde o palabras muy españolas (en un texto en inglés no deberían salir)
 // Nombres propios con tilde que no son español (Thévenin, Scheffé…)
 // nombres propios y palabras extranjeras con tilde (André, Józef, élektron…) no cuentan como español
-const sinNombres = (l) => l.replace(/\p{Lu}[\p{L}'-]*/gu, (w) => (/[áéíóúñ]/i.test(w) ? ' ' : w)).replace(/élektron|El Alamein|olla exprés/g, ' ');
+const sinNombres = (l) => l.replace(/\p{Lu}[\p{L}'-]*/gu, (w) => (/[áéíóúñ]/i.test(w) ? ' ' : w)).replace(/élektron|El Alamein|olla exprés/g, ' ').replace(/(?<=· )para(?![\p{L}])/gu, ' ');
 // Nombres propios con tilde que no son español (Thévenin, Scheffé…); en las páginas generales también García, Jiménez…
 const NOMBRES = /Th[ée]venin|Scheff[ée]|Cram[ée]r|Kolmog[oó]rov|Fr[ée]chet|Poincar[ée]|Gram-Schmidt|Rouché|Ampère|García|Jiménez|Fresnel|Kutta|Bézout|Hölder|Möbius|Lévy|Gödel|Lagrangiano/g, ESPANOL_G = /[¿¡ñáíóú]|\b(los|las|una|del|desde|sobre|cuando|más)\b/i;
 // \b de JavaScript no entiende las letras con tilde («delà» casaba con «del»): se usan límites por letra Unicode

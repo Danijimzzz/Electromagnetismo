@@ -50,11 +50,11 @@ const Enunciado = (() => {
 .enun-bloque .enun-imp { display: none }
 body:has(.prac) .enun-bloque { display: none }
 @media print {
-  .enun-bloque { border: 0; border-left: 3px solid #555; border-radius: 0; background: none; margin: 0 0 12px; break-inside: avoid }
+  .enun-bloque { border: 0; border-left: 2pt solid var(--accent, #555); border-radius: 0; background: none; margin: 0 0 12px; break-inside: avoid }
   .enun-bloque > summary, .enun-bloque .enun-cuerpo, .enun-bloque .enun-ayuda { display: none !important }
   .enun-bloque.vacio { display: none !important }
-  .enun-bloque .enun-imp { display: block; padding: 2px 0 2px 12px; color: #000; font: 11.5pt/1.45 var(--f-ui, system-ui); white-space: pre-wrap }
-  .enun-bloque .enun-imp::before { content: 'Enunciado'; display: block; font: 700 9.5pt var(--f-ui, system-ui); text-transform: uppercase; letter-spacing: .06em; color: #444; margin-bottom: 3px }
+  .enun-bloque .enun-imp { display: block; padding: 2px 0 2px 12px; color: #222; font: italic 11pt/1.5 "IBM Plex Serif", Georgia, serif; white-space: pre-wrap }
+  .enun-bloque .enun-imp::before { content: 'Enunciado'; display: block; font: normal 500 7.5pt "IBM Plex Mono", ui-monospace, monospace; text-transform: uppercase; letter-spacing: .12em; color: var(--accent, #555); margin-bottom: 3px }
 }`;
 
   function monta(carpeta, clave) {

@@ -86,6 +86,7 @@ const Biblioteca = (() => {
 .bib-x, .bib-dots { border: 0; background: none; color: var(--muted); cursor: pointer; display: grid; place-items: center; border-radius: 50% }
 .bib-x { width: 28px; height: 28px; background: color-mix(in srgb, var(--ink) 9%, transparent) } .bib-x .bib-i { width: 13px; height: 13px }
 .bib-dots { width: 30px; height: 30px; flex: 0 0 auto } .bib-dots:hover, .bib-dots[aria-expanded=true] { background: color-mix(in srgb, var(--ink) 9%, transparent); color: var(--accent) } .bib-dots .bib-i { width: 17px; height: 17px }
+.bib-dots:disabled { opacity: .4; cursor: default; pointer-events: none }
 .bib-h .bib-dots { background: var(--vidrio, var(--bg)); border: 1px solid var(--vidrio-borde, var(--line)) }
 .bib-seg { display: grid; grid-template-columns: 1fr 1fr; margin: 0 14px 10px; padding: 3px; border-radius: 99px; background: color-mix(in srgb, var(--ink) 8%, transparent) }
 .bib-seg button { border: 0; background: none; color: var(--muted); font: 500 13px var(--f-ui, system-ui); padding: 6px; border-radius: 99px; cursor: pointer }
@@ -135,7 +136,21 @@ const Biblioteca = (() => {
 .bib-pop { position: absolute; right: 12px; z-index: 5; width: 240px; max-width: calc(100% - 24px); max-height: calc(100% - 20px); overflow-y: auto; padding: 8px; border-radius: 20px; background: var(--vidrio-fuerte, var(--panel)); border: 1px solid var(--vidrio-borde, var(--line)); box-shadow: var(--vidrio-brillo, none), 0 14px 40px rgba(0,0,0,.28); -webkit-backdrop-filter: var(--blur, none); backdrop-filter: var(--blur, none) }
 #hoja-imp { display: none }
 @media print { .bib, .bib-scrim, .bib-aviso, .bib-btn { display: none !important } body.bib-fija { padding-left: 0 !important } }
-@media print { body.hoja-imprimiendo > *:not(#hoja-imp) { display: none !important } body.hoja-imprimiendo #hoja-imp { display: block !important } body.hoja-imprimiendo { padding: 0 !important; background: #fff !important } #hoja-imp { color: #000; font: 11pt/1.4 var(--f-ui, system-ui) } #hoja-imp h1 { font-size: 17pt; margin: 0 0 4px } #hoja-imp .hoja-sub { color: #555; margin: 0 0 14px } #hoja-imp section.hoja-ej { margin: 0 0 18px; padding-top: 10px; border-top: 1px solid #999 } #hoja-imp h2 { font-size: 13pt; margin: 0 0 8px; break-after: avoid } #hoja-imp .card { box-shadow: none !important; border: 0 !important; padding: 0 0 6px !important; background: none !important; break-inside: avoid } #hoja-imp img { max-width: 100%; max-height: 9cm; object-fit: contain } #hoja-imp .pasos li { break-inside: avoid } #hoja-imp .hoja-enun h3 { font-size: 11pt; margin: 0 0 4px } #hoja-imp .enun-imp { white-space: pre-wrap } }
+@media print { body.hoja-imprimiendo > *:not(#hoja-imp) { display: none !important } body.hoja-imprimiendo #hoja-imp { display: block !important } body.hoja-imprimiendo { padding: 0 !important; background: #fff !important }
+  #hoja-imp { color: #222; font: 10pt/1.45 "IBM Plex Sans", system-ui, sans-serif; --i-serif: "IBM Plex Serif", Georgia, serif; --i-mono: "IBM Plex Mono", ui-monospace, monospace }
+  #hoja-imp .hoja-marca { display: flex; align-items: baseline; justify-content: space-between; padding-bottom: 10pt; margin-bottom: 14pt; border-bottom: 1.5pt solid var(--accent, #555) }
+  #hoja-imp .hoja-marca .mk { font: 600 15pt var(--i-serif); color: #111 } #hoja-imp .hoja-marca .mk i { color: var(--marca, #0d6b66) }
+  #hoja-imp .hoja-marca .as { font: 500 7.5pt var(--i-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--accent, #555) }
+  #hoja-imp h1 { font: italic 400 24pt/1.2 var(--i-serif); letter-spacing: -.01em; margin: 0 0 10pt }
+  #hoja-imp .hoja-sub { color: #666; font-size: 9pt; margin: -4pt 0 16pt }
+  #hoja-imp section.hoja-ej { margin: 0 0 22pt; padding-top: 14pt; border-top: .5pt solid #bbb } #hoja-imp section.hoja-ej:first-of-type { border-top: 0; padding-top: 0 }
+  #hoja-imp h2 { font: 500 7.5pt var(--i-mono); text-transform: uppercase; letter-spacing: .14em; color: #222; border-bottom: .5pt solid var(--accent, #555); padding-bottom: 3pt; margin: 12pt 0 6pt; break-after: avoid }
+  #hoja-imp h2.hoja-tit { font: italic 400 17pt var(--i-serif); text-transform: none; letter-spacing: 0; border: 0; padding: 0; margin: 0 0 6pt; display: flex; gap: 8pt; align-items: baseline } #hoja-imp h2.hoja-tit b { font: 600 17pt var(--f-ui, system-ui); font-style: normal; color: var(--accent, #555) } #hoja-imp h2.hoja-tit small { font: 8pt var(--f-ui, system-ui); font-style: normal; color: #777 }
+  #hoja-imp h3 { font: 600 10.5pt var(--f-ui, system-ui); margin: 0 0 2pt } #hoja-imp h4 { font: 600 8pt var(--f-ui, system-ui); text-transform: uppercase; letter-spacing: .1em; color: #777; margin: 8pt 0 3pt }
+  #hoja-imp .card { box-shadow: none !important; border: 0 !important; border-radius: 0 !important; padding: 0 0 6pt !important; background: none !important; break-inside: avoid }
+  #hoja-imp .hoja-enun, #hoja-imp .stmt { border-left: 2pt solid var(--accent, #555) !important; background: none !important; padding: 0 0 0 12pt !important; margin: 0 0 12pt; font: italic 10.5pt/1.5 var(--i-serif); white-space: pre-wrap } #hoja-imp .hoja-enun h3 { font: 700 7.5pt var(--f-ui, system-ui); font-style: normal; text-transform: uppercase; letter-spacing: .12em; color: var(--accent, #555); margin: 0 0 3pt }
+  #hoja-imp .result, #hoja-imp .destacado { border-left: 3pt solid var(--accent, #555); padding-left: 10pt }
+  #hoja-imp img { max-width: 100%; max-height: 9cm; object-fit: contain } #hoja-imp .pasos li, #hoja-imp .steps-b { break-inside: avoid } #hoja-imp .enun-imp { white-space: pre-wrap } }
 `;
 
   function monta(herramienta, clave, opts = {}) {
@@ -316,12 +331,20 @@ const Biblioteca = (() => {
         c.querySelectorAll('button, .controles, .compartir, .tools, .chips, .teoria, footer, header.top, nav, script, style, [hidden]').forEach((e) => e.remove());
         c.querySelectorAll('[id]').forEach((e) => e.removeAttribute('id'));
         c.querySelectorAll('details').forEach((e) => { e.open = true; });
+        c.dataset.h = n.querySelector('.campos') ? 'datos' : n.classList.contains('pasos') ? 'desarrollo' : n.querySelector('canvas, img') ? 'escena' : 'resultados';
         c.classList.add('card'); out.appendChild(c);
       }
       return out.innerHTML;
     }
-    async function imprimeHoja(its) {
+    function exporta(its, accion, origen) {
       if (!its.length) return;
+      if (typeof Biblioteca.abrirVentanaExportar === 'function') { Biblioteca.abrirVentanaExportar({ ids: its.map((x) => x.id), accion, origen }); return; }
+      if (accion === 'pdf') aviso('Dans la fenêtre d’impression, choisissez « Enregistrer au format PDF »');
+      imprimeHoja(its);
+    }
+    async function imprimeHoja(its, op = {}) {
+      if (!its.length) return;
+      op = { ...(typeof VentanaImprimir !== 'undefined' ? VentanaImprimir.BASE : {}), indice: false, ...op };
       aviso('Préparation de la feuille…');
       let original = null; try { original = localStorage.getItem(clave); } catch (e) { /* sin almacenamiento */ }
       const fr = document.createElement('iframe');
@@ -344,13 +367,25 @@ const Biblioteca = (() => {
       document.getElementById('hoja-imp')?.remove();
       const cont = document.createElement('div'); cont.id = 'hoja-imp';
       const fecha = new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
-      cont.innerHTML = `<h1>${esc(nombre)}</h1><p class="hoja-sub">Feuille d'exercices · ${its.length} exercice${its.length === 1 ? '' : 's'} · ${esc(fecha)} · Ciencify</p>`
-        + trozos.map((t, i) => `<section class="hoja-ej"><h2>${i + 1}. ${esc(t.it.titulo)}${t.it.carpeta ? ` <small>(${esc(t.it.carpeta)})</small>` : ''}</h2>${t.html}</section>`).join('');
+      const marca = `<div class="hoja-marca"><span class="mk">${document.querySelector('header.top .logo')?.innerHTML || 'Cienci<i>fy</i>'}</span><span class="as">${esc(document.querySelector('.miga a')?.textContent || '')}</span></div>`;
+      const uno = its.length === 1, tituloHoja = op.titulo || (uno ? trozos[0].it.titulo : nombre);
+      const enunDe = (html) => { const d = new DOMParser().parseFromString(html, 'text/html'), e = d.querySelector('.stmt, .hoja-enun .enun-imp, .hoja-enun'); return (e ? e.textContent.replace(/^\s*Enunciado\s*/, '').trim() : '').replace(/\s+/g, ' ').slice(0, 150); };
+      const indice = !uno && op.indice && (typeof VentanaImprimir !== 'undefined') ? VentanaImprimir.indiceHTML(tituloHoja, `${its.length} exercices · ${fecha}`, trozos.map((t) => ({ titulo: t.it.titulo, carpeta: t.it.carpeta, enun: op.estilo === 'enunciado' ? enunDe(t.html) : '' })), op.estilo === 'enunciado') : '';
+      cont.innerHTML = uno
+        ? `${marca}<h1>${esc(tituloHoja)}</h1>${trozos[0].html}<div class="hoja-fin"></div>`
+        : `${marca}${indice ? '' : `<h1>${esc(tituloHoja)}</h1><p class="hoja-sub">Feuille d'exercices · ${its.length} exercices · ${esc(fecha)}</p>`}${indice}`
+          + trozos.map((t, i) => `<section class="hoja-ej" id="hoja-ej-${i + 1}"><h2 class="hoja-tit"><b>${i + 1}</b>${esc(t.it.titulo)}${t.it.carpeta ? ` <small>(${esc(t.it.carpeta)})</small>` : ''}</h2>${t.html}</section>`).join('');
+      cont.classList.toggle('uno', uno); cont.classList.toggle('hoja-sep', !uno && op.disposicion === 'paginas');
+      cont.classList.toggle('sin-enun', op.enun === false); cont.classList.toggle('sin-datos', op.datos === false);
+      cont.classList.toggle('sin-res', op.res === false || op.tipo === 'enunciados'); cont.classList.toggle('sin-des', op.des === false || op.tipo === 'enunciados' || op.tipo === 'resultados');
+      cont.classList.toggle('sin-esc', op.esc === false); cont.classList.toggle('solo-enun', op.tipo === 'enunciados'); cont.classList.toggle('bn', op.tinta === 'bn');
+      if ((typeof VentanaImprimir !== 'undefined')) VentanaImprimir.estilos();
+      const tituloAntes = document.title; if (op.titulo) document.title = op.titulo;
       document.body.appendChild(cont);
       const tema = document.documentElement.getAttribute('data-theme');
       const fin = () => {
         removeEventListener('afterprint', fin);
-        document.body.classList.remove('hoja-imprimiendo'); cont.remove();
+        document.body.classList.remove('hoja-imprimiendo'); cont.remove(); document.title = tituloAntes;
         if (tema === null) document.documentElement.removeAttribute('data-theme'); else document.documentElement.setAttribute('data-theme', tema);
       };
       addEventListener('afterprint', fin);
@@ -372,7 +407,7 @@ const Biblioteca = (() => {
         const it = lib.items.find((x) => x.id === menu.id); if (!it) return '';
         g = borrando === it.id
           ? `<div class="bib-grp"><button class="bib-mi peligro" role="menuitem" data-acc="si-borrar"><span class="bib-sq" style="--c:var(--ic-rojo)">${ico('trash')}</span><span>Oui, supprimer « ${esc(it.titulo.length > 20 ? it.titulo.slice(0, 19) + '…' : it.titulo)} »</span></button>${mi('no-borrar', 'x', 'cielo', 'No borrar')}</div>`
-          : `<div class="bib-grp">${mi('abrir', 'open', 'azul', 'Ouvrir')}${mi('seleccionar', 'sel', 'violeta', 'Sélectionner', 'pour imprimer ou partager plusieurs exercices')}${mi('editar', 'pencil', 'naranja', 'Titre et dossier')}${mi('mover', 'move', 'cielo', 'Déplacer vers un dossier')}${mi('fijar', 'pin', 'or', it.fijado ? 'Désépingler' : 'Épingler en haut')}</div><div class="bib-grp">${mi('enlace-fila', 'link', 'verde', 'Copier le lien')}${mi('exportar', 'exp', 'cielo', 'Exporter')}${mi('borrar', 'trash', 'rojo', 'Supprimer', '', ' peligro')}</div>`;
+          : `<div class="bib-grp">${mi('abrir', 'open', 'azul', 'Ouvrir')}${mi('seleccionar', 'sel', 'violeta', 'Sélectionner', 'pour imprimer ou partager plusieurs exercices')}${mi('editar', 'pencil', 'naranja', 'Titre et dossier')}${mi('mover', 'move', 'cielo', 'Déplacer vers un dossier')}${mi('fijar', 'pin', 'or', it.fijado ? 'Désépingler' : 'Épingler en haut')}</div><div class="bib-grp">${mi('imprimir', 'print', 'naranja', 'Imprimer')}${mi('pdf', 'exp', 'rosa', 'Télécharger le PDF')}${mi('enlace-fila', 'link', 'verde', 'Copier le lien')}${mi('exportar', 'exp', 'cielo', 'Exporter')}${mi('borrar', 'trash', 'rojo', 'Supprimer', '', ' peligro')}</div>`;
       } else if (menu.tipo === 'carpeta') {
         g = `<div class="bib-grp">${mi('sel-carpeta', 'sel', 'violeta', 'Sélectionner le dossier')}${mi('carp-renombrar', 'pencil', 'naranja', 'Renommer le dossier')}${mi('carp-quitar', 'folder', 'cielo', 'Supprimer le dossier', 'les exercices restent sans dossier')}</div>`;
       } else {
@@ -426,12 +461,12 @@ const Biblioteca = (() => {
       }
       const cab = sel
         ? `<div class="bib-h bib-hsel"><button class="bib-lnk" data-acc="sel-cancelar">Annuler</button><b>${sel.size ? `${sel.size} seleccionado${sel.size === 1 ? '' : 's'}` : 'Choisissez des exercices'}</b><button class="bib-lnk" data-acc="sel-todos">${vis.length && vis.every((i) => sel.has(i.id)) ? 'Aucun' : 'Tous'}</button></div>`
-        : `<div class="bib-h"><b>Mes exercices</b><span class="bib-n">${n}</span><button class="bib-dots" data-acc="menu-general" aria-haspopup="menu" aria-expanded="${menu?.tipo === 'general'}" aria-label="Plus d'options" title="Plus d'options : sauvegarde, importation, sélection multiple…">${ico('dots')}</button><button class="bib-x" data-acc="cerrar" title="Fermer" aria-label="Fermer Mes exercices">${ico('x')}</button></div>`;
+        : `<div class="bib-h"><b>Mes exercices</b><span class="bib-n">${n}</span><button class="bib-dots" data-acc="sel-modo"${n ? '' : ' disabled'} aria-label="Sélectionner" title="Sélectionner">${ico('sel')}</button><button class="bib-dots" data-acc="menu-general" aria-haspopup="menu" aria-expanded="${menu?.tipo === 'general'}" aria-label="Plus d'options" title="Plus d'options : sauvegarde, importation, sélection multiple…">${ico('dots')}</button><button class="bib-x" data-acc="cerrar" title="Fermer" aria-label="Fermer Mes exercices">${ico('x')}</button></div>`;
       const tabs = sel || !hayEj ? '' : `<div class="bib-seg" role="tablist"><button role="tab" data-acc="pestana-guardados" aria-selected="${pestana === 'guardados'}">Enregistrés</button><button role="tab" data-acc="pestana-ejemplos" aria-selected="${pestana === 'ejemplos'}">Exemples</button></div>`;
       const cta = sel || pestana !== 'guardados' ? '' : `<div class="bib-cta"><button class="bib-prim" data-acc="nuevo">${ico('plus')} Enregistrer l'actuel</button><button class="bib-circ" data-acc="actualizar"${it ? '' : ' disabled'} aria-label="${it ? `Enregistrer les modifications dans « ${esc(it.titulo)} »` : 'Enregistrer les modifications'}" title="${it ? `Enregistrer les données actuelles dans « ${esc(it.titulo)} »` : 'Ouvrez ou enregistrez d\'abord un exercice'}">${ico('refresh')}</button></div>`;
       const buscar = (pestana === 'ejemplos' ? selsEj().some((s) => s.options.length > 5) : n > 3) ? `<input type="search" class="bib-busca" placeholder="${pestana === 'ejemplos' ? 'Rechercher un exemple…' : 'Rechercher par titre ou dossier…'}" aria-label="Rechercher" value="${esc(busca)}">` : '';
       const nSel = sel ? sel.size : 0, conf = borrando === '#sel';
-      const barra = sel ? `<div class="bib-selbar"><div class="bib-grp">${mi('sel-imprimir', 'print', 'naranja', `Imprimer la feuille${nSel ? ` (${nSel})` : ''}`).replace('<button', nSel ? '<button' : '<button disabled')}${mi('sel-enlaces', 'link', 'azul', 'Copier les liens').replace('<button', nSel ? '<button' : '<button disabled')}${mi('sel-exportar', 'exp', 'cielo', 'Exporter la sélection').replace('<button', nSel ? '<button' : '<button disabled')}${mi('sel-mover', 'move', 'verde', 'Déplacer vers un dossier…').replace('<button', nSel ? '<button' : '<button disabled')}${conf ? `<button class="bib-mi peligro" data-acc="sel-si-borrar"><span class="bib-sq" style="--c:var(--ic-rojo)">${ico('trash')}</span><span>Oui, supprimer ${nSel}</span></button>${mi('no-borrar', 'x', 'cielo', 'No borrar')}` : mi('sel-borrar', 'trash', 'rojo', 'Supprimer', '', ' peligro').replace('<button', nSel ? '<button' : '<button disabled')}</div></div>` : '';
+      const barra = sel ? `<div class="bib-selbar"><div class="bib-grp">${mi('sel-imprimir', 'print', 'naranja', `Imprimer la feuille${nSel ? ` (${nSel})` : ''}`).replace('<button', nSel ? '<button' : '<button disabled')}${mi('sel-pdf', 'exp', 'rosa', `Télécharger le PDF${nSel ? ` (${nSel})` : ''}`).replace('<button', nSel ? '<button' : '<button disabled')}${mi('sel-enlaces', 'link', 'azul', 'Copier les liens').replace('<button', nSel ? '<button' : '<button disabled')}${mi('sel-exportar', 'exp', 'cielo', 'Exporter la sélection').replace('<button', nSel ? '<button' : '<button disabled')}${mi('sel-mover', 'move', 'verde', 'Déplacer vers un dossier…').replace('<button', nSel ? '<button' : '<button disabled')}${conf ? `<button class="bib-mi peligro" data-acc="sel-si-borrar"><span class="bib-sq" style="--c:var(--ic-rojo)">${ico('trash')}</span><span>Oui, supprimer ${nSel}</span></button>${mi('no-borrar', 'x', 'cielo', 'No borrar')}` : mi('sel-borrar', 'trash', 'rojo', 'Supprimer', '', ' peligro').replace('<button', nSel ? '<button' : '<button disabled')}</div></div>` : '';
       const pie = sel || pestana !== 'guardados' ? '' : '<div class="bib-pie"><p>Ils sont enregistrés dans ce navigateur. Faites de temps en temps une sauvegarde (⋮ ci-dessus) : si vous effacez les données du navigateur, ils sont perdus. Vous pouvez aussi faire glisser ici un fichier <code>.simu.json</code>.</p></div>';
       panel.innerHTML = `${cab}${tabs}<div class="bib-acc">${cta}${f || ''}${buscar}</div><div class="bib-lista">${lista}</div>${pie}${barra}${menuHTML()}`;
       if (f) { const t = panel.querySelector('#bib-t') || panel.querySelector('#bib-c'); t.focus(); t.select(); }
@@ -460,6 +495,8 @@ const Biblioteca = (() => {
         case 'copia': descargaCopia(); break;
         case 'exportar-todo': descarga(nombreArchivo(nombre + ' ejercicios'), archivoDe(lib.items)); break;
         case 'enlace': copiaEnlace(); break;
+        case 'imprimir': if (it) exporta([it], 'imprimir', 'menu-fila'); break;
+        case 'pdf': if (it) exporta([it], 'pdf', 'menu-fila'); break;
         case 'enlace-fila': if (it) copiaEnlace(it.datos); break;
         case 'sel-modo': sel = new Set(); form = null; pestana = 'guardados'; break;
         case 'seleccionar': if (it) { sel = new Set([it.id]); form = null; } break;
@@ -467,7 +504,8 @@ const Biblioteca = (() => {
         case 'sel-cancelar': sel = null; borrando = null; break;
         case 'sel-todos': { const q = norm(busca), vis = lib.items.filter((i) => !q || norm(i.titulo + ' ' + (i.carpeta || '')).includes(q)); if (vis.every((i) => sel.has(i.id))) vis.forEach((i) => sel.delete(i.id)); else vis.forEach((i) => sel.add(i.id)); break; }
         case 'marcar': if (it) { if (sel.has(it.id)) sel.delete(it.id); else sel.add(it.id); pinta(); [...panel.querySelectorAll('.bib-it')].find((x) => x.dataset.id === it.id)?.querySelector('.bib-abre')?.focus(); } return;
-        case 'sel-imprimir': { const its = itemsSel(); if (its.length) imprimeHoja(its); break; }
+        case 'sel-imprimir': { const its = itemsSel(); if (its.length) exporta(its, 'imprimir', 'seleccion'); break; }
+        case 'sel-pdf': { const its = itemsSel(); if (its.length) exporta(its, 'pdf', 'seleccion'); break; }
         case 'sel-enlaces': { const its = itemsSel(); if (its.length) copiaEnlaces(its); break; }
         case 'sel-exportar': { const its = itemsSel(); if (its.length) descarga(nombreArchivo(nombre + ' seleccion'), archivoDe(its)); break; }
         case 'sel-mover': if (sel.size) form = { ids: [...sel] }; break;
@@ -512,8 +550,19 @@ const Biblioteca = (() => {
     document.addEventListener('change', sigue); document.addEventListener('input', sigue);
     pinta(); abre(!!ui.abierta);
     if (selsEj().some((s) => s.options.length > 1)) document.body.classList.add('bib-ejemplos');
-    return { get items() { return lib.items; }, abre, importa: (t) => { const n = importa(t); guardaLib(); pinta(); return n; }, archivoDe };
+    function abrirVentanaExportar({ ids, accion = 'imprimir', origen = '' } = {}) {
+      refresca();
+      const its = ids && ids.length ? ids.map((id) => lib.items.find((x) => x.id === id)).filter(Boolean) : (sel && sel.size ? itemsSel() : lib.items);
+      if (!its.length) { aviso('Aucun exercice enregistré à imprimer'); return; }
+      if (typeof VentanaImprimir === 'undefined') { imprimeHoja(its); return; }
+      sel = null; menu = null; pinta();
+      VentanaImprimir.abre({ titulo: nombre, items: its, accion, origen, imprime: (op) => imprimeHoja(its, op) });
+    }
+    const inst = { get items() { return lib.items; }, abre, abrirVentanaExportar, importa: (t) => { const n = importa(t); guardaLib(); pinta(); return n; }, archivoDe };
+    ultima = inst; return inst;
   }
-  return { monta, FORMATO, FORMATO_COPIA, copia, restaura, migraElectro };
+  let ultima = null;
+  const abrirVentanaExportar = (a) => (ultima ? ultima.abrirVentanaExportar(a) : null);
+  return { monta, abrirVentanaExportar, FORMATO, FORMATO_COPIA, copia, restaura, migraElectro };
 })();
 

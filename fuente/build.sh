@@ -42,7 +42,7 @@ if [ "$1" = privado ]; then presets=../privado/tema3-pdf.js; out=${2:?falta el a
     printf '<script>\nwindow.GUIA_IMG = {\n'
     for img in guia/*.webp; do printf '  "%s": "guia/%s",\n' "$(basename "$img" .webp)" "$(basename "$img")"; done
     # biblioteca.js (el de las demás herramientas, con huella y en caché): la copia de seguridad de todo y su restauración
-    printf '};\n</script>\n<script src="../../js/%s"></script>\n<script src="../../js/%s"></script>\n' "$(node -p "require('./herramientas.js').externos()['biblioteca.js'].nombre")" "$(node electrostatica-js.js nombre)"
+    printf '};\n</script>\n<script src="../../js/%s"></script>\n<script src="../../js/%s"></script>\n<script src="../../js/%s"></script>\n<script src="../../js/%s"></script>\n' "$(node -p "require('./herramientas.js').externos()['imprimir.js'].nombre")" "$(node -p "require('./herramientas.js').externos()['biblioteca.js'].nombre")" "$(node -p "require('./herramientas.js').externos()['ventana-imprimir.js'].nombre")" "$(node electrostatica-js.js nombre)"
   fi
   if [ "$1" != privado ]; then printf '</html>\n'; fi
 } > "$out"
