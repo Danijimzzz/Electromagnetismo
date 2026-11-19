@@ -1,0 +1,500 @@
+<!doctype html>
+<html lang="fr">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTQiIGZpbGw9IiMwZDZiNjYiLz48ZyBmaWxsPSJub25lIiBzdHJva2U9IiNlNmE2NDAiIHN0cm9rZS13aWR0aD0iMi40IiBzdHJva2UtZGFzaGFycmF5PSI0IDYuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIj48cGF0aCBkPSJNMjAgMzJINDQiLz48cGF0aCBkPSJNMjEgMjdDMjcgMTQgMzcgMTQgNDMgMjciLz48cGF0aCBkPSJNMjEgMzdDMjcgNTAgMzcgNTAgNDMgMzciLz48cGF0aCBkPSJNMTcgMjRDMjIgNCA0MiA0IDQ3IDI0Ii8+PHBhdGggZD0iTTE3IDQwQzIyIDYwIDQyIDYwIDQ3IDQwIi8+PC9nPjxjaXJjbGUgY3g9IjE3IiBjeT0iMzIiIHI9IjgiIGZpbGw9IiNlZjdhNjIiLz48Y2lyY2xlIGN4PSI0NyIgY3k9IjMyIiByPSI4IiBmaWxsPSIjNzRhMmYyIi8+PHBhdGggZD0iTTEzIDMyaDhNMTcgMjh2OE00MyAzMmg4IiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iMi42IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48L3N2Zz4K">
+<link rel="apple-touch-icon" href="../../../apple-touch-icon.png">
+<meta property="og:title" content="Mann-Whitney et Wilcoxon : tests non paramétriques pas à pas">
+<meta property="og:description" content="Calculatrice de la U de Mann-Whitney et du test de Wilcoxon des rangs signés (données appariées ou une médiane) : rangs, ex æquo, p-valeur exacte ou par approximation normale et conclusion, pas à pas">
+<link rel="canonical" href="https://simulaciencia.vercel.app/fr/estadistica/no-parametricos/">
+<link rel="alternate" hreflang="es" href="https://simulaciencia.vercel.app/estadistica/no-parametricos/">
+<link rel="alternate" hreflang="en" href="https://simulaciencia.vercel.app/en/estadistica/no-parametricos/">
+<link rel="alternate" hreflang="de" href="https://simulaciencia.vercel.app/de/estadistica/no-parametricos/">
+<link rel="alternate" hreflang="fr" href="https://simulaciencia.vercel.app/fr/estadistica/no-parametricos/">
+<link rel="alternate" hreflang="x-default" href="https://simulaciencia.vercel.app/estadistica/no-parametricos/">
+<meta property="og:locale" content="fr">
+<meta property="og:image" content="https://simulaciencia.vercel.app/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebApplication","name":"Tests non paramétriques","description":"Calculatrice de tests non paramétriques en français : U de Mann-Whitney, Wilcoxon, Kruskal-Wallis avec Dunn, test des signes, Spearman et Kendall, avec rangs, ex æquo, p-valeur exacte, taille d’effet et estimateur de Hodges-Lehmann pas à pas.","url":"https://simulaciencia.vercel.app/estadistica/no-parametricos/","inLanguage":"fr","isAccessibleForFree":true,"applicationCategory":"EducationalApplication","operatingSystem":"Navigateur web","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://simulaciencia.vercel.app/"},{"@type":"ListItem","position":2,"name":"Statistique","item":"https://simulaciencia.vercel.app/estadistica/"},{"@type":"ListItem","position":3,"name":"Tests non paramétriques","item":"https://simulaciencia.vercel.app/estadistica/no-parametricos/"}]},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Comment calcule-t-on la U de Mann-Whitney ?","acceptedAnswer":{"@type":"Answer","text":"On ordonne toutes les données ensemble, on additionne les rangs de chaque échantillon et U₁ = R₁ − n₁(n₁ + 1)/2, avec U₁ + U₂ = n₁n₂. Avec 14 17 16 19 22 et 10 12 15 11 13 9 : R₁ = 44, U₁ = 44 − 15 = 29 et U₂ = 1, avec p exact bilatéral = 4/462 ≈ 0,0087."}},{"@type":"Question","name":"Quand utiliser Wilcoxon plutôt que le test t de Student ?","acceptedAnswer":{"@type":"Answer","text":"Quand les données appariées (ou l’échantillon) ne sont pas normales ou qu’il y a des valeurs aberrantes : le test utilise les rangs de |d| avec leur signe, W⁺ et W⁻, et n’exige pas la normalité. Avec un petit n et sans ex æquo, la p-valeur est exacte ; sinon, on utilise l’approximation normale."}}]}]}</script>
+<link rel="manifest" href="../../manifest.webmanifest">
+<meta name="theme-color" content="#0d6b66">
+<script src="../../pwa.js" defer></script>
+<meta name="google-adsense-account" content="ca-pub-6407501780492688">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6407501780492688" crossorigin="anonymous"></script>
+<script>window.googlefc = window.googlefc || {}; googlefc.callbackQueue = googlefc.callbackQueue || [];
+document.addEventListener('click', (e) => { if (!e.target.closest('.pref-cookies')) return; e.preventDefault(); googlefc.callbackQueue.push(() => googlefc.showRevocationMessage()); });</script>
+<style>.anuncio { max-width:860px; margin:28px 0 0; text-align:center; min-height:120px } .anuncio > span { display:block; font:11px/1.6 system-ui, sans-serif; letter-spacing:.06em; text-transform:uppercase; color:var(--muted, #5b6670) } .anuncio ins { display:block }</style>
+<style>.anuncio-lado { display:none } @media (min-width: 901px) { .anuncio-lado { display:block; grid-column:1; grid-row:2; position:sticky; top:96px; margin:8px 0 0; max-width:none; min-height:250px; min-width:0; overflow:hidden } main .layout.con-lado > :nth-child(2) { grid-row:1 / span 2 } }</style>
+<script>document.addEventListener('DOMContentLoaded', () => {
+  const l = document.querySelector('main .layout');
+  if (!l || l.classList.contains('invertido') || l.children.length !== 2 || !l.offsetParent || !matchMedia('(min-width: 901px)').matches) return;
+  l.classList.add('con-lado');
+  const a = document.createElement('div'); a.className = 'anuncio anuncio-lado';
+  a.innerHTML = '<span>Publicidad</span><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-6407501780492688" data-ad-slot="9800921596" data-ad-format="auto" data-full-width-responsive="true"></ins>';
+  l.appendChild(a); (window.adsbygoogle = window.adsbygoogle || []).push({});
+});</script>
+<script>(() => {
+  const raiz = document.documentElement, mq = matchMedia('(prefers-color-scheme: dark)'), oyentes = [];
+  try { const t = localStorage.getItem('simu-tema'); if (t === 'dark' || t === 'light') raiz.dataset.theme = t; } catch (e) { /* sin almacenamiento */ }
+  const orig = MediaQueryList.prototype.addEventListener;
+  MediaQueryList.prototype.addEventListener = function (tipo, f, ...r) { if (tipo === 'change' && /prefers-color-scheme/.test(this.media)) oyentes.push(f); return orig.call(this, tipo, f, ...r); };
+  const oscuro = () => (raiz.dataset.theme ? raiz.dataset.theme === 'dark' : mq.matches);
+  const rotula = () => document.querySelectorAll('.tema').forEach((b) => { const t = oscuro() ? 'Passer en mode clair' : 'Passer en mode sombre'; b.title = t; b.setAttribute('aria-label', t); });
+  document.addEventListener('DOMContentLoaded', rotula);
+  mq.addEventListener('change', rotula);
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.tema')) return;
+    raiz.dataset.theme = oscuro() ? 'light' : 'dark';
+    try { localStorage.setItem('simu-tema', raiz.dataset.theme); } catch (e) { /* sin almacenamiento */ }
+    rotula();
+    for (const f of oyentes) { try { f.call(mq, { matches: oscuro(), media: mq.media }); } catch (err) { console.error(err); } }
+  });
+})();</script>
+<script>(() => {
+  const ENFOCABLE = 'a[href],button,input,select,textarea,summary,[tabindex]';
+  let espera = 0;
+  const revisa = () => {
+    espera = 0;
+    for (const e of document.querySelectorAll('main *')) {
+      const desborda = e.scrollWidth > e.clientWidth || e.scrollHeight > e.clientHeight;
+      if (e.dataset.sf) { if (!desborda || e.querySelector(ENFOCABLE)) { e.removeAttribute('tabindex'); delete e.dataset.sf; } continue; }
+      if (!desborda || e.hasAttribute('tabindex') || e.matches('svg,svg *,canvas') || e.querySelector(ENFOCABLE)) continue;
+      const o = getComputedStyle(e);
+      if (/auto|scroll/.test(o.overflowX + o.overflowY)) { e.tabIndex = 0; e.dataset.sf = '1'; }
+    }
+  };
+  window.revisaScroll = revisa; // también lo llama pruebas/accesibilidad.js antes de pasar axe
+  const pide = () => { if (!espera) espera = setTimeout(revisa, 400); };
+  addEventListener('load', () => { revisa(); const m = document.querySelector('main'); if (m) new MutationObserver(pide).observe(m, { childList: true, subtree: true, characterData: true }); });
+  addEventListener('resize', pide);
+})();</script>
+<script src="../../buscador.js" defer></script>
+<script src="../../llama.js" defer></script>
+<title>Kruskal-Wallis, Mann-Whitney et Wilcoxon : tests non paramétriques · Ciencify</title>
+<meta name="description" content="Calculatrice de tests non paramétriques en français : U de Mann-Whitney, Wilcoxon, Kruskal-Wallis avec Dunn, test des signes, Spearman et Kendall, avec rangs, ex æquo, p-valeur exacte, taille d’effet et estimateur de Hodges-Lehmann pas à pas.">
+<style>/* =====================================================================
+   Hoja de estilos común de todas las herramientas (fuente/<herramienta>/pagina.html).
+   diseno.js la mete en cada página, antes de su propio <style>, junto con el color
+   de la asignatura (--accent, --accent-soft) y la cabecera del portal. La guía de uso
+   de cada componente, con su HTML, está en DISENO.md.
+   Una herramienta no vuelve a definir estas reglas: ajusta las variables de medida
+   (--col-datos, --ancho-valor, --alto-grafica) o añade una clase propia.
+   ===================================================================== */
+
+/* ---------- Colores y letras (claro y oscuro) ---------- */
+:root {
+  --bg: #eef1ee; --panel: #fff; --ink: #1a2128; --muted: #5b6670; --line: #d5dbd5; --error: #c0392b;
+  --f-ui: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-math: "STIX Two Text", "Cambria Math", Cambria, Georgia, serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+  --vidrio: rgba(255,255,255,.55); --vidrio-fuerte: rgba(255,255,255,.72); --vidrio-borde: rgba(255,255,255,.7); --vidrio-brillo: inset 0 1px 0 rgba(255,255,255,.8);
+  --vidrio-sombra: 0 1px 2px rgba(20,40,60,.06), 0 8px 28px rgba(20,40,60,.10); --blur: blur(22px) saturate(1.7); --halo1: rgba(13,107,102,.22); --halo2: rgba(42,93,181,.20); --halo3: rgba(107,63,160,.14);
+  /* medidas que cada herramienta puede ajustar */
+  --col-datos: 360px; --ancho-etiqueta: minmax(0, 1fr); --ancho-valor: 150px; --letra-campo: 13px var(--f-ui); --ancho-dato: 190px; --alto-grafica: clamp(260px, 36vw, 380px); --margen-grafica: 10px;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #111619; --panel: #182025; --ink: #e3e8ea; --muted: #a3aeb5; --line: #2a343b; --error: #f08a80; --vidrio: rgba(34,46,54,.50); --vidrio-fuerte: rgba(26,36,42,.70); --vidrio-borde: rgba(255,255,255,.12); --vidrio-brillo: inset 0 1px 0 rgba(255,255,255,.10); --vidrio-sombra: 0 1px 2px rgba(0,0,0,.3), 0 10px 32px rgba(0,0,0,.35); --halo1: rgba(77,188,176,.20); --halo2: rgba(116,162,242,.18); --halo3: rgba(170,120,230,.14); color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #111619; --panel: #182025; --ink: #e3e8ea; --muted: #a3aeb5; --line: #2a343b; --error: #f08a80; --vidrio: rgba(34,46,54,.50); --vidrio-fuerte: rgba(26,36,42,.70); --vidrio-borde: rgba(255,255,255,.12); --vidrio-brillo: inset 0 1px 0 rgba(255,255,255,.10); --vidrio-sombra: 0 1px 2px rgba(0,0,0,.3), 0 10px 32px rgba(0,0,0,.35); --halo1: rgba(77,188,176,.20); --halo2: rgba(116,162,242,.18); --halo3: rgba(170,120,230,.14); color-scheme: dark }
+/* fin de los colores */
+
+/* ---------- Base ---------- */
+* { box-sizing: border-box }
+[hidden] { display: none !important }
+html, body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.45 var(--f-ui) }
+a { color: var(--accent) }
+.wrap { max-width: 1300px; margin: 0 auto; padding: 16px clamp(16px, 3vw, 24px) 32px }
+h1 { font: 600 24px/1.25 var(--f-ui); margin: 0 0 4px }
+.lead { color: var(--muted); margin: 0 0 12px; max-width: 760px }
+/* texto solo para lectores de pantalla; sin position:absolute para que no ensanche las tablas con scroll */
+.solo-lector { display: inline-block; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; vertical-align: top }
+footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 8px 16px 24px }
+footer a { color: var(--muted); margin: 0 6px; white-space: nowrap; display: inline-block }
+
+/* ---------- Diseño A: datos a la izquierda, resultados a la derecha ---------- */
+.layout { display: grid; grid-template-columns: var(--col-datos) minmax(0, 1fr); gap: 16px; align-items: start }
+.layout.invertido { grid-template-columns: minmax(0, 1fr) var(--col-datos) }
+@media (max-width: 900px) { .layout, .layout.invertido { grid-template-columns: minmax(0, 1fr) } }
+
+/* ---------- Tarjetas ---------- */
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 14px; margin-bottom: 14px }
+.card h2 { font: 600 12px/1.4 var(--f-ui); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 0 0 10px }
+.destacado { border-color: var(--line); border-top: 3px solid var(--accent) }
+.destacado h2 { color: var(--accent) }
+
+/* ---------- Datos: campos, separadores, botones y pestañas ---------- */
+.campos { display: grid; grid-template-columns: var(--ancho-etiqueta) var(--ancho-valor); gap: 7px 10px; align-items: center }
+.campos label { font-size: 13.5px }
+.campos label small { color: var(--muted) }
+.campos .ancho { grid-column: 1 / -1 }
+.sep { grid-column: 1 / -1; font: 600 12px var(--f-ui); color: var(--accent); text-transform: uppercase; letter-spacing: .04em; margin-top: 8px }
+.in { font: var(--letra-campo); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; width: 100%; font-variant-numeric: tabular-nums }
+.btn { font: 500 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 5px 10px; cursor: pointer; white-space: nowrap }
+.btn:hover { border-color: var(--accent) }
+/* foco del teclado en todo lo que se pulsa o se escribe (sin especificidad: una herramienta puede ajustarlo) */
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible { outline: 2px solid var(--accent); outline-offset: 1px }
+.controles { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 8px }
+.controles > .nota, .controles > .leyenda { flex: 1 1 220px; margin: 0 }
+.exportar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 8px 0 }
+.exportar-aviso { color: var(--muted); font-size: 12.5px }
+.tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px }
+.tools label { color: var(--muted); font-size: 13px; display: inline-flex; gap: 6px; align-items: center }
+.modos { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; margin-bottom: 14px }
+.modos button { font: 500 13.5px var(--f-ui); border: 0; background: var(--panel); color: var(--muted); padding: 7px 14px; cursor: pointer }
+.modos button[aria-selected=true] { background: var(--accent); color: var(--panel) }
+.error { color: var(--error); font-size: 13px; margin: 10px 0 0 }
+.nota { color: var(--muted); font-size: 12.5px; margin: 8px 0 0 }
+
+/* ---------- Resultados ---------- */
+.res { display: grid; grid-template-columns: repeat(auto-fill, minmax(var(--ancho-dato), 1fr)); gap: 6px 14px; font: 16px var(--f-math) }
+.res div { overflow-x: auto; overflow-y: hidden }
+.res span { display: block; font: 12px var(--f-ui); color: var(--muted) }
+.res div.ancho { grid-column: 1 / -1 }
+.resumen { display: grid; grid-template-columns: repeat(auto-fill, minmax(var(--ancho-dato), 1fr)); gap: 8px; margin: 0 }
+.resumen div { background: var(--accent-soft); border-radius: 8px; padding: 8px 10px; overflow-x: auto; overflow-y: hidden }
+.resumen div span { display: block; font-size: 12px; color: var(--muted) }
+.resumen div b { font: 600 17px var(--f-math) }
+.resumen div.ancho { grid-column: 1 / -1 }
+
+/* ---------- Gráficas ---------- */
+canvas { display: block; width: 100%; height: var(--alto-grafica); border-radius: 8px; background: var(--bg); margin-top: var(--margen-grafica) }
+.leyenda { font-size: 12.5px; color: var(--muted); margin: 6px 0 0 }
+.leyenda b { font-weight: 600 }
+
+/* ---------- Desarrollo paso a paso ---------- */
+/* el número va dentro del paso para que no lo corte el desplazamiento de las fórmulas largas */
+.pasos ol { margin: 0; padding: 0; list-style: none; counter-reset: paso }
+.pasos li { position: relative; margin: 0 0 12px; padding-left: 22px; font-family: var(--f-math); font-size: 15.5px; overflow-x: auto; counter-increment: paso; overflow-y: hidden }
+.pasos li::before { content: counter(paso) "."; position: absolute; left: 0; top: 0; font: 13.5px/1.45 var(--f-ui); color: var(--muted) }
+.pasos li strong { font: 600 13.5px var(--f-ui); display: block; margin-bottom: 2px }
+.pasos table.tabla { border-collapse: collapse; margin: 6px 0; font: 13px var(--f-ui); font-variant-numeric: tabular-nums }
+.pasos table.tabla th, .pasos table.tabla td { border: 1px solid var(--line); padding: 3px 9px; text-align: right }
+.pasos table.tabla th { background: var(--accent-soft); font-weight: 600 }
+.tabla-scroll { overflow-x: auto }
+
+/* matrices con corchetes, dentro de una fórmula */
+.mat { position: relative; display: inline-block; vertical-align: middle; padding: 0 7px; margin: 2px 2px }
+.mat::before, .mat::after { content: ""; position: absolute; top: 0; bottom: 0; width: 5px; border: 1.4px solid currentColor }
+.mat::before { left: 0; border-right: 0 }
+.mat::after { right: 0; border-left: 0 }
+.mat table { border-collapse: collapse }
+.mat td { padding: 2px 7px; text-align: center; white-space: nowrap; font-variant-numeric: tabular-nums }
+
+/* ---------- Teoría ---------- */
+.teoria, .preguntas { margin-top: 28px; max-width: 860px; font-size: 15px; line-height: 1.6 }
+.preguntas h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
+.preguntas h3 { font: 600 15px var(--f-ui); margin: 14px 0 2px }
+.preguntas p { margin: 0 }
+.teoria h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
+.teoria .f { max-width: 100%; overflow-x: auto; overflow-y: hidden; font-family: var(--f-math); font-size: 16.5px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; display: inline-block }
+.teoria ul { padding-left: 20px }
+.teoria li { margin-bottom: 4px }
+.teoria li, .teoria p { overflow-x: auto; overflow-y: hidden }
+
+/* ---------- Liquid Glass ---------- */
+/* Vidrio solo en el marco (tarjetas, controles, barras); el lienzo de las gráficas y las fórmulas no se tocan. */
+body { display: flow-root; background: radial-gradient(60% 50% at 8% 0%, var(--halo1), transparent 70%), radial-gradient(50% 45% at 95% 10%, var(--halo2), transparent 70%), radial-gradient(55% 50% at 60% 100%, var(--halo3), transparent 70%), var(--bg); background-attachment: fixed }
+.card { background: var(--vidrio); border-color: var(--vidrio-borde); border-radius: 18px; box-shadow: var(--vidrio-brillo), var(--vidrio-sombra); -webkit-backdrop-filter: var(--blur); backdrop-filter: var(--blur) }
+.destacado { border-top: 3px solid var(--accent) }
+.in { background: var(--vidrio); border-color: var(--vidrio-borde); border-radius: 10px; box-shadow: var(--vidrio-brillo) }
+.btn { background: var(--vidrio-fuerte); border-color: var(--vidrio-borde); border-radius: 99px; padding: 5px 14px; box-shadow: var(--vidrio-brillo) }
+.modos { border-color: var(--vidrio-borde); border-radius: 99px; background: var(--vidrio); box-shadow: var(--vidrio-brillo); -webkit-backdrop-filter: var(--blur); backdrop-filter: var(--blur) }
+.modos button { background: transparent; border-radius: 99px }
+.modos button[aria-selected=true] { box-shadow: 0 1px 6px rgba(0,0,0,.18) }
+.resumen div { border-radius: 14px }
+.teoria .f { background: var(--vidrio); border-color: var(--vidrio-borde); border-radius: 12px }
+canvas { border-radius: 14px }
+@media (max-width: 900px) { .card, .modos { -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px) } }
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) { .card, .modos, header.top { background: var(--panel); -webkit-backdrop-filter: none; backdrop-filter: none } .in, .btn, .teoria .f { background: var(--panel) } }
+
+:root { --accent:#a3367a; --accent-soft:color-mix(in srgb, #a3367a 12%, #fff); --marca:#0d6b66 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --accent:#e07ab8; --accent-soft:color-mix(in srgb, #e07ab8 16%, #182025); --marca:#4dbcb0 } }
+:root[data-theme="dark"] { --accent:#e07ab8; --accent-soft:color-mix(in srgb, #e07ab8 16%, #182025); --marca:#4dbcb0 }
+header.top { display:flex; align-items:center; gap:8px 20px; flex-wrap:wrap; padding:12px clamp(16px,3vw,28px); position:sticky; top:10px; z-index:10; margin:10px clamp(10px,2vw,20px) 0; border:1px solid var(--vidrio-borde); border-radius:22px; background:var(--vidrio-fuerte); box-shadow:var(--vidrio-brillo),var(--vidrio-sombra); -webkit-backdrop-filter:var(--blur); backdrop-filter:var(--blur) }
+header.top .logo { font:600 18px var(--f-math); margin:0; white-space:nowrap; color:var(--ink); text-decoration:none } header.top .logo i { color:var(--marca) }
+header.top nav { display:flex; gap:4px 14px; font-size:14px; overflow-x:auto; max-width:100%; scrollbar-width:none }
+header.top nav a { white-space:nowrap; padding:2px 0; color:var(--muted); text-decoration:none } header.top nav a:hover { color:var(--ink) }
+header.top nav a[aria-current] { color:var(--ink); font-weight:600; box-shadow:inset 0 -2px 0 var(--accent) }
+header.top form { margin-left:auto; flex:0 1 170px; min-width:130px }
+header.top .foro { margin-left:auto; display:inline-flex; align-items:center; gap:6px; white-space:nowrap; font:600 14px var(--f-ui); color:var(--ink); text-decoration:none; border:1px solid var(--vidrio-borde); background:var(--vidrio); border-radius:99px; padding:6px 12px } header.top .foro:hover, header.top .foro[aria-current] { border-color:var(--accent); color:var(--accent) } header.top .foro + form { margin-left:0 } header.top > .foro ~ .tema { margin-left:0 }
+@media (min-width:701px) { header.top { flex-wrap:nowrap } header.top nav { min-width:0 } }
+header.top .buscar { font:14px var(--f-ui); color:var(--ink); border:1px solid var(--vidrio-borde); border-radius:99px; padding:7px 14px; width:100%; background:var(--vidrio) }
+header.top .buscar:focus-visible, header.top a:focus-visible { outline:2px solid var(--accent); outline-offset:1px }
+.miga { display:flex; align-items:center; flex-wrap:wrap; gap:8px; font-size:13.5px; color:var(--muted); margin:0 0 10px }
+.miga a { color:var(--accent); font-weight:600; text-decoration:none } .miga a:hover { text-decoration:underline }
+.miga-ico { display:inline-grid; place-items:center; width:22px; height:22px; border-radius:6px; background:var(--accent-soft); color:var(--accent); font:italic 600 13px var(--f-math) }
+.miga-der { margin-left:auto; display:flex; gap:8px } .miga-izq:empty, .miga-der:empty { display:none }
+.bib-btn, .prac-btn { border-radius:8px !important; padding:6px 12px !important }
+body.bib-ejemplos select[id^="ejemplo"] { display:none }
+@media print { header.top, .miga, .prac-btn { display:none !important } }
+:root { --vida:#6a4fc2 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --vida:#b39ff7 } }
+:root[data-theme="dark"] { --vida:#b39ff7 }
+.relacionadas { max-width:860px; margin:16px 0 0; background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--accent); border-radius:4px 12px 12px 4px; padding:12px 16px }
+.relacionadas h2 { font:600 12px/1.4 var(--f-ui); text-transform:uppercase; letter-spacing:.06em; color:var(--accent); margin:0 0 4px }
+.relacionadas a { display:flex; gap:10px; align-items:baseline; padding:5px 0; color:var(--ink); text-decoration:none; font-size:14px }
+.relacionadas a b { font-weight:600; white-space:nowrap } .relacionadas a span { color:var(--muted) } .relacionadas a:hover b { color:var(--accent); text-decoration:underline }
+.vida-real { max-width:860px; margin:28px 0 0; background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--vida); border-radius:4px 12px 12px 4px; padding:12px 16px }
+.vida-real h2 { font:600 12px/1.4 var(--f-ui); text-transform:uppercase; letter-spacing:.06em; color:var(--vida); margin:0 0 4px }
+.vida-real a { display:flex; gap:10px; align-items:baseline; padding:5px 0; color:var(--ink); text-decoration:none; font-size:14px }
+.vida-real a b { font-weight:600; white-space:nowrap } .vida-real a span { color:var(--muted) } .vida-real a:hover b { color:var(--vida); text-decoration:underline }
+@media (max-width:600px) { .vida-real a, .relacionadas a { display:block } .vida-real a b, .relacionadas a b { display:block; white-space:normal } }
+@media (max-width:700px) { header.top form { display:none } h1 { font-size:21px }
+  .miga-izq, .miga-der, .miga::after { order:-1 } .miga::after { content:''; flex-basis:100%; height:0 } }
+
+.tema { flex:0 0 auto; margin-left:auto; width:36px; height:36px; display:grid; place-items:center; padding:0; border:1px solid var(--vidrio-borde, var(--line)); border-radius:99px; background:var(--vidrio, var(--bg)); color:var(--ink); cursor:pointer }
+.buscar ~ .tema, form ~ .tema { margin-left:0 }
+.tema:hover { border-color:var(--accent); color:var(--accent) }
+.tema:focus-visible { outline:2px solid var(--accent); outline-offset:1px }
+.tema .sol { display:none }
+:root[data-theme="dark"] .tema .sol { display:block } :root[data-theme="dark"] .tema .luna { display:none }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .tema .sol { display:block } :root:not([data-theme="light"]) .tema .luna { display:none } }
+@media (max-width:700px) { .top > .tema { margin-left:auto } .top > nav { order:1 } }
+</style>
+<style>
+.tabla-eco { border-collapse: collapse; font: 13.5px var(--f-ui); width: 100%; font-variant-numeric: tabular-nums }
+.tabla-eco th, .tabla-eco td { padding: 5px 8px; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap }
+.tabla-eco th { font-weight: 600; color: var(--muted) } .tabla-eco th:first-child, .tabla-eco td:first-child { text-align: left }
+.tabla-eco tfoot td { font-weight: 600; background: var(--accent-soft) }
+.tabla-eco small { color: var(--muted) }
+.tabla-eco.libre th, .tabla-eco.libre td { text-align: left; white-space: normal; vertical-align: top }
+.tabla-eco caption { text-align: left; font-weight: 600; padding: 2px 0 6px; caption-side: top }
+:root {
+  --serie-1: #2a5db5; --serie-2: #c2412a }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --serie-1: #74a2f2; --serie-2: #ef7a62 } }
+:root[data-theme="dark"] {
+  --serie-1: #74a2f2; --serie-2: #ef7a62 }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../../">Cienci<i>fy</i></a><nav aria-label="Matières"><a href="../../../">Accueil</a><a href="../../electromagnetismo/">Électromagnétisme</a><a href="../../fisica/">Physique générale</a><a href="../../quimica/">Chimie</a><a href="../../matematicas/">Mathématiques</a><a href="../" aria-current="page">Statistique</a><a href="../../circuitos/">Circuits</a><a href="../../economia/">Économie</a><a href="../../fenomenos/">Vie réelle</a></nav><a class="foro" href="../../foro/"><span aria-hidden="true">💬</span>Forum</a><form action="../../../" role="search"><input class="buscar" type="search" name="q" placeholder="Rechercher : Biot-Savart, molarité…" aria-label="Rechercher des outils (raccourci : touche /)" title="Raccourci : / ou Ctrl+K"></form><style>
+.lg { position:relative; flex:0 0 auto }
+.lg-btn { display:inline-flex; align-items:center; gap:6px; height:36px; padding:0 12px; border:1px solid var(--vidrio-borde, var(--line)); border-radius:99px; background:var(--vidrio, var(--bg)); color:var(--ink); font:600 13px var(--f-ui, system-ui, sans-serif); cursor:pointer }
+.lg-btn:hover { border-color:var(--accent); color:var(--accent) }
+.lg-btn:focus-visible, .lg-pop a:focus-visible, .lg-ban button:focus-visible { outline:2px solid var(--accent); outline-offset:1px }
+.lg-pop { position:absolute; top:44px; right:0; z-index:50; min-width:210px; margin:0; padding:6px; list-style:none; border:1px solid var(--vidrio-borde, var(--line)); border-radius:16px; background:rgba(255,255,255,.98); color:var(--ink); box-shadow:0 12px 36px rgba(0,0,0,.22) }
+.lg-pop[hidden] { display:none }
+:root[data-theme="dark"] .lg-pop, :root[data-theme="dark"] .lg-ban { background:rgba(28,34,38,.98) }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .lg-pop, :root:not([data-theme="light"]) .lg-ban { background:rgba(28,34,38,.98) } }
+.lg-t { font:600 11px var(--f-ui, system-ui, sans-serif); text-transform:uppercase; letter-spacing:.06em; color:var(--muted); padding:6px 10px 4px }
+.lg-pop a { display:flex; justify-content:space-between; align-items:center; gap:14px; padding:8px 10px; border-radius:10px; color:var(--ink); text-decoration:none; font:500 14px var(--f-ui, system-ui, sans-serif) }
+.lg-pop a:hover { background:var(--accent-soft) }
+.lg-pop a > span { display:flex; align-items:center; gap:10px }
+.lg-pop a small { color:var(--muted); font-size:12px }
+.lg-pop a[aria-current="true"] { background:var(--accent-soft); font-weight:700 }
+.lg-pop a[aria-current="true"] small::after { content:' ✓'; color:var(--accent) }
+.lg-fl { flex:none; border-radius:50%; box-shadow:0 0 0 1px rgba(0,0,0,.18) }
+.lg-ban { position:fixed; left:50%; bottom:18px; z-index:60; transform:translateX(-50%); width:min(560px, calc(100vw - 24px)); box-sizing:border-box; display:flex; flex-wrap:wrap; align-items:center; gap:10px 12px; padding:12px 16px; border:1px solid var(--vidrio-borde, var(--line)); border-radius:18px; background:rgba(255,255,255,.98); color:var(--ink); box-shadow:0 12px 36px rgba(0,0,0,.25); font:14px var(--f-ui, system-ui, sans-serif) }
+.lg-ban p { flex:1 1 220px; margin:0 }
+.lg-ban button { font:600 13px var(--f-ui, system-ui, sans-serif); padding:7px 14px; border-radius:99px; border:1px solid var(--vidrio-borde, var(--line)); background:var(--vidrio, var(--bg)); color:var(--ink); cursor:pointer }
+.lg-ban button.lg-si { background:var(--accent); border-color:var(--accent); color:#fff }
+:root[data-theme="dark"] .lg-ban button.lg-si { color:#0d141a }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .lg-ban button.lg-si { color:#0d141a } }
+@media (max-width:700px) { .top > .lg { margin-left:auto } .top > .lg + .tema { margin-left:0 } }
+@media print { .lg, .lg-ban { display:none !important } }
+</style><div class="lg"><button class="lg-btn" type="button" aria-expanded="false" aria-controls="lg-lista" aria-label="Langue: Français" title="Langue"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.8 3 2.8 15 0 18M12 3c-2.8 3-2.8 15 0 18"/></svg><span>FR</span><span aria-hidden="true">▾</span></button><ul class="lg-pop" id="lg-lista" hidden><li class="lg-t" aria-hidden="true">Langue · Language</li><li><a href="../../../" hreflang="es" lang="es"><span><svg class="lg-fl" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false"><rect width="24" height="24" fill="#c60b1e"/><rect y="6" width="24" height="12" fill="#ffc400"/></svg>Español</span><small>ES</small></a></li><li><a href="../../../en/" hreflang="en" lang="en"><span><svg class="lg-fl" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false"><rect width="24" height="24" fill="#012169"/><path d="M0 0L24 24M24 0L0 24" stroke="#fff" stroke-width="5"/><path d="M0 0L24 24M24 0L0 24" stroke="#c8102e" stroke-width="2"/><path d="M12 0V24M0 12H24" stroke="#fff" stroke-width="8"/><path d="M12 0V24M0 12H24" stroke="#c8102e" stroke-width="4.5"/></svg>English</span><small>EN</small></a></li><li><a href="../../../de/" hreflang="de" lang="de"><span><svg class="lg-fl" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false"><rect width="24" height="8" fill="#000"/><rect y="8" width="24" height="8" fill="#dd0000"/><rect y="16" width="24" height="8" fill="#ffce00"/></svg>Deutsch</span><small>DE</small></a></li><li><a href="../../../fr/" hreflang="fr" lang="fr" aria-current="true"><span><svg class="lg-fl" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false"><rect width="8" height="24" fill="#0055a4"/><rect x="8" width="8" height="24" fill="#fff"/><rect x="16" width="8" height="24" fill="#ef4135"/></svg>Français</span><small>FR</small></a></li></ul></div><script>(() => {
+  const L = [{"c":"es","d":"","n":"Español","a":["Esta página está disponible en español.","Cambiar a español","Seguir aquí"]},{"c":"en","d":"en/","n":"English","a":["This page is available in English.","Switch to English","Stay here"]},{"c":"de","d":"de/","n":"Deutsch","a":["Diese Seite ist auf Deutsch verfügbar.","Auf Deutsch ansehen","Hier bleiben"]},{"c":"fr","d":"fr/","n":"Français","a":["Cette page est disponible en français.","Passer en français","Rester ici"]}], ACTUAL = "fr", K = 'simu-idioma';
+  const guarda = (c) => { try { localStorage.setItem(K, c); } catch (e) { /* sin almacenamiento */ } };
+  const lee = () => { try { return localStorage.getItem(K); } catch (e) { return null; } };
+  const resto = () => { let p = location.pathname; for (const i of L) if (i.d && p.startsWith('/' + i.d)) { p = '/' + p.slice(i.d.length + 1); break; } return p + location.search + location.hash; };
+  const destino = (i) => '/' + i.d + resto().replace(/^\//, '');
+  const btn = document.querySelector('.lg-btn'), pop = document.querySelector('.lg-pop');
+  if (!btn || !pop) return;
+  pop.querySelectorAll('a[hreflang]').forEach((a) => { const i = L.find((x) => x.c === a.hreflang); if (i && /^https?:$/.test(location.protocol)) a.href = destino(i); a.addEventListener('click', () => guarda(a.hreflang)); });
+  const abre = (v) => { pop.hidden = !v; btn.setAttribute('aria-expanded', String(v)); };
+  btn.addEventListener('click', (e) => { e.stopPropagation(); abre(pop.hidden); });
+  document.addEventListener('click', (e) => { if (!pop.hidden && !e.target.closest('.lg')) abre(false); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !pop.hidden) { abre(false); btn.focus(); } });
+  pop.addEventListener('focusout', (e) => { if (!pop.hidden && !e.relatedTarget?.closest?.('.lg')) abre(false); });
+  // aviso: una vez, sin elección guardada, con el idioma del navegador publicado y distinto del de la página
+  if (lee() || window.__sinAviso) return;
+  const pref = (navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language || '']).map((s) => String(s).toLowerCase().slice(0, 2));
+  const i = pref.map((c) => L.find((x) => x.c === c)).find(Boolean);
+  if (!i || i.c === ACTUAL) { return; }
+  const b = document.createElement('div'); b.className = 'lg-ban'; b.setAttribute('role', 'region'); b.setAttribute('aria-label', "Langue"); b.lang = i.c;
+  const t = document.createElement('p'); t.textContent = i.a[0];
+  const si = document.createElement('button'); si.type = 'button'; si.className = 'lg-si'; si.textContent = i.a[1];
+  const no = document.createElement('button'); no.type = 'button'; no.textContent = i.a[2];
+  si.addEventListener('click', () => { guarda(i.c); const a = [...pop.querySelectorAll('a[hreflang]')].find((x) => x.hreflang === i.c); location.href = a ? a.href : destino(i); });
+  no.addEventListener('click', () => { guarda(ACTUAL); b.remove(); });
+  b.append(t, si, no); document.body.append(b);
+})();</script><button class="tema" type="button" title="Passer du mode clair au mode sombre" aria-label="Passer du mode clair au mode sombre"><svg class="luna" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.5A8.5 8.5 0 1 1 9.5 3.5a7 7 0 0 0 11 11z"/></svg><svg class="sol" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button></header>
+<main class="wrap">
+<nav class="miga" aria-label="Vous êtes ici"><span class="miga-izq"></span><span class="miga-ico" aria-hidden="true">σ</span><a href="../">Statistique</a><span aria-hidden="true">›</span><span>Tests non paramétriques</span><span class="miga-der"></span></nav>
+<h1>Tests non paramétriques</h1>
+<p class="lead">Comparez des groupes sans supposer qu’ils sont normaux : Mann-Whitney pour deux groupes indépendants, Wilcoxon et le test des signes pour des données appariées ou une médiane, Kruskal-Wallis avec comparaisons de Dunn pour trois groupes ou plus, et Spearman et Kendall pour la corrélation, avec les rangs, les ex æquo, la p-valeur, la taille d’effet et le développement pas à pas.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Données</h2>
+    <select id="ejemplos" class="in" aria-label="Exemples" style="margin-bottom:12px"></select>
+    <div class="campos" id="campos"></div>
+    <p class="nota" id="nota"></p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card destacado"><h2>Résultats</h2><div class="resumen" id="resumen"></div></div>
+    <div class="card"><h2>Tableaux</h2><div class="tabla-scroll" id="tabla"></div></div>
+    <div class="card"><h2>Graphique</h2>
+      <canvas id="grafica" aria-label="Graphique des rangs ou des signes des observations"></canvas>
+      <p class="leyenda" id="leyenda"></p>
+    </div>
+    <div class="card pasos"><h2>Développement</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<div class="anuncio"><span>Publicité</span><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-6407501780492688" data-ad-slot="4415753033" data-ad-format="auto" data-full-width-responsive="true"></ins><script>(window.adsbygoogle = window.adsbygoogle || []).push({});</script></div>
+<section class="teoria">
+<h2>L’idée</h2>
+<p class="m">Les tests non paramétriques n’utilisent pas les valeurs, mais leur <b>ordre</b> (les rangs). C’est pourquoi ils n’exigent pas que les données soient normales et sont presque insensibles aux valeurs aberrantes, au prix d’un peu moins de puissance si les données étaient normales.</p>
+<h2>U de Mann-Whitney (deux échantillons indépendants)</h2>
+<p class="m">On ordonne toutes les données ensemble et l’on additionne les rangs de chaque échantillon, $R_1$ et $R_2$. $U_1 = R_1 − n_1(n_1 + 1)/2$ compte combien de fois une donnée de l’échantillon 1 dépasse une donnée de l’échantillon 2 (les ex æquo comptent pour moitié), et $U_1 + U_2 = n_1 n_2$. On teste si un échantillon a tendance à donner des valeurs plus grandes que l’autre.</p>
+<div class="anuncio"><span>Publicité</span><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-6407501780492688" data-ad-slot="4415753033" data-ad-format="auto" data-full-width-responsive="true"></ins><script>(window.adsbygoogle = window.adsbygoogle || []).push({});</script></div>
+<h2>Wilcoxon (données appariées ou une médiane)</h2>
+<p class="m">On prend les différences $d_i$ (entre les deux mesures ou par rapport à la médiane de $H_0$), on écarte les nulles, on ordonne les $|d_i|$ et l’on additionne les rangs des positives, $W^+$, et des négatives, $W^−$. Si $H_0$ est vraie, les deux sommes se ressemblent.</p>
+<h2>Kruskal-Wallis (trois groupes ou plus)</h2>
+<p class="m">C’est l’ANOVA à un facteur sur les rangs. On ordonne toutes les données ensemble et l’on regarde si les rangs moyens des groupes s’écartent plus que ce que l’on peut attendre : $H = {12}/{N(N + 1)} ∑ {R_i^2}/{n_i} − 3(N + 1)$, divisé par la correction d’ex æquo $1 − {∑ (t^3 − t)}/{N^3 − N}$, suit approximativement un $χ^2$ à $k − 1$ degrés de liberté. S’il est significatif, les <b>comparaisons de Dunn</b> disent quelles paires diffèrent : $z = {R̄_i − R̄_j}/√({N(N + 1)}/12 · (1/n_i + 1/n_j))$ avec la p-valeur ajustée par Holm (plus puissant) ou Bonferroni. La taille d’effet est $ε^2 = H/(N − 1)$.</p>
+<h2>Test des signes</h2>
+<p class="m">Le plus simple : il compte seulement si chaque différence est positive ou négative. Si $H_0$ est vraie, $n^+$ suit une loi binomiale $B(n, 1/2)$ et la p-valeur est exacte. Il utilise moins d’information que Wilcoxon (il ne regarde pas de combien), donc il a moins de puissance, mais il demande presque rien aux données.</p>
+<h2>Spearman et Kendall</h2>
+<p class="m">Ils mesurent si deux variables croissent ensemble même sans que ce soit en ligne droite. <b>Spearman</b> est la corrélation de Pearson des rangs. <b>Kendall</b> compte les paires concordantes ($C$) et discordantes ($D$) : $τ_b = (C − D)/√((n_0 − n_1)(n_0 − n_2))$ ; sa p-valeur est exacte sans ex æquo et il est plus fiable avec peu de données.</p>
+<h2>Taille d’effet et Hodges-Lehmann</h2>
+<p class="m">La p-valeur ne dit pas de combien. Pour Mann-Whitney, on donne la <b>probabilité de supériorité</b> $U_1/(n_1 n_2)$ (0,5 s’il n’y a pas de différence) et $r = |z|/√N$ (0,1 petit, 0,3 moyen, 0,5 grand). L’<b>estimateur de Hodges-Lehmann</b> est la médiane de toutes les différences entre une donnée d’un échantillon et une de l’autre (dans Wilcoxon, des moyennes de Walsh $(d_i + d_j)/2$), avec son intervalle de confiance, le même que donne <code>wilcox.test</code> de R.</p>
+<h2>Quel test utiliser ?</h2>
+<div class="tabla-scroll"><table class="tabla-eco libre"><caption>Choisir le test selon la question</caption><thead><tr><th scope="col">Je veux…</th><th scope="col">J’utilise</th><th scope="col">Équivaut à (avec normalité)</th></tr></thead><tbody>
+<tr><td>comparer deux groupes indépendants</td><td>Mann-Whitney</td><td><a href="../contrastes/">test t de deux moyennes</a></td></tr>
+<tr><td>comparer avant et après</td><td>Wilcoxon (ou les signes, si les grandeurs importent peu)</td><td><a href="../contrastes/">test t apparié</a></td></tr>
+<tr><td>comparer une médiane à une valeur</td><td>Wilcoxon à un échantillon ou signes</td><td><a href="../contrastes/">test t d’une moyenne</a></td></tr>
+<tr><td>comparer trois groupes ou plus</td><td>Kruskal-Wallis avec Dunn</td><td><a href="../anova/">ANOVA</a></td></tr>
+<tr><td>voir si deux variables évoluent ensemble</td><td>Spearman ou Kendall</td><td><a href="../regresion/">Pearson</a></td></tr>
+<tr><td>vérifier si les données sont normales</td><td><a href="../contrastes/">Shapiro-Wilk dans Tests d’hypothèses</a></td><td>—</td></tr>
+</tbody></table></div>
+<h2>P-valeur exacte ou approchée</h2>
+<p class="m">Avec peu de données et sans ex æquo, la p-valeur est calculée de façon <b>exacte</b> en comptant tous les ordres possibles. Avec plus de données ou avec des ex æquo, on utilise l’approximation normale, avec la correction d’ex æquo et, si on l’active, la correction de continuité.</p>
+</section>
+<section class="preguntas" aria-label="Questions fréquentes">
+<h2>Questions fréquentes</h2>
+<h3>Comment calcule-t-on la U de Mann-Whitney ?</h3>
+<p>On ordonne toutes les données ensemble, on additionne les rangs de chaque échantillon et U₁ = R₁ − n₁(n₁ + 1)/2, avec U₁ + U₂ = n₁n₂. Avec 14 17 16 19 22 et 10 12 15 11 13 9 : R₁ = 44, U₁ = 44 − 15 = 29 et U₂ = 1, avec p exact bilatéral = 4/462 ≈ 0,0087.</p>
+<h3>Quand utiliser Wilcoxon plutôt que le test t de Student ?</h3>
+<p>Quand les données appariées (ou l’échantillon) ne sont pas normales ou qu’il y a des valeurs aberrantes : le test utilise les rangs de |d| avec leur signe, W⁺ et W⁻, et n’exige pas la normalité. Avec un petit n et sans ex æquo, la p-valeur est exacte ; sinon, on utilise l’approximation normale.</p>
+</section>
+<div class="anuncio"><span>Publicité</span><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-6407501780492688" data-ad-slot="4415753033" data-ad-format="auto" data-full-width-responsive="true"></ins><script>(window.adsbygoogle = window.adsbygoogle || []).push({});</script></div>
+<section class="relacionadas" aria-label="Outils associés"><h2>Outils associés</h2>
+<a href="../distribuciones/"><b>Lois de probabilité →</b><span>Normale, t, χ², F, uniforme, binomiale, Poisson, géométrique et hypergéométrique avec l’aire grisée, quantiles, valeurs critiques et approximations.</span></a>
+<a href="../regresion/"><b>Régression et corrélation →</b><span>Covariance, r de Pearson et de Spearman, les deux droites, ajustements non linéaires comparés, résidus et erreur de la pente et de l’ordonnée à l’origine pour les travaux pratiques.</span></a>
+<a href="../regresion-multiple/"><b>Régression linéaire multiple →</b><span>Moindres carrés avec plusieurs variables explicatives : coefficients avec leur erreur, t et p-valeur, R² ajusté, F global, VIF et prévision.</span></a>
+<a href="../anova/"><b>ANOVA à un et deux facteurs →</b><span>Compare les moyennes de plusieurs groupes avec un ou deux facteurs : tableau d’ANOVA, F de Welch, taille d’effet, hypothèses, Tukey, Holm, Scheffé, Games-Howell et contrastes planifiés.</span></a>
+</section>
+</main>
+<footer><a href="../../../">Accueil</a>·<a href="../../contacto.html">Contact</a>·<a href="mailto:danijimzzz30@gmail.com?subject=Error%20en%20Contrastes%20no%20param%C3%A9tricos&amp;body=Herramienta%3A%20Contrastes%20no%20param%C3%A9tricos%20(estadistica%2Fno-parametricos)%0A%0AQu%C3%A9%20esperaba%20y%20qu%C3%A9%20ha%20pasado%3A%0A">Signaler une erreur</a>·<a href="../../aviso-legal.html">Mentions légales</a>·<a href="../../privacidad.html">Confidentialité</a>·<a href="../../cookies.html">Cookies</a> · <a href="#" class="pref-cookies">Préférences des cookies</a>· Tests non paramétriques <span id="ver"></span> (bêta)</footer>
+</body>
+<script>
+const Pagina = { carpeta: 'no-parametricos', guarda: 'no-parametricos-v1' };
+const Version = (() => { const registros = {"web":[{"v":"1.22"}],"control":[{"v":"0.2"}],"termo-estadistica":[{"v":"0.2"}],"markowitz":[{"v":"0.3"}],"cavidades":[{"v":"0.2"}],"organica":[{"v":"0.3"}],"transformada-z":[{"v":"0.2"}],"semiconductores":[{"v":"0.2"}],"relatividad":[{"v":"0.2"}],"osc-acopladas":[{"v":"0.2"}],"solubilidad":[{"v":"0.2"}],"lagrange":[{"v":"0.2"}],"series":[{"v":"0.3"}],"no-parametricos":[{"v":"0.3"}],"regresion-multiple":[{"v":"0.2"}],"anova":[{"v":"0.3"}],"black-scholes":[{"v":"0.3"}],"bonos":[{"v":"0.3"}],"solow":[{"v":"0.3"}],"integrales-multiples":[{"v":"0.1"}],"formulacion":[{"v":"0.2"}],"balance":[{"v":"0.2"}],"redox":[{"v":"0.2"}],"lineas-transmision":[{"v":"0.3"}],"superficies":[{"v":"0.2"}],"vsepr":[{"v":"0.2"}],"maxwell":[{"v":"0.3"}],"fresnel":[{"v":"0.2"}],"gravitacion":[{"v":"0.2"}],"convolucion":[{"v":"0.2"}],"laplace-numerica":[{"v":"0.2"}],"imagenes":[{"v":"0.2.1"}],"guias-onda":[{"v":"0.2"}],"antena":[{"v":"0.2"}],"bode":[{"v":"0.3"}],"optica":[{"v":"0.2"}],"simulador":[{"v":"0.4"}],"teoria-juegos":[{"v":"0.2"}],"puertas-logicas":[{"v":"0.4"}],"multiplicador":[{"v":"0.3"}],"is-lm":[{"v":"0.3"}],"choques":[{"v":"0.1"}],"termoquimica":[{"v":"0.3"}],"probabilidad":[{"v":"0.2"}],"unidades":[{"v":"0.2"}],"equilibrio":[{"v":"0.2"}],"oscilaciones":[{"v":"0.1"}],"beneficio":[{"v":"0.3"}],"costes":[{"v":"0.3"}],"sistemas-numericos":[{"v":"0.2"}],"excedentes":[{"v":"0.2"}],"oferta-demanda":[{"v":"0.2"}],"chi2-bondad":[{"v":"0.2"}],"contrastes":[{"v":"0.2"}],"errores":[{"v":"0.2"}],"graficador":[{"v":"0.2"}],"metodos-numericos":[{"v":"0.2"}],"fisica-moderna":[{"v":"0.2"}],"lorenz-gini":[{"v":"0.2"}],"phillips-okun":[{"v":"0.3"}],"tipos-cambio":[{"v":"0.3"}],"elasticidades":[{"v":"0.3"}],"pib-ipc":[{"v":"0.2"}],"numeros-indice":[{"v":"0.2"}],"ratios":[{"v":"0.2"}],"punto-muerto":[{"v":"0.2"}],"ahorro":[{"v":"0.3"}],"van-tir":[{"v":"0.3"}],"amortizacion-inmovilizado":[{"v":"0.2"}],"prestamos":[{"v":"0.3"}],"rentas":[{"v":"0.3"}],"interes":[{"v":"0.3"}],"descriptiva":[{"v":"0.2"}],"regresion-economia":[{"v":"0.2"}],"ajustador":[{"v":"0.2.1"}],"electrostatica":[{"v":"0.11"}],"magnetostatica":[{"v":"0.4"}],"tabla-periodica":[{"v":"0.2"}],"trabajo-y-energia":[{"v":"0.3"}],"masa-molar":[{"v":"0.2"}],"configuracion-electronica":[{"v":"0.2"}],"condensadores":[{"v":"0.4"}],"tiro-parabolico":[{"v":"0.4"}],"disoluciones":[{"v":"0.2"}],"calorimetria":[{"v":"0.2"}],"induccion":[{"v":"0.4"}],"matrices":[{"v":"0.3"}],"derivadas":[{"v":"0.3"}],"laplace":[{"v":"0.2"}],"interferencia":[{"v":"0.2"}],"ondas-em":[{"v":"0.4"}],"intervalos":[{"v":"0.3"}],"fuerza":[{"v":"0.3"}],"campos":[{"v":"0.2.1"}],"cinetica":[{"v":"0.2"}],"edos":[{"v":"0.2"}],"fourier":[{"v":"0.2"}],"taylor":[{"v":"0.3"}],"complejos":[{"v":"0.3"}],"sistemas":[{"v":"0.3"}],"regresion":[{"v":"0.3"}],"estadistica":[{"v":"0.3"}],"dinamica":[{"v":"0.3"}],"solido-rigido":[{"v":"0.3"}],"ondas":[{"v":"0.3"}],"gases":[{"v":"0.6"}],"ciclos":[{"v":"0.2"}],"ph":[{"v":"0.4"}],"fluidos":[{"v":"0.3"}],"doppler":[{"v":"0.2"}],"resistencias":[{"v":"0.3"}],"faraday":[{"v":"0.4"}],"fenomenos":[{"v":"0.9"}]}; const de = (h) => ({ current: registros[h][0].v, log: registros[h] }); return { registros, de }; })();
+
+</script>
+<script src="../../../js/fr/herramienta.fr.8886d3c4.js"></script>
+<script src="../../../js/fr/enunciado.fr.4bd513d9.js"></script>
+<script src="../../../js/fr/mates.fr.b5c3ede5.js"></script>
+<script src="../../../js/fr/calculadora.fr.94c2fd3d.js"></script>
+<script src="../../../js/fr/estadistica-calculo.fr.0f2de596.js"></script>
+<script src="../../../js/fr/estadistica-inferencia.fr.0ce3a867.js"></script>
+<script src="../../../js/fr/no-parametricos-calculo.fr.5c886709.js"></script>
+<script src="../../../js/fr/compartir.fr.8a6ba9d7.js"></script>
+<script>
+(() => {
+  const C = NoParametricos, { f } = Calculadora;
+  const SI_NO = [['si', 'Oui'], ['no', 'No']];
+  const pr = Estadistica.prob;
+  const fila = (cs, td = 'td') => `<tr>${cs.map((c) => (td === 'th' ? `<th scope="col">${c}</th>` : `<td>${c}</td>`)).join('')}</tr>`;
+  const des = (s) => s.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
+  const tabla = (cap, cab, filas, pie = '') => `<table class="tabla-eco" style="margin-bottom:14px"><caption>${cap}</caption><thead>${fila(cab, 'th')}</thead><tbody>${filas}</tbody>${pie ? `<tfoot>${pie}</tfoot>` : ''}</table>`;
+  const ic = (hl) => (isFinite(hl.lo) ? `(${f(hl.lo)}; ${f(hl.hi)})` : '—');
+  function campos(sc) {
+    const t = C.TIPOS[sc.tipo] ? sc.tipo : 'mw';
+    if (t === 'kw') return [{ k: 'tipo', nom: 'Test', tipo: 'sel', ops: Object.entries(C.TIPOS) }, { k: 'alfa', nom: 'Niveau de signification α' }, { k: 'post', nom: 'Comparaisons par paires', tipo: 'sel', ops: Object.entries(C.POST) }, { k: 'datos', nom: 'Données', tipo: 'area', ayuda: 'un groupe par ligne, avec son nom avant « : » si vous voulez ; valeurs séparées par des espaces', filas: 7 }];
+    return [{ k: 'tipo', nom: 'Test', tipo: 'sel', ops: Object.entries(C.TIPOS) },
+      { k: 'h1', nom: 'Hypothèse alternative H₁', tipo: 'sel', ops: Object.entries(C.H1) },
+      { k: 'alfa', nom: 'Niveau de signification α' },
+      ...(t === 'signos' || t === 'signosmed' ? (t === 'signos' ? [{ k: 'datos', nom: 'Paires « première seconde »', tipo: 'area', ayuda: 'une ligne par individu', filas: 8 }] : [{ k: 'm0', nom: 'Médiane de H₀' }, { k: 'datos', nom: 'Échantillon', tipo: 'area', ayuda: 'valeurs séparées par des espaces', filas: 4 }])
+        : t === 'correlacion' ? [{ k: 'datos', nom: 'Paires « x y »', tipo: 'area', ayuda: 'une ligne par individu', filas: 8 }] : []),
+      ...(['signos', 'signosmed', 'correlacion'].includes(t) ? [] : [
+      ...(t === 'mw' ? [{ k: 'datos1', nom: 'Échantillon 1', tipo: 'area', ayuda: 'valeurs séparées par des espaces', filas: 3 }, { k: 'datos2', nom: 'Échantillon 2', tipo: 'area', ayuda: 'valeurs séparées par des espaces', filas: 3 }]
+        : t === 'pares' ? [{ k: 'datos', nom: 'Paires « première seconde »', tipo: 'area', ayuda: 'une ligne par individu, p. ex. avant et après', filas: 8 }]
+          : [{ k: 'm0', nom: 'Médiane de H₀' }, { k: 'datos', nom: 'Échantillon', tipo: 'area', ayuda: 'valeurs séparées par des espaces', filas: 4 }]),
+      { k: 'exacto', nom: 'p-valeur exacte si possible', tipo: 'sel', ops: SI_NO, ayuda: 'sans ex æquo et avec peu de données' },
+      { k: 'cc', nom: 'Correction de continuité', tipo: 'sel', ops: SI_NO, ayuda: 'dans l’approximation normale' }])];
+  }
+  function azar() {
+    const e = (a, b) => a + Math.floor(Math.random() * (b - a + 1)), vals = (n, c) => Array.from({ length: n }, () => c + e(-8, 8)).join(' ');
+    if (Math.random() < 0.5) return { tipo: 'mw', h1: 'dos', alfa: '0,05', exacto: 'si', cc: 'si', datos1: vals(6, 20), datos2: vals(7, 20 + e(0, 6)) };
+    return { tipo: 'pares', h1: 'dos', alfa: '0,05', exacto: 'si', cc: 'si', datos: Array.from({ length: 8 }, () => { const a = e(60, 90); return `${a} ${a + e(-4, 8)}`; }).join('\n') };
+  }
+  const H1T = { dos: 'les médianes sont différentes', mayor: 'la première est plus grande', menor: 'la première est plus petite' };
+  Calculadora.monta({
+    C, carpeta: 'no-parametricos', app: 'NoParametricosApp', campos, azar,
+    usarEn: (s, sc) => (s.tipo === 'kw' ? [{ texto: 'ANOVA avec ces groupes →', carpeta: 'anova', estado: { modo: 'uno', alfa: sc.alfa, prueba: 'f', post: 'tukey', contrastes: '', datos: sc.datos } }]
+      : s.tipo === 'mediana' || s.tipo === 'signosmed' ? [{ texto: 'Descriptive de ces données →', carpeta: 'descriptiva', estado: { formato: 'lista', datos: sc.datos, pesos: '', div: 'n1', pk: '' } }] : []),
+    enunciado: (sc, s) => s && (s.tipo === 'kw' ? `On a mesuré plusieurs groupes (chaque groupe séparé par « ; ») : ${String(sc.datos).trim().split(/\r?\n/).map((l) => l.trim()).filter(Boolean).join('; ')}. Avec α = ${sc.alfa}, testez avec Kruskal-Wallis si les groupes diffèrent : calculez les sommes de rangs, H et la p-valeur.`
+      : s.tipo === 'signos' || s.tipo === 'signosmed' || s.tipo === 'correlacion' ? `Résolvez le test avec les données de l’outil (α = ${sc.alfa}) : calculez la statistique et la p-valeur.`
+      : s.tipo === 'mw'
+      ? `On a mesuré deux groupes indépendants. Échantillon 1 : ${sc.datos1.trim().replace(/\s+/g, ' ')}. Échantillon 2 : ${sc.datos2.trim().replace(/\s+/g, ' ')}. Avec α = ${sc.alfa}, testez avec la U de Mann-Whitney si ${H1T[s.h1]} : calculez les rangs, U et la p-valeur.`
+      : s.tipo === 'pares' ? `On a mesuré ${s.nTotal} individus avant et après (paires « avant après » séparées par « ; ») : ${String(sc.datos).trim().split(/\r?\n/).map((l) => l.trim().replace(/\s+/g, ' ')).join('; ')}. Avec α = ${sc.alfa}, testez avec le test de Wilcoxon si ${H1T[s.h1]} : calculez les rangs signés, W⁺ et la p-valeur.`
+        : `Un échantillon : ${sc.datos.trim().replace(/\s+/g, ' ')}. Avec α = ${sc.alfa}, testez avec le test de Wilcoxon si la médiane est ${sc.m0} contre le fait que ${H1T[s.h1]} : calculez les rangs signés, W⁺ et la p-valeur.`),
+    nota: 'Il n’est pas nécessaire que les données soient normales : seul leur ordre compte. S’il y a des ex æquo ou beaucoup de données, la p-valeur est obtenue par l’approximation normale.',
+    resumen: (s) => s.tipo === 'kw' ? [['Décision', s.rechaza ? 'On rejette H₀' : 'On ne rejette pas H₀', true], ['Statistique', `H = ${f(s.H)}`], ['Degrés de liberté', String(s.gl)], ['Valeur critique', f(s.crit)], ['p-valor', f(s.p)], ['ε² (taille d’effet)', f(s.eps2, 3)]]
+      : s.tipo === 'signos' || s.tipo === 'signosmed' ? [['Décision', s.rechaza ? 'On rejette H₀' : 'On ne rejette pas H₀', true], ['Positifs n⁺', String(s.mas)], ['Négatifs n⁻', String(s.menos)], ['p-valor exacto (binomial)', f(s.p)], ['Différences nulles écartées', String(s.ceros)]]
+      : s.tipo === 'correlacion' ? [['Décision', s.rechaza ? 'Il y a association (l’un des deux tests rejette H₀)' : 'On ne rejette H₀ avec aucun', true], ['Spearman ρₛ', f(s.sp.rho, 4)], ['p-valor (Spearman)', f(s.pS)], ['Kendall τ', f(s.ke.tau, 4)], ['p-valor (Kendall)', f(s.pK)], ['Méthode de Kendall', s.ke.exacto ? 'Exacte' : 'Approximation normale']]
+      : [
+      ['Décision', s.rechaza ? 'On rejette H₀' : 'On ne rejette pas H₀', true],
+      s.tipo === 'mw' ? ['Statistique', `U₁ = ${f(s.U1)}`] : ['Statistique', `W⁺ = ${f(s.Wp)}`],
+      s.tipo === 'mw' ? ['Autre statistique', `U₂ = ${f(s.U2)}`] : ['Autre statistique', `W⁻ = ${f(s.Wm)}`],
+      ['p-valor', f(s.p)],
+      ['Méthode', s.exacto ? 'p-valor exacto' : 'Approximation normale'],
+      s.z === null ? ['Données', s.tipo === 'mw' ? `${s.n1} y ${s.n2}` : `n = ${s.n}`] : ['z', f(s.z)],
+      s.tipo === 'mw' ? ['Prob. de supériorité', f(s.psup, 3)] : ['r bisérial des rangs', f(s.rb, 3)],
+      ['r = |z|/√n (efecto)', f(s.rEf, 3)],
+      ['Hodges-Lehmann', f(s.hl.est)],
+      ['IC de Hodges-Lehmann', ic(s.hl)],
+    ],
+    tabla: (s) => {
+      if (s.tipo === 'kw') return tabla('Rangs de chaque groupe', ['Groupe', 'n', 'Somme des rangs', 'Rang moyen'], s.g.map((q) => fila([q.nom, String(q.n), f(q.R), f(q.Rm)])).join('')) + (s.pares.length ? tabla(`Comparaisons de Dunn (${s.post === 'holm' ? 'Holm' : 'Bonferroni'})`, ['Paire', 'Diff. des rangs moyens', 'z', 'p ajustado', 'Différents ?'], s.pares.map((q) => fila([`${q.a} − ${q.b}`, f(q.dif), f(q.z), pr(q.p), q.sig ? 'Oui' : 'No'])).join('')) : '');
+      if (s.tipo === 'signos' || s.tipo === 'signosmed') return tabla('Signes des différences', [s.tipo === 'signos' ? 'Première' : 'Donnée', s.tipo === 'signos' ? 'Seconde' : 'Médiane H₀', 'd', 'Signe'], s.ds.map((q) => fila([f(q.a), f(q.b), f(q.d), q.d > 0 ? '+' : q.d < 0 ? '−' : 'se descarta'])).join(''), fila(['', '', 'n⁺ / n⁻', `${s.mas} / ${s.menos}`]));
+      if (s.tipo === 'correlacion') return tabla('Données et rangs', ['x', 'y', 'Rang de x', 'Rang de y'], s.x.map((v, i) => fila([f(v), f(s.y[i]), f(s.rx[i]), f(s.ry[i])])).join(''));
+      if (s.tipo === 'mw') return `<table class="tabla-eco"><thead>${fila(['Donnée', 'Échantillon', 'Rang'], 'th')}</thead><tbody>${s.orden.map((q) => fila([f(q.v), String(q.g), f(q.r)])).join('')}</tbody><tfoot>${fila(['Somme des rangs', `R₁ = ${f(s.R1)}`, `R₂ = ${f(s.R2)}`])}</tfoot></table>`;
+      const cab = s.tipo === 'pares' ? ['Première', 'Seconde'] : ['Donnée', 'Médiane H₀'];
+      return `<table class="tabla-eco"><thead>${fila([...cab, 'd', '|d|', 'Rang signé'], 'th')}</thead><tbody>${s.ds.map((q) => fila([f(q.a), f(q.b), f(q.d), f(Math.abs(q.d)), q.d === 0 ? 'se descarta' : `${q.d < 0 ? '−' : '+'}${f(q.r)}`])).join('')}</tbody><tfoot>${fila(['', '', '', `W⁺ = ${f(s.Wp)}`, `W⁻ = ${f(s.Wm)}`])}</tfoot></table>`;
+    },
+    grafica: (s) => {
+      if (s.tipo === 'kw') { const r = s.g.flatMap((q) => q.rangos), k = s.k; return { x: [0.4, k + 0.6], y: [0, Math.max(...r) + 1], ejeX: 'Groupe', ejeY: 'Rang', fx: (v) => (Number.isInteger(v) && v >= 1 && v <= k ? des(s.g[v - 1].nom) : ''), series: [...s.g.map((q, i) => ({ tipo: 'puntos', pts: q.rangos.map((v, j) => [i + 1 + (j - (q.n - 1) / 2) * 0.05, v]), color: '--serie-1', radio: 4 })), ...s.g.map((q, i) => ({ pts: [[i + 0.7, q.Rm], [i + 1.3, q.Rm]], color: '--serie-2', grosor: 3 }))], horizontales: [{ y: (s.N + 1) / 2, color: '--muted' }] }; }
+      if (s.tipo === 'signos' || s.tipo === 'signosmed') return { x: [0.4, 2.6], y: [0, Math.max(s.mas, s.menos) * 1.2 + 0.5], ejeX: 'Signe de la différence', ejeY: 'Nombre de différences', fx: (v) => (v === 1 ? '+' : v === 2 ? '−' : ''), series: [{ tipo: 'barras', ancho: 0.6, pts: [[1, s.mas]], color: '--serie-1' }, { tipo: 'barras', ancho: 0.6, pts: [[2, s.menos]], color: '--serie-2' }], horizontales: [{ y: s.n / 2, color: '--muted', texto: 'n/2 si H₀' }] };
+      if (s.tipo === 'correlacion') { const n = s.n; return { x: [0.5, n + 0.5], y: [0.5, n + 0.5], ejeX: 'Rang de x', ejeY: 'Rang de y', series: [{ pts: [[0.5, 0.5], [n + 0.5, n + 0.5]], color: '--muted', grosor: 1.5 }, { tipo: 'puntos', pts: s.rx.map((v, i) => [v, s.ry[i]]), color: '--serie-1', radio: 4.5 }] }; }
+      if (s.tipo === 'mw') {
+        const med = (v) => { const o = [...v].sort((a, b) => a - b), m = o.length >> 1; return o.length % 2 ? o[m] : (o[m - 1] + o[m]) / 2; };
+        const todos = [...s.x, ...s.y], lo = Math.min(...todos), hi = Math.max(...todos), aire = (hi - lo || 1) * 0.12;
+        return { x: [0.4, 2.6], y: [lo - aire, hi + aire], ejeX: 'Échantillon', ejeY: 'Valeur', fx: (v) => (v === 1 || v === 2 ? `Échantillon ${v}` : ''),
+          series: [{ tipo: 'puntos', pts: s.x.map((v, j) => [1 + (j - (s.n1 - 1) / 2) * 0.05, v]), color: '--serie-1', radio: 4 }, { tipo: 'puntos', pts: s.y.map((v, j) => [2 + (j - (s.n2 - 1) / 2) * 0.05, v]), color: '--serie-1', radio: 4 },
+            { pts: [[0.7, med(s.x)], [1.3, med(s.x)]], color: '--serie-2', grosor: 3 }, { pts: [[1.7, med(s.y)], [2.3, med(s.y)]], color: '--serie-2', grosor: 3 }] };
+      }
+      const o = [...s.nz].sort((a, b) => Math.abs(a.d) - Math.abs(b.d)), m = Math.max(...o.map((q) => q.r)) * 1.15;
+      return { x: [0.4, o.length + 0.6], y: [-m, m], ejeX: 'Différences ordonnées par |d|', ejeY: 'Rang signé', fx: (v) => (Number.isInteger(v) && v >= 1 && v <= o.length ? String(v) : ''),
+        series: [{ tipo: 'barras', ancho: 0.6, pts: o.filter((q) => q.d > 0).map((q) => [o.indexOf(q) + 1, q.r]), color: '--serie-1' }, { tipo: 'barras', ancho: 0.6, pts: o.filter((q) => q.d < 0).map((q) => [o.indexOf(q) + 1, -q.r]), color: '--serie-2' }] };
+    },
+    leyenda: (s) => s.tipo === 'kw' ? `<b style="color:var(--serie-1)">Bleu</b> : le rang de chaque donnée (1 est le plus petit de tous) ; <b style="color:var(--serie-2)">rouge</b> : le rang moyen de chaque groupe ; la ligne grise est le rang moyen global (N + 1)/2 = ${f((s.N + 1) / 2)}. Si H₀ est vraie, tous les rangs moyens ressemblent à celui-ci. ${s.g.map((q) => `${q.nom} : ${f(q.Rm)}`).join(' ; ')}.`
+      : s.tipo === 'signos' || s.tipo === 'signosmed' ? `On compte les différences positives (bleu, n⁺ = ${s.mas}) et les négatives (rouge, n⁻ = ${s.menos}). Si H₀ est vraie, elles se répartissent à parts égales (n/2 = ${f(s.n / 2)} chacune), et la p-valeur est la probabilité binomiale d’une répartition aussi inégale.`
+        : s.tipo === 'correlacion' ? `Chaque point est un individu avec le rang de x sur l’axe horizontal et celui de y sur le vertical. La diagonale grise est l’association parfaite (ρₛ = 1) ; plus les points s’en rapprochent (ou de l’autre diagonale, si elle est négative), plus |ρₛ| est grand. Ici ρₛ = ${f(s.sp.rho, 4)} et τ = ${f(s.ke.tau, 4)}.`
+        : s.tipo === 'mw'
+      ? `<b style="color:var(--serie-1)">Bleu</b> : les données de chaque échantillon ; <b style="color:var(--serie-2)">rouge</b> : leur médiane. Si un échantillon a tendance à donner des valeurs plus grandes, ses rangs ont une somme plus grande (R₁ = ${f(s.R1)}, R₂ = ${f(s.R2)}).`
+      : `Chaque barre est une différence, ordonnée par taille : sa hauteur est le rang de |d|. <b style="color:var(--serie-1)">Bleu</b> : différences positives (W⁺ = ${f(s.Wp)}) ; <b style="color:var(--serie-2)">rouge</b> : négatives (W⁻ = ${f(s.Wm)}). Si H₀ est vraie, les deux sommes se ressemblent.`,
+  });
+})();
+
+</script>
+<script src="../../../js/fr/biblioteca.fr.86a7f543.js"></script>
+<script src="../../../js/fr/practica.fr.ebd61c5b.js"></script>
+<script src="../../../js/fr/personal.fr.d7df8991.js"></script>
+<script>
+Biblioteca.monta('no-parametricos', 'no-parametricos-v1');
+Practica.monta('no-parametricos', 'no-parametricos-v1');
+Enunciado.monta('no-parametricos', 'no-parametricos-v1');
+</script>
+</html>

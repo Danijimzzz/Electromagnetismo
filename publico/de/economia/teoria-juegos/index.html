@@ -1,0 +1,600 @@
+<!doctype html>
+<html lang="de">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTQiIGZpbGw9IiMwZDZiNjYiLz48ZyBmaWxsPSJub25lIiBzdHJva2U9IiNlNmE2NDAiIHN0cm9rZS13aWR0aD0iMi40IiBzdHJva2UtZGFzaGFycmF5PSI0IDYuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIj48cGF0aCBkPSJNMjAgMzJINDQiLz48cGF0aCBkPSJNMjEgMjdDMjcgMTQgMzcgMTQgNDMgMjciLz48cGF0aCBkPSJNMjEgMzdDMjcgNTAgMzcgNTAgNDMgMzciLz48cGF0aCBkPSJNMTcgMjRDMjIgNCA0MiA0IDQ3IDI0Ii8+PHBhdGggZD0iTTE3IDQwQzIyIDYwIDQyIDYwIDQ3IDQwIi8+PC9nPjxjaXJjbGUgY3g9IjE3IiBjeT0iMzIiIHI9IjgiIGZpbGw9IiNlZjdhNjIiLz48Y2lyY2xlIGN4PSI0NyIgY3k9IjMyIiByPSI4IiBmaWxsPSIjNzRhMmYyIi8+PHBhdGggZD0iTTEzIDMyaDhNMTcgMjh2OE00MyAzMmg4IiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iMi42IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48L3N2Zz4K">
+<link rel="apple-touch-icon" href="../../../apple-touch-icon.png">
+<meta property="og:title" content="Spieltheorie">
+<meta property="og:description" content="Gefangenendilemma und Nash-Gleichgewicht in 2×2-Matrizen.">
+<link rel="canonical" href="https://simulaciencia.vercel.app/de/economia/teoria-juegos/">
+<link rel="alternate" hreflang="es" href="https://simulaciencia.vercel.app/economia/teoria-juegos/">
+<link rel="alternate" hreflang="en" href="https://simulaciencia.vercel.app/en/economia/teoria-juegos/">
+<link rel="alternate" hreflang="de" href="https://simulaciencia.vercel.app/de/economia/teoria-juegos/">
+<link rel="alternate" hreflang="fr" href="https://simulaciencia.vercel.app/fr/economia/teoria-juegos/">
+<link rel="alternate" hreflang="x-default" href="https://simulaciencia.vercel.app/economia/teoria-juegos/">
+<meta property="og:locale" content="de">
+<meta property="og:image" content="https://simulaciencia.vercel.app/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebApplication","name":"Spieltheorie","description":"Spieltheorie-Rechner: 2×2-Auszahlungsmatrix, Nash-Gleichgewichte in reinen und gemischten Strategien, dominante Strategien, Gefangenendilemma und Pareto-Effizienz, mit den Kurven der besten Antwort und dem Rechenweg.","url":"https://simulaciencia.vercel.app/economia/teoria-juegos/","inLanguage":"de","isAccessibleForFree":true,"applicationCategory":"EducationalApplication","operatingSystem":"Webbrowser","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://simulaciencia.vercel.app/"},{"@type":"ListItem","position":2,"name":"Wirtschaft","item":"https://simulaciencia.vercel.app/economia/"},{"@type":"ListItem","position":3,"name":"Spieltheorie","item":"https://simulaciencia.vercel.app/economia/teoria-juegos/"}]},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Was ist ein Nash-Gleichgewicht?","acceptedAnswer":{"@type":"Answer","text":"Eine Kombination von Strategien, bei der sich kein Spieler verbessert, wenn er allein seine ändert. Im Gefangenendilemma besteht das Gleichgewicht darin, dass beide gestehen (5 und 5 Jahre), obwohl Schweigen für beide (1 und 1) für beide besser wäre."}},{"@type":"Question","name":"Wie findet man es in einer 2×2-Matrix?","acceptedAnswer":{"@type":"Answer","text":"Man markiert die beste Antwort jedes Spielers auf jede Strategie des anderen; die Felder mit beiden Markierungen sind Nash-Gleichgewichte."}}]}]}</script>
+<link rel="manifest" href="../../manifest.webmanifest">
+<meta name="theme-color" content="#0d6b66">
+<script src="../../pwa.js" defer></script>
+<meta name="google-adsense-account" content="ca-pub-6407501780492688">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6407501780492688" crossorigin="anonymous"></script>
+<script>window.googlefc = window.googlefc || {}; googlefc.callbackQueue = googlefc.callbackQueue || [];
+document.addEventListener('click', (e) => { if (!e.target.closest('.pref-cookies')) return; e.preventDefault(); googlefc.callbackQueue.push(() => googlefc.showRevocationMessage()); });</script>
+<style>.anuncio { max-width:860px; margin:28px 0 0; text-align:center; min-height:120px } .anuncio > span { display:block; font:11px/1.6 system-ui, sans-serif; letter-spacing:.06em; text-transform:uppercase; color:var(--muted, #5b6670) } .anuncio ins { display:block }</style>
+<style>.anuncio-lado { display:none } @media (min-width: 901px) { .anuncio-lado { display:block; grid-column:1; grid-row:2; position:sticky; top:96px; margin:8px 0 0; max-width:none; min-height:250px; min-width:0; overflow:hidden } main .layout.con-lado > :nth-child(2) { grid-row:1 / span 2 } }</style>
+<script>document.addEventListener('DOMContentLoaded', () => {
+  const l = document.querySelector('main .layout');
+  if (!l || l.classList.contains('invertido') || l.children.length !== 2 || !l.offsetParent || !matchMedia('(min-width: 901px)').matches) return;
+  l.classList.add('con-lado');
+  const a = document.createElement('div'); a.className = 'anuncio anuncio-lado';
+  a.innerHTML = '<span>Publicidad</span><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-6407501780492688" data-ad-slot="9800921596" data-ad-format="auto" data-full-width-responsive="true"></ins>';
+  l.appendChild(a); (window.adsbygoogle = window.adsbygoogle || []).push({});
+});</script>
+<script>(() => {
+  const raiz = document.documentElement, mq = matchMedia('(prefers-color-scheme: dark)'), oyentes = [];
+  try { const t = localStorage.getItem('simu-tema'); if (t === 'dark' || t === 'light') raiz.dataset.theme = t; } catch (e) { /* sin almacenamiento */ }
+  const orig = MediaQueryList.prototype.addEventListener;
+  MediaQueryList.prototype.addEventListener = function (tipo, f, ...r) { if (tipo === 'change' && /prefers-color-scheme/.test(this.media)) oyentes.push(f); return orig.call(this, tipo, f, ...r); };
+  const oscuro = () => (raiz.dataset.theme ? raiz.dataset.theme === 'dark' : mq.matches);
+  const rotula = () => document.querySelectorAll('.tema').forEach((b) => { const t = oscuro() ? 'Zum hellen Modus wechseln' : 'Zum dunklen Modus wechseln'; b.title = t; b.setAttribute('aria-label', t); });
+  document.addEventListener('DOMContentLoaded', rotula);
+  mq.addEventListener('change', rotula);
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.tema')) return;
+    raiz.dataset.theme = oscuro() ? 'light' : 'dark';
+    try { localStorage.setItem('simu-tema', raiz.dataset.theme); } catch (e) { /* sin almacenamiento */ }
+    rotula();
+    for (const f of oyentes) { try { f.call(mq, { matches: oscuro(), media: mq.media }); } catch (err) { console.error(err); } }
+  });
+})();</script>
+<script>(() => {
+  const ENFOCABLE = 'a[href],button,input,select,textarea,summary,[tabindex]';
+  let espera = 0;
+  const revisa = () => {
+    espera = 0;
+    for (const e of document.querySelectorAll('main *')) {
+      const desborda = e.scrollWidth > e.clientWidth || e.scrollHeight > e.clientHeight;
+      if (e.dataset.sf) { if (!desborda || e.querySelector(ENFOCABLE)) { e.removeAttribute('tabindex'); delete e.dataset.sf; } continue; }
+      if (!desborda || e.hasAttribute('tabindex') || e.matches('svg,svg *,canvas') || e.querySelector(ENFOCABLE)) continue;
+      const o = getComputedStyle(e);
+      if (/auto|scroll/.test(o.overflowX + o.overflowY)) { e.tabIndex = 0; e.dataset.sf = '1'; }
+    }
+  };
+  window.revisaScroll = revisa; // también lo llama pruebas/accesibilidad.js antes de pasar axe
+  const pide = () => { if (!espera) espera = setTimeout(revisa, 400); };
+  addEventListener('load', () => { revisa(); const m = document.querySelector('main'); if (m) new MutationObserver(pide).observe(m, { childList: true, subtree: true, characterData: true }); });
+  addEventListener('resize', pide);
+})();</script>
+<script src="../../buscador.js" defer></script>
+<script src="../../llama.js" defer></script>
+<title>Rechner für Nash-Gleichgewicht und Spieltheorie</title>
+<meta name="description" content="Spieltheorie-Rechner: 2×2-Auszahlungsmatrix, Nash-Gleichgewichte in reinen und gemischten Strategien, dominante Strategien, Gefangenendilemma und Pareto-Effizienz, mit den Kurven der besten Antwort und dem Rechenweg.">
+<style>/* =====================================================================
+   Hoja de estilos común de todas las herramientas (fuente/<herramienta>/pagina.html).
+   diseno.js la mete en cada página, antes de su propio <style>, junto con el color
+   de la asignatura (--accent, --accent-soft) y la cabecera del portal. La guía de uso
+   de cada componente, con su HTML, está en DISENO.md.
+   Una herramienta no vuelve a definir estas reglas: ajusta las variables de medida
+   (--col-datos, --ancho-valor, --alto-grafica) o añade una clase propia.
+   ===================================================================== */
+
+/* ---------- Colores y letras (claro y oscuro) ---------- */
+:root {
+  --bg: #eef1ee; --panel: #fff; --ink: #1a2128; --muted: #5b6670; --line: #d5dbd5; --error: #c0392b;
+  --f-ui: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-math: "STIX Two Text", "Cambria Math", Cambria, Georgia, serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+  --vidrio: rgba(255,255,255,.55); --vidrio-fuerte: rgba(255,255,255,.72); --vidrio-borde: rgba(255,255,255,.7); --vidrio-brillo: inset 0 1px 0 rgba(255,255,255,.8);
+  --vidrio-sombra: 0 1px 2px rgba(20,40,60,.06), 0 8px 28px rgba(20,40,60,.10); --blur: blur(22px) saturate(1.7); --halo1: rgba(13,107,102,.22); --halo2: rgba(42,93,181,.20); --halo3: rgba(107,63,160,.14);
+  /* medidas que cada herramienta puede ajustar */
+  --col-datos: 360px; --ancho-etiqueta: minmax(0, 1fr); --ancho-valor: 150px; --letra-campo: 13px var(--f-ui); --ancho-dato: 190px; --alto-grafica: clamp(260px, 36vw, 380px); --margen-grafica: 10px;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #111619; --panel: #182025; --ink: #e3e8ea; --muted: #a3aeb5; --line: #2a343b; --error: #f08a80; --vidrio: rgba(34,46,54,.50); --vidrio-fuerte: rgba(26,36,42,.70); --vidrio-borde: rgba(255,255,255,.12); --vidrio-brillo: inset 0 1px 0 rgba(255,255,255,.10); --vidrio-sombra: 0 1px 2px rgba(0,0,0,.3), 0 10px 32px rgba(0,0,0,.35); --halo1: rgba(77,188,176,.20); --halo2: rgba(116,162,242,.18); --halo3: rgba(170,120,230,.14); color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #111619; --panel: #182025; --ink: #e3e8ea; --muted: #a3aeb5; --line: #2a343b; --error: #f08a80; --vidrio: rgba(34,46,54,.50); --vidrio-fuerte: rgba(26,36,42,.70); --vidrio-borde: rgba(255,255,255,.12); --vidrio-brillo: inset 0 1px 0 rgba(255,255,255,.10); --vidrio-sombra: 0 1px 2px rgba(0,0,0,.3), 0 10px 32px rgba(0,0,0,.35); --halo1: rgba(77,188,176,.20); --halo2: rgba(116,162,242,.18); --halo3: rgba(170,120,230,.14); color-scheme: dark }
+/* fin de los colores */
+
+/* ---------- Base ---------- */
+* { box-sizing: border-box }
+[hidden] { display: none !important }
+html, body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.45 var(--f-ui) }
+a { color: var(--accent) }
+.wrap { max-width: 1300px; margin: 0 auto; padding: 16px clamp(16px, 3vw, 24px) 32px }
+h1 { font: 600 24px/1.25 var(--f-ui); margin: 0 0 4px }
+.lead { color: var(--muted); margin: 0 0 12px; max-width: 760px }
+/* texto solo para lectores de pantalla; sin position:absolute para que no ensanche las tablas con scroll */
+.solo-lector { display: inline-block; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; vertical-align: top }
+footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 8px 16px 24px }
+footer a { color: var(--muted); margin: 0 6px; white-space: nowrap; display: inline-block }
+
+/* ---------- Diseño A: datos a la izquierda, resultados a la derecha ---------- */
+.layout { display: grid; grid-template-columns: var(--col-datos) minmax(0, 1fr); gap: 16px; align-items: start }
+.layout.invertido { grid-template-columns: minmax(0, 1fr) var(--col-datos) }
+@media (max-width: 900px) { .layout, .layout.invertido { grid-template-columns: minmax(0, 1fr) } }
+
+/* ---------- Tarjetas ---------- */
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 14px; margin-bottom: 14px }
+.card h2 { font: 600 12px/1.4 var(--f-ui); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 0 0 10px }
+.destacado { border-color: var(--line); border-top: 3px solid var(--accent) }
+.destacado h2 { color: var(--accent) }
+
+/* ---------- Datos: campos, separadores, botones y pestañas ---------- */
+.campos { display: grid; grid-template-columns: var(--ancho-etiqueta) var(--ancho-valor); gap: 7px 10px; align-items: center }
+.campos label { font-size: 13.5px }
+.campos label small { color: var(--muted) }
+.campos .ancho { grid-column: 1 / -1 }
+.sep { grid-column: 1 / -1; font: 600 12px var(--f-ui); color: var(--accent); text-transform: uppercase; letter-spacing: .04em; margin-top: 8px }
+.in { font: var(--letra-campo); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; width: 100%; font-variant-numeric: tabular-nums }
+.btn { font: 500 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 5px 10px; cursor: pointer; white-space: nowrap }
+.btn:hover { border-color: var(--accent) }
+/* foco del teclado en todo lo que se pulsa o se escribe (sin especificidad: una herramienta puede ajustarlo) */
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible { outline: 2px solid var(--accent); outline-offset: 1px }
+.controles { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 8px }
+.controles > .nota, .controles > .leyenda { flex: 1 1 220px; margin: 0 }
+.exportar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 8px 0 }
+.exportar-aviso { color: var(--muted); font-size: 12.5px }
+.tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px }
+.tools label { color: var(--muted); font-size: 13px; display: inline-flex; gap: 6px; align-items: center }
+.modos { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; margin-bottom: 14px }
+.modos button { font: 500 13.5px var(--f-ui); border: 0; background: var(--panel); color: var(--muted); padding: 7px 14px; cursor: pointer }
+.modos button[aria-selected=true] { background: var(--accent); color: var(--panel) }
+.error { color: var(--error); font-size: 13px; margin: 10px 0 0 }
+.nota { color: var(--muted); font-size: 12.5px; margin: 8px 0 0 }
+
+/* ---------- Resultados ---------- */
+.res { display: grid; grid-template-columns: repeat(auto-fill, minmax(var(--ancho-dato), 1fr)); gap: 6px 14px; font: 16px var(--f-math) }
+.res div { overflow-x: auto; overflow-y: hidden }
+.res span { display: block; font: 12px var(--f-ui); color: var(--muted) }
+.res div.ancho { grid-column: 1 / -1 }
+.resumen { display: grid; grid-template-columns: repeat(auto-fill, minmax(var(--ancho-dato), 1fr)); gap: 8px; margin: 0 }
+.resumen div { background: var(--accent-soft); border-radius: 8px; padding: 8px 10px; overflow-x: auto; overflow-y: hidden }
+.resumen div span { display: block; font-size: 12px; color: var(--muted) }
+.resumen div b { font: 600 17px var(--f-math) }
+.resumen div.ancho { grid-column: 1 / -1 }
+
+/* ---------- Gráficas ---------- */
+canvas { display: block; width: 100%; height: var(--alto-grafica); border-radius: 8px; background: var(--bg); margin-top: var(--margen-grafica) }
+.leyenda { font-size: 12.5px; color: var(--muted); margin: 6px 0 0 }
+.leyenda b { font-weight: 600 }
+
+/* ---------- Desarrollo paso a paso ---------- */
+/* el número va dentro del paso para que no lo corte el desplazamiento de las fórmulas largas */
+.pasos ol { margin: 0; padding: 0; list-style: none; counter-reset: paso }
+.pasos li { position: relative; margin: 0 0 12px; padding-left: 22px; font-family: var(--f-math); font-size: 15.5px; overflow-x: auto; counter-increment: paso; overflow-y: hidden }
+.pasos li::before { content: counter(paso) "."; position: absolute; left: 0; top: 0; font: 13.5px/1.45 var(--f-ui); color: var(--muted) }
+.pasos li strong { font: 600 13.5px var(--f-ui); display: block; margin-bottom: 2px }
+.pasos table.tabla { border-collapse: collapse; margin: 6px 0; font: 13px var(--f-ui); font-variant-numeric: tabular-nums }
+.pasos table.tabla th, .pasos table.tabla td { border: 1px solid var(--line); padding: 3px 9px; text-align: right }
+.pasos table.tabla th { background: var(--accent-soft); font-weight: 600 }
+.tabla-scroll { overflow-x: auto }
+
+/* matrices con corchetes, dentro de una fórmula */
+.mat { position: relative; display: inline-block; vertical-align: middle; padding: 0 7px; margin: 2px 2px }
+.mat::before, .mat::after { content: ""; position: absolute; top: 0; bottom: 0; width: 5px; border: 1.4px solid currentColor }
+.mat::before { left: 0; border-right: 0 }
+.mat::after { right: 0; border-left: 0 }
+.mat table { border-collapse: collapse }
+.mat td { padding: 2px 7px; text-align: center; white-space: nowrap; font-variant-numeric: tabular-nums }
+
+/* ---------- Teoría ---------- */
+.teoria, .preguntas { margin-top: 28px; max-width: 860px; font-size: 15px; line-height: 1.6 }
+.preguntas h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
+.preguntas h3 { font: 600 15px var(--f-ui); margin: 14px 0 2px }
+.preguntas p { margin: 0 }
+.teoria h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
+.teoria .f { max-width: 100%; overflow-x: auto; overflow-y: hidden; font-family: var(--f-math); font-size: 16.5px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; display: inline-block }
+.teoria ul { padding-left: 20px }
+.teoria li { margin-bottom: 4px }
+.teoria li, .teoria p { overflow-x: auto; overflow-y: hidden }
+
+/* ---------- Liquid Glass ---------- */
+/* Vidrio solo en el marco (tarjetas, controles, barras); el lienzo de las gráficas y las fórmulas no se tocan. */
+body { display: flow-root; background: radial-gradient(60% 50% at 8% 0%, var(--halo1), transparent 70%), radial-gradient(50% 45% at 95% 10%, var(--halo2), transparent 70%), radial-gradient(55% 50% at 60% 100%, var(--halo3), transparent 70%), var(--bg); background-attachment: fixed }
+.card { background: var(--vidrio); border-color: var(--vidrio-borde); border-radius: 18px; box-shadow: var(--vidrio-brillo), var(--vidrio-sombra); -webkit-backdrop-filter: var(--blur); backdrop-filter: var(--blur) }
+.destacado { border-top: 3px solid var(--accent) }
+.in { background: var(--vidrio); border-color: var(--vidrio-borde); border-radius: 10px; box-shadow: var(--vidrio-brillo) }
+.btn { background: var(--vidrio-fuerte); border-color: var(--vidrio-borde); border-radius: 99px; padding: 5px 14px; box-shadow: var(--vidrio-brillo) }
+.modos { border-color: var(--vidrio-borde); border-radius: 99px; background: var(--vidrio); box-shadow: var(--vidrio-brillo); -webkit-backdrop-filter: var(--blur); backdrop-filter: var(--blur) }
+.modos button { background: transparent; border-radius: 99px }
+.modos button[aria-selected=true] { box-shadow: 0 1px 6px rgba(0,0,0,.18) }
+.resumen div { border-radius: 14px }
+.teoria .f { background: var(--vidrio); border-color: var(--vidrio-borde); border-radius: 12px }
+canvas { border-radius: 14px }
+@media (max-width: 900px) { .card, .modos { -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px) } }
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) { .card, .modos, header.top { background: var(--panel); -webkit-backdrop-filter: none; backdrop-filter: none } .in, .btn, .teoria .f { background: var(--panel) } }
+
+:root { --accent:#6b7a12; --accent-soft:color-mix(in srgb, #6b7a12 12%, #fff); --marca:#0d6b66 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --accent:#b8c955; --accent-soft:color-mix(in srgb, #b8c955 16%, #182025); --marca:#4dbcb0 } }
+:root[data-theme="dark"] { --accent:#b8c955; --accent-soft:color-mix(in srgb, #b8c955 16%, #182025); --marca:#4dbcb0 }
+header.top { display:flex; align-items:center; gap:8px 20px; flex-wrap:wrap; padding:12px clamp(16px,3vw,28px); position:sticky; top:10px; z-index:10; margin:10px clamp(10px,2vw,20px) 0; border:1px solid var(--vidrio-borde); border-radius:22px; background:var(--vidrio-fuerte); box-shadow:var(--vidrio-brillo),var(--vidrio-sombra); -webkit-backdrop-filter:var(--blur); backdrop-filter:var(--blur) }
+header.top .logo { font:600 18px var(--f-math); margin:0; white-space:nowrap; color:var(--ink); text-decoration:none } header.top .logo i { color:var(--marca) }
+header.top nav { display:flex; gap:4px 14px; font-size:14px; overflow-x:auto; max-width:100%; scrollbar-width:none }
+header.top nav a { white-space:nowrap; padding:2px 0; color:var(--muted); text-decoration:none } header.top nav a:hover { color:var(--ink) }
+header.top nav a[aria-current] { color:var(--ink); font-weight:600; box-shadow:inset 0 -2px 0 var(--accent) }
+header.top form { margin-left:auto; flex:0 1 170px; min-width:130px }
+header.top .foro { margin-left:auto; display:inline-flex; align-items:center; gap:6px; white-space:nowrap; font:600 14px var(--f-ui); color:var(--ink); text-decoration:none; border:1px solid var(--vidrio-borde); background:var(--vidrio); border-radius:99px; padding:6px 12px } header.top .foro:hover, header.top .foro[aria-current] { border-color:var(--accent); color:var(--accent) } header.top .foro + form { margin-left:0 } header.top > .foro ~ .tema { margin-left:0 }
+@media (min-width:701px) { header.top { flex-wrap:nowrap } header.top nav { min-width:0 } }
+header.top .buscar { font:14px var(--f-ui); color:var(--ink); border:1px solid var(--vidrio-borde); border-radius:99px; padding:7px 14px; width:100%; background:var(--vidrio) }
+header.top .buscar:focus-visible, header.top a:focus-visible { outline:2px solid var(--accent); outline-offset:1px }
+.miga { display:flex; align-items:center; flex-wrap:wrap; gap:8px; font-size:13.5px; color:var(--muted); margin:0 0 10px }
+.miga a { color:var(--accent); font-weight:600; text-decoration:none } .miga a:hover { text-decoration:underline }
+.miga-ico { display:inline-grid; place-items:center; width:22px; height:22px; border-radius:6px; background:var(--accent-soft); color:var(--accent); font:italic 600 13px var(--f-math) }
+.miga-der { margin-left:auto; display:flex; gap:8px } .miga-izq:empty, .miga-der:empty { display:none }
+.bib-btn, .prac-btn { border-radius:8px !important; padding:6px 12px !important }
+body.bib-ejemplos select[id^="ejemplo"] { display:none }
+@media print { header.top, .miga, .prac-btn { display:none !important } }
+:root { --vida:#6a4fc2 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --vida:#b39ff7 } }
+:root[data-theme="dark"] { --vida:#b39ff7 }
+.relacionadas { max-width:860px; margin:16px 0 0; background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--accent); border-radius:4px 12px 12px 4px; padding:12px 16px }
+.relacionadas h2 { font:600 12px/1.4 var(--f-ui); text-transform:uppercase; letter-spacing:.06em; color:var(--accent); margin:0 0 4px }
+.relacionadas a { display:flex; gap:10px; align-items:baseline; padding:5px 0; color:var(--ink); text-decoration:none; font-size:14px }
+.relacionadas a b { font-weight:600; white-space:nowrap } .relacionadas a span { color:var(--muted) } .relacionadas a:hover b { color:var(--accent); text-decoration:underline }
+.vida-real { max-width:860px; margin:28px 0 0; background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--vida); border-radius:4px 12px 12px 4px; padding:12px 16px }
+.vida-real h2 { font:600 12px/1.4 var(--f-ui); text-transform:uppercase; letter-spacing:.06em; color:var(--vida); margin:0 0 4px }
+.vida-real a { display:flex; gap:10px; align-items:baseline; padding:5px 0; color:var(--ink); text-decoration:none; font-size:14px }
+.vida-real a b { font-weight:600; white-space:nowrap } .vida-real a span { color:var(--muted) } .vida-real a:hover b { color:var(--vida); text-decoration:underline }
+@media (max-width:600px) { .vida-real a, .relacionadas a { display:block } .vida-real a b, .relacionadas a b { display:block; white-space:normal } }
+@media (max-width:700px) { header.top form { display:none } h1 { font-size:21px }
+  .miga-izq, .miga-der, .miga::after { order:-1 } .miga::after { content:''; flex-basis:100%; height:0 } }
+
+.tema { flex:0 0 auto; margin-left:auto; width:36px; height:36px; display:grid; place-items:center; padding:0; border:1px solid var(--vidrio-borde, var(--line)); border-radius:99px; background:var(--vidrio, var(--bg)); color:var(--ink); cursor:pointer }
+.buscar ~ .tema, form ~ .tema { margin-left:0 }
+.tema:hover { border-color:var(--accent); color:var(--accent) }
+.tema:focus-visible { outline:2px solid var(--accent); outline-offset:1px }
+.tema .sol { display:none }
+:root[data-theme="dark"] .tema .sol { display:block } :root[data-theme="dark"] .tema .luna { display:none }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .tema .sol { display:block } :root:not([data-theme="light"]) .tema .luna { display:none } }
+@media (max-width:700px) { .top > .tema { margin-left:auto } .top > nav { order:1 } }
+</style>
+<style>
+:root {
+  --serie-1: #2a5db5; --serie-2: #c2412a }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --serie-1: #74a2f2; --serie-2: #ef7a62 } }
+:root[data-theme="dark"] {
+  --serie-1: #74a2f2; --serie-2: #ef7a62 }
+.tabla-juego { border-collapse: collapse; font: 14px var(--f-ui); width: 100%; font-variant-numeric: tabular-nums }
+.tabla-juego th, .tabla-juego td { border: 1px solid var(--line); padding: 9px 10px; text-align: center }
+.tabla-juego thead th, .tabla-juego tbody th { background: var(--accent-soft); font-weight: 600 }
+.tabla-juego td.nash { background: var(--accent-soft); font-weight: 700; box-shadow: inset 0 0 0 2px var(--accent) }
+.tabla-juego small { color: var(--muted) }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../../">Cienci<i>fy</i></a><nav aria-label="Fächer"><a href="../../../">Start</a><a href="../../electromagnetismo/">Elektromagnetismus</a><a href="../../fisica/">Allgemeine Physik</a><a href="../../quimica/">Chemie</a><a href="../../matematicas/">Mathematik</a><a href="../../estadistica/">Statistik</a><a href="../../circuitos/">Schaltungen</a><a href="../" aria-current="page">Wirtschaft</a><a href="../../fenomenos/">Alltagsphysik</a></nav><a class="foro" href="../../foro/"><span aria-hidden="true">💬</span>Forum</a><form action="../../../" role="search"><input class="buscar" type="search" name="q" placeholder="Suchen: Biot-Savart, Molarität …" aria-label="Werkzeuge suchen (Kürzel: Taste /)" title="Kürzel: / oder Strg+K"></form><style>
+.lg { position:relative; flex:0 0 auto }
+.lg-btn { display:inline-flex; align-items:center; gap:6px; height:36px; padding:0 12px; border:1px solid var(--vidrio-borde, var(--line)); border-radius:99px; background:var(--vidrio, var(--bg)); color:var(--ink); font:600 13px var(--f-ui, system-ui, sans-serif); cursor:pointer }
+.lg-btn:hover { border-color:var(--accent); color:var(--accent) }
+.lg-btn:focus-visible, .lg-pop a:focus-visible, .lg-ban button:focus-visible { outline:2px solid var(--accent); outline-offset:1px }
+.lg-pop { position:absolute; top:44px; right:0; z-index:50; min-width:210px; margin:0; padding:6px; list-style:none; border:1px solid var(--vidrio-borde, var(--line)); border-radius:16px; background:rgba(255,255,255,.98); color:var(--ink); box-shadow:0 12px 36px rgba(0,0,0,.22) }
+.lg-pop[hidden] { display:none }
+:root[data-theme="dark"] .lg-pop, :root[data-theme="dark"] .lg-ban { background:rgba(28,34,38,.98) }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .lg-pop, :root:not([data-theme="light"]) .lg-ban { background:rgba(28,34,38,.98) } }
+.lg-t { font:600 11px var(--f-ui, system-ui, sans-serif); text-transform:uppercase; letter-spacing:.06em; color:var(--muted); padding:6px 10px 4px }
+.lg-pop a { display:flex; justify-content:space-between; align-items:center; gap:14px; padding:8px 10px; border-radius:10px; color:var(--ink); text-decoration:none; font:500 14px var(--f-ui, system-ui, sans-serif) }
+.lg-pop a:hover { background:var(--accent-soft) }
+.lg-pop a > span { display:flex; align-items:center; gap:10px }
+.lg-pop a small { color:var(--muted); font-size:12px }
+.lg-pop a[aria-current="true"] { background:var(--accent-soft); font-weight:700 }
+.lg-pop a[aria-current="true"] small::after { content:' ✓'; color:var(--accent) }
+.lg-fl { flex:none; border-radius:50%; box-shadow:0 0 0 1px rgba(0,0,0,.18) }
+.lg-ban { position:fixed; left:50%; bottom:18px; z-index:60; transform:translateX(-50%); width:min(560px, calc(100vw - 24px)); box-sizing:border-box; display:flex; flex-wrap:wrap; align-items:center; gap:10px 12px; padding:12px 16px; border:1px solid var(--vidrio-borde, var(--line)); border-radius:18px; background:rgba(255,255,255,.98); color:var(--ink); box-shadow:0 12px 36px rgba(0,0,0,.25); font:14px var(--f-ui, system-ui, sans-serif) }
+.lg-ban p { flex:1 1 220px; margin:0 }
+.lg-ban button { font:600 13px var(--f-ui, system-ui, sans-serif); padding:7px 14px; border-radius:99px; border:1px solid var(--vidrio-borde, var(--line)); background:var(--vidrio, var(--bg)); color:var(--ink); cursor:pointer }
+.lg-ban button.lg-si { background:var(--accent); border-color:var(--accent); color:#fff }
+:root[data-theme="dark"] .lg-ban button.lg-si { color:#0d141a }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .lg-ban button.lg-si { color:#0d141a } }
+@media (max-width:700px) { .top > .lg { margin-left:auto } .top > .lg + .tema { margin-left:0 } }
+@media print { .lg, .lg-ban { display:none !important } }
+</style><div class="lg"><button class="lg-btn" type="button" aria-expanded="false" aria-controls="lg-lista" aria-label="Sprache: Deutsch" title="Sprache"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.8 3 2.8 15 0 18M12 3c-2.8 3-2.8 15 0 18"/></svg><span>DE</span><span aria-hidden="true">▾</span></button><ul class="lg-pop" id="lg-lista" hidden><li class="lg-t" aria-hidden="true">Sprache · Language</li><li><a href="../../../" hreflang="es" lang="es"><span><svg class="lg-fl" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false"><rect width="24" height="24" fill="#c60b1e"/><rect y="6" width="24" height="12" fill="#ffc400"/></svg>Español</span><small>ES</small></a></li><li><a href="../../../en/" hreflang="en" lang="en"><span><svg class="lg-fl" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false"><rect width="24" height="24" fill="#012169"/><path d="M0 0L24 24M24 0L0 24" stroke="#fff" stroke-width="5"/><path d="M0 0L24 24M24 0L0 24" stroke="#c8102e" stroke-width="2"/><path d="M12 0V24M0 12H24" stroke="#fff" stroke-width="8"/><path d="M12 0V24M0 12H24" stroke="#c8102e" stroke-width="4.5"/></svg>English</span><small>EN</small></a></li><li><a href="../../../de/" hreflang="de" lang="de" aria-current="true"><span><svg class="lg-fl" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false"><rect width="24" height="8" fill="#000"/><rect y="8" width="24" height="8" fill="#dd0000"/><rect y="16" width="24" height="8" fill="#ffce00"/></svg>Deutsch</span><small>DE</small></a></li><li><a href="../../../fr/" hreflang="fr" lang="fr"><span><svg class="lg-fl" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false"><rect width="8" height="24" fill="#0055a4"/><rect x="8" width="8" height="24" fill="#fff"/><rect x="16" width="8" height="24" fill="#ef4135"/></svg>Français</span><small>FR</small></a></li></ul></div><script>(() => {
+  const L = [{"c":"es","d":"","n":"Español","a":["Esta página está disponible en español.","Cambiar a español","Seguir aquí"]},{"c":"en","d":"en/","n":"English","a":["This page is available in English.","Switch to English","Stay here"]},{"c":"de","d":"de/","n":"Deutsch","a":["Diese Seite ist auf Deutsch verfügbar.","Auf Deutsch ansehen","Hier bleiben"]},{"c":"fr","d":"fr/","n":"Français","a":["Cette page est disponible en français.","Passer en français","Rester ici"]}], ACTUAL = "de", K = 'simu-idioma';
+  const guarda = (c) => { try { localStorage.setItem(K, c); } catch (e) { /* sin almacenamiento */ } };
+  const lee = () => { try { return localStorage.getItem(K); } catch (e) { return null; } };
+  const resto = () => { let p = location.pathname; for (const i of L) if (i.d && p.startsWith('/' + i.d)) { p = '/' + p.slice(i.d.length + 1); break; } return p + location.search + location.hash; };
+  const destino = (i) => '/' + i.d + resto().replace(/^\//, '');
+  const btn = document.querySelector('.lg-btn'), pop = document.querySelector('.lg-pop');
+  if (!btn || !pop) return;
+  pop.querySelectorAll('a[hreflang]').forEach((a) => { const i = L.find((x) => x.c === a.hreflang); if (i && /^https?:$/.test(location.protocol)) a.href = destino(i); a.addEventListener('click', () => guarda(a.hreflang)); });
+  const abre = (v) => { pop.hidden = !v; btn.setAttribute('aria-expanded', String(v)); };
+  btn.addEventListener('click', (e) => { e.stopPropagation(); abre(pop.hidden); });
+  document.addEventListener('click', (e) => { if (!pop.hidden && !e.target.closest('.lg')) abre(false); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !pop.hidden) { abre(false); btn.focus(); } });
+  pop.addEventListener('focusout', (e) => { if (!pop.hidden && !e.relatedTarget?.closest?.('.lg')) abre(false); });
+  // aviso: una vez, sin elección guardada, con el idioma del navegador publicado y distinto del de la página
+  if (lee() || window.__sinAviso) return;
+  const pref = (navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language || '']).map((s) => String(s).toLowerCase().slice(0, 2));
+  const i = pref.map((c) => L.find((x) => x.c === c)).find(Boolean);
+  if (!i || i.c === ACTUAL) { return; }
+  const b = document.createElement('div'); b.className = 'lg-ban'; b.setAttribute('role', 'region'); b.setAttribute('aria-label', "Sprache"); b.lang = i.c;
+  const t = document.createElement('p'); t.textContent = i.a[0];
+  const si = document.createElement('button'); si.type = 'button'; si.className = 'lg-si'; si.textContent = i.a[1];
+  const no = document.createElement('button'); no.type = 'button'; no.textContent = i.a[2];
+  si.addEventListener('click', () => { guarda(i.c); const a = [...pop.querySelectorAll('a[hreflang]')].find((x) => x.hreflang === i.c); location.href = a ? a.href : destino(i); });
+  no.addEventListener('click', () => { guarda(ACTUAL); b.remove(); });
+  b.append(t, si, no); document.body.append(b);
+})();</script><button class="tema" type="button" title="Zwischen hellem und dunklem Modus wechseln" aria-label="Zwischen hellem und dunklem Modus wechseln"><svg class="luna" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.5A8.5 8.5 0 1 1 9.5 3.5a7 7 0 0 0 11 11z"/></svg><svg class="sol" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button></header>
+<main class="wrap">
+<nav class="miga" aria-label="Du bist hier"><span class="miga-izq"></span><span class="miga-ico" aria-hidden="true">€</span><a href="../">Wirtschaft</a><span aria-hidden="true">›</span><span>Spieltheorie</span><span class="miga-der"></span></nav>
+<h1>Spieltheorie</h1>
+<p class="lead">Gib die Auszahlungsmatrix eines Spiels mit zwei Spielern und je zwei Strategien ein und erhalte die Nash-Gleichgewichte (rein und gemischt), die dominanten Strategien und ob das Ergebnis effizient ist, mit dem Gefangenendilemma als Beispiel.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Daten</h2>
+    <select id="ejemplos" class="in" aria-label="Beispiele" style="margin-bottom:12px"></select>
+    <div class="campos" id="campos"></div>
+    <p class="nota" id="nota"></p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card destacado"><h2>Ergebnisse</h2><div class="resumen" id="resumen"></div></div>
+    <div class="card"><h2>Auszahlungsmatrix</h2><div class="tabla-scroll" id="tabla"></div>
+      <p class="leyenda">Unterstrichen die beste Antwort jedes Spielers; schattiert das Feld, das ein Nash-Gleichgewicht ist; ★ die Pareto-optimalen Ergebnisse.</p></div>
+    <div class="card"><h2>Beste Antworten</h2>
+      <canvas id="grafica" aria-label="Kurven der besten Antwort beider Spieler, die sich in den Nash-Gleichgewichten schneiden"></canvas>
+      <p class="leyenda" id="leyenda"></p>
+    </div>
+    <div class="card pasos"><h2>Herleitung</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<div class="anuncio"><span>Werbung</span><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-6407501780492688" data-ad-slot="4415753033" data-ad-format="auto" data-full-width-responsive="true"></ins><script>(window.adsbygoogle = window.adsbygoogle || []).push({});</script></div>
+<section class="teoria">
+<h2>Die Auszahlungsmatrix</h2>
+<p>Zwei Spieler wählen gleichzeitig, ohne zu wissen, was der andere tut, eine ihrer zwei Strategien. Jedes Feld der Matrix zeigt, was jeder mit dieser Kombination gewinnt: zuerst Spieler 1 (Zeilen), dann Spieler 2 (Spalten).</p>
+<h2>Dominante Strategie und Nash-Gleichgewicht</h2>
+<p>Eine Strategie ist dominant, wenn sie unabhängig vom Verhalten des anderen mehr bringt als die andere. Ein Nash-Gleichgewicht ist eine Kombination, bei der niemand auf eigene Faust wechseln will: Jeder spielt seine beste Antwort auf das, was der andere tut. Gibt es dominante Strategien, verwendet das Gleichgewicht sie.</p>
+<div class="anuncio"><span>Werbung</span><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-6407501780492688" data-ad-slot="4415753033" data-ad-format="auto" data-full-width-responsive="true"></ins><script>(window.adsbygoogle = window.adsbygoogle || []).push({});</script></div>
+<h2>Gemischtes Gleichgewicht</h2>
+<p class="m">Manchmal lohnt es sich, per Zufall zu entscheiden. Spielt Spieler 2 seine erste Strategie mit Wahrscheinlichkeit $q$, ist Spieler 1 zwischen seinen indifferent, wenn seine beiden erwarteten Auszahlungen übereinstimmen, und daraus ergibt sich $q$; dasselbe mit $p$ für Spieler 2:</p>
+<p class="f m">$q = {a_{22} − a_{12}}/{a_{11} − a_{12} − a_{21} + a_{22}}$</p>
+<p class="f m">$p = {b_{22} − b_{21}}/{b_{11} − b_{12} − b_{21} + b_{22}}$</p>
+<h2>Effizienz und das Gefangenendilemma</h2>
+<p>Ein Ergebnis ist Pareto-optimal, wenn man einen nicht besserstellen kann, ohne den anderen schlechterzustellen. Das Nash-Gleichgewicht muss es nicht sein: Im Gefangenendilemma gestehen beide, weil es das Beste ist, was jeder tun kann, obwohl beide besser führen, wenn sie schwiegen. Dasselbe passiert bei zwei Unternehmen, die die Preise senken, oder bei Ländern, die ihre Emissionen nicht verringern.</p>
+</section>
+<section class="limites" aria-label="Grenzen dieses Werkzeugs">
+<h2>Grenzen dieses Werkzeugs</h2>
+<ul>
+<li>Es sind simultane Spiele mit zwei Spielern: Es gibt keinen sequenziellen Entscheidungsbaum (teilspielperfekt) und nicht mehr als drei Strategien pro Spieler.</li>
+<li>In der 3 × 3-Matrix wird das Nash-Gleichgewicht in reinen Strategien gefunden und strikt von einer reinen Strategie dominierte Strategien werden eliminiert; das gemischte Gleichgewicht wird nur bei 2 × 2 berechnet.</li>
+</ul>
+</section>
+<section class="preguntas" aria-label="Häufige Fragen">
+<h2>Häufige Fragen</h2>
+<h3>Was ist ein Nash-Gleichgewicht?</h3>
+<p>Eine Kombination von Strategien, bei der sich kein Spieler verbessert, wenn er allein seine ändert. Im Gefangenendilemma besteht das Gleichgewicht darin, dass beide gestehen (5 und 5 Jahre), obwohl Schweigen für beide (1 und 1) für beide besser wäre.</p>
+<h3>Wie findet man es in einer 2×2-Matrix?</h3>
+<p>Man markiert die beste Antwort jedes Spielers auf jede Strategie des anderen; die Felder mit beiden Markierungen sind Nash-Gleichgewichte.</p>
+</section>
+<div class="anuncio"><span>Werbung</span><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-6407501780492688" data-ad-slot="4415753033" data-ad-format="auto" data-full-width-responsive="true"></ins><script>(window.adsbygoogle = window.adsbygoogle || []).push({});</script></div>
+<section class="relacionadas" aria-label="Verwandte Werkzeuge"><h2>Verwandte Werkzeuge</h2>
+<a href="../pib-ipc/"><b>BIP, VPI und Inflation →</b><span>Nominales und reales BIP, Deflator, Verbraucherpreisindex und Inflationsrate.</span></a>
+<a href="../multiplicador/"><b>Keynesscher Multiplikator →</b><span>Einkommen-Ausgaben-Modell, aggregierte Nachfrage und Ausgabenmultiplikator.</span></a>
+<a href="../beneficio/"><b>Gewinnmaximierung →</b><span>Vollkommene Konkurrenz und Monopol: GrE = GrK, Preis und Gewinn.</span></a>
+<a href="../costes/"><b>Produktionskosten →</b><span>Gesamt-, Durchschnitts- und Grenzkosten einer Produktion, Betriebsminimum und Betriebsoptimum.</span></a>
+</section>
+</main>
+<footer><a href="../../../">Start</a>·<a href="../../contacto.html">Kontakt</a>·<a href="mailto:danijimzzz30@gmail.com?subject=Error%20en%20Teor%C3%ADa%20de%20juegos&amp;body=Herramienta%3A%20Teor%C3%ADa%20de%20juegos%20(economia%2Fteoria-juegos)%0A%0AQu%C3%A9%20esperaba%20y%20qu%C3%A9%20ha%20pasado%3A%0A">Fehler melden</a>·<a href="../../aviso-legal.html">Impressum</a>·<a href="../../privacidad.html">Datenschutz</a>·<a href="../../cookies.html">Cookies</a> · <a href="#" class="pref-cookies">Cookie-Einstellungen</a>· Spieltheorie <span id="ver"></span> (Beta)</footer>
+</body>
+<script>
+const Pagina = { carpeta: 'teoria-juegos', guarda: 'teoria-juegos-v1' };
+const Version = (() => { const registros = {"web":[{"v":"1.22"}],"control":[{"v":"0.2"}],"termo-estadistica":[{"v":"0.2"}],"markowitz":[{"v":"0.3"}],"cavidades":[{"v":"0.2"}],"organica":[{"v":"0.3"}],"transformada-z":[{"v":"0.2"}],"semiconductores":[{"v":"0.2"}],"relatividad":[{"v":"0.2"}],"osc-acopladas":[{"v":"0.2"}],"solubilidad":[{"v":"0.2"}],"lagrange":[{"v":"0.2"}],"series":[{"v":"0.3"}],"no-parametricos":[{"v":"0.3"}],"regresion-multiple":[{"v":"0.2"}],"anova":[{"v":"0.3"}],"black-scholes":[{"v":"0.3"}],"bonos":[{"v":"0.3"}],"solow":[{"v":"0.3"}],"integrales-multiples":[{"v":"0.1"}],"formulacion":[{"v":"0.2"}],"balance":[{"v":"0.2"}],"redox":[{"v":"0.2"}],"lineas-transmision":[{"v":"0.3"}],"superficies":[{"v":"0.2"}],"vsepr":[{"v":"0.2"}],"maxwell":[{"v":"0.3"}],"fresnel":[{"v":"0.2"}],"gravitacion":[{"v":"0.2"}],"convolucion":[{"v":"0.2"}],"laplace-numerica":[{"v":"0.2"}],"imagenes":[{"v":"0.2.1"}],"guias-onda":[{"v":"0.2"}],"antena":[{"v":"0.2"}],"bode":[{"v":"0.3"}],"optica":[{"v":"0.2"}],"simulador":[{"v":"0.4"}],"teoria-juegos":[{"v":"0.2"}],"puertas-logicas":[{"v":"0.4"}],"multiplicador":[{"v":"0.3"}],"is-lm":[{"v":"0.3"}],"choques":[{"v":"0.1"}],"termoquimica":[{"v":"0.3"}],"probabilidad":[{"v":"0.2"}],"unidades":[{"v":"0.2"}],"equilibrio":[{"v":"0.2"}],"oscilaciones":[{"v":"0.1"}],"beneficio":[{"v":"0.3"}],"costes":[{"v":"0.3"}],"sistemas-numericos":[{"v":"0.2"}],"excedentes":[{"v":"0.2"}],"oferta-demanda":[{"v":"0.2"}],"chi2-bondad":[{"v":"0.2"}],"contrastes":[{"v":"0.2"}],"errores":[{"v":"0.2"}],"graficador":[{"v":"0.2"}],"metodos-numericos":[{"v":"0.2"}],"fisica-moderna":[{"v":"0.2"}],"lorenz-gini":[{"v":"0.2"}],"phillips-okun":[{"v":"0.3"}],"tipos-cambio":[{"v":"0.3"}],"elasticidades":[{"v":"0.3"}],"pib-ipc":[{"v":"0.2"}],"numeros-indice":[{"v":"0.2"}],"ratios":[{"v":"0.2"}],"punto-muerto":[{"v":"0.2"}],"ahorro":[{"v":"0.3"}],"van-tir":[{"v":"0.3"}],"amortizacion-inmovilizado":[{"v":"0.2"}],"prestamos":[{"v":"0.3"}],"rentas":[{"v":"0.3"}],"interes":[{"v":"0.3"}],"descriptiva":[{"v":"0.2"}],"regresion-economia":[{"v":"0.2"}],"ajustador":[{"v":"0.2.1"}],"electrostatica":[{"v":"0.11"}],"magnetostatica":[{"v":"0.4"}],"tabla-periodica":[{"v":"0.2"}],"trabajo-y-energia":[{"v":"0.3"}],"masa-molar":[{"v":"0.2"}],"configuracion-electronica":[{"v":"0.2"}],"condensadores":[{"v":"0.4"}],"tiro-parabolico":[{"v":"0.4"}],"disoluciones":[{"v":"0.2"}],"calorimetria":[{"v":"0.2"}],"induccion":[{"v":"0.4"}],"matrices":[{"v":"0.3"}],"derivadas":[{"v":"0.3"}],"laplace":[{"v":"0.2"}],"interferencia":[{"v":"0.2"}],"ondas-em":[{"v":"0.4"}],"intervalos":[{"v":"0.3"}],"fuerza":[{"v":"0.3"}],"campos":[{"v":"0.2.1"}],"cinetica":[{"v":"0.2"}],"edos":[{"v":"0.2"}],"fourier":[{"v":"0.2"}],"taylor":[{"v":"0.3"}],"complejos":[{"v":"0.3"}],"sistemas":[{"v":"0.3"}],"regresion":[{"v":"0.3"}],"estadistica":[{"v":"0.3"}],"dinamica":[{"v":"0.3"}],"solido-rigido":[{"v":"0.3"}],"ondas":[{"v":"0.3"}],"gases":[{"v":"0.6"}],"ciclos":[{"v":"0.2"}],"ph":[{"v":"0.4"}],"fluidos":[{"v":"0.3"}],"doppler":[{"v":"0.2"}],"resistencias":[{"v":"0.3"}],"faraday":[{"v":"0.4"}],"fenomenos":[{"v":"0.9"}]}; const de = (h) => ({ current: registros[h][0].v, log: registros[h] }); return { registros, de }; })();
+
+</script>
+<script src="../../../js/de/herramienta.de.74e911cb.js"></script>
+<script src="../../../js/de/enunciado.de.ad25b594.js"></script>
+<script src="../../../js/de/mates.de.b5c3ede5.js"></script>
+<script src="../../../js/de/calculadora.de.e177d0ba.js"></script>
+<script src="../../../js/de/economia-comun.de.fdf6c4a3.js"></script>
+<script>
+const TeoriaJuegos = (() => {
+  const K = typeof Eco !== 'undefined' ? Eco : require('../economia/comun.js');
+  const { f, lee } = K;
+  const n = (x) => f(x, 5), par = (x) => (x < 0 ? `(${n(x)})` : n(x));
+  const limpia = (s, def) => (String(s ?? '').replace(/[<>&"$\\{}]/g, '').trim().slice(0, 24) || def);
+  const EPS = 1e-12;
+
+  function resolver2(sc) {
+    const nom = { f: [limpia(sc.f1, 'Oben'), limpia(sc.f2, 'Unten')], c: [limpia(sc.c1, 'Links'), limpia(sc.c2, 'Rechts')] };
+    const A = [[0, 0], [0, 0]], B = [[0, 0], [0, 0]];
+    for (const i of [0, 1]) for (const j of [0, 1]) {
+      A[i][j] = lee(sc, `a${i + 1}${j + 1}`, `die Auszahlung von Spieler 1 bei (${nom.f[i]}, ${nom.c[j]})`);
+      B[i][j] = lee(sc, `b${i + 1}${j + 1}`, `die Auszahlung von Spieler 2 bei (${nom.f[i]}, ${nom.c[j]})`);
+    }
+    const [[a11, a12], [a21, a22]] = A, [[b11, b12], [b21, b22]] = B;
+    const mejorF = [[0, 1].map((j) => A[0][j] >= A[1][j] - EPS), [0, 1].map((j) => A[1][j] >= A[0][j] - EPS)];
+    const mejorC = [0, 1].map((i) => [B[i][0] >= B[i][1] - EPS, B[i][1] >= B[i][0] - EPS]);
+    const nash = [];
+    for (const i of [0, 1]) for (const j of [0, 1]) if (mejorF[i][j] && mejorC[i][j]) nash.push([i, j]);
+    const domina = (u) => {
+      for (const i of [0, 1]) {
+        const x = u(i, 0) - u(1 - i, 0), y = u(i, 1) - u(1 - i, 1);
+        if (x > EPS && y > EPS) return { i, fuerte: true };
+        if (x >= -EPS && y >= -EPS && (x > EPS || y > EPS)) return { i, fuerte: false };
+      }
+      return null;
+    };
+    const domF = domina((i, j) => A[i][j]), domC = domina((j, i) => B[i][j]);
+    const dq = a11 - a12 - a21 + a22, dp = b11 - b12 - b21 + b22;
+    let mixto = null, motivoMixto = '';
+    if (Math.abs(dq) < EPS || Math.abs(dp) < EPS) motivoMixto = 'für einen der Spieler ist es gleich, was der andere tut (oder seine Auszahlung ändert sich beim Mischen nicht), also gibt es keine Wahrscheinlichkeiten, die ihn indifferent machen';
+    else {
+      const q = (a22 - a12) / dq, p = (b22 - b21) / dp;
+      if (!(p > EPS && p < 1 - EPS && q > EPS && q < 1 - EPS)) motivoMixto = `die sich ergebenden Wahrscheinlichkeiten (p = ${n(p)} und q = ${n(q)}) liegen nicht zwischen 0 und 1`;
+      else mixto = { p, q, u1: q * a11 + (1 - q) * a12, u2: p * b11 + (1 - p) * b21 };
+    }
+    const pareto = A.map((fila, i) => fila.map((_, j) => ![0, 1].some((k) => [0, 1].some((l) => (k !== i || l !== j) && A[k][l] >= A[i][j] - EPS && B[k][l] >= B[i][j] - EPS && (A[k][l] > A[i][j] + EPS || B[k][l] > B[i][j] + EPS)))));
+    const mejoraAmbos = (i, j) => [0, 1].some((k) => [0, 1].some((l) => A[k][l] > A[i][j] + EPS && B[k][l] > B[i][j] + EPS));
+    let tipo;
+    const mismo = (x) => nash.length === 2 && nash.some((t) => t[0] === x[0] && t[1] === x[1]);
+    if (nash.length === 0) tipo = 'Kein Gleichgewicht in reinen Strategien (wie Kopf oder Zahl): Jeder will erraten, was der andere tut, und es gibt nur durch Mischen ein Gleichgewicht.';
+    else if (nash.length === 1 && domF?.fuerte && domC?.fuerte && mejoraAmbos(...nash[0])) tipo = 'Gefangenendilemma: Beide haben eine dominante Strategie, spielen das Nash-Gleichgewicht, und beide führen mit einem anderen Ergebnis besser, aber keiner kann es allein erreichen.';
+    else if (nash.length === 1) tipo = pareto[nash[0][0]][nash[0][1]] ? 'Eindeutiges und effizientes Nash-Gleichgewicht: Niemand kann sich verbessern, ohne dass sich ein anderer verschlechtert.' : 'Eindeutiges, aber ineffizientes Nash-Gleichgewicht: Es gibt ein anderes, für beide besseres Ergebnis.';
+    else if (mismo([0, 0]) && mismo([1, 1])) tipo = 'Koordinationsspiel: Es gibt zwei Gleichgewichte, und beiden nützt es, dasselbe zu wählen, aber man muss sich einigen, welches.';
+    else if (mismo([0, 1]) && mismo([1, 0])) tipo = 'Feiglingsspiel (Anti-Koordination): Es gibt zwei Gleichgewichte, und jedem nützt es, das Gegenteil des anderen zu tun; jeder bevorzugt das Gleichgewicht, in dem der andere nachgibt.';
+    else tipo = 'Mehrere Nash-Gleichgewichte (es gibt Gleichstände zwischen Strategien).';
+
+    const pasos = [], N = (r, c) => `${nom.f[r]} / ${nom.c[c]}`;
+    const cel = (i, j) => `(${n(A[i][j])}, ${n(B[i][j])})`;
+    pasos.push({ t: 'Auszahlungsmatrix', html: `Jedes Feld ist (Auszahlung von Spieler 1, Auszahlung von Spieler 2). Spieler 1 wählt die Zeile (<b>${nom.f[0]}</b> oder <b>${nom.f[1]}</b>) und Spieler 2 die Spalte (<b>${nom.c[0]}</b> oder <b>${nom.c[1]}</b>):<br>` + [0, 1].map((i) => [0, 1].map((j) => `${N(i, j)}: ${cel(i, j)}`).join(' &ensp; ')).join('<br>') });
+    const respF = [0, 1].map((j) => { const [x, y] = [A[0][j], A[1][j]]; return `Spielt Spieler 2 <b>${nom.c[j]}</b>: $${n(x)}${x > y ? ' > ' : x < y ? ' < ' : ' = '}${n(y)}$, ${x === y ? 'ist es ihm gleich' : `besser <b>${nom.f[x > y ? 0 : 1]}</b>`}`; });
+    const respC = [0, 1].map((i) => { const [x, y] = [B[i][0], B[i][1]]; return `Spielt Spieler 1 <b>${nom.f[i]}</b>: $${n(x)}${x > y ? ' > ' : x < y ? ' < ' : ' = '}${n(y)}$, ${x === y ? 'ist es ihm gleich' : `besser <b>${nom.c[x > y ? 0 : 1]}</b>`}`; });
+    pasos.push({ t: 'Beste Antworten von Spieler 1', html: respF.join('<br>') });
+    pasos.push({ t: 'Beste Antworten von Spieler 2', html: respC.join('<br>') });
+    const dTxt = (d, jug, nm) => (d ? `Spieler ${jug} hat eine ${d.fuerte ? 'strikt' : 'schwach'} dominante Strategie: <b>${nm[d.i]}</b>, die ihm ${d.fuerte ? 'mehr' : 'mindestens ebenso viel'} bringt wie <b>${nm[1 - d.i]}</b>, was auch immer der andere spielt.` : `Spieler ${jug} hat keine dominante Strategie: Seine beste Antwort hängt davon ab, was der andere tut.`);
+    pasos.push({ t: 'Dominante Strategien', html: `${dTxt(domF, 1, nom.f)}<br>${dTxt(domC, 2, nom.c)}` });
+    pasos.push({ t: 'Nash-Gleichgewichte in reinen Strategien', html: nash.length ? `Ein Nash-Gleichgewicht ist ein Feld, in dem jeder seine beste Antwort auf die des anderen spielt (beide markiert): ${nash.map(([i, j]) => `<b>${N(i, j)}</b> mit Auszahlungen ${cel(i, j)}`).join('; ')}.` : 'Kein Feld hat beide besten Antworten gleichzeitig: Es gibt kein Gleichgewicht in reinen Strategien.' });
+    pasos.push({ t: 'Gleichgewicht in gemischten Strategien', html: `Sei $p$ die Wahrscheinlichkeit, dass Spieler 1 <b>${nom.f[0]}</b> spielt, und $q$ die, dass Spieler 2 <b>${nom.c[0]}</b> spielt. Jeder mischt so, dass der andere indifferent ist.<br>`
+      + `Spieler 1 indifferent: $${n(a11)} q + ${par(a12)} (1 − q) = ${n(a21)} q + ${par(a22)} (1 − q)$ ⇒ $q = {${n(a22)} − ${par(a12)}}/{${n(a11)} − ${par(a12)} − ${par(a21)} + ${par(a22)}}$ ${Math.abs(dq) < EPS ? '(der Nenner ist 0)' : `$= ${n((a22 - a12) / dq)}$`}<br>`
+      + `Spieler 2 indifferent: $${n(b11)} p + ${par(b21)} (1 − p) = ${n(b12)} p + ${par(b22)} (1 − p)$ ⇒ $p = {${n(b22)} − ${par(b21)}}/{${n(b11)} − ${par(b12)} − ${par(b21)} + ${par(b22)}}$ ${Math.abs(dp) < EPS ? '(der Nenner ist 0)' : `$= ${n((b22 - b21) / dp)}$`}<br>`
+      + (mixto ? `Es gibt ein gemischtes Gleichgewicht: Spieler 1 spielt <b>${nom.f[0]}</b> mit Wahrscheinlichkeit $p = ${n(mixto.p)}$ und Spieler 2 spielt <b>${nom.c[0]}</b> mit $q = ${n(mixto.q)}$. Erwartete Auszahlungen: $u_1 = ${n(mixto.u1)}$ und $u_2 = ${n(mixto.u2)}$.` : `Es gibt kein gemischtes Gleichgewicht mit Wahrscheinlichkeiten zwischen 0 und 1: ${motivoMixto}.`) });
+    const pa = [[0, 0], [0, 1], [1, 0], [1, 1]].filter(([i, j]) => pareto[i][j]);
+    pasos.push({ t: 'Effizienz und Spieltyp', html: `Pareto-optimale Felder (man kann einen nicht besserstellen, ohne den anderen schlechterzustellen): ${pa.map(([i, j]) => `<b>${N(i, j)}</b> ${cel(i, j)}`).join('; ')}.<br>${nash.length ? nash.map(([i, j]) => `${N(i, j)} ${pareto[i][j] ? 'es eficiente' : 'ist <b>ineffizient</b>: Ein anderes Feld bringt beiden mehr'}`).join('; ') + '.<br>' : ''}${tipo}` });
+    return { A, B, nom, mejorF, mejorC, nash, domF, domC, mixto, motivoMixto, pareto, tipo, pasos };
+  }
+
+  function resolver3(sc) {
+    const nom = { f: [1, 2, 3].map((i) => limpia(sc['f' + i], ['Oben', 'Mittel', 'Unten'][i - 1])), c: [1, 2, 3].map((j) => limpia(sc['c' + j], ['Links', 'Mitte', 'Rechts'][j - 1])) };
+    const matriz = (txt, quien) => {
+      const d = K.filas(txt, 3, `die Auszahlungen von Spieler ${quien}`);
+      if (d.length !== 3) throw new Error(`Die Auszahlungen von Spieler ${quien} brauchen 3 Zeilen mit je 3 Zahlen: eine Zeile für jede Strategie von Spieler 1`);
+      return d;
+    };
+    const A = matriz(sc.p1, 1), B = matriz(sc.p2, 2), T = [0, 1, 2];
+    const mejorF = T.map((i) => T.map((j) => A[i][j] >= Math.max(...T.map((k) => A[k][j])) - EPS));
+    const mejorC = T.map((i) => T.map((j) => B[i][j] >= Math.max(...T.map((l) => B[i][l])) - EPS));
+    const nash = []; for (const i of T) for (const j of T) if (mejorF[i][j] && mejorC[i][j]) nash.push([i, j]);
+    let F = [...T], C = [...T]; const rondas = [];
+    for (let r = 0; r < 6; r++) {
+      const ef = F.map((i) => ({ i, por: F.find((k) => k !== i && C.every((j) => A[k][j] > A[i][j] + EPS)) })).filter((x) => x.por !== undefined);
+      const ec = C.map((j) => ({ j, por: C.find((l) => l !== j && F.every((i) => B[i][l] > B[i][j] + EPS)) })).filter((x) => x.por !== undefined);
+      if (!ef.length && !ec.length) break;
+      rondas.push({ f: ef, c: ec, F: F.filter((i) => !ef.some((x) => x.i === i)), C: C.filter((j) => !ec.some((x) => x.j === j)) });
+      F = rondas[rondas.length - 1].F; C = rondas[rondas.length - 1].C;
+    }
+    const resuelto = F.length === 1 && C.length === 1;
+    const pareto = T.map((i) => T.map((j) => !T.some((k) => T.some((l) => (k !== i || l !== j) && A[k][l] >= A[i][j] - EPS && B[k][l] >= B[i][j] - EPS && (A[k][l] > A[i][j] + EPS || B[k][l] > B[i][j] + EPS)))));
+    let tipo;
+    if (resuelto) tipo = `Durch Dominanz lösbar: Nach Eliminierung dominierter Strategien bleibt nur ${nom.f[F[0]]} / ${nom.c[C[0]]}, das das einzige Nash-Gleichgewicht ist.`;
+    else if (!nash.length) tipo = 'Kein Nash-Gleichgewicht in reinen Strategien: Es gäbe nur durch Mischen ein Gleichgewicht (dieses Werkzeug berechnet es bei 3 × 3 nicht).';
+    else if (nash.length === 1) tipo = 'Ein Nash-Gleichgewicht in reinen Strategien, das sich nicht durch Dominanz ergibt.';
+    else tipo = `${nash.length} Nash-Gleichgewichte in reinen Strategien: Man muss sich koordinieren, um eines zu wählen.`;
+
+    const pasos = [], N = (i, j) => `${nom.f[i]} / ${nom.c[j]}`, n3 = (x) => f(x, 5), cel = (i, j) => `(${n3(A[i][j])}, ${n3(B[i][j])})`;
+    pasos.push({ t: 'Auszahlungsmatrix', html: `Jedes Feld ist (Auszahlung von Spieler 1, Auszahlung von Spieler 2). Spieler 1 wählt die Zeile (${nom.f.map((x) => `<b>${x}</b>`).join(', ')}) und Spieler 2 die Spalte (${nom.c.map((x) => `<b>${x}</b>`).join(', ')}):<br>` + T.map((i) => `${nom.f[i]}: ${T.map((j) => cel(i, j)).join(' ')}`).join('<br>') });
+    pasos.push({ t: 'Beste Antworten', html: `Ein Feld $(s_1^*, s_2^*)$ ist ein Nash-Gleichgewicht, wenn $u_1(s_1^*, s_2^*) ≥ u_1(s_1, s_2^*)$ für alle $s_1$ und $u_2(s_1^*, s_2^*) ≥ u_2(s_1^*, s_2)$ für alle $s_2$. Um es zu sehen, vergleicht Spieler 1 in jeder Spalte seine drei Auszahlungen und nimmt die größte; Spieler 2 tut dasselbe in jeder Zeile. ${T.map((j) => `Spielt Spieler 2 <b>${nom.c[j]}</b>, bevorzugt Spieler 1 ${T.filter((i) => mejorF[i][j]).map((i) => `<b>${nom.f[i]}</b>`).join(' oder ')}`).join('; ')}. ${T.map((i) => `Spielt Spieler 1 <b>${nom.f[i]}</b>, bevorzugt Spieler 2 ${T.filter((j) => mejorC[i][j]).map((j) => `<b>${nom.c[j]}</b>`).join(' oder ')}`).join('; ')}.` });
+    pasos.push({ t: 'Nash-Gleichgewichte in reinen Strategien', html: nash.length ? `Felder, in denen beide beste Antworten sind: ${nash.map(([i, j]) => `<b>${N(i, j)}</b> mit Auszahlungen ${cel(i, j)}`).join('; ')}.` : 'Kein Feld ist gleichzeitig beste Antwort beider: Es gibt kein Gleichgewicht in reinen Strategien.' });
+    if (!rondas.length) pasos.push({ t: 'Eliminierung dominierter Strategien', html: 'Keine Strategie wird von einer anderen strikt dominiert (bringt weniger als sie gegen alle des Gegners): Es lässt sich nichts eliminieren, und die Dominanz vereinfacht das Spiel nicht.' });
+    rondas.forEach((r, k) => pasos.push({ t: `Eliminierung, Runde ${k + 1}`, html: `${r.f.map((x) => `Für Spieler 1 ist <b>${nom.f[x.por]}</b> immer besser als <b>${nom.f[x.i]}</b> (bringt gegen jede noch im Spiel befindliche Spalte mehr): <b>${nom.f[x.i]}</b> wird eliminiert.`).concat(r.c.map((x) => `Für Spieler 2 ist <b>${nom.c[x.por]}</b> immer besser als <b>${nom.c[x.j]}</b> (bringt gegen jede noch im Spiel befindliche Zeile mehr): <b>${nom.c[x.j]}</b> wird eliminiert.`)).join('<br>')}<br>Es bleiben: Zeilen ${r.F.map((i) => nom.f[i]).join(', ')}; Spalten ${r.C.map((j) => nom.c[j]).join(', ')}.` }));
+    if (rondas.length) pasos.push({ t: 'Was übrig bleibt', html: resuelto ? `Es bleibt nur <b>${N(F[0], C[0])}</b> mit Auszahlungen ${cel(F[0], C[0])}: Ein rationaler Spieler, der weiß, dass auch der andere rational ist, gelangt hierher. ${nash.length === 1 && nash[0][0] === F[0] && nash[0][1] === C[0] ? 'Es stimmt mit dem einzigen Nash-Gleichgewicht überein.' : ''}` : `Es bleibt ein ${F.length} × ${C.length}-Spiel: ${F.map((i) => nom.f[i]).join(', ')} gegen ${C.map((j) => nom.c[j]).join(', ')}. Die Nash-Gleichgewichte liegen weiterhin unter den verbleibenden Strategien, und mit strikter Dominanz lässt sich nichts weiter eliminieren.` });
+    pasos.push({ t: 'Effizienz', html: `Pareto-optimale Felder: ${T.flatMap((i) => T.filter((j) => pareto[i][j]).map((j) => `<b>${N(i, j)}</b> ${cel(i, j)}`)).join('; ')}.${nash.length ? ` ${nash.map(([i, j]) => `${N(i, j)} ${pareto[i][j] ? 'ist' : 'ist nicht'} Pareto-optimal`).join('; ')}.` : ''}` });
+    pasos.push({ t: 'Was es nicht tut', html: 'Es werden nur von einer reinen Strategie <b>strikt</b> dominierte Strategien eliminiert: Bei schwacher Dominanz kann das Ergebnis von der Reihenfolge der Eliminierung abhängen, und eine Strategie kann von einer Mischung zweier anderer dominiert sein, ohne dass eine reine sie dominiert; beides wird hier nicht geprüft.' });
+    return { tam: 3, A, B, nom, mejorF, mejorC, nash, rondas, F, C, resuelto, pareto, tipo, pasos };
+  }
+  const resolver = (sc) => (String(sc.tam) === '3' ? resolver3(sc) : resolver2(sc));
+
+  const ej = (f1, f2, c1, c2, a, b) => ({ f1, f2, c1, c2, a11: a[0], a12: a[1], a21: a[2], a22: a[3], b11: b[0], b12: b[1], b21: b[2], b22: b[3] });
+  const ejemplos = [
+    { clave: 'prisionero', nombre: 'Gefangenendilemma', sc: ej('Schweigen', 'Gestehen', 'Schweigen', 'Gestehen', ['-1', '-10', '0', '-5'], ['-1', '0', '-10', '-5']) },
+    { clave: 'coordinacion', nombre: 'Koordination: dieselbe Plattform wählen', sc: ej('Blu-ray', 'HD DVD', 'Blu-ray', 'HD DVD', ['2', '0', '0', '1'], ['2', '0', '0', '1']) },
+    { clave: 'gallina', nombre: 'Feiglingsspiel', sc: ej('Weiterfahren', 'Ausweichen', 'Weiterfahren', 'Ausweichen', ['-10', '2', '0', '1'], ['-10', '0', '2', '1']) },
+    { clave: 'pares', nombre: 'Kopf oder Zahl (ohne reines Gleichgewicht)', sc: ej('Kopf', 'Zahl', 'Kopf', 'Zahl', ['1', '-1', '-1', '1'], ['-1', '1', '1', '-1']) },
+    { clave: 'batalla', nombre: 'Kampf der Geschlechter', sc: ej('Oper', 'Fußball', 'Oper', 'Fußball', ['3', '0', '0', '2'], ['2', '0', '0', '3']) },
+    { clave: 'dominancia-3x3', nombre: '3 × 3-Matrix, die sich durch Eliminierung dominierter Strategien lösen lässt', sc: { tam: '3', f1: 'Oben', f2: 'Mittel', f3: 'Unten', c1: 'Links', c2: 'Mitte', c3: 'Rechts', p1: '3 1 2\n2 2 1\n1 0 0', p2: '2 3 1\n1 2 0\n0 1 2' } },
+    { clave: 'coordinacion-3x3', nombre: '3 × 3-Koordination: drei Gleichgewichte', sc: { tam: '3', f1: 'A', f2: 'B', f3: 'C', c1: 'A', c2: 'B', c3: 'C', p1: '2 0 0\n0 1 0\n0 0 3', p2: '2 0 0\n0 1 0\n0 0 3' } },
+    { clave: 'piedra-papel-tijera', nombre: 'Schere, Stein, Papier (ohne reines Gleichgewicht)', sc: { tam: '3', f1: 'Stein', f2: 'Papier', f3: 'Schere', c1: 'Stein', c2: 'Papier', c3: 'Schere', p1: '0 -1 1\n1 0 -1\n-1 1 0', p2: '0 1 -1\n-1 0 1\n1 -1 0' } },
+    { clave: 'cuota', nombre: 'Zwei Unternehmen: den Preis senken oder halten', sc: ej('Halten', 'Senken', 'Halten', 'Senken', ['10', '4', '14', '6'], ['10', '14', '4', '6']) },
+  ];
+
+  return { resolver, ejemplos };
+})();
+
+</script>
+<script src="../../../js/de/compartir.de.4d359e6b.js"></script>
+<script>
+(() => {
+  const X = TeoriaJuegos, { f } = Eco;
+  const par = (a, b) => `(${f(a, 5)}, ${f(b, 5)})`;
+  function azar() {
+    const e = () => String(Math.floor(Math.random() * 10));
+    const sc = { f1: 'Oben', f2: 'Unten', c1: 'Links', c2: 'Rechts' };
+    for (const i of [1, 2]) for (const j of [1, 2]) { sc[`a${i}${j}`] = e(); sc[`b${i}${j}`] = e(); }
+    return sc;
+  }
+  const matriz = (sc) => `Spieler 1 (Zeilen): ${sc.f1} oder ${sc.f2}. Spieler 2 (Spalten): ${sc.c1} oder ${sc.c2}. Auszahlungen (Spieler 1, Spieler 2): `
+    + [[1, 1], [1, 2], [2, 1], [2, 2]].map(([i, j]) => `(${sc['f' + i]}, ${sc['c' + j]}) = (${sc[`a${i}${j}`]}, ${sc[`b${i}${j}`]})`).join('; ') + '.';
+  function mejor(d0, d1, gira) {
+    const u = (v, t) => (gira ? [t, v] : [v, t]);
+    if (d0 * d1 < 0) { const tm = d0 / (d0 - d1), a = d0 > 0 ? 1 : 0; return [[u(a, 0), u(a, tm), u(1 - a, tm), u(1 - a, 1)]]; }
+    if (d0 === 0 && d1 === 0) return [[u(0, 0), u(0, 1), u(1, 1), u(1, 0), u(0, 0)]];
+    const v = d0 > 0 || d1 > 0 ? 1 : 0, r = [[u(v, 0), u(v, 1)]];
+    if (d0 === 0) r.push([u(0, 0), u(1, 0)]); if (d1 === 0) r.push([u(0, 1), u(1, 1)]);
+    return r;
+  }
+  const celda = (s, i, j) => {
+    const a = f(s.A[i][j], 5), b = f(s.B[i][j], 5);
+    return `<td class="${s.nash.some((t) => t[0] === i && t[1] === j) ? 'nash' : ''}">${s.mejorF[i][j] ? `<u>${a}</u>` : a}, ${s.mejorC[i][j] ? `<u>${b}</u>` : b}${s.pareto[i][j] ? ' <small title="Pareto-optimal">★</small>' : ''}</td>`;
+  };
+  Calculadora.monta({
+    C: X, carpeta: 'teoria-juegos', app: 'TeoriaJuegosApp', azar,
+    enunciado: (sc) => String(sc.tam) === '3' ? `In diesem Spiel mit zwei Spielern und je drei Strategien (Spieler 1 wählt die Zeile unter ${[1, 2, 3].map((i) => sc['f' + i]).join(', ')} und Spieler 2 die Spalte unter ${[1, 2, 3].map((j) => sc['c' + j]).join(', ')}), mit den Auszahlungen von Spieler 1 zeilenweise «${String(sc.p1).replace(/\n/g, ' / ')}» und denen von Spieler 2 «${String(sc.p2).replace(/\n/g, ' / ')}», eliminiere die strikt dominierten Strategien Runde für Runde und finde die Nash-Gleichgewichte in reinen Strategien.` : `Bestimme in diesem Spiel mit zwei Spielern (${matriz(sc)}) die dominanten Strategien, die Nash-Gleichgewichte in reinen Strategien und, falls es eines gibt, das gemischte Gleichgewicht (p ist die Wahrscheinlichkeit, dass Spieler 1 ${sc.f1} spielt, und q die, dass Spieler 2 ${sc.c1} spielt).`,
+    nota: 'Die Matrix zeigt in jedem Feld die Auszahlung von Spieler 1 und die von Spieler 2. Sie können negativ sein (zum Beispiel Jahre im Gefängnis). Die Namen der Strategien sind frei wählbar.',
+    campos: (sc) => String(sc.tam) === '3' ? [
+      { k: 'tam', nom: 'Größe der Matrix', tipo: 'sel', ops: [['2', '2 × 2 (mit gemischtem Gleichgewicht)'], ['3', '3 × 3 (mit Eliminierung dominierter Strategien)']] },
+      { k: 'f1', nom: 'Spieler 1, Strategie 1', tipo: 'texto', sep: 'Strategien (Namen)' }, { k: 'f2', nom: 'Spieler 1, Strategie 2', tipo: 'texto' }, { k: 'f3', nom: 'Spieler 1, Strategie 3', tipo: 'texto' },
+      { k: 'c1', nom: 'Spieler 2, Strategie 1', tipo: 'texto' }, { k: 'c2', nom: 'Spieler 2, Strategie 2', tipo: 'texto' }, { k: 'c3', nom: 'Spieler 2, Strategie 3', tipo: 'texto' },
+      { k: 'p1', nom: 'Auszahlungen von Spieler 1', tipo: 'area', filas: 3, ayuda: 'drei Zeilen mit je drei Zahlen: eine Zeile pro Strategie von Spieler 1', sep: 'Auszahlungen' },
+      { k: 'p2', nom: 'Auszahlungen von Spieler 2', tipo: 'area', filas: 3, ayuda: 'drei Zeilen mit je drei Zahlen, in derselben Reihenfolge' },
+    ] : [
+      { k: 'tam', nom: 'Größe der Matrix', tipo: 'sel', ops: [['2', '2 × 2 (mit gemischtem Gleichgewicht)'], ['3', '3 × 3 (mit Eliminierung dominierter Strategien)']] },
+      { k: 'f1', nom: 'Spieler 1, Strategie 1', tipo: 'texto', sep: 'Strategien (Namen)' }, { k: 'f2', nom: 'Spieler 1, Strategie 2', tipo: 'texto' },
+      { k: 'c1', nom: 'Spieler 2, Strategie 1', tipo: 'texto' }, { k: 'c2', nom: 'Spieler 2, Strategie 2', tipo: 'texto' },
+      { k: 'a11', nom: 'Spieler 1 bei (1, 1)', sep: 'Auszahlungen von Spieler 1' }, { k: 'a12', nom: 'Spieler 1 bei (1, 2)' }, { k: 'a21', nom: 'Spieler 1 bei (2, 1)' }, { k: 'a22', nom: 'Spieler 1 bei (2, 2)' },
+      { k: 'b11', nom: 'Spieler 2 bei (1, 1)', sep: 'Auszahlungen von Spieler 2' }, { k: 'b12', nom: 'Spieler 2 bei (1, 2)' }, { k: 'b21', nom: 'Spieler 2 bei (2, 1)' }, { k: 'b22', nom: 'Spieler 2 bei (2, 2)' },
+    ],
+    resumen: (s) => {
+      if (s.tam === 3) {
+        return [
+          ['Nash-Gleichgewichte (rein)', s.nash.length ? s.nash.map(([i, j]) => `${s.nom.f[i]} / ${s.nom.c[j]} ${par(s.A[i][j], s.B[i][j])}`).join('<br>') : 'Keine', true],
+          ['Eliminierung dominierter Strategien', s.rondas.length ? (s.resuelto ? `Nach ${s.rondas.length} Runde${s.rondas.length > 1 ? 'n' : ''} bleibt nur ${s.nom.f[s.F[0]]} / ${s.nom.c[s.C[0]]}` : `${s.F.length} × ${s.C.length} bleibt nach ${s.rondas.length} Runde${s.rondas.length > 1 ? 'n' : ''}`) : 'Es lässt sich keine eliminieren', true],
+          ['Spieltyp', s.tipo.split(':')[0].split('.')[0], true],
+        ];
+      }
+      const dom = (d, nm) => (d ? `${nm[d.i]} (${d.fuerte ? 'streng' : 'schwach'})` : 'Keine');
+      return [
+        ['Nash-Gleichgewichte (rein)', s.nash.length ? s.nash.map(([i, j]) => `${s.nom.f[i]} / ${s.nom.c[j]} ${par(s.A[i][j], s.B[i][j])}`).join('<br>') : 'Keine', true],
+        ['Dominante Strategie von Spieler 1', dom(s.domF, s.nom.f)], ['Dominante Strategie von Spieler 2', dom(s.domC, s.nom.c)],
+        ['Gemischtes Gleichgewicht', s.mixto ? `p = ${f(s.mixto.p, 5)} y q = ${f(s.mixto.q, 5)}` : 'Keine', true],
+        ...(s.mixto ? [['Erwartete Auszahlung von Spieler 1', f(s.mixto.u1, 5)], ['Erwartete Auszahlung von Spieler 2', f(s.mixto.u2, 5)]] : []),
+        ['Spieltyp', s.tipo.split(':')[0].split(',')[0].replace(/\.$/, ''), true],
+      ];
+    },
+    tabla: (s) => s.tam === 3
+      ? `<table class="tabla-juego"><thead><tr><th><span class="solo-lector">Strategien</span></th>${[0, 1, 2].map((j) => `<th>${s.nom.c[j]}${s.C.includes(j) ? '' : ' <small>(eliminiert)</small>'}</th>`).join('')}</tr></thead><tbody>${[0, 1, 2].map((i) => `<tr><th>${s.nom.f[i]}${s.F.includes(i) ? '' : ' <small>(eliminiert)</small>'}</th>${[0, 1, 2].map((j) => celda(s, i, j)).join('')}</tr>`).join('')}</tbody></table>`
+      : `<table class="tabla-juego"><thead><tr><th><span class="solo-lector">Strategien</span></th><th>${s.nom.c[0]}</th><th>${s.nom.c[1]}</th></tr></thead><tbody>${[0, 1].map((i) => `<tr><th>${s.nom.f[i]}</th>${celda(s, i, 0)}${celda(s, i, 1)}</tr>`).join('')}</tbody></table>`,
+    grafica: (s) => {
+      if (s.tam === 3) return null;
+      const [[a11, a12], [a21, a22]] = s.A, [[b11, b12], [b21, b22]] = s.B;
+      const series = [];
+      for (const pts of mejor(a12 - a22, a11 - a21, false)) series.push({ pts, color: '--serie-1' });
+      for (const pts of mejor(b21 - b22, b11 - b12, true)) series.push({ pts, color: '--serie-2' });
+      series.push({ tipo: 'puntos', pts: s.nash.map(([i, j]) => [i === 0 ? 1 : 0, j === 0 ? 1 : 0]), color: '--ink', radio: 6 });
+      if (s.mixto) series.push({ tipo: 'puntos', pts: [[s.mixto.p, s.mixto.q]], color: '--ink', radio: 6 });
+      return { x: [-0.04, 1.04], y: [-0.04, 1.04], fx: (v) => f(v, 2), fy: (v) => f(v, 2), ejeX: `p: Wahrscheinlichkeit, dass Spieler 1 «${s.nom.f[0]}» spielt`, ejeY: `q: die, dass Spieler 2 «${s.nom.c[0]}» spielt`, series };
+    },
+    leyenda: (s) => s.tam === 3 ? '' : `<b style="color:var(--serie-1)">Beste Antwort von Spieler 1</b> (sein p nach dem q des anderen) und <b style="color:var(--serie-2)">beste Antwort von Spieler 2</b> (sein q nach dem p des anderen). Die schwarzen Punkte, wo sie sich schneiden, sind die Nash-Gleichgewichte: ${s.nash.length ? 'die Ecken sind die reinen' : 'hier gibt es keine reinen'}${s.mixto ? ' und das im Inneren das gemischte' : ''}.`,
+  });
+})();
+
+</script>
+<script src="../../../js/de/biblioteca.de.255cecb4.js"></script>
+<script src="../../../js/de/practica.de.c189e4a1.js"></script>
+<script src="../../../js/de/personal.de.c25efcf5.js"></script>
+<script>
+Biblioteca.monta('teoria-juegos', 'teoria-juegos-v1');
+Practica.monta('teoria-juegos', 'teoria-juegos-v1');
+Enunciado.monta('teoria-juegos', 'teoria-juegos-v1');
+</script>
+</html>

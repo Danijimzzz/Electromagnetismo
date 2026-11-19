@@ -1,0 +1,489 @@
+<!doctype html>
+<html lang="fr">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTQiIGZpbGw9IiMwZDZiNjYiLz48ZyBmaWxsPSJub25lIiBzdHJva2U9IiNlNmE2NDAiIHN0cm9rZS13aWR0aD0iMi40IiBzdHJva2UtZGFzaGFycmF5PSI0IDYuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIj48cGF0aCBkPSJNMjAgMzJINDQiLz48cGF0aCBkPSJNMjEgMjdDMjcgMTQgMzcgMTQgNDMgMjciLz48cGF0aCBkPSJNMjEgMzdDMjcgNTAgMzcgNTAgNDMgMzciLz48cGF0aCBkPSJNMTcgMjRDMjIgNCA0MiA0IDQ3IDI0Ii8+PHBhdGggZD0iTTE3IDQwQzIyIDYwIDQyIDYwIDQ3IDQwIi8+PC9nPjxjaXJjbGUgY3g9IjE3IiBjeT0iMzIiIHI9IjgiIGZpbGw9IiNlZjdhNjIiLz48Y2lyY2xlIGN4PSI0NyIgY3k9IjMyIiByPSI4IiBmaWxsPSIjNzRhMmYyIi8+PHBhdGggZD0iTTEzIDMyaDhNMTcgMjh2OE00MyAzMmg4IiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iMi42IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48L3N2Zz4K">
+<link rel="apple-touch-icon" href="../../../apple-touch-icon.png">
+<meta property="og:title" content="Calculatrice de coûts de production : coût moyen et marginal">
+<meta property="og:description" content="Coût variable, total, moyen et marginal d’une production, minimum d’exploitation (seuil de fermeture) et optimum d’exploitation, avec le graphique des courbes de coûts">
+<link rel="canonical" href="https://simulaciencia.vercel.app/fr/economia/costes/">
+<link rel="alternate" hreflang="es" href="https://simulaciencia.vercel.app/economia/costes/">
+<link rel="alternate" hreflang="en" href="https://simulaciencia.vercel.app/en/economia/costes/">
+<link rel="alternate" hreflang="de" href="https://simulaciencia.vercel.app/de/economia/costes/">
+<link rel="alternate" hreflang="fr" href="https://simulaciencia.vercel.app/fr/economia/costes/">
+<link rel="alternate" hreflang="x-default" href="https://simulaciencia.vercel.app/economia/costes/">
+<meta property="og:locale" content="fr">
+<meta property="og:image" content="https://simulaciencia.vercel.app/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebApplication","name":"Coûts de production","description":"Calculatrice de coûts de production en ligne : coût variable, total, moyen et marginal d’une production, minimum d’exploitation (seuil de fermeture) et optimum d’exploitation, avec le graphique des courbes de coûts.","url":"https://simulaciencia.vercel.app/economia/costes/","inLanguage":"fr","isAccessibleForFree":true,"applicationCategory":"EducationalApplication","operatingSystem":"Navigateur web","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://simulaciencia.vercel.app/"},{"@type":"ListItem","position":2,"name":"Économie","item":"https://simulaciencia.vercel.app/economia/"},{"@type":"ListItem","position":3,"name":"Coûts de production","item":"https://simulaciencia.vercel.app/economia/costes/"}]},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Comment calcule-t-on le coût moyen et le coût marginal ?","acceptedAnswer":{"@type":"Answer","text":"CM = CT/Q et Cm = dCT/dQ. Avec CT = 100 + 10Q + Q² et Q = 10 : CT = 300, CM = 30 et Cm = 10 + 2Q = 30."}},{"@type":"Question","name":"Que sont l’optimum et le minimum d’exploitation ?","acceptedAnswer":{"@type":"Answer","text":"L’optimum d’exploitation est le minimum du coût moyen, là où Cm = CM (dans l’exemple, Q = 10). Le minimum d’exploitation est le minimum du coût variable moyen, le prix en dessous duquel l’entreprise cesse de produire."}}]}]}</script>
+<link rel="manifest" href="../../manifest.webmanifest">
+<meta name="theme-color" content="#0d6b66">
+<script src="../../pwa.js" defer></script>
+<meta name="google-adsense-account" content="ca-pub-6407501780492688">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6407501780492688" crossorigin="anonymous"></script>
+<script>window.googlefc = window.googlefc || {}; googlefc.callbackQueue = googlefc.callbackQueue || [];
+document.addEventListener('click', (e) => { if (!e.target.closest('.pref-cookies')) return; e.preventDefault(); googlefc.callbackQueue.push(() => googlefc.showRevocationMessage()); });</script>
+<style>.anuncio { max-width:860px; margin:28px 0 0; text-align:center; min-height:120px } .anuncio > span { display:block; font:11px/1.6 system-ui, sans-serif; letter-spacing:.06em; text-transform:uppercase; color:var(--muted, #5b6670) } .anuncio ins { display:block }</style>
+<style>.anuncio-lado { display:none } @media (min-width: 901px) { .anuncio-lado { display:block; grid-column:1; grid-row:2; position:sticky; top:96px; margin:8px 0 0; max-width:none; min-height:250px; min-width:0; overflow:hidden } main .layout.con-lado > :nth-child(2) { grid-row:1 / span 2 } }</style>
+<script>document.addEventListener('DOMContentLoaded', () => {
+  const l = document.querySelector('main .layout');
+  if (!l || l.classList.contains('invertido') || l.children.length !== 2 || !l.offsetParent || !matchMedia('(min-width: 901px)').matches) return;
+  l.classList.add('con-lado');
+  const a = document.createElement('div'); a.className = 'anuncio anuncio-lado';
+  a.innerHTML = '<span>Publicidad</span><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-6407501780492688" data-ad-slot="9800921596" data-ad-format="auto" data-full-width-responsive="true"></ins>';
+  l.appendChild(a); (window.adsbygoogle = window.adsbygoogle || []).push({});
+});</script>
+<script>(() => {
+  const raiz = document.documentElement, mq = matchMedia('(prefers-color-scheme: dark)'), oyentes = [];
+  try { const t = localStorage.getItem('simu-tema'); if (t === 'dark' || t === 'light') raiz.dataset.theme = t; } catch (e) { /* sin almacenamiento */ }
+  const orig = MediaQueryList.prototype.addEventListener;
+  MediaQueryList.prototype.addEventListener = function (tipo, f, ...r) { if (tipo === 'change' && /prefers-color-scheme/.test(this.media)) oyentes.push(f); return orig.call(this, tipo, f, ...r); };
+  const oscuro = () => (raiz.dataset.theme ? raiz.dataset.theme === 'dark' : mq.matches);
+  const rotula = () => document.querySelectorAll('.tema').forEach((b) => { const t = oscuro() ? 'Passer en mode clair' : 'Passer en mode sombre'; b.title = t; b.setAttribute('aria-label', t); });
+  document.addEventListener('DOMContentLoaded', rotula);
+  mq.addEventListener('change', rotula);
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.tema')) return;
+    raiz.dataset.theme = oscuro() ? 'light' : 'dark';
+    try { localStorage.setItem('simu-tema', raiz.dataset.theme); } catch (e) { /* sin almacenamiento */ }
+    rotula();
+    for (const f of oyentes) { try { f.call(mq, { matches: oscuro(), media: mq.media }); } catch (err) { console.error(err); } }
+  });
+})();</script>
+<script>(() => {
+  const ENFOCABLE = 'a[href],button,input,select,textarea,summary,[tabindex]';
+  let espera = 0;
+  const revisa = () => {
+    espera = 0;
+    for (const e of document.querySelectorAll('main *')) {
+      const desborda = e.scrollWidth > e.clientWidth || e.scrollHeight > e.clientHeight;
+      if (e.dataset.sf) { if (!desborda || e.querySelector(ENFOCABLE)) { e.removeAttribute('tabindex'); delete e.dataset.sf; } continue; }
+      if (!desborda || e.hasAttribute('tabindex') || e.matches('svg,svg *,canvas') || e.querySelector(ENFOCABLE)) continue;
+      const o = getComputedStyle(e);
+      if (/auto|scroll/.test(o.overflowX + o.overflowY)) { e.tabIndex = 0; e.dataset.sf = '1'; }
+    }
+  };
+  window.revisaScroll = revisa; // también lo llama pruebas/accesibilidad.js antes de pasar axe
+  const pide = () => { if (!espera) espera = setTimeout(revisa, 400); };
+  addEventListener('load', () => { revisa(); const m = document.querySelector('main'); if (m) new MutationObserver(pide).observe(m, { childList: true, subtree: true, characterData: true }); });
+  addEventListener('resize', pide);
+})();</script>
+<script src="../../buscador.js" defer></script>
+<script src="../../llama.js" defer></script>
+<title>Calculatrice de coûts de production : coût moyen et marginal</title>
+<meta name="description" content="Calculatrice de coûts de production en ligne : coût variable, total, moyen et marginal d’une production, minimum d’exploitation (seuil de fermeture) et optimum d’exploitation, avec le graphique des courbes de coûts.">
+<style>/* =====================================================================
+   Hoja de estilos común de todas las herramientas (fuente/<herramienta>/pagina.html).
+   diseno.js la mete en cada página, antes de su propio <style>, junto con el color
+   de la asignatura (--accent, --accent-soft) y la cabecera del portal. La guía de uso
+   de cada componente, con su HTML, está en DISENO.md.
+   Una herramienta no vuelve a definir estas reglas: ajusta las variables de medida
+   (--col-datos, --ancho-valor, --alto-grafica) o añade una clase propia.
+   ===================================================================== */
+
+/* ---------- Colores y letras (claro y oscuro) ---------- */
+:root {
+  --bg: #eef1ee; --panel: #fff; --ink: #1a2128; --muted: #5b6670; --line: #d5dbd5; --error: #c0392b;
+  --f-ui: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-math: "STIX Two Text", "Cambria Math", Cambria, Georgia, serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+  --vidrio: rgba(255,255,255,.55); --vidrio-fuerte: rgba(255,255,255,.72); --vidrio-borde: rgba(255,255,255,.7); --vidrio-brillo: inset 0 1px 0 rgba(255,255,255,.8);
+  --vidrio-sombra: 0 1px 2px rgba(20,40,60,.06), 0 8px 28px rgba(20,40,60,.10); --blur: blur(22px) saturate(1.7); --halo1: rgba(13,107,102,.22); --halo2: rgba(42,93,181,.20); --halo3: rgba(107,63,160,.14);
+  /* medidas que cada herramienta puede ajustar */
+  --col-datos: 360px; --ancho-etiqueta: minmax(0, 1fr); --ancho-valor: 150px; --letra-campo: 13px var(--f-ui); --ancho-dato: 190px; --alto-grafica: clamp(260px, 36vw, 380px); --margen-grafica: 10px;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #111619; --panel: #182025; --ink: #e3e8ea; --muted: #a3aeb5; --line: #2a343b; --error: #f08a80; --vidrio: rgba(34,46,54,.50); --vidrio-fuerte: rgba(26,36,42,.70); --vidrio-borde: rgba(255,255,255,.12); --vidrio-brillo: inset 0 1px 0 rgba(255,255,255,.10); --vidrio-sombra: 0 1px 2px rgba(0,0,0,.3), 0 10px 32px rgba(0,0,0,.35); --halo1: rgba(77,188,176,.20); --halo2: rgba(116,162,242,.18); --halo3: rgba(170,120,230,.14); color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #111619; --panel: #182025; --ink: #e3e8ea; --muted: #a3aeb5; --line: #2a343b; --error: #f08a80; --vidrio: rgba(34,46,54,.50); --vidrio-fuerte: rgba(26,36,42,.70); --vidrio-borde: rgba(255,255,255,.12); --vidrio-brillo: inset 0 1px 0 rgba(255,255,255,.10); --vidrio-sombra: 0 1px 2px rgba(0,0,0,.3), 0 10px 32px rgba(0,0,0,.35); --halo1: rgba(77,188,176,.20); --halo2: rgba(116,162,242,.18); --halo3: rgba(170,120,230,.14); color-scheme: dark }
+/* fin de los colores */
+
+/* ---------- Base ---------- */
+* { box-sizing: border-box }
+[hidden] { display: none !important }
+html, body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.45 var(--f-ui) }
+a { color: var(--accent) }
+.wrap { max-width: 1300px; margin: 0 auto; padding: 16px clamp(16px, 3vw, 24px) 32px }
+h1 { font: 600 24px/1.25 var(--f-ui); margin: 0 0 4px }
+.lead { color: var(--muted); margin: 0 0 12px; max-width: 760px }
+/* texto solo para lectores de pantalla; sin position:absolute para que no ensanche las tablas con scroll */
+.solo-lector { display: inline-block; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; vertical-align: top }
+footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 8px 16px 24px }
+footer a { color: var(--muted); margin: 0 6px; white-space: nowrap; display: inline-block }
+
+/* ---------- Diseño A: datos a la izquierda, resultados a la derecha ---------- */
+.layout { display: grid; grid-template-columns: var(--col-datos) minmax(0, 1fr); gap: 16px; align-items: start }
+.layout.invertido { grid-template-columns: minmax(0, 1fr) var(--col-datos) }
+@media (max-width: 900px) { .layout, .layout.invertido { grid-template-columns: minmax(0, 1fr) } }
+
+/* ---------- Tarjetas ---------- */
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 14px; margin-bottom: 14px }
+.card h2 { font: 600 12px/1.4 var(--f-ui); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 0 0 10px }
+.destacado { border-color: var(--line); border-top: 3px solid var(--accent) }
+.destacado h2 { color: var(--accent) }
+
+/* ---------- Datos: campos, separadores, botones y pestañas ---------- */
+.campos { display: grid; grid-template-columns: var(--ancho-etiqueta) var(--ancho-valor); gap: 7px 10px; align-items: center }
+.campos label { font-size: 13.5px }
+.campos label small { color: var(--muted) }
+.campos .ancho { grid-column: 1 / -1 }
+.sep { grid-column: 1 / -1; font: 600 12px var(--f-ui); color: var(--accent); text-transform: uppercase; letter-spacing: .04em; margin-top: 8px }
+.in { font: var(--letra-campo); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; width: 100%; font-variant-numeric: tabular-nums }
+.btn { font: 500 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 5px 10px; cursor: pointer; white-space: nowrap }
+.btn:hover { border-color: var(--accent) }
+/* foco del teclado en todo lo que se pulsa o se escribe (sin especificidad: una herramienta puede ajustarlo) */
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible { outline: 2px solid var(--accent); outline-offset: 1px }
+.controles { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 8px }
+.controles > .nota, .controles > .leyenda { flex: 1 1 220px; margin: 0 }
+.exportar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 8px 0 }
+.exportar-aviso { color: var(--muted); font-size: 12.5px }
+.tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px }
+.tools label { color: var(--muted); font-size: 13px; display: inline-flex; gap: 6px; align-items: center }
+.modos { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; margin-bottom: 14px }
+.modos button { font: 500 13.5px var(--f-ui); border: 0; background: var(--panel); color: var(--muted); padding: 7px 14px; cursor: pointer }
+.modos button[aria-selected=true] { background: var(--accent); color: var(--panel) }
+.error { color: var(--error); font-size: 13px; margin: 10px 0 0 }
+.nota { color: var(--muted); font-size: 12.5px; margin: 8px 0 0 }
+
+/* ---------- Resultados ---------- */
+.res { display: grid; grid-template-columns: repeat(auto-fill, minmax(var(--ancho-dato), 1fr)); gap: 6px 14px; font: 16px var(--f-math) }
+.res div { overflow-x: auto; overflow-y: hidden }
+.res span { display: block; font: 12px var(--f-ui); color: var(--muted) }
+.res div.ancho { grid-column: 1 / -1 }
+.resumen { display: grid; grid-template-columns: repeat(auto-fill, minmax(var(--ancho-dato), 1fr)); gap: 8px; margin: 0 }
+.resumen div { background: var(--accent-soft); border-radius: 8px; padding: 8px 10px; overflow-x: auto; overflow-y: hidden }
+.resumen div span { display: block; font-size: 12px; color: var(--muted) }
+.resumen div b { font: 600 17px var(--f-math) }
+.resumen div.ancho { grid-column: 1 / -1 }
+
+/* ---------- Gráficas ---------- */
+canvas { display: block; width: 100%; height: var(--alto-grafica); border-radius: 8px; background: var(--bg); margin-top: var(--margen-grafica) }
+.leyenda { font-size: 12.5px; color: var(--muted); margin: 6px 0 0 }
+.leyenda b { font-weight: 600 }
+
+/* ---------- Desarrollo paso a paso ---------- */
+/* el número va dentro del paso para que no lo corte el desplazamiento de las fórmulas largas */
+.pasos ol { margin: 0; padding: 0; list-style: none; counter-reset: paso }
+.pasos li { position: relative; margin: 0 0 12px; padding-left: 22px; font-family: var(--f-math); font-size: 15.5px; overflow-x: auto; counter-increment: paso; overflow-y: hidden }
+.pasos li::before { content: counter(paso) "."; position: absolute; left: 0; top: 0; font: 13.5px/1.45 var(--f-ui); color: var(--muted) }
+.pasos li strong { font: 600 13.5px var(--f-ui); display: block; margin-bottom: 2px }
+.pasos table.tabla { border-collapse: collapse; margin: 6px 0; font: 13px var(--f-ui); font-variant-numeric: tabular-nums }
+.pasos table.tabla th, .pasos table.tabla td { border: 1px solid var(--line); padding: 3px 9px; text-align: right }
+.pasos table.tabla th { background: var(--accent-soft); font-weight: 600 }
+.tabla-scroll { overflow-x: auto }
+
+/* matrices con corchetes, dentro de una fórmula */
+.mat { position: relative; display: inline-block; vertical-align: middle; padding: 0 7px; margin: 2px 2px }
+.mat::before, .mat::after { content: ""; position: absolute; top: 0; bottom: 0; width: 5px; border: 1.4px solid currentColor }
+.mat::before { left: 0; border-right: 0 }
+.mat::after { right: 0; border-left: 0 }
+.mat table { border-collapse: collapse }
+.mat td { padding: 2px 7px; text-align: center; white-space: nowrap; font-variant-numeric: tabular-nums }
+
+/* ---------- Teoría ---------- */
+.teoria, .preguntas { margin-top: 28px; max-width: 860px; font-size: 15px; line-height: 1.6 }
+.preguntas h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
+.preguntas h3 { font: 600 15px var(--f-ui); margin: 14px 0 2px }
+.preguntas p { margin: 0 }
+.teoria h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
+.teoria .f { max-width: 100%; overflow-x: auto; overflow-y: hidden; font-family: var(--f-math); font-size: 16.5px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; display: inline-block }
+.teoria ul { padding-left: 20px }
+.teoria li { margin-bottom: 4px }
+.teoria li, .teoria p { overflow-x: auto; overflow-y: hidden }
+
+/* ---------- Liquid Glass ---------- */
+/* Vidrio solo en el marco (tarjetas, controles, barras); el lienzo de las gráficas y las fórmulas no se tocan. */
+body { display: flow-root; background: radial-gradient(60% 50% at 8% 0%, var(--halo1), transparent 70%), radial-gradient(50% 45% at 95% 10%, var(--halo2), transparent 70%), radial-gradient(55% 50% at 60% 100%, var(--halo3), transparent 70%), var(--bg); background-attachment: fixed }
+.card { background: var(--vidrio); border-color: var(--vidrio-borde); border-radius: 18px; box-shadow: var(--vidrio-brillo), var(--vidrio-sombra); -webkit-backdrop-filter: var(--blur); backdrop-filter: var(--blur) }
+.destacado { border-top: 3px solid var(--accent) }
+.in { background: var(--vidrio); border-color: var(--vidrio-borde); border-radius: 10px; box-shadow: var(--vidrio-brillo) }
+.btn { background: var(--vidrio-fuerte); border-color: var(--vidrio-borde); border-radius: 99px; padding: 5px 14px; box-shadow: var(--vidrio-brillo) }
+.modos { border-color: var(--vidrio-borde); border-radius: 99px; background: var(--vidrio); box-shadow: var(--vidrio-brillo); -webkit-backdrop-filter: var(--blur); backdrop-filter: var(--blur) }
+.modos button { background: transparent; border-radius: 99px }
+.modos button[aria-selected=true] { box-shadow: 0 1px 6px rgba(0,0,0,.18) }
+.resumen div { border-radius: 14px }
+.teoria .f { background: var(--vidrio); border-color: var(--vidrio-borde); border-radius: 12px }
+canvas { border-radius: 14px }
+@media (max-width: 900px) { .card, .modos { -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px) } }
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) { .card, .modos, header.top { background: var(--panel); -webkit-backdrop-filter: none; backdrop-filter: none } .in, .btn, .teoria .f { background: var(--panel) } }
+
+:root { --accent:#6b7a12; --accent-soft:color-mix(in srgb, #6b7a12 12%, #fff); --marca:#0d6b66 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --accent:#b8c955; --accent-soft:color-mix(in srgb, #b8c955 16%, #182025); --marca:#4dbcb0 } }
+:root[data-theme="dark"] { --accent:#b8c955; --accent-soft:color-mix(in srgb, #b8c955 16%, #182025); --marca:#4dbcb0 }
+header.top { display:flex; align-items:center; gap:8px 20px; flex-wrap:wrap; padding:12px clamp(16px,3vw,28px); position:sticky; top:10px; z-index:10; margin:10px clamp(10px,2vw,20px) 0; border:1px solid var(--vidrio-borde); border-radius:22px; background:var(--vidrio-fuerte); box-shadow:var(--vidrio-brillo),var(--vidrio-sombra); -webkit-backdrop-filter:var(--blur); backdrop-filter:var(--blur) }
+header.top .logo { font:600 18px var(--f-math); margin:0; white-space:nowrap; color:var(--ink); text-decoration:none } header.top .logo i { color:var(--marca) }
+header.top nav { display:flex; gap:4px 14px; font-size:14px; overflow-x:auto; max-width:100%; scrollbar-width:none }
+header.top nav a { white-space:nowrap; padding:2px 0; color:var(--muted); text-decoration:none } header.top nav a:hover { color:var(--ink) }
+header.top nav a[aria-current] { color:var(--ink); font-weight:600; box-shadow:inset 0 -2px 0 var(--accent) }
+header.top form { margin-left:auto; flex:0 1 170px; min-width:130px }
+header.top .foro { margin-left:auto; display:inline-flex; align-items:center; gap:6px; white-space:nowrap; font:600 14px var(--f-ui); color:var(--ink); text-decoration:none; border:1px solid var(--vidrio-borde); background:var(--vidrio); border-radius:99px; padding:6px 12px } header.top .foro:hover, header.top .foro[aria-current] { border-color:var(--accent); color:var(--accent) } header.top .foro + form { margin-left:0 } header.top > .foro ~ .tema { margin-left:0 }
+@media (min-width:701px) { header.top { flex-wrap:nowrap } header.top nav { min-width:0 } }
+header.top .buscar { font:14px var(--f-ui); color:var(--ink); border:1px solid var(--vidrio-borde); border-radius:99px; padding:7px 14px; width:100%; background:var(--vidrio) }
+header.top .buscar:focus-visible, header.top a:focus-visible { outline:2px solid var(--accent); outline-offset:1px }
+.miga { display:flex; align-items:center; flex-wrap:wrap; gap:8px; font-size:13.5px; color:var(--muted); margin:0 0 10px }
+.miga a { color:var(--accent); font-weight:600; text-decoration:none } .miga a:hover { text-decoration:underline }
+.miga-ico { display:inline-grid; place-items:center; width:22px; height:22px; border-radius:6px; background:var(--accent-soft); color:var(--accent); font:italic 600 13px var(--f-math) }
+.miga-der { margin-left:auto; display:flex; gap:8px } .miga-izq:empty, .miga-der:empty { display:none }
+.bib-btn, .prac-btn { border-radius:8px !important; padding:6px 12px !important }
+body.bib-ejemplos select[id^="ejemplo"] { display:none }
+@media print { header.top, .miga, .prac-btn { display:none !important } }
+:root { --vida:#6a4fc2 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --vida:#b39ff7 } }
+:root[data-theme="dark"] { --vida:#b39ff7 }
+.relacionadas { max-width:860px; margin:16px 0 0; background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--accent); border-radius:4px 12px 12px 4px; padding:12px 16px }
+.relacionadas h2 { font:600 12px/1.4 var(--f-ui); text-transform:uppercase; letter-spacing:.06em; color:var(--accent); margin:0 0 4px }
+.relacionadas a { display:flex; gap:10px; align-items:baseline; padding:5px 0; color:var(--ink); text-decoration:none; font-size:14px }
+.relacionadas a b { font-weight:600; white-space:nowrap } .relacionadas a span { color:var(--muted) } .relacionadas a:hover b { color:var(--accent); text-decoration:underline }
+.vida-real { max-width:860px; margin:28px 0 0; background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--vida); border-radius:4px 12px 12px 4px; padding:12px 16px }
+.vida-real h2 { font:600 12px/1.4 var(--f-ui); text-transform:uppercase; letter-spacing:.06em; color:var(--vida); margin:0 0 4px }
+.vida-real a { display:flex; gap:10px; align-items:baseline; padding:5px 0; color:var(--ink); text-decoration:none; font-size:14px }
+.vida-real a b { font-weight:600; white-space:nowrap } .vida-real a span { color:var(--muted) } .vida-real a:hover b { color:var(--vida); text-decoration:underline }
+@media (max-width:600px) { .vida-real a, .relacionadas a { display:block } .vida-real a b, .relacionadas a b { display:block; white-space:normal } }
+@media (max-width:700px) { header.top form { display:none } h1 { font-size:21px }
+  .miga-izq, .miga-der, .miga::after { order:-1 } .miga::after { content:''; flex-basis:100%; height:0 } }
+
+.tema { flex:0 0 auto; margin-left:auto; width:36px; height:36px; display:grid; place-items:center; padding:0; border:1px solid var(--vidrio-borde, var(--line)); border-radius:99px; background:var(--vidrio, var(--bg)); color:var(--ink); cursor:pointer }
+.buscar ~ .tema, form ~ .tema { margin-left:0 }
+.tema:hover { border-color:var(--accent); color:var(--accent) }
+.tema:focus-visible { outline:2px solid var(--accent); outline-offset:1px }
+.tema .sol { display:none }
+:root[data-theme="dark"] .tema .sol { display:block } :root[data-theme="dark"] .tema .luna { display:none }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .tema .sol { display:block } :root:not([data-theme="light"]) .tema .luna { display:none } }
+@media (max-width:700px) { .top > .tema { margin-left:auto } .top > nav { order:1 } }
+</style>
+<style>
+:root {
+  --serie-1: #2a5db5; --serie-2: #c2412a; --serie-3: #6b3fa0 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --serie-1: #74a2f2; --serie-2: #ef7a62; --serie-3: #b48be8 } }
+:root[data-theme="dark"] {
+  --serie-1: #74a2f2; --serie-2: #ef7a62; --serie-3: #b48be8 }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../../">Cienci<i>fy</i></a><nav aria-label="Matières"><a href="../../../">Accueil</a><a href="../../electromagnetismo/">Électromagnétisme</a><a href="../../fisica/">Physique générale</a><a href="../../quimica/">Chimie</a><a href="../../matematicas/">Mathématiques</a><a href="../../estadistica/">Statistique</a><a href="../../circuitos/">Circuits</a><a href="../" aria-current="page">Économie</a><a href="../../fenomenos/">Vie réelle</a></nav><a class="foro" href="../../foro/"><span aria-hidden="true">💬</span>Forum</a><form action="../../../" role="search"><input class="buscar" type="search" name="q" placeholder="Rechercher : Biot-Savart, molarité…" aria-label="Rechercher des outils (raccourci : touche /)" title="Raccourci : / ou Ctrl+K"></form><style>
+.lg { position:relative; flex:0 0 auto }
+.lg-btn { display:inline-flex; align-items:center; gap:6px; height:36px; padding:0 12px; border:1px solid var(--vidrio-borde, var(--line)); border-radius:99px; background:var(--vidrio, var(--bg)); color:var(--ink); font:600 13px var(--f-ui, system-ui, sans-serif); cursor:pointer }
+.lg-btn:hover { border-color:var(--accent); color:var(--accent) }
+.lg-btn:focus-visible, .lg-pop a:focus-visible, .lg-ban button:focus-visible { outline:2px solid var(--accent); outline-offset:1px }
+.lg-pop { position:absolute; top:44px; right:0; z-index:50; min-width:210px; margin:0; padding:6px; list-style:none; border:1px solid var(--vidrio-borde, var(--line)); border-radius:16px; background:rgba(255,255,255,.98); color:var(--ink); box-shadow:0 12px 36px rgba(0,0,0,.22) }
+.lg-pop[hidden] { display:none }
+:root[data-theme="dark"] .lg-pop, :root[data-theme="dark"] .lg-ban { background:rgba(28,34,38,.98) }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .lg-pop, :root:not([data-theme="light"]) .lg-ban { background:rgba(28,34,38,.98) } }
+.lg-t { font:600 11px var(--f-ui, system-ui, sans-serif); text-transform:uppercase; letter-spacing:.06em; color:var(--muted); padding:6px 10px 4px }
+.lg-pop a { display:flex; justify-content:space-between; align-items:center; gap:14px; padding:8px 10px; border-radius:10px; color:var(--ink); text-decoration:none; font:500 14px var(--f-ui, system-ui, sans-serif) }
+.lg-pop a:hover { background:var(--accent-soft) }
+.lg-pop a > span { display:flex; align-items:center; gap:10px }
+.lg-pop a small { color:var(--muted); font-size:12px }
+.lg-pop a[aria-current="true"] { background:var(--accent-soft); font-weight:700 }
+.lg-pop a[aria-current="true"] small::after { content:' ✓'; color:var(--accent) }
+.lg-fl { flex:none; border-radius:50%; box-shadow:0 0 0 1px rgba(0,0,0,.18) }
+.lg-ban { position:fixed; left:50%; bottom:18px; z-index:60; transform:translateX(-50%); width:min(560px, calc(100vw - 24px)); box-sizing:border-box; display:flex; flex-wrap:wrap; align-items:center; gap:10px 12px; padding:12px 16px; border:1px solid var(--vidrio-borde, var(--line)); border-radius:18px; background:rgba(255,255,255,.98); color:var(--ink); box-shadow:0 12px 36px rgba(0,0,0,.25); font:14px var(--f-ui, system-ui, sans-serif) }
+.lg-ban p { flex:1 1 220px; margin:0 }
+.lg-ban button { font:600 13px var(--f-ui, system-ui, sans-serif); padding:7px 14px; border-radius:99px; border:1px solid var(--vidrio-borde, var(--line)); background:var(--vidrio, var(--bg)); color:var(--ink); cursor:pointer }
+.lg-ban button.lg-si { background:var(--accent); border-color:var(--accent); color:#fff }
+:root[data-theme="dark"] .lg-ban button.lg-si { color:#0d141a }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .lg-ban button.lg-si { color:#0d141a } }
+@media (max-width:700px) { .top > .lg { margin-left:auto } .top > .lg + .tema { margin-left:0 } }
+@media print { .lg, .lg-ban { display:none !important } }
+</style><div class="lg"><button class="lg-btn" type="button" aria-expanded="false" aria-controls="lg-lista" aria-label="Langue: Français" title="Langue"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.8 3 2.8 15 0 18M12 3c-2.8 3-2.8 15 0 18"/></svg><span>FR</span><span aria-hidden="true">▾</span></button><ul class="lg-pop" id="lg-lista" hidden><li class="lg-t" aria-hidden="true">Langue · Language</li><li><a href="../../../" hreflang="es" lang="es"><span><svg class="lg-fl" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false"><rect width="24" height="24" fill="#c60b1e"/><rect y="6" width="24" height="12" fill="#ffc400"/></svg>Español</span><small>ES</small></a></li><li><a href="../../../en/" hreflang="en" lang="en"><span><svg class="lg-fl" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false"><rect width="24" height="24" fill="#012169"/><path d="M0 0L24 24M24 0L0 24" stroke="#fff" stroke-width="5"/><path d="M0 0L24 24M24 0L0 24" stroke="#c8102e" stroke-width="2"/><path d="M12 0V24M0 12H24" stroke="#fff" stroke-width="8"/><path d="M12 0V24M0 12H24" stroke="#c8102e" stroke-width="4.5"/></svg>English</span><small>EN</small></a></li><li><a href="../../../de/" hreflang="de" lang="de"><span><svg class="lg-fl" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false"><rect width="24" height="8" fill="#000"/><rect y="8" width="24" height="8" fill="#dd0000"/><rect y="16" width="24" height="8" fill="#ffce00"/></svg>Deutsch</span><small>DE</small></a></li><li><a href="../../../fr/" hreflang="fr" lang="fr" aria-current="true"><span><svg class="lg-fl" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false"><rect width="8" height="24" fill="#0055a4"/><rect x="8" width="8" height="24" fill="#fff"/><rect x="16" width="8" height="24" fill="#ef4135"/></svg>Français</span><small>FR</small></a></li></ul></div><script>(() => {
+  const L = [{"c":"es","d":"","n":"Español","a":["Esta página está disponible en español.","Cambiar a español","Seguir aquí"]},{"c":"en","d":"en/","n":"English","a":["This page is available in English.","Switch to English","Stay here"]},{"c":"de","d":"de/","n":"Deutsch","a":["Diese Seite ist auf Deutsch verfügbar.","Auf Deutsch ansehen","Hier bleiben"]},{"c":"fr","d":"fr/","n":"Français","a":["Cette page est disponible en français.","Passer en français","Rester ici"]}], ACTUAL = "fr", K = 'simu-idioma';
+  const guarda = (c) => { try { localStorage.setItem(K, c); } catch (e) { /* sin almacenamiento */ } };
+  const lee = () => { try { return localStorage.getItem(K); } catch (e) { return null; } };
+  const resto = () => { let p = location.pathname; for (const i of L) if (i.d && p.startsWith('/' + i.d)) { p = '/' + p.slice(i.d.length + 1); break; } return p + location.search + location.hash; };
+  const destino = (i) => '/' + i.d + resto().replace(/^\//, '');
+  const btn = document.querySelector('.lg-btn'), pop = document.querySelector('.lg-pop');
+  if (!btn || !pop) return;
+  pop.querySelectorAll('a[hreflang]').forEach((a) => { const i = L.find((x) => x.c === a.hreflang); if (i && /^https?:$/.test(location.protocol)) a.href = destino(i); a.addEventListener('click', () => guarda(a.hreflang)); });
+  const abre = (v) => { pop.hidden = !v; btn.setAttribute('aria-expanded', String(v)); };
+  btn.addEventListener('click', (e) => { e.stopPropagation(); abre(pop.hidden); });
+  document.addEventListener('click', (e) => { if (!pop.hidden && !e.target.closest('.lg')) abre(false); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !pop.hidden) { abre(false); btn.focus(); } });
+  pop.addEventListener('focusout', (e) => { if (!pop.hidden && !e.relatedTarget?.closest?.('.lg')) abre(false); });
+  // aviso: una vez, sin elección guardada, con el idioma del navegador publicado y distinto del de la página
+  if (lee() || window.__sinAviso) return;
+  const pref = (navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language || '']).map((s) => String(s).toLowerCase().slice(0, 2));
+  const i = pref.map((c) => L.find((x) => x.c === c)).find(Boolean);
+  if (!i || i.c === ACTUAL) { return; }
+  const b = document.createElement('div'); b.className = 'lg-ban'; b.setAttribute('role', 'region'); b.setAttribute('aria-label', "Langue"); b.lang = i.c;
+  const t = document.createElement('p'); t.textContent = i.a[0];
+  const si = document.createElement('button'); si.type = 'button'; si.className = 'lg-si'; si.textContent = i.a[1];
+  const no = document.createElement('button'); no.type = 'button'; no.textContent = i.a[2];
+  si.addEventListener('click', () => { guarda(i.c); const a = [...pop.querySelectorAll('a[hreflang]')].find((x) => x.hreflang === i.c); location.href = a ? a.href : destino(i); });
+  no.addEventListener('click', () => { guarda(ACTUAL); b.remove(); });
+  b.append(t, si, no); document.body.append(b);
+})();</script><button class="tema" type="button" title="Passer du mode clair au mode sombre" aria-label="Passer du mode clair au mode sombre"><svg class="luna" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.5A8.5 8.5 0 1 1 9.5 3.5a7 7 0 0 0 11 11z"/></svg><svg class="sol" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button></header>
+<main class="wrap">
+<nav class="miga" aria-label="Vous êtes ici"><span class="miga-izq"></span><span class="miga-ico" aria-hidden="true">€</span><a href="../">Économie</a><span aria-hidden="true">›</span><span>Coûts de production</span><span class="miga-der"></span></nav>
+<h1>Coûts de production</h1>
+<p class="lead">Calculez le coût total, moyen et marginal d’une production à partir de la fonction de coûts, avec le minimum d’exploitation, l’optimum d’exploitation et le graphique des courbes.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Données</h2>
+    <select id="ejemplos" class="in" aria-label="Exemples" style="margin-bottom:12px"></select>
+    <div class="campos" id="campos"></div>
+    <p class="nota" id="nota"></p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card destacado"><h2>Résultats</h2><div class="resumen" id="resumen"></div></div>
+    <div class="card"><h2>Coûts moyens et marginal</h2>
+      <canvas id="grafica" aria-label="Courbes de coût marginal, de coût moyen et de coût variable moyen"></canvas>
+      <p class="leyenda" id="leyenda"></p>
+    </div>
+    <div class="card pasos"><h2>Développement</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<div class="anuncio"><span>Publicité</span><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-6407501780492688" data-ad-slot="4415753033" data-ad-format="auto" data-full-width-responsive="true"></ins><script>(window.adsbygoogle = window.adsbygoogle || []).push({});</script></div>
+<section class="teoria">
+<h2>Coûts fixes et variables</h2>
+<p>Les coûts fixes (CF) ne dépendent pas de ce que l’on produit : loyer, assurances, machines. Les coûts variables (CV) croissent avec la production : matières premières, énergie, heures supplémentaires. Le coût total est CT = CF + CV.</p>
+<h2>Coûts moyens et coût marginal</h2>
+<p class="m">Les coûts moyens sont le coût par unité : $CM = {CT}/Q = CFM + CVM$, avec $CFM = {CF}/Q$ et $CVM = {CV}/Q$. Le coût marginal est ce que coûte la production d’une unité de plus, $Cm = {dCT}/{dQ}$.</p>
+<div class="anuncio"><span>Publicité</span><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-6407501780492688" data-ad-slot="4415753033" data-ad-format="auto" data-full-width-responsive="true"></ins><script>(window.adsbygoogle = window.adsbygoogle || []).push({});</script></div>
+<h2>La relation entre le marginal et le moyen</h2>
+<p>Si le coût marginal est en dessous du coût moyen, produire plus fait baisser ce dernier ; s’il est au-dessus, il le fait monter. C’est pourquoi le coût marginal coupe le coût moyen (et le coût variable moyen) exactement à leurs minimums. Le coût fixe moyen ne fait que baisser : il se répartit sur plus d’unités.</p>
+<h2>Minimum d’exploitation et optimum d’exploitation</h2>
+<p class="m">Le <b>minimum d’exploitation</b> est le minimum du coût variable moyen : avec un prix inférieur, les coûts variables ne sont même pas couverts et l’entreprise ferme. L’<b>optimum d’exploitation</b> est le minimum du coût moyen, là où $Cm = CM$ : c’est le seuil de rentabilité à long terme ; en dessous, il y a des pertes.</p>
+<h2>La fonction utilisée par la calculatrice</h2>
+<p class="m">$CT(Q) = CF + a · Q + b · Q^2 + c · Q^3$. Avec $b &lt; 0$ et $c &gt; 0$, on obtient la courbe en U des manuels (d’abord des rendements croissants, puis décroissants) ; avec $c = 0$ et $b &gt; 0$, une parabole.</p>
+</section>
+<section class="preguntas" aria-label="Questions fréquentes">
+<h2>Questions fréquentes</h2>
+<h3>Comment calcule-t-on le coût moyen et le coût marginal ?</h3>
+<p>CM = CT/Q et Cm = dCT/dQ. Avec CT = 100 + 10Q + Q² et Q = 10 : CT = 300, CM = 30 et Cm = 10 + 2Q = 30.</p>
+<h3>Que sont l’optimum et le minimum d’exploitation ?</h3>
+<p>L’optimum d’exploitation est le minimum du coût moyen, là où Cm = CM (dans l’exemple, Q = 10). Le minimum d’exploitation est le minimum du coût variable moyen, le prix en dessous duquel l’entreprise cesse de produire.</p>
+</section>
+<div class="anuncio"><span>Publicité</span><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-6407501780492688" data-ad-slot="4415753033" data-ad-format="auto" data-full-width-responsive="true"></ins><script>(window.adsbygoogle = window.adsbygoogle || []).push({});</script></div>
+<section class="relacionadas" aria-label="Outils associés"><h2>Outils associés</h2>
+<a href="../beneficio/"><b>Maximisation du profit →</b><span>Concurrence parfaite et monopole : Rm = Cm, prix et profit.</span></a>
+<a href="../teoria-juegos/"><b>Théorie des jeux →</b><span>Dilemme du prisonnier et équilibre de Nash dans des matrices 2×2.</span></a>
+<a href="../excedentes/"><b>Surplus, impôts et efficacité →</b><span>Surplus du consommateur et du producteur, effet d’un impôt et perte d’efficacité.</span></a>
+<a href="../elasticidades/"><b>Élasticités →</b><span>Élasticité-prix, élasticité-revenu et élasticité croisée, avec leur interprétation.</span></a>
+</section>
+</main>
+<footer><a href="../../../">Accueil</a>·<a href="../../contacto.html">Contact</a>·<a href="mailto:danijimzzz30@gmail.com?subject=Error%20en%20Costes%20de%20producci%C3%B3n&amp;body=Herramienta%3A%20Costes%20de%20producci%C3%B3n%20(economia%2Fcostes)%0A%0AQu%C3%A9%20esperaba%20y%20qu%C3%A9%20ha%20pasado%3A%0A">Signaler une erreur</a>·<a href="../../aviso-legal.html">Mentions légales</a>·<a href="../../privacidad.html">Confidentialité</a>·<a href="../../cookies.html">Cookies</a> · <a href="#" class="pref-cookies">Préférences des cookies</a>· Coûts de production <span id="ver"></span> (bêta)</footer>
+</body>
+<script>
+const Pagina = { carpeta: 'costes', guarda: 'costes-v1' };
+const Version = (() => { const registros = {"web":[{"v":"1.22"}],"control":[{"v":"0.2"}],"termo-estadistica":[{"v":"0.2"}],"markowitz":[{"v":"0.3"}],"cavidades":[{"v":"0.2"}],"organica":[{"v":"0.3"}],"transformada-z":[{"v":"0.2"}],"semiconductores":[{"v":"0.2"}],"relatividad":[{"v":"0.2"}],"osc-acopladas":[{"v":"0.2"}],"solubilidad":[{"v":"0.2"}],"lagrange":[{"v":"0.2"}],"series":[{"v":"0.3"}],"no-parametricos":[{"v":"0.3"}],"regresion-multiple":[{"v":"0.2"}],"anova":[{"v":"0.3"}],"black-scholes":[{"v":"0.3"}],"bonos":[{"v":"0.3"}],"solow":[{"v":"0.3"}],"integrales-multiples":[{"v":"0.1"}],"formulacion":[{"v":"0.2"}],"balance":[{"v":"0.2"}],"redox":[{"v":"0.2"}],"lineas-transmision":[{"v":"0.3"}],"superficies":[{"v":"0.2"}],"vsepr":[{"v":"0.2"}],"maxwell":[{"v":"0.3"}],"fresnel":[{"v":"0.2"}],"gravitacion":[{"v":"0.2"}],"convolucion":[{"v":"0.2"}],"laplace-numerica":[{"v":"0.2"}],"imagenes":[{"v":"0.2.1"}],"guias-onda":[{"v":"0.2"}],"antena":[{"v":"0.2"}],"bode":[{"v":"0.3"}],"optica":[{"v":"0.2"}],"simulador":[{"v":"0.4"}],"teoria-juegos":[{"v":"0.2"}],"puertas-logicas":[{"v":"0.4"}],"multiplicador":[{"v":"0.3"}],"is-lm":[{"v":"0.3"}],"choques":[{"v":"0.1"}],"termoquimica":[{"v":"0.3"}],"probabilidad":[{"v":"0.2"}],"unités":[{"v":"0.2"}],"equilibrio":[{"v":"0.2"}],"oscilaciones":[{"v":"0.1"}],"beneficio":[{"v":"0.3"}],"costes":[{"v":"0.3"}],"sistemas-numericos":[{"v":"0.2"}],"excedentes":[{"v":"0.2"}],"oferta-demanda":[{"v":"0.2"}],"chi2-bondad":[{"v":"0.2"}],"contrastes":[{"v":"0.2"}],"errores":[{"v":"0.2"}],"graficador":[{"v":"0.2"}],"metodos-numericos":[{"v":"0.2"}],"fisica-moderna":[{"v":"0.2"}],"lorenz-gini":[{"v":"0.2"}],"phillips-okun":[{"v":"0.3"}],"tipos-cambio":[{"v":"0.3"}],"elasticidades":[{"v":"0.3"}],"pib-ipc":[{"v":"0.2"}],"numeros-indice":[{"v":"0.2"}],"ratios":[{"v":"0.2"}],"punto-muerto":[{"v":"0.2"}],"ahorro":[{"v":"0.3"}],"van-tir":[{"v":"0.3"}],"amortizacion-inmovilizado":[{"v":"0.2"}],"prestamos":[{"v":"0.3"}],"rentas":[{"v":"0.3"}],"interes":[{"v":"0.3"}],"descriptiva":[{"v":"0.2"}],"regresion-economia":[{"v":"0.2"}],"ajustador":[{"v":"0.2.1"}],"electrostatica":[{"v":"0.11"}],"magnetostatica":[{"v":"0.4"}],"tabla-periodica":[{"v":"0.2"}],"trabajo-y-energia":[{"v":"0.3"}],"masa-molar":[{"v":"0.2"}],"configuracion-electronica":[{"v":"0.2"}],"condensadores":[{"v":"0.4"}],"tiro-parabolico":[{"v":"0.4"}],"disoluciones":[{"v":"0.2"}],"calorimetria":[{"v":"0.2"}],"induccion":[{"v":"0.4"}],"matrices":[{"v":"0.3"}],"derivadas":[{"v":"0.3"}],"laplace":[{"v":"0.2"}],"interferencia":[{"v":"0.2"}],"ondas-em":[{"v":"0.4"}],"intervalos":[{"v":"0.3"}],"fuerza":[{"v":"0.3"}],"campos":[{"v":"0.2.1"}],"cinetica":[{"v":"0.2"}],"edos":[{"v":"0.2"}],"fourier":[{"v":"0.2"}],"taylor":[{"v":"0.3"}],"complejos":[{"v":"0.3"}],"sistemas":[{"v":"0.3"}],"regresion":[{"v":"0.3"}],"estadistica":[{"v":"0.3"}],"dinamica":[{"v":"0.3"}],"solido-rigido":[{"v":"0.3"}],"ondas":[{"v":"0.3"}],"gases":[{"v":"0.6"}],"ciclos":[{"v":"0.2"}],"ph":[{"v":"0.4"}],"fluidos":[{"v":"0.3"}],"doppler":[{"v":"0.2"}],"resistencias":[{"v":"0.3"}],"faraday":[{"v":"0.4"}],"fenomenos":[{"v":"0.9"}]}; const de = (h) => ({ current: registros[h][0].v, log: registros[h] }); return { registros, de }; })();
+
+</script>
+<script src="../../../js/fr/herramienta.fr.8886d3c4.js"></script>
+<script src="../../../js/fr/enunciado.fr.4bd513d9.js"></script>
+<script src="../../../js/fr/mates.fr.b5c3ede5.js"></script>
+<script src="../../../js/fr/calculadora.fr.46a75da8.js"></script>
+<script src="../../../js/fr/economia-comun.fr.6c158b6d.js"></script>
+<script>
+const Costes = (() => {
+  const K = typeof Eco !== 'undefined' ? Eco : require('../economia/comun.js');
+  const { f, lee } = K;
+  const e = (x) => x.toFixed(2).replace('.', ',').replace('-', '−');
+  const poli = (a, b, c) => [[a, 'Q'], [b, 'Q^2'], [c, 'Q^3']].filter(([k]) => k !== 0).map(([k, t], i) => `${k < 0 ? '−' : i ? '+' : ''} ${Math.abs(k) === 1 ? '' : f(Math.abs(k), 6) + ' · '}${t}`.trim()).join(' ');
+
+  const funciones = (cf, a, b, c) => ({
+    cv: (q) => a * q + b * q * q + c * q ** 3, ct: (q) => cf + a * q + b * q * q + c * q ** 3,
+    cvme: (q) => a + b * q + c * q * q, cme: (q) => cf / q + a + b * q + c * q * q, cmg: (q) => a + 2 * b * q + 3 * c * q * q,
+  });
+
+  function resolverCT(sc) {
+    const cf = lee(sc, 'cf', 'les coûts fixes', { min: 0, minEx: true });
+    const a = lee(sc, 'a', 'le coefficient a (coût variable de la première unité)', { min: 0, minEx: true });
+    const b = lee(sc, 'b', 'el coeficiente b', { def: 0 }), c = lee(sc, 'c', 'el coeficiente c', { min: 0, def: 0 });
+    const q = lee(sc, 'q', 'la production Q', { min: 0, minEx: true });
+    if (c === 0 && b <= 0) throw new Error('Avec c = 0, il faut b > 0 : sinon le coût moyen n’a pas de minimum (les rendements ne seraient pas décroissants)');
+    if (c > 0 && b < 0 && b * b >= 3 * a * c) throw new Error('Avec ces coefficients, le coût marginal deviendrait négatif ou nul (il faut b² < 3·a·c) ; modifiez b, a ou c');
+    const F = funciones(cf, a, b, c);
+    const qc = c > 0 && b < 0 ? -b / (2 * c) : 0, pc = F.cvme(qc);
+    let qm;
+    if (c === 0) qm = Math.sqrt(cf / b);
+    else { let lo = 0, hi = 1; const h = (x) => 2 * c * x ** 3 + b * x * x - cf; while (h(hi) < 0) hi *= 2; for (let i = 0; i < 200; i++) { const m = (lo + hi) / 2; if (h(m) < 0) lo = m; else hi = m; } qm = (lo + hi) / 2; }
+    const pm = F.cme(qm);
+    const cv = F.cv(q), ct = cf + cv, cfme = cf / q, cvme = cv / q, cme = ct / q, cmg = F.cmg(q), pasos = [];
+    const pol = poli(a, b, c);
+    pasos.push({ t: 'La fonction de coûts', html: `Les coûts fixes ne dépendent pas de ce que l’on produit, les coûts variables si : $CT(Q) = CF + CV(Q) = ${e(cf)} + (${pol})$ €.` });
+    const sust = () => `${a !== 0 ? f(a, 6) + ' · ' + f(q, 6) : ''}${b !== 0 ? (b < 0 ? ' − ' : ' + ') + f(Math.abs(b), 6) + ' · ' + f(q, 6) + '^2' : ''}${c !== 0 ? ' + ' + f(c, 6) + ' · ' + f(q, 6) + '^3' : ''}`;
+    pasos.push({ t: 'Coût variable et total avec Q', html: `$CV = ${sust()} = ${e(cv)}$ €, y $CT = CF + CV = ${e(cf)} + ${e(cv)} = ${e(ct)}$ €.` });
+    pasos.push({ t: 'Coûts moyens', html: `On les divise par la production : $CFM = {CF}/Q = ${e(cfme)}$ €, $CVM = {CV}/Q = ${e(cvme)}$ € et $CM = {CT}/Q = CFM + CVM = ${e(cme)}$ € par unité.` });
+    const deriv = `${f(a, 6)}${b !== 0 ? (b < 0 ? ' − ' : ' + ') + f(2 * Math.abs(b), 6) + ' · ' + f(q, 6) : ''}${c !== 0 ? ' + ' + f(3 * c, 6) + ' · ' + f(q, 6) + '^2' : ''}`;
+    pasos.push({ t: 'Coût marginal', html: `Ce que coûte la production d’une unité de plus est la dérivée du coût : $Cm = {dCT}/{dQ} = ${f(a, 6)}${b !== 0 ? (b < 0 ? ' − ' : ' + ') + f(2 * Math.abs(b), 6) + ' · Q' : ''}${c !== 0 ? ' + ' + f(3 * c, 6) + ' · Q^2' : ''}$, qui en Q = ${f(q, 6)} vaut $${deriv} = ${e(cmg)}$ €.` });
+    pasos.push({ t: 'Relation entre le marginal et le moyen', html: `Comme $Cm ${cmg < cme ? '<' : cmg > cme ? '>' : '='} CM$, ${cmg < cme ? 'le coût moyen baisse : produire une unité de plus coûte moins que le coût moyen' : cmg > cme ? 'le coût moyen monte : l’unité supplémentaire coûte plus que la moyenne' : 'vous êtes exactement au minimum du coût moyen'}.` });
+    pasos.push({ t: 'Minimum d’exploitation (fermeture)', html: c > 0 && b < 0
+      ? `Le coût variable moyen est minimal là où sa dérivée s’annule : $b + 2 · c · Q = 0$, soit $Q = {−b}/{2 · c} = ${f(qc, 6)}$ unités, et il vaut $CVM = ${e(pc)}$ €. Si le prix n’atteint pas cette valeur, les coûts variables ne sont même pas couverts et il vaut mieux fermer.`
+      : `Avec ces coefficients, le coût variable moyen, $a + b · Q + c · Q^2$, ne descend pas en dessous de $a = ${e(a)}$ € (sa valeur pour la première unité) et croît quand on produit plus. Si le prix est inférieur à ${e(a)} €, les coûts variables ne sont même pas couverts et il vaut mieux fermer.` });
+    pasos.push({ t: 'Optimum d’exploitation (seuil de rentabilité)', html: `Le coût moyen est minimal là où $CM = Cm$, c’est-à-dire là où sa dérivée s’annule : $${c !== 0 ? '2 · c · Q^3 + b · Q^2 − CF = 0' : 'b · Q^2 = CF'}$${c !== 0 ? ', que l’on résout numériquement' : `, d’où $Q = √(CF/b)$`}. On obtient $Q = ${f(qm, 6)}$ unités et $CM = Cm = ${e(pm)}$ €. Avec un prix de ${e(pm)} € ou plus, tous les coûts sont couverts (profit non négatif).` });
+    return { cf, a, b, c, q, cv, ct, cfme, cvme, cme, cmg, qc, pc, qm, pm, pasos, F };
+  }
+
+  const ejemplos = [
+    { clave: 'clasico', nombre: 'Courbe en U : CV = Q³ − 6Q² + 15Q et CF = 32', sc: { cf: '32', a: '15', b: '-6', c: '1', q: '5' } },
+    { clave: 'cuadratico', nombre: 'Coûts quadratiques : CT = 450 + 20Q + 0,5Q²', sc: { cf: '450', a: '20', b: '0,5', c: '0', q: '20' } },
+    { clave: 'dado-cmg', nombre: 'Coût marginal donné Cm = 15 − 12Q + 3Q² et CF = 32', sc: { entrada: 'cmg', cf: '32', m0: '15', m1: '-12', m2: '3', q: '5' } },
+    { clave: 'cuadratico-2', nombre: 'Coûts quadratiques : CT = 200 + 10Q + 0,25Q²', sc: { cf: '200', a: '10', b: '0,25', c: '0', q: '30' } },
+    { clave: 'optimo', nombre: 'Produire exactement au minimum du coût moyen', sc: { cf: '32', a: '15', b: '-6', c: '1', q: '4' } },
+  ];
+
+  function resolver(sc) {
+    if (sc.entrada !== 'cmg') return resolverCT(sc);
+    const m0 = lee(sc, 'm0', 'le terme constant du coût marginal', { min: 0, minEx: true }), m1 = lee(sc, 'm1', 'le coefficient de Q du coût marginal', { def: 0 }), m2 = lee(sc, 'm2', 'le coefficient de Q² du coût marginal', { min: 0, def: 0 });
+    const cf = lee(sc, 'cf', 'les coûts fixes (la constante d’intégration)', { min: 0, minEx: true }), q = lee(sc, 'q', 'la production Q', { min: 0, minEx: true });
+    const a = m0, b = m1 / 2, c = m2 / 3, S = (x) => String(x);
+    const r = resolverCT({ cf: S(cf), a: S(a), b: S(b), c: S(c), q: S(q) });
+    r.pasos.unshift({ t: 'Du coût marginal au coût total', html: `Le coût marginal est la dérivée du coût total, donc on intègre : $Cm = ${f(m0, 6)} ${m1 < 0 ? '−' : '+'} ${f(Math.abs(m1), 6)}·Q + ${f(m2, 6)}·Q^2 ⇒ CT = ∫ Cm dQ = ${f(m0, 6)}·Q ${m1 < 0 ? '−' : '+'} ${f(Math.abs(m1) / 2, 6)}·Q^2 + ${f(m2 / 3, 6)}·Q^3 + K$. La constante d’intégration $K$ est le coût fixe (le coût avec une production nulle), qu’il faut donner : $K = CF = ${f(cf, 6)}$. Ainsi $a = ${f(a, 6)}$, $b = ${f(b, 6)}$ et $c = ${f(c, 6)}$.` });
+    return { ...r, entrada: 'cmg', a, b, c, m0, m1, m2 };
+  }
+
+  const AZ = K.az, azar = AZ.desde(ejemplos, (sc) => {
+    const cf = AZ.toma([20, 32, 50, 100, 200]);
+    if (sc.entrada === 'cmg') { const [a, b] = AZ.toma([[15, -6], [12, -4], [20, -6], [10, -4]]); return { cf: String(cf), m0: String(a), m1: String(2 * b), m2: '3', q: String(AZ.e(2, 8)) }; }
+    if (sc.c === '0') return { cf: String(AZ.toma([100, 200, 300, 450])), a: String(AZ.toma([5, 10, 20])), b: AZ.t(AZ.toma([0.25, 0.5, 1])), c: '0', q: String(AZ.toma([10, 20, 30])) };
+    const [a, b] = AZ.toma([[15, -6], [12, -4], [20, -6], [30, -9], [10, -4]]);
+    return { cf: String(cf), a: String(a), b: String(b), c: '1', q: String(AZ.e(2, 9)) };
+  }, null, (sc) => resolver(sc));
+  const enunciado = (sc) => `${sc.entrada === 'cmg' ? `Le coût marginal d’une entreprise est Cm = ${AZ.poli([[sc.m0, 0], [sc.m1, 1], [sc.m2, 2]])} et ses coûts fixes sont de ${sc.cf} €.` : `Une entreprise a des coûts fixes de ${sc.cf} € et des coûts variables CV = ${AZ.poli([[sc.a, 1], [sc.b, 2], [sc.c, 3]])}.`} Calculez, pour Q = ${sc.q}, les coûts variable, total, moyen, variable moyen, fixe moyen et marginal, ainsi que le minimum et l’optimum d’exploitation.`;
+
+  return { azar, enunciado, resolver, ejemplos, funciones };
+})();
+
+</script>
+<script src="../../../js/fr/compartir.fr.8a6ba9d7.js"></script>
+<script>
+(() => {
+  const P = Costes, { f, dinero, num } = Eco;
+  const ud = (x) => `${f(x, 6)} unités`;
+  Calculadora.monta({
+    usarEn: (s) => [{ carpeta: 'beneficio', texto: 'Utiliser dans Maximisation du profit →', estado: (s.c === 0 ? { modo: 'competencia', cf: String(s.cf), c: String(s.a), d: String(s.b), p: String(Math.round(1e4 * s.pm) / 1e4).replace('.', ',') } : { modo: 'competencia3', cf: String(s.cf), ca: String(s.a), cb: String(s.b), cc: String(s.c), p: String(Math.round(1e4 * s.pm) / 1e4).replace('.', ',') }) }],
+    C: P, carpeta: 'costes', app: 'CostesApp', azar: P.azar, enunciado: P.enunciado,
+    nota: 'CT(Q) = CF + a·Q + b·Q² + c·Q³. Si b et c sont vides, ils valent 0. Pour une courbe en U, b négatif et c positif ; avec c = 0, b doit être positif.',
+    campos: (sc) => [
+      { k: 'entrada', nom: 'Ce que l’on vous donne', tipo: 'sel', ops: [['ct', 'Le coût total CT(Q)'], ['cmg', 'Le coût marginal Cm(Q) et CF']] },
+      { k: 'cf', nom: 'Coûts fixes CF', un: '€', sep: 'Fonction de coûts' },
+      ...(sc.entrada === 'cmg'
+        ? [{ k: 'm0', nom: 'Cm : terme constant', un: '€/unité' }, { k: 'm1', nom: 'Cm : coefficient de Q' }, { k: 'm2', nom: 'Cm : coefficient de Q²' }]
+        : [{ k: 'a', nom: 'Coefficient a', un: '€/unité' }, { k: 'b', nom: 'Coefficient b', un: '€/unité²' }, { k: 'c', nom: 'Coefficient c', un: '€/unité³' }]),
+      { k: 'q', nom: 'Production Q', un: 'unités', sep: 'Production' },
+    ],
+    resumen: (s) => [['Coût variable CV', dinero(s.cv)], ['Coût total CT', dinero(s.ct)], ['Coût moyen CM', dinero(s.cme)], ['Coût variable moyen', dinero(s.cvme)], ['Coût fixe moyen', dinero(s.cfme)], ['Coût marginal Cm', dinero(s.cmg), true],
+      ['Minimum d’exploitation', `${dinero(s.pc)} pour Q = ${f(s.qc, 5)}`], ['Optimum d’exploitation', `${dinero(s.pm)} pour Q = ${f(s.qm, 5)}`]],
+    grafica: (s) => {
+      const X0 = 0.1 * s.qm, X1 = Math.max(2 * s.qm, 1.15 * s.q), n = 120, pts = (fn) => Array.from({ length: n + 1 }, (_, i) => { const x = X0 + (X1 - X0) * i / n; return [x, fn(x)]; });
+      const F = s.F, ym = Math.min(Math.max(F.cmg(X1), F.cme(X0)), 3 * s.pm);
+      return { x: [0, X1], y: [0, ym], fx: (v) => num(v, 0), fy: (v) => num(v, 0), ejeX: 'Production Q', ejeY: 'Euros par unité',
+        series: [{ pts: pts(F.cmg), color: '--serie-2' }, { pts: pts(F.cme), color: '--serie-1' }, { pts: pts(F.cvme), color: '--muted', discontinua: true },
+          { tipo: 'puntos', pts: [[s.qm, s.pm]], color: '--serie-3', radio: 5 }, { tipo: 'puntos', pts: [[s.qc, s.pc]], color: '--serie-3', radio: 4 }],
+        verticales: [{ x: s.q, color: '--muted', texto: 'Q' }] };
+    },
+    leyenda: () => '<b>Rouge</b> : coût marginal. <b>Bleu</b> : coût moyen. <b>Pointillés</b> : coût variable moyen. Le coût marginal coupe le coût moyen à son <b>minimum (optimum d’exploitation)</b> et le coût variable moyen au sien (<b>minimum d’exploitation</b>, point du prix de fermeture).',
+  });
+})();
+
+</script>
+<script src="../../../js/fr/biblioteca.fr.86a7f543.js"></script>
+<script src="../../../js/fr/practica.fr.ebd61c5b.js"></script>
+<script src="../../../js/fr/personal.fr.d7df8991.js"></script>
+<script>
+Biblioteca.monta('costes', 'costes-v1');
+Practica.monta('costes', 'costes-v1');
+Enunciado.monta('costes', 'costes-v1');
+</script>
+</html>
