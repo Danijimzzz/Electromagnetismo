@@ -210,7 +210,7 @@ const Condensador = (() => {
       }).filter(Boolean);
       const peor = lista.reduce((a, b) => (b.Vm < a.Vm ? b : a));
       Vmax = peor.Vm;
-      pasos.push({ t: 'Durchschlagfestigkeit', html: `Das Dielektrikum schlägt durch, wenn das Feld seine Festigkeit übersteigt. Da alle Felder proportional zu V sind, ist die maximale Spannung diejenige, die das Feld im knappsten Bereich an seine Grenze bringt:<br>` + lista.map((x) => `${x.nombre}: Festigkeit ${num(x.k / 1e6)} kV/mm${x.nombre === 'vacío' ? ' (Luft)' : ''} ⇒ $V_máx$ = ${conUnidad(x.Vm, 'V')}`).join('<br>') + `<br>Zuerst schlägt ${peor.nombre} durch: <b>V<sub>máx</sub> = ${conUnidad(Vmax, 'V')}</b>${V > Vmax ? ' (die aktuelle Spannung übersteigt sie bereits!)' : ''}.` });
+      pasos.push({ t: 'Durchschlagfestigkeit', html: `Das Dielektrikum schlägt durch, wenn das Feld seine Festigkeit übersteigt. Da alle Felder proportional zu V sind, ist die maximale Spannung diejenige, die das Feld im knappsten Bereich an seine Grenze bringt:<br>` + lista.map((x) => `${x.nombre}: Festigkeit ${num(x.k / 1e6)} kV/mm${x.nombre === 'vacío' ? ' (Luft)' : ''} ⇒ $V_max$ = ${conUnidad(x.Vm, 'V')}`).join('<br>') + `<br>Zuerst schlägt ${peor.nombre} durch: <b>V<sub>max</sub> = ${conUnidad(Vmax, 'V')}</b>${V > Vmax ? ' (die aktuelle Spannung übersteigt sie bereits!)' : ''}.` });
     }
     let comp = null;
     if (hayDiel) {
@@ -293,7 +293,7 @@ const Condensador = (() => {
     if (vm.some((k) => k)) {
       const lista = cs.map((_, i) => (vm[i] ? { i, vm: vm[i], Vred: (V * vm[i]) / v[i] } : null)).filter(Boolean), peor = lista.reduce((a, b) => (b.Vred < a.Vred ? b : a));
       ruptura = { primero: peor.i, Vmax: peor.Vred, lista, sin: cs.map((_, i) => i).filter((i) => !vm[i]) };
-      pasos.push({ t: 'Welcher Kondensator zuerst durchschlägt', html: `Die Spannungen aller sind proportional zu V (jedes ${'$V_i = k_i V$'} bleibt beim Erhöhen der Spannung erhalten), also hält jeder bis $V_{máx,i} = V · V_{rotura,i}/V_i$ aus:<br>` + lista.map((x) => `${sub(x.i)}: hält ${conUnidad(x.vm, 'V')} aus und trägt jetzt ${conUnidad(v[x.i], 'V')} ⇒ ${conUnidad(x.Vred, 'V')} in der Schaltung`).join('<br>') + `<br>Als Erstes schlägt ${sub(peor.i)} durch: <b>V<sub>máx</sub> = ${conUnidad(peor.Vred, 'V')}</b>${V > peor.Vred ? ' (die angelegte Spannung übersteigt sie bereits!)' : ''}.${ruptura.sin.length ? ` (${ruptura.sin.map((i) => sub(i)).join(', ')} nicht berücksichtigt: ohne maximale Spannung.)` : ''}` });
+      pasos.push({ t: 'Welcher Kondensator zuerst durchschlägt', html: `Die Spannungen aller sind proportional zu V (jedes ${'$V_i = k_i V$'} bleibt beim Erhöhen der Spannung erhalten), also hält jeder bis $V_{max,i} = V · V_{rotura,i}/V_i$ aus:<br>` + lista.map((x) => `${sub(x.i)}: hält ${conUnidad(x.vm, 'V')} aus und trägt jetzt ${conUnidad(v[x.i], 'V')} ⇒ ${conUnidad(x.Vred, 'V')} in der Schaltung`).join('<br>') + `<br>Als Erstes schlägt ${sub(peor.i)} durch: <b>V<sub>max</sub> = ${conUnidad(peor.Vred, 'V')}</b>${V > peor.Vred ? ' (die angelegte Spannung übersteigt sie bereits!)' : ''}.${ruptura.sin.length ? ` (${ruptura.sin.map((i) => sub(i)).join(', ')} nicht berücksichtigt: ohne maximale Spannung.)` : ''}` });
     }
     return { tipo: 'asociacion', red, cs, V, Ceq, Q: Ceq * V, q, v, u, U, pasos, vm, ruptura };
   }

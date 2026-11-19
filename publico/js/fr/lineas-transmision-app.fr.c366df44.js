@@ -70,9 +70,9 @@
       dato('Affaiblissement de retour', `RL = ${f(sol.rl)} dB`) + dato('Puissance réfléchie', `${f(sol.pRef)} %`) + dato('Longueur d\'onde dans la ligne', `λ = ${f(sol.lam)} m`) +
       dato('Impédance d\'entrée', `Z<sub>in</sub> = ${cm(sol.zin)} Ω`);
     if (!sol.adaptada) {
-      h += dato('Premier maximum de tension', `d<sub>máx</sub> = ${f(sol.dmax)} m`) + dato('Premier minimum de tension', `d<sub>mín</sub> = ${f(sol.dmin)} m`);
+      h += dato('Premier maximum de tension', `d<sub>max</sub> = ${f(sol.dmax)} m`) + dato('Premier minimum de tension', `d<sub>min</sub> = ${f(sol.dmin)} m`);
       sol.stub.forEach((s, i) => { h += dato(`Stub parallèle, solution ${i + 1}`, `d = ${f(s.dm)} m ; l<sub>cc</sub> = ${f(s.lccm)} m ; l<sub>ab</sub> = ${f(s.labm)} m`, 'est'); });
-      h += dato('Transformateur λ/4 à un maximum', `Z<sub>T</sub> = ${f(sol.cuarto.Zt1)} Ω à d<sub>máx</sub>`, 'est');
+      h += dato('Transformateur λ/4 à un maximum', `Z<sub>T</sub> = ${f(sol.cuarto.Zt1)} Ω à d<sub>max</sub>`, 'est');
       sol.serie.forEach((q, i) => { h += dato(`Stub série, solution ${i + 1}`, `d = ${f(q.dm)} m ; l<sub>cc</sub> = ${f(q.lccm)} m ; l<sub>ab</sub> = ${f(q.labm)} m`, 'est'); });
       if (sol.doble.prohibida) h += dato('Double stub', `Zone interdite : g = ${f(sol.doble.g1)} dépasse ${f(sol.doble.gmax)}`, 'est');
       else sol.doble.sols.forEach((q, i) => { h += dato(`Double stub, solution ${i + 1}`, `l<sub>1</sub> = ${f(q.l1m)} m; l<sub>2</sub> = ${f(q.l2m)} m`, 'est'); });

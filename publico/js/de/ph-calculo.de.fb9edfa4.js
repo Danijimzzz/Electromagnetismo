@@ -117,7 +117,7 @@ const PH = (() => {
     const Ka = 10 ** -pKa, Ct = cAc + cBa, betaDe = (pHx) => { const hx = 10 ** -pHx; return Math.LN10 * (hx + KW / hx + (Ct * Ka * hx) / ((Ka + hx) ** 2)); };
     const beta = betaDe(pH0), betaMax = (Math.LN10 / 4) * Ct, curvaBeta = Array.from({ length: 141 }, (_, i) => [i / 10, betaDe(i / 10)]);
     pasos.push({ t: 'Pufferkapazität', html: `Sie puffern gut zwischen $pH = pK_a ± 1$, von ${f2(pKa - 1)} bis ${f2(pKa + 1)}, und umso besser, je konzentrierter beide Formen sind.` });
-    pasos.push({ t: 'Pufferkapazität β', html: `$β = {d C_b}/{d pH} = 2,303 ([H_{3}O^{+}] + [OH^{−}] + {C K_a [H_{3}O^{+}]}/{(K_a + [H_{3}O^{+}])^2})$, mit $C = [HA] + [A^{−}] = ${f(Ct)}$ M. Bei pH = ${f2(pH0)} ist <b>β = ${f(beta)} mol/(L·pH)</b>: Man braucht ${f(beta)} mol starke Base pro Liter, um den pH-Wert um eine Einheit zu erhöhen. Sie ist bei $pH = pK_a$ maximal, mit $β_{máx} = 2,303 C/4 = ${f(betaMax)}$ mol/(L·pH), und fällt bei $pK_a ± 0,76$ auf die Hälfte.` });
+    pasos.push({ t: 'Pufferkapazität β', html: `$β = {d C_b}/{d pH} = 2,303 ([H_{3}O^{+}] + [OH^{−}] + {C K_a [H_{3}O^{+}]}/{(K_a + [H_{3}O^{+}])^2})$, mit $C = [HA] + [A^{−}] = ${f(Ct)}$ M. Bei pH = ${f2(pH0)} ist <b>β = ${f(beta)} mol/(L·pH)</b>: Man braucht ${f(beta)} mol starke Base pro Liter, um den pH-Wert um eine Einheit zu erhöhen. Sie ist bei $pH = pK_a$ maximal, mit $β_{max} = 2,303 C/4 = ${f(betaMax)}$ mol/(L·pH), und fällt bei $pK_a ± 0,76$ auf die Hälfte.` });
     return { modo: 'tampon', base, K, pKa, cAc, cBa, pH0, pH, anade, pHagua, nAc, nBa, Ct, beta, betaMax, curvaBeta, betaDe, h: 10 ** -pH, pasos };
   }
 

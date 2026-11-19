@@ -200,7 +200,7 @@ const Fluidos = (() => {
       pasos.push({ t: 'Débit', html: `$Q = Δp/R = ${f(dp)}/${f(Rh)}$ = <b>${f(Q)} m³/s</b> = ${f(Q * 1e6)} mL/s` });
     }
     const A = Math.PI * r * r, vm = Q / A, vmax = 2 * vm, rho = lee(sc, 'rho', 'la masse volumique du fluide', { opcional: true }) ?? 1000, Re = (rho * vm * d) / eta;
-    pasos.push({ t: 'Vitesses', html: `Vitesse moyenne $v̄ = Q/(π r^2) = ${f(vm)}$ m/s ; au centre, elle est double, $v_{máx} = 2 v̄ = ${f(vmax)}$ m/s, et contre la paroi, elle est nulle.` });
+    pasos.push({ t: 'Vitesses', html: `Vitesse moyenne $v̄ = Q/(π r^2) = ${f(vm)}$ m/s ; au centre, elle est double, $v_{max} = 2 v̄ = ${f(vmax)}$ m/s, et contre la paroi, elle est nulle.` });
     pasos.push({ t: 'L’écoulement est-il laminaire ?', html: `$Re = ρ v̄ d/η = {${f(rho)} · ${f(vm)} · ${f(d)}}/${'{'}${f(eta)}}$ = ${f(Re)} : ${Re < 2000 ? 'inférieur à environ 2000, régime laminaire et la loi de Poiseuille est valable.' : Re < 4000 ? 'entre 2000 et 4000, zone de transition : la loi de Poiseuille cesse d’être fiable.' : 'supérieur à 4000, l’écoulement est turbulent et la loi de Poiseuille n’est pas valable.'}` });
     return { modo: 'viscosidad', tipo: 'poiseuille', datos: sc.datos === 'Q' ? 'Q' : 'dp', eta, L, d, r, Rh, Q, dp, vm, vmax, rho, Re, pasos };
   }

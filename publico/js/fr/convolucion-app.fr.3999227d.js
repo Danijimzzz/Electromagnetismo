@@ -88,7 +88,7 @@
     const hl = h.fin - h.ini;
     const v0 = Math.min(x.ini, h.ini, sol.tmin - hl), v1 = Math.max(x.fin, h.fin, sol.tmaxT), pad = (v1 - v0) * 0.03;
     vista = { v0: v0 - pad, v1: v1 + pad };
-    let r = dato('Valeur maximale', `y<sub>máx</sub> = ${f(sol.ymax)}`) + dato('Instant du maximum', `t = ${T(sol.tymax)}`) + dato('La sortie commence en', `t = ${T(sol.tmin)}`);
+    let r = dato('Valeur maximale', `y<sub>max</sub> = ${f(sol.ymax)}`) + dato('Instant du maximum', `t = ${T(sol.tymax)}`) + dato('La sortie commence en', `t = ${T(sol.tmin)}`);
     if (sol.modo === 'sistema' && sol.esc) {
       const e = sol.esc;
       r += dato('Gain en continu', `H(0) = ${f(e.final)}`) + (e.cero ? dato('Pic de la réponse à l\'échelon', `${f(e.pico)} en t = ${T(e.tpico)}`) + dato('Établissement (2 % du pic)', T(e.establecimiento)) : dato('Temps de montée (10–90 %)', T(e.subida)) + dato('Dépassement', `${f(100 * e.sobre)} %`) + dato('Établissement (2 %)', T(e.establecimiento)));

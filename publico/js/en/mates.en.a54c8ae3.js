@@ -63,7 +63,7 @@ const Mates = (() => {
       if (k.t === 's') { p++; return `<mo>${escH(k.v)}</mo>`; }
       let v = k.v; p++;
       while (ver() && !ver().sp && (ver().t === 'n' || ver().t === 'w')) { v += ver().v; p++; }
-      return letra(v);
+      return letra(/^m[áa][x]$|^m[íi][n]$/.test(v) ? nombreFn(v) : v);
     }
     function guiones() {
       const base = atomo();
@@ -80,7 +80,7 @@ const Mates = (() => {
       if (!k) return nodo('<mrow></mrow>');
       p++;
       if (k.t === 'n') return nodo(`<mn>${k.v}</mn>`);
-      if (k.t === 'x') return nodo(`${k.sp && p > 1 ? '<mspace width="0.3em"></mspace>' : ''}<mtext>${escH(k.v)}</mtext>`);
+      if (k.t === 'x') return nodo(`${k.sp && p > 1 ? '<mspace width="0.3em"></mspace>' : ''}<mtext>${escH(/^m[áa][x]$|^m[íi][n]$/.test(k.v) ? nombreFn(k.v) : k.v)}</mtext>`);
       if (k.t === 'w') {
         if (k.v === 'binom' && es('(')) { p++; const a = secuencia(','); p++; const b = secuencia(')'); p++; return nodo(`<mrow><mo>(</mo><mfrac linethickness="0">${fila(a)}${fila(b)}</mfrac><mo>)</mo></mrow>`); }
         if (FUNC.has(k.v)) { let m = `<mi mathvariant="normal">${nombreFn(k.v)}</mi>`; if (es('^')) { p++; m = `<msup>${m}${argumento()}</msup>`; } return nodo(`<mspace width="0.17em"></mspace>${m}<mo>&#x2061;</mo><mspace width="0.12em"></mspace>`); }
