@@ -86,7 +86,7 @@ body .card:not(.off), body .vers, body .obras { background:var(--vidrio); border
 body a.card:hover { border-color:color-mix(in srgb,var(--c) 45%,var(--vidrio-borde)); transform:translateY(-2px) } body .card { transition:transform .18s ease }
 body .vers::before { background:var(--bg) } body .filtro button { border-radius:99px; border-color:var(--vidrio-borde); background:var(--vidrio); -webkit-backdrop-filter:var(--blur); backdrop-filter:var(--blur) } body .filtro button[aria-pressed=true] { background:var(--c) }
 body .t { background:var(--vidrio) } body a .t { background:var(--c) }
-@media (max-width:760px) { body .top { position:static; padding:10px 14px; gap:8px 10px; border-radius:20px } body .top .buscar { order:5; flex:1 0 100%; width:100%; margin-left:0 } body .top .tema { margin-left:0 } body .lado { margin:8px 10px 0; top:8px; max-height:none; border-radius:99px; background:var(--vidrio-fuerte); z-index:9 }
+@media (max-width:760px) { body .top { position:relative; z-index:10; padding:10px 14px; gap:8px 10px; border-radius:20px } body .top .buscar { order:5; flex:1 0 100%; width:100%; margin-left:0 } body .top .tema { margin-left:0 } body .lado { margin:8px 10px 0; top:8px; max-height:none; border-radius:99px; background:var(--vidrio-fuerte); z-index:9 }
   body .lado a { background:var(--vidrio) } body .mini > * { -webkit-backdrop-filter:blur(12px); backdrop-filter:blur(12px) } }
 @media (prefers-reduced-transparency: reduce), (prefers-contrast: more) { body .top, body .lado, body .mini > *, body .card, body .vers, body .obras, body .filtro button { background:var(--panel); -webkit-backdrop-filter:none; backdrop-filter:none } }
 @media (prefers-reduced-motion: reduce) { body .mini > * { transition:none } body .mini a:hover { transform:none } }
@@ -462,7 +462,9 @@ fs.writeFileSync(vercel, JSON.stringify(conf, null, 2) + '\n');
 // fenómenos las escribe herramientas.js, y Electrostática build.sh, con la misma etiqueta.
 const enlaces = ['', 'novedades/', ...Catalogo.asignaturas.flatMap((a) => [`${a.clave}/`, ...disponibles(a).map((h) => `${a.clave}/${h.clave}/`)]),
   'fenomenos/', ...V.lista.filter((f) => f.disponible).map((f) => `fenomenos/${f.clave}/`), 'aviso-legal.html', 'privacidad.html', 'cookies.html', 'contacto.html'];
-archivos['sitemap.xml'] = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"${enlaces.some((e) => Idiomas.SITEMAP(e, Catalogo.web)) ? ' xmlns:xhtml="http://www.w3.org/1999/xhtml"' : ''}>\n${enlaces.map((e) => `  <url><loc>${Catalogo.web}/${e}</loc>${Idiomas.SITEMAP(e, Catalogo.web) ? '\n    ' + Idiomas.SITEMAP(e, Catalogo.web).split('\n').join('\n    ') : ''}</url>`).join('\n')}\n</urlset>\n`;
+// una entrada por cada versión de idioma indexable (la española y las traducidas que existen), todas con las mismas alternativas hreflang
+const urlsSitemap = enlaces.flatMap((e) => Idiomas.activos().filter((i) => i.indexar && Idiomas.existe(i.c, e)).map((i) => ({ e, loc: `${Catalogo.web}/${i.carpeta}${e}` })));
+archivos['sitemap.xml'] = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"${enlaces.some((e) => Idiomas.SITEMAP(e, Catalogo.web)) ? ' xmlns:xhtml="http://www.w3.org/1999/xhtml"' : ''}>\n${urlsSitemap.map(({ e, loc }) => `  <url><loc>${loc}</loc>${Idiomas.SITEMAP(e, Catalogo.web) ? '\n    ' + Idiomas.SITEMAP(e, Catalogo.web).split('\n').join('\n    ') : ''}</url>`).join('\n')}\n</urlset>\n`;
 archivos['robots.txt'] = `User-agent: *\nAllow: /\n\nSitemap: ${Catalogo.web}/sitemap.xml\n`;
 const canonica = (f) => `${Catalogo.web}/${f.replace(/index\.html$/, '')}`;
 for (const f of Object.keys(archivos)) if (f.endsWith('.html') && !archivos[f].includes('rel="canonical"'))

@@ -1,0 +1,586 @@
+<!doctype html>
+<html lang="fr">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTQiIGZpbGw9IiMwZDZiNjYiLz48ZyBmaWxsPSJub25lIiBzdHJva2U9IiNlNmE2NDAiIHN0cm9rZS13aWR0aD0iMi40IiBzdHJva2UtZGFzaGFycmF5PSI0IDYuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIj48cGF0aCBkPSJNMjAgMzJINDQiLz48cGF0aCBkPSJNMjEgMjdDMjcgMTQgMzcgMTQgNDMgMjciLz48cGF0aCBkPSJNMjEgMzdDMjcgNTAgMzcgNTAgNDMgMzciLz48cGF0aCBkPSJNMTcgMjRDMjIgNCA0MiA0IDQ3IDI0Ii8+PHBhdGggZD0iTTE3IDQwQzIyIDYwIDQyIDYwIDQ3IDQwIi8+PC9nPjxjaXJjbGUgY3g9IjE3IiBjeT0iMzIiIHI9IjgiIGZpbGw9IiNlZjdhNjIiLz48Y2lyY2xlIGN4PSI0NyIgY3k9IjMyIiByPSI4IiBmaWxsPSIjNzRhMmYyIi8+PHBhdGggZD0iTTEzIDMyaDhNMTcgMjh2OE00MyAzMmg4IiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iMi42IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48L3N2Zz4K">
+<link rel="apple-touch-icon" href="../../../apple-touch-icon.png">
+<meta property="og:title" content="Probabilité">
+<meta property="og:description" content="Dénombrement, probabilité conditionnelle, probabilités totales et théorème de Bayes avec l’arbre de probabilités.">
+<link rel="canonical" href="https://simulaciencia.vercel.app/fr/estadistica/probabilidad/">
+<link rel="alternate" hreflang="es" href="https://simulaciencia.vercel.app/estadistica/probabilidad/">
+<link rel="alternate" hreflang="en" href="https://simulaciencia.vercel.app/en/estadistica/probabilidad/">
+<link rel="alternate" hreflang="de" href="https://simulaciencia.vercel.app/de/estadistica/probabilidad/">
+<link rel="alternate" hreflang="fr" href="https://simulaciencia.vercel.app/fr/estadistica/probabilidad/">
+<link rel="alternate" hreflang="x-default" href="https://simulaciencia.vercel.app/estadistica/probabilidad/">
+<meta property="og:locale" content="fr">
+<meta property="og:image" content="https://simulaciencia.vercel.app/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebApplication","name":"Probabilidad","description":"Dénombrement, probabilité conditionnelle, théorème de Bayes avec l’arbre de probabilités, variable aléatoire discrète (espérance et variance) et tableaux 2 × 2.","url":"https://simulaciencia.vercel.app/estadistica/probabilidad/","inLanguage":"fr","isAccessibleForFree":true,"applicationCategory":"EducationalApplication","operatingSystem":"Navigateur web","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://simulaciencia.vercel.app/"},{"@type":"ListItem","position":2,"name":"Statistique","item":"https://simulaciencia.vercel.app/estadistica/"},{"@type":"ListItem","position":3,"name":"Probabilidad","item":"https://simulaciencia.vercel.app/estadistica/probabilidad/"}]},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Comment applique-t-on le théorème de Bayes ?","acceptedAnswer":{"@type":"Answer","text":"P(A|B) = P(B|A)·P(A)/P(B). Si une maladie touche 1 % de la population, que le test détecte 99 % des malades et donne des faux positifs dans 5 % des cas : P(malade | +) = 0,0099/(0,0099 + 0,0495) ≈ 16,7 %."}},{"@type":"Question","name":"Quand utilise-t-on permutations, arrangements et combinaisons ?","acceptedAnswer":{"@type":"Answer","text":"Permutations, n!, si l’on ordonne tous les éléments ; arrangements, n!/(n − k)!, si l’ordre compte quand on en choisit k ; combinaisons, C(n, k) = n!/(k!(n − k)!), si l’ordre ne compte pas. Il y a C(5, 2) = 10 façons de choisir 2 éléments parmi 5."}}]}]}</script>
+<link rel="manifest" href="../../manifest.webmanifest">
+<meta name="theme-color" content="#0d6b66">
+<script src="../../pwa.js" defer></script>
+<meta name="google-adsense-account" content="ca-pub-6407501780492688">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6407501780492688" crossorigin="anonymous"></script>
+<script>window.googlefc = window.googlefc || {}; googlefc.callbackQueue = googlefc.callbackQueue || [];
+document.addEventListener('click', (e) => { if (!e.target.closest('.pref-cookies')) return; e.preventDefault(); googlefc.callbackQueue.push(() => googlefc.showRevocationMessage()); });</script>
+<style>.anuncio { max-width:860px; margin:28px 0 0; text-align:center; min-height:120px } .anuncio > span { display:block; font:11px/1.6 system-ui, sans-serif; letter-spacing:.06em; text-transform:uppercase; color:var(--muted, #5b6670) } .anuncio ins { display:block }</style>
+<style>.anuncio-lado { display:none } @media (min-width: 901px) { .anuncio-lado { display:block; grid-column:1; grid-row:2; position:sticky; top:96px; margin:8px 0 0; max-width:none; min-height:250px; min-width:0; overflow:hidden } main .layout.con-lado > :nth-child(2) { grid-row:1 / span 2 } }</style>
+<script>document.addEventListener('DOMContentLoaded', () => {
+  const l = document.querySelector('main .layout');
+  if (!l || l.classList.contains('invertido') || l.children.length !== 2 || !l.offsetParent || !matchMedia('(min-width: 901px)').matches) return;
+  l.classList.add('con-lado');
+  const a = document.createElement('div'); a.className = 'anuncio anuncio-lado';
+  a.innerHTML = '<span>Publicidad</span><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-6407501780492688" data-ad-slot="9800921596" data-ad-format="auto" data-full-width-responsive="true"></ins>';
+  l.appendChild(a); (window.adsbygoogle = window.adsbygoogle || []).push({});
+});</script>
+<script>(() => {
+  const raiz = document.documentElement, mq = matchMedia('(prefers-color-scheme: dark)'), oyentes = [];
+  try { const t = localStorage.getItem('simu-tema'); if (t === 'dark' || t === 'light') raiz.dataset.theme = t; } catch (e) { /* sin almacenamiento */ }
+  const orig = MediaQueryList.prototype.addEventListener;
+  MediaQueryList.prototype.addEventListener = function (tipo, f, ...r) { if (tipo === 'change' && /prefers-color-scheme/.test(this.media)) oyentes.push(f); return orig.call(this, tipo, f, ...r); };
+  const oscuro = () => (raiz.dataset.theme ? raiz.dataset.theme === 'dark' : mq.matches);
+  const rotula = () => document.querySelectorAll('.tema').forEach((b) => { const t = oscuro() ? 'Passer en mode clair' : 'Passer en mode sombre'; b.title = t; b.setAttribute('aria-label', t); });
+  document.addEventListener('DOMContentLoaded', rotula);
+  mq.addEventListener('change', rotula);
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.tema')) return;
+    raiz.dataset.theme = oscuro() ? 'light' : 'dark';
+    try { localStorage.setItem('simu-tema', raiz.dataset.theme); } catch (e) { /* sin almacenamiento */ }
+    rotula();
+    for (const f of oyentes) { try { f.call(mq, { matches: oscuro(), media: mq.media }); } catch (err) { console.error(err); } }
+  });
+})();</script>
+<script>(() => {
+  const ENFOCABLE = 'a[href],button,input,select,textarea,summary,[tabindex]';
+  let espera = 0;
+  const revisa = () => {
+    espera = 0;
+    for (const e of document.querySelectorAll('main *')) {
+      const desborda = e.scrollWidth > e.clientWidth || e.scrollHeight > e.clientHeight;
+      if (e.dataset.sf) { if (!desborda || e.querySelector(ENFOCABLE)) { e.removeAttribute('tabindex'); delete e.dataset.sf; } continue; }
+      if (!desborda || e.hasAttribute('tabindex') || e.matches('svg,svg *,canvas') || e.querySelector(ENFOCABLE)) continue;
+      const o = getComputedStyle(e);
+      if (/auto|scroll/.test(o.overflowX + o.overflowY)) { e.tabIndex = 0; e.dataset.sf = '1'; }
+    }
+  };
+  window.revisaScroll = revisa; // también lo llama pruebas/accesibilidad.js antes de pasar axe
+  const pide = () => { if (!espera) espera = setTimeout(revisa, 400); };
+  addEventListener('load', () => { revisa(); const m = document.querySelector('main'); if (m) new MutationObserver(pide).observe(m, { childList: true, subtree: true, characterData: true }); });
+  addEventListener('resize', pide);
+})();</script>
+<script src="../../buscador.js" defer></script>
+<script src="../../llama.js" defer></script>
+<title>Probabilités · Ciencify</title>
+<meta name="description" content="Dénombrement, probabilité conditionnelle, théorème de Bayes avec l’arbre de probabilités, variable aléatoire discrète (espérance et variance) et tableaux 2 × 2.">
+<style>/* =====================================================================
+   Hoja de estilos común de todas las herramientas (fuente/<herramienta>/pagina.html).
+   diseno.js la mete en cada página, antes de su propio <style>, junto con el color
+   de la asignatura (--accent, --accent-soft) y la cabecera del portal. La guía de uso
+   de cada componente, con su HTML, está en DISENO.md.
+   Una herramienta no vuelve a definir estas reglas: ajusta las variables de medida
+   (--col-datos, --ancho-valor, --alto-grafica) o añade una clase propia.
+   ===================================================================== */
+
+/* ---------- Colores y letras (claro y oscuro) ---------- */
+:root {
+  --bg: #eef1ee; --panel: #fff; --ink: #1a2128; --muted: #5b6670; --line: #d5dbd5; --error: #c0392b;
+  --f-ui: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-math: "STIX Two Text", "Cambria Math", Cambria, Georgia, serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+  --vidrio: rgba(255,255,255,.55); --vidrio-fuerte: rgba(255,255,255,.72); --vidrio-borde: rgba(255,255,255,.7); --vidrio-brillo: inset 0 1px 0 rgba(255,255,255,.8);
+  --vidrio-sombra: 0 1px 2px rgba(20,40,60,.06), 0 8px 28px rgba(20,40,60,.10); --blur: blur(22px) saturate(1.7); --halo1: rgba(13,107,102,.22); --halo2: rgba(42,93,181,.20); --halo3: rgba(107,63,160,.14);
+  /* medidas que cada herramienta puede ajustar */
+  --col-datos: 360px; --ancho-etiqueta: minmax(0, 1fr); --ancho-valor: 150px; --letra-campo: 13px var(--f-ui); --ancho-dato: 190px; --alto-grafica: clamp(260px, 36vw, 380px); --margen-grafica: 10px;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #111619; --panel: #182025; --ink: #e3e8ea; --muted: #a3aeb5; --line: #2a343b; --error: #f08a80; --vidrio: rgba(34,46,54,.50); --vidrio-fuerte: rgba(26,36,42,.70); --vidrio-borde: rgba(255,255,255,.12); --vidrio-brillo: inset 0 1px 0 rgba(255,255,255,.10); --vidrio-sombra: 0 1px 2px rgba(0,0,0,.3), 0 10px 32px rgba(0,0,0,.35); --halo1: rgba(77,188,176,.20); --halo2: rgba(116,162,242,.18); --halo3: rgba(170,120,230,.14); color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #111619; --panel: #182025; --ink: #e3e8ea; --muted: #a3aeb5; --line: #2a343b; --error: #f08a80; --vidrio: rgba(34,46,54,.50); --vidrio-fuerte: rgba(26,36,42,.70); --vidrio-borde: rgba(255,255,255,.12); --vidrio-brillo: inset 0 1px 0 rgba(255,255,255,.10); --vidrio-sombra: 0 1px 2px rgba(0,0,0,.3), 0 10px 32px rgba(0,0,0,.35); --halo1: rgba(77,188,176,.20); --halo2: rgba(116,162,242,.18); --halo3: rgba(170,120,230,.14); color-scheme: dark }
+/* fin de los colores */
+
+/* ---------- Base ---------- */
+* { box-sizing: border-box }
+[hidden] { display: none !important }
+html, body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.45 var(--f-ui) }
+a { color: var(--accent) }
+.wrap { max-width: 1300px; margin: 0 auto; padding: 16px clamp(16px, 3vw, 24px) 32px }
+h1 { font: 600 24px/1.25 var(--f-ui); margin: 0 0 4px }
+.lead { color: var(--muted); margin: 0 0 12px; max-width: 760px }
+/* texto solo para lectores de pantalla; sin position:absolute para que no ensanche las tablas con scroll */
+.solo-lector { display: inline-block; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; vertical-align: top }
+footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 8px 16px 24px }
+footer a { color: var(--muted); margin: 0 6px; white-space: nowrap; display: inline-block }
+
+/* ---------- Diseño A: datos a la izquierda, resultados a la derecha ---------- */
+.layout { display: grid; grid-template-columns: var(--col-datos) minmax(0, 1fr); gap: 16px; align-items: start }
+.layout.invertido { grid-template-columns: minmax(0, 1fr) var(--col-datos) }
+@media (max-width: 900px) { .layout, .layout.invertido { grid-template-columns: minmax(0, 1fr) } }
+
+/* ---------- Tarjetas ---------- */
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 14px; margin-bottom: 14px }
+.card h2 { font: 600 12px/1.4 var(--f-ui); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 0 0 10px }
+.destacado { border-color: var(--line); border-top: 3px solid var(--accent) }
+.destacado h2 { color: var(--accent) }
+
+/* ---------- Datos: campos, separadores, botones y pestañas ---------- */
+.campos { display: grid; grid-template-columns: var(--ancho-etiqueta) var(--ancho-valor); gap: 7px 10px; align-items: center }
+.campos label { font-size: 13.5px }
+.campos label small { color: var(--muted) }
+.campos .ancho { grid-column: 1 / -1 }
+.sep { grid-column: 1 / -1; font: 600 12px var(--f-ui); color: var(--accent); text-transform: uppercase; letter-spacing: .04em; margin-top: 8px }
+.in { font: var(--letra-campo); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; width: 100%; font-variant-numeric: tabular-nums }
+.btn { font: 500 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 5px 10px; cursor: pointer; white-space: nowrap }
+.btn:hover { border-color: var(--accent) }
+/* foco del teclado en todo lo que se pulsa o se escribe (sin especificidad: una herramienta puede ajustarlo) */
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible { outline: 2px solid var(--accent); outline-offset: 1px }
+.controles { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 8px }
+.controles > .nota, .controles > .leyenda { flex: 1 1 220px; margin: 0 }
+.exportar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 8px 0 }
+.exportar-aviso { color: var(--muted); font-size: 12.5px }
+.tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px }
+.tools label { color: var(--muted); font-size: 13px; display: inline-flex; gap: 6px; align-items: center }
+.modos { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; margin-bottom: 14px }
+.modos button { font: 500 13.5px var(--f-ui); border: 0; background: var(--panel); color: var(--muted); padding: 7px 14px; cursor: pointer }
+.modos button[aria-selected=true] { background: var(--accent); color: var(--panel) }
+.error { color: var(--error); font-size: 13px; margin: 10px 0 0 }
+.nota { color: var(--muted); font-size: 12.5px; margin: 8px 0 0 }
+
+/* ---------- Resultados ---------- */
+.res { display: grid; grid-template-columns: repeat(auto-fill, minmax(var(--ancho-dato), 1fr)); gap: 6px 14px; font: 16px var(--f-math) }
+.res div { overflow-x: auto; overflow-y: hidden }
+.res span { display: block; font: 12px var(--f-ui); color: var(--muted) }
+.res div.ancho { grid-column: 1 / -1 }
+.resumen { display: grid; grid-template-columns: repeat(auto-fill, minmax(var(--ancho-dato), 1fr)); gap: 8px; margin: 0 }
+.resumen div { background: var(--accent-soft); border-radius: 8px; padding: 8px 10px; overflow-x: auto; overflow-y: hidden }
+.resumen div span { display: block; font-size: 12px; color: var(--muted) }
+.resumen div b { font: 600 17px var(--f-math) }
+.resumen div.ancho { grid-column: 1 / -1 }
+
+/* ---------- Gráficas ---------- */
+canvas { display: block; width: 100%; height: var(--alto-grafica); border-radius: 8px; background: var(--bg); margin-top: var(--margen-grafica) }
+.leyenda { font-size: 12.5px; color: var(--muted); margin: 6px 0 0 }
+.leyenda b { font-weight: 600 }
+
+/* ---------- Desarrollo paso a paso ---------- */
+/* el número va dentro del paso para que no lo corte el desplazamiento de las fórmulas largas */
+.pasos ol { margin: 0; padding: 0; list-style: none; counter-reset: paso }
+.pasos li { position: relative; margin: 0 0 12px; padding-left: 22px; font-family: var(--f-math); font-size: 15.5px; overflow-x: auto; counter-increment: paso; overflow-y: hidden }
+.pasos li::before { content: counter(paso) "."; position: absolute; left: 0; top: 0; font: 13.5px/1.45 var(--f-ui); color: var(--muted) }
+.pasos li strong { font: 600 13.5px var(--f-ui); display: block; margin-bottom: 2px }
+.pasos table.tabla { border-collapse: collapse; margin: 6px 0; font: 13px var(--f-ui); font-variant-numeric: tabular-nums }
+.pasos table.tabla th, .pasos table.tabla td { border: 1px solid var(--line); padding: 3px 9px; text-align: right }
+.pasos table.tabla th { background: var(--accent-soft); font-weight: 600 }
+.tabla-scroll { overflow-x: auto }
+
+/* matrices con corchetes, dentro de una fórmula */
+.mat { position: relative; display: inline-block; vertical-align: middle; padding: 0 7px; margin: 2px 2px }
+.mat::before, .mat::after { content: ""; position: absolute; top: 0; bottom: 0; width: 5px; border: 1.4px solid currentColor }
+.mat::before { left: 0; border-right: 0 }
+.mat::after { right: 0; border-left: 0 }
+.mat table { border-collapse: collapse }
+.mat td { padding: 2px 7px; text-align: center; white-space: nowrap; font-variant-numeric: tabular-nums }
+
+/* ---------- Teoría ---------- */
+.teoria, .preguntas { margin-top: 28px; max-width: 860px; font-size: 15px; line-height: 1.6 }
+.preguntas h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
+.preguntas h3 { font: 600 15px var(--f-ui); margin: 14px 0 2px }
+.preguntas p { margin: 0 }
+.teoria h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
+.teoria .f { max-width: 100%; overflow-x: auto; overflow-y: hidden; font-family: var(--f-math); font-size: 16.5px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; display: inline-block }
+.teoria ul { padding-left: 20px }
+.teoria li { margin-bottom: 4px }
+.teoria li, .teoria p { overflow-x: auto; overflow-y: hidden }
+
+/* ---------- Liquid Glass ---------- */
+/* Vidrio solo en el marco (tarjetas, controles, barras); el lienzo de las gráficas y las fórmulas no se tocan. */
+body { display: flow-root; background: radial-gradient(60% 50% at 8% 0%, var(--halo1), transparent 70%), radial-gradient(50% 45% at 95% 10%, var(--halo2), transparent 70%), radial-gradient(55% 50% at 60% 100%, var(--halo3), transparent 70%), var(--bg); background-attachment: fixed }
+.card { background: var(--vidrio); border-color: var(--vidrio-borde); border-radius: 18px; box-shadow: var(--vidrio-brillo), var(--vidrio-sombra); -webkit-backdrop-filter: var(--blur); backdrop-filter: var(--blur) }
+.destacado { border-top: 3px solid var(--accent) }
+.in { background: var(--vidrio); border-color: var(--vidrio-borde); border-radius: 10px; box-shadow: var(--vidrio-brillo) }
+.btn { background: var(--vidrio-fuerte); border-color: var(--vidrio-borde); border-radius: 99px; padding: 5px 14px; box-shadow: var(--vidrio-brillo) }
+.modos { border-color: var(--vidrio-borde); border-radius: 99px; background: var(--vidrio); box-shadow: var(--vidrio-brillo); -webkit-backdrop-filter: var(--blur); backdrop-filter: var(--blur) }
+.modos button { background: transparent; border-radius: 99px }
+.modos button[aria-selected=true] { box-shadow: 0 1px 6px rgba(0,0,0,.18) }
+.resumen div { border-radius: 14px }
+.teoria .f { background: var(--vidrio); border-color: var(--vidrio-borde); border-radius: 12px }
+canvas { border-radius: 14px }
+@media (max-width: 900px) { .card, .modos { -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px) } }
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) { .card, .modos, header.top { background: var(--panel); -webkit-backdrop-filter: none; backdrop-filter: none } .in, .btn, .teoria .f { background: var(--panel) } }
+
+:root { --accent:#a3367a; --accent-soft:color-mix(in srgb, #a3367a 12%, #fff); --marca:#0d6b66 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --accent:#e07ab8; --accent-soft:color-mix(in srgb, #e07ab8 16%, #182025); --marca:#4dbcb0 } }
+:root[data-theme="dark"] { --accent:#e07ab8; --accent-soft:color-mix(in srgb, #e07ab8 16%, #182025); --marca:#4dbcb0 }
+header.top { display:flex; align-items:center; gap:8px 20px; flex-wrap:wrap; padding:12px clamp(16px,3vw,28px); position:sticky; top:10px; z-index:10; margin:10px clamp(10px,2vw,20px) 0; border:1px solid var(--vidrio-borde); border-radius:22px; background:var(--vidrio-fuerte); box-shadow:var(--vidrio-brillo),var(--vidrio-sombra); -webkit-backdrop-filter:var(--blur); backdrop-filter:var(--blur) }
+header.top .logo { font:600 18px var(--f-math); margin:0; white-space:nowrap; color:var(--ink); text-decoration:none } header.top .logo i { color:var(--marca) }
+header.top nav { display:flex; gap:4px 14px; font-size:14px; overflow-x:auto; max-width:100%; scrollbar-width:none }
+header.top nav a { white-space:nowrap; padding:2px 0; color:var(--muted); text-decoration:none } header.top nav a:hover { color:var(--ink) }
+header.top nav a[aria-current] { color:var(--ink); font-weight:600; box-shadow:inset 0 -2px 0 var(--accent) }
+header.top form { margin-left:auto; flex:0 1 170px; min-width:130px }
+header.top .foro { margin-left:auto; display:inline-flex; align-items:center; gap:6px; white-space:nowrap; font:600 14px var(--f-ui); color:var(--ink); text-decoration:none; border:1px solid var(--vidrio-borde); background:var(--vidrio); border-radius:99px; padding:6px 12px } header.top .foro:hover, header.top .foro[aria-current] { border-color:var(--accent); color:var(--accent) } header.top .foro + form { margin-left:0 } header.top > .foro ~ .tema { margin-left:0 }
+@media (min-width:701px) { header.top { flex-wrap:nowrap } header.top nav { min-width:0 } }
+header.top .buscar { font:14px var(--f-ui); color:var(--ink); border:1px solid var(--vidrio-borde); border-radius:99px; padding:7px 14px; width:100%; background:var(--vidrio) }
+header.top .buscar:focus-visible, header.top a:focus-visible { outline:2px solid var(--accent); outline-offset:1px }
+.miga { display:flex; align-items:center; flex-wrap:wrap; gap:8px; font-size:13.5px; color:var(--muted); margin:0 0 10px }
+.miga a { color:var(--accent); font-weight:600; text-decoration:none } .miga a:hover { text-decoration:underline }
+.miga-ico { display:inline-grid; place-items:center; width:22px; height:22px; border-radius:6px; background:var(--accent-soft); color:var(--accent); font:italic 600 13px var(--f-math) }
+.miga-der { margin-left:auto; display:flex; gap:8px } .miga-izq:empty, .miga-der:empty { display:none }
+.bib-btn, .prac-btn { border-radius:8px !important; padding:6px 12px !important }
+body.bib-ejemplos select[id^="ejemplo"] { display:none }
+@media print { header.top, .miga, .prac-btn { display:none !important } }
+:root { --vida:#6a4fc2 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --vida:#b39ff7 } }
+:root[data-theme="dark"] { --vida:#b39ff7 }
+.relacionadas { max-width:860px; margin:16px 0 0; background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--accent); border-radius:4px 12px 12px 4px; padding:12px 16px }
+.relacionadas h2 { font:600 12px/1.4 var(--f-ui); text-transform:uppercase; letter-spacing:.06em; color:var(--accent); margin:0 0 4px }
+.relacionadas a { display:flex; gap:10px; align-items:baseline; padding:5px 0; color:var(--ink); text-decoration:none; font-size:14px }
+.relacionadas a b { font-weight:600; white-space:nowrap } .relacionadas a span { color:var(--muted) } .relacionadas a:hover b { color:var(--accent); text-decoration:underline }
+.vida-real { max-width:860px; margin:28px 0 0; background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--vida); border-radius:4px 12px 12px 4px; padding:12px 16px }
+.vida-real h2 { font:600 12px/1.4 var(--f-ui); text-transform:uppercase; letter-spacing:.06em; color:var(--vida); margin:0 0 4px }
+.vida-real a { display:flex; gap:10px; align-items:baseline; padding:5px 0; color:var(--ink); text-decoration:none; font-size:14px }
+.vida-real a b { font-weight:600; white-space:nowrap } .vida-real a span { color:var(--muted) } .vida-real a:hover b { color:var(--vida); text-decoration:underline }
+@media (max-width:600px) { .vida-real a, .relacionadas a { display:block } .vida-real a b, .relacionadas a b { display:block; white-space:normal } }
+@media (max-width:700px) { header.top form { display:none } h1 { font-size:21px }
+  .miga-izq, .miga-der, .miga::after { order:-1 } .miga::after { content:''; flex-basis:100%; height:0 } }
+
+.tema { flex:0 0 auto; margin-left:auto; width:36px; height:36px; display:grid; place-items:center; padding:0; border:1px solid var(--vidrio-borde, var(--line)); border-radius:99px; background:var(--vidrio, var(--bg)); color:var(--ink); cursor:pointer }
+.buscar ~ .tema, form ~ .tema { margin-left:0 }
+.tema:hover { border-color:var(--accent); color:var(--accent) }
+.tema:focus-visible { outline:2px solid var(--accent); outline-offset:1px }
+.tema .sol { display:none }
+:root[data-theme="dark"] .tema .sol { display:block } :root[data-theme="dark"] .tema .luna { display:none }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .tema .sol { display:block } :root:not([data-theme="light"]) .tema .luna { display:none } }
+@media (max-width:700px) { .top > .tema { margin-left:auto } .top > nav { order:1 } }
+</style>
+<style>
+:root {
+  --alto-grafica: clamp(240px, 36vw, 340px);
+  --rama: #2a5db5; --rama2: #c2412a }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --rama: #74a2f2; --rama2: #ef7a62 } }
+:root[data-theme="dark"] {
+  --rama: #74a2f2; --rama2: #ef7a62 }
+.causas { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 1fr); gap: 6px 8px; align-items: center }
+.causas span { font: 500 12px var(--f-ui); color: var(--muted) }
+.causas .in { width: 100% }
+#resumen b { font-family: var(--f-math); font-size: 19px }
+.tabla-caja { overflow-x: auto }
+.tabla-caja table { border-collapse: collapse; font: 13.5px var(--f-ui); width: 100%; font-variant-numeric: tabular-nums }
+.tabla-caja th, .tabla-caja td { padding: 5px 8px; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap }
+.tabla-caja th { font-weight: 600; color: var(--muted) } .tabla-caja th:first-child, .tabla-caja td:first-child { text-align: left }
+.tabla-caja tfoot td, .tabla-caja tfoot th { font-weight: 600; background: var(--accent-soft); color: var(--ink) }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../../">Cienci<i>fy</i></a><nav aria-label="Matières"><a href="../../../">Accueil</a><a href="../../electromagnetismo/">Électromagnétisme</a><a href="../../fisica/">Physique générale</a><a href="../../quimica/">Chimie</a><a href="../../matematicas/">Mathématiques</a><a href="../" aria-current="page">Statistique</a><a href="../../circuitos/">Circuits</a><a href="../../economia/">Économie</a><a href="../../fenomenos/">Vie réelle</a></nav><a class="foro" href="../../foro/"><span aria-hidden="true">💬</span>Forum</a><form action="../../../" role="search"><input class="buscar" type="search" name="q" placeholder="Rechercher : Biot-Savart, molarité…" aria-label="Rechercher des outils (raccourci : touche /)" title="Raccourci : / ou Ctrl+K"></form><style>
+.lg { position:relative; flex:0 0 auto }
+.lg-btn { display:inline-flex; align-items:center; gap:6px; height:36px; padding:0 12px; border:1px solid var(--vidrio-borde, var(--line)); border-radius:99px; background:var(--vidrio, var(--bg)); color:var(--ink); font:600 13px var(--f-ui, system-ui, sans-serif); cursor:pointer }
+.lg-btn:hover { border-color:var(--accent); color:var(--accent) }
+.lg-btn:focus-visible, .lg-pop a:focus-visible, .lg-ban button:focus-visible { outline:2px solid var(--accent); outline-offset:1px }
+.lg-pop { position:absolute; top:44px; right:0; z-index:50; min-width:210px; margin:0; padding:6px; list-style:none; border:1px solid var(--vidrio-borde, var(--line)); border-radius:16px; background:rgba(255,255,255,.98); color:var(--ink); box-shadow:0 12px 36px rgba(0,0,0,.22) }
+.lg-pop[hidden] { display:none }
+:root[data-theme="dark"] .lg-pop, :root[data-theme="dark"] .lg-ban { background:rgba(28,34,38,.98) }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .lg-pop, :root:not([data-theme="light"]) .lg-ban { background:rgba(28,34,38,.98) } }
+.lg-t { font:600 11px var(--f-ui, system-ui, sans-serif); text-transform:uppercase; letter-spacing:.06em; color:var(--muted); padding:6px 10px 4px }
+.lg-pop a { display:flex; justify-content:space-between; align-items:center; gap:14px; padding:8px 10px; border-radius:10px; color:var(--ink); text-decoration:none; font:500 14px var(--f-ui, system-ui, sans-serif) }
+.lg-pop a:hover { background:var(--accent-soft) }
+.lg-pop a > span { display:flex; align-items:center; gap:10px }
+.lg-pop a small { color:var(--muted); font-size:12px }
+.lg-pop a[aria-current="true"] { background:var(--accent-soft); font-weight:700 }
+.lg-pop a[aria-current="true"] small::after { content:' ✓'; color:var(--accent) }
+.lg-fl { flex:none; border-radius:50%; box-shadow:0 0 0 1px rgba(0,0,0,.18) }
+.lg-ban { position:fixed; left:50%; bottom:18px; z-index:60; transform:translateX(-50%); width:min(560px, calc(100vw - 24px)); box-sizing:border-box; display:flex; flex-wrap:wrap; align-items:center; gap:10px 12px; padding:12px 16px; border:1px solid var(--vidrio-borde, var(--line)); border-radius:18px; background:rgba(255,255,255,.98); color:var(--ink); box-shadow:0 12px 36px rgba(0,0,0,.25); font:14px var(--f-ui, system-ui, sans-serif) }
+.lg-ban p { flex:1 1 220px; margin:0 }
+.lg-ban button { font:600 13px var(--f-ui, system-ui, sans-serif); padding:7px 14px; border-radius:99px; border:1px solid var(--vidrio-borde, var(--line)); background:var(--vidrio, var(--bg)); color:var(--ink); cursor:pointer }
+.lg-ban button.lg-si { background:var(--accent); border-color:var(--accent); color:#fff }
+:root[data-theme="dark"] .lg-ban button.lg-si { color:#0d141a }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .lg-ban button.lg-si { color:#0d141a } }
+@media (max-width:700px) { .top > .lg { margin-left:auto } .top > .lg + .tema { margin-left:0 } }
+@media print { .lg, .lg-ban { display:none !important } }
+</style><div class="lg"><button class="lg-btn" type="button" aria-expanded="false" aria-controls="lg-lista" aria-label="Langue: Français" title="Langue"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.8 3 2.8 15 0 18M12 3c-2.8 3-2.8 15 0 18"/></svg><span>FR</span><span aria-hidden="true">▾</span></button><ul class="lg-pop" id="lg-lista" hidden><li class="lg-t" aria-hidden="true">Langue · Language</li><li><a href="../../../" hreflang="es" lang="es"><span><svg class="lg-fl" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false"><rect width="24" height="24" fill="#c60b1e"/><rect y="6" width="24" height="12" fill="#ffc400"/></svg>Español</span><small>ES</small></a></li><li><a href="../../../en/" hreflang="en" lang="en"><span><svg class="lg-fl" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false"><rect width="24" height="24" fill="#012169"/><path d="M0 0L24 24M24 0L0 24" stroke="#fff" stroke-width="5"/><path d="M0 0L24 24M24 0L0 24" stroke="#c8102e" stroke-width="2"/><path d="M12 0V24M0 12H24" stroke="#fff" stroke-width="8"/><path d="M12 0V24M0 12H24" stroke="#c8102e" stroke-width="4.5"/></svg>English</span><small>EN</small></a></li><li><a href="../../../de/" hreflang="de" lang="de"><span><svg class="lg-fl" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false"><rect width="24" height="8" fill="#000"/><rect y="8" width="24" height="8" fill="#dd0000"/><rect y="16" width="24" height="8" fill="#ffce00"/></svg>Deutsch</span><small>DE</small></a></li><li><a href="../../../fr/" hreflang="fr" lang="fr" aria-current="true"><span><svg class="lg-fl" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false"><rect width="8" height="24" fill="#0055a4"/><rect x="8" width="8" height="24" fill="#fff"/><rect x="16" width="8" height="24" fill="#ef4135"/></svg>Français</span><small>FR</small></a></li></ul></div><script>(() => {
+  const L = [{"c":"es","d":"","n":"Español","a":["Esta página está disponible en español.","Cambiar a español","Seguir aquí"]},{"c":"en","d":"en/","n":"English","a":["This page is available in English.","Switch to English","Stay here"]},{"c":"de","d":"de/","n":"Deutsch","a":["Diese Seite ist auf Deutsch verfügbar.","Auf Deutsch ansehen","Hier bleiben"]},{"c":"fr","d":"fr/","n":"Français","a":["Cette page est disponible en français.","Passer en français","Rester ici"]}], ACTUAL = "fr", K = 'simu-idioma';
+  const guarda = (c) => { try { localStorage.setItem(K, c); } catch (e) { /* sin almacenamiento */ } };
+  const lee = () => { try { return localStorage.getItem(K); } catch (e) { return null; } };
+  const resto = () => { let p = location.pathname; for (const i of L) if (i.d && p.startsWith('/' + i.d)) { p = '/' + p.slice(i.d.length + 1); break; } return p + location.search + location.hash; };
+  const destino = (i) => '/' + i.d + resto().replace(/^\//, '');
+  const btn = document.querySelector('.lg-btn'), pop = document.querySelector('.lg-pop');
+  if (!btn || !pop) return;
+  pop.querySelectorAll('a[hreflang]').forEach((a) => { const i = L.find((x) => x.c === a.hreflang); if (i && /^https?:$/.test(location.protocol)) a.href = destino(i); a.addEventListener('click', () => guarda(a.hreflang)); });
+  const abre = (v) => { pop.hidden = !v; btn.setAttribute('aria-expanded', String(v)); };
+  btn.addEventListener('click', (e) => { e.stopPropagation(); abre(pop.hidden); });
+  document.addEventListener('click', (e) => { if (!pop.hidden && !e.target.closest('.lg')) abre(false); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !pop.hidden) { abre(false); btn.focus(); } });
+  pop.addEventListener('focusout', (e) => { if (!pop.hidden && !e.relatedTarget?.closest?.('.lg')) abre(false); });
+  // aviso: una vez, sin elección guardada, con el idioma del navegador publicado y distinto del de la página
+  if (lee() || window.__sinAviso) return;
+  const pref = (navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language || '']).map((s) => String(s).toLowerCase().slice(0, 2));
+  const i = pref.map((c) => L.find((x) => x.c === c)).find(Boolean);
+  if (!i || i.c === ACTUAL) { return; }
+  const b = document.createElement('div'); b.className = 'lg-ban'; b.setAttribute('role', 'region'); b.setAttribute('aria-label', "Langue"); b.lang = i.c;
+  const t = document.createElement('p'); t.textContent = i.a[0];
+  const si = document.createElement('button'); si.type = 'button'; si.className = 'lg-si'; si.textContent = i.a[1];
+  const no = document.createElement('button'); no.type = 'button'; no.textContent = i.a[2];
+  si.addEventListener('click', () => { guarda(i.c); const a = [...pop.querySelectorAll('a[hreflang]')].find((x) => x.hreflang === i.c); location.href = a ? a.href : destino(i); });
+  no.addEventListener('click', () => { guarda(ACTUAL); b.remove(); });
+  b.append(t, si, no); document.body.append(b);
+})();</script><button class="tema" type="button" title="Passer du mode clair au mode sombre" aria-label="Passer du mode clair au mode sombre"><svg class="luna" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.5A8.5 8.5 0 1 1 9.5 3.5a7 7 0 0 0 11 11z"/></svg><svg class="sol" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button></header>
+<main class="wrap">
+<nav class="miga" aria-label="Vous êtes ici"><span class="miga-izq"></span><span class="miga-ico" aria-hidden="true">σ</span><a href="../">Statistique</a><span aria-hidden="true">›</span><span>Probabilité</span><span class="miga-der"></span></nav>
+<h1>Probabilités : dénombrement, événements et Bayes</h1>
+<p class="lead">Comptez les cas avec les arrangements, les permutations et les combinaisons, calculez la probabilité de la réunion, de l’intersection et de la conditionnelle de deux événements, résolvez des problèmes de probabilités totales et de théorème de Bayes avec l’arbre de probabilités, trouvez l’espérance et la variance d’une variable aléatoire discrète et lisez un tableau 2 × 2 de deux événements.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Données</h2>
+    <div class="modos" role="tablist" aria-label="Ce que l’on calcule"><button type="button" role="tab" data-modo="comb" aria-selected="true">Dénombrement</button><button type="button" role="tab" data-modo="suc" aria-selected="false">Événements</button><button type="button" role="tab" data-modo="bayes" aria-selected="false">Totales et Bayes</button><button type="button" role="tab" data-modo="va" aria-selected="false">Variable aléatoire</button><button type="button" role="tab" data-modo="tabla" aria-selected="false">Tableau 2 × 2</button></div>
+    <select id="ejemplos" class="in" aria-label="Exemples" style="margin-bottom:12px"></select>
+    <div class="campos" id="campos"></div>
+    <p class="nota" id="nota"></p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card destacado"><h2>Résultats</h2><div class="resumen" id="resumen"></div></div>
+    <div class="card" id="tarjeta-grafica"><h2 id="titulo-grafica">Diagramme</h2>
+      <canvas id="grafica" aria-label="Arbre ou diagramme d’aires avec les probabilités"></canvas>
+      <p class="leyenda" id="leyenda"></p>
+    </div>
+    <div class="card" id="tarjeta-tabla" hidden><h2 id="titulo-tabla">Tableau</h2><div class="tabla-caja" id="tabla"></div></div>
+    <div class="card pasos"><h2>Développement</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<div class="anuncio"><span>Publicité</span><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-6407501780492688" data-ad-slot="4415753033" data-ad-format="auto" data-full-width-responsive="true"></ins><script>(window.adsbygoogle = window.adsbygoogle || []).push({});</script></div>
+<section class="teoria">
+  <h2>Combien de cas y a-t-il : dénombrement</h2>
+  <p>Pour compter les cas, il faut répondre à deux questions : l’ordre compte-t-il et peut-on répéter. Si l’ordre compte et que l’on choisit k éléments distincts parmi n sans répétition, ce sont des arrangements ; si l’on utilise tous les éléments, des permutations. Si l’ordre ne compte pas, des combinaisons.</p>
+  <p class="f m">$V_{n,k} = {n!}/{(n − k)!}$, &ensp; $VR_{n,k} = n^k$, &ensp; $P_n = n!$</p>
+  <p class="f m">$C_{n,k} = binom(n, k) = {n!}/{k!(n − k)!}$, &ensp; $CR_{n,k} = binom(n + k − 1, k)$, &ensp; $PR_n^{a,b,…} = {n!}/{a!b!⋯}$</p>
+  <p>Quand tous les cas sont équiprobables, la règle de Laplace donne la probabilité comme le nombre de cas favorables divisé par le nombre de cas possibles.</p>
+  <p class="f m">$P(A) = {"casos favorables"}/{"casos posibles"}$</p>
+  <h2>Réunion, intersection et conditionnelle</h2>
+  <p>La probabilité de la réunion additionne celles de chaque événement et retranche l’intersection, qui aurait été comptée deux fois. La conditionnelle est la probabilité de A sachant que B s’est produit.</p>
+  <p class="f m">$P(A ∪ B) = P(A) + P(B) − P(A ∩ B)$, &ensp; $P(A | B) = {P(A ∩ B)}/{P(B)}$</p>
+  <p>Deux événements sont indépendants si savoir que l’un se produit ne change pas la probabilité de l’autre : P(A ∩ B) = P(A)·P(B). Ils sont incompatibles s’ils ne peuvent pas se produire en même temps (P(A ∩ B) = 0) ; si les deux ont une probabilité non nulle, ils ne sont jamais indépendants. Les lois de De Morgan disent que le contraire de la réunion est l’intersection des contraires.</p>
+  <p class="f m">$P(Ā ∩ B̄) = 1 − P(A ∪ B)$</p>
+  <div class="anuncio"><span>Publicité</span><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-6407501780492688" data-ad-slot="4415753033" data-ad-format="auto" data-full-width-responsive="true"></ins><script>(window.adsbygoogle = window.adsbygoogle || []).push({});</script></div>
+<h2>Probabilités totales et théorème de Bayes</h2>
+  <p>Si les causes A₁, …, Aₙ forment un système complet (elles sont incompatibles deux à deux et de somme 1), la probabilité d’un événement B est la somme de ce qu’apporte chaque branche de l’arbre. Le théorème de Bayes donne la probabilité de chaque cause sachant que B s’est produit.</p>
+  <p class="f m">$P(B) = ∑ P(A_i)·P(B | A_i)$, &ensp; $P(A_i | B) = {P(A_i)·P(B | A_i)}/{P(B)}$</p>
+  <p>Les probabilités P(Aᵢ) sont les probabilités <b>a priori</b> et les P(Aᵢ | B), les <b>a posteriori</b>. C’est pourquoi un test médical très fiable peut donner beaucoup de faux positifs si la maladie est rare : la prévalence pèse beaucoup dans P(B).</p>
+  <h2>Variable aléatoire discrète</h2>
+  <p>Une variable aléatoire discrète X prend quelques valeurs, chacune avec sa probabilité. Ces probabilités forment la loi de probabilité : aucune n’est négative et leur somme vaut 1. La fonction de répartition F(x) cumule la probabilité jusqu’à x, donc elle monte par sauts de 0 à 1.</p>
+  <p class="f m">$E[X] = μ = ∑ x_i·p_i$, &ensp; $"Var"(X) = E[X^2] − μ^2$, &ensp; $σ = √{"Var"(X)}$</p>
+  <p>L’espérance est la valeur moyenne que l’on obtiendrait en répétant l’expérience un grand nombre de fois, et l’écart type mesure de combien les valeurs s’écartent de cette moyenne. Un changement linéaire Y = aX + b déplace la moyenne comme les valeurs, mais la variance ne ressent pas le décalage b et se multiplie par a².</p>
+  <p class="f m">$E[aX + b] = a·E[X] + b$, &ensp; $"Var"(aX + b) = a^2·"Var"(X)$</p>
+  <h2>Tableau de contingence de deux événements</h2>
+  <p>Quand un problème donne les cas croisés de deux caractéristiques (ceux qui font du sport et fument, ceux qui font du sport et ne fument pas…), le plus commode est un tableau 2 × 2 avec ses totaux. Les probabilités de chaque événement viennent des totaux de ligne et de colonne ; l’intersection, de la case où ils se croisent ; et une conditionnelle, en ne gardant qu’une ligne ou colonne et en divisant par son total.</p>
+  <p class="f m">$P(A | B) = {"casos de " A " y " B}/{"casos de " B}$</p>
+</section>
+<section class="preguntas" aria-label="Questions fréquentes">
+<h2>Questions fréquentes</h2>
+<h3>Comment applique-t-on le théorème de Bayes ?</h3>
+<p>P(A|B) = P(B|A)·P(A)/P(B). Si une maladie touche 1 % de la population, que le test détecte 99 % des malades et donne des faux positifs dans 5 % des cas : P(malade | +) = 0,0099/(0,0099 + 0,0495) ≈ 16,7 %.</p>
+<h3>Quand utilise-t-on permutations, arrangements et combinaisons ?</h3>
+<p>Permutations, n!, si l’on ordonne tous les éléments ; arrangements, n!/(n − k)!, si l’ordre compte quand on en choisit k ; combinaisons, C(n, k) = n!/(k!(n − k)!), si l’ordre ne compte pas. Il y a C(5, 2) = 10 façons de choisir 2 éléments parmi 5.</p>
+</section>
+<div class="anuncio"><span>Publicité</span><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-6407501780492688" data-ad-slot="4415753033" data-ad-format="auto" data-full-width-responsive="true"></ins><script>(window.adsbygoogle = window.adsbygoogle || []).push({});</script></div>
+<section class="relacionadas" aria-label="Outils associés"><h2>Outils associés</h2>
+<a href="../chi2-bondad/"><b>χ² d’adéquation et d’indépendance →</b><span>Adéquation, tableaux de contingence avec résidus standardisés, test exact de Fisher pour 2 × 2 et McNemar pour données appariées.</span></a>
+<a href="../anova/"><b>ANOVA à un et deux facteurs →</b><span>Compare les moyennes de plusieurs groupes avec un ou deux facteurs : tableau d’ANOVA, F de Welch, taille d’effet, hypothèses, Tukey, Holm, Scheffé, Games-Howell et contrastes planifiés.</span></a>
+<a href="../descriptiva/"><b>Statistique descriptive →</b><span>Moyenne, médiane, mode, quartiles et écart type d’une liste ou d’un tableau d’effectifs, avec l’histogramme et la boîte à moustaches.</span></a>
+<a href="../contrastes/"><b>Tests d’hypothèses →</b><span>Tests de moyennes, de proportions et de variances avec la statistique, la région critique et la p-valeur, plus puissance, taille d’effet, normalité et plusieurs variances.</span></a>
+</section>
+</main>
+<footer><a href="../../../">Accueil</a>·<a href="../../contacto.html">Contact</a>·<a href="mailto:danijimzzz30@gmail.com?subject=Error%20en%20Probabilidad&amp;body=Herramienta%3A%20Probabilidad%20(estadistica%2Fprobabilidad)%0A%0AQu%C3%A9%20esperaba%20y%20qu%C3%A9%20ha%20pasado%3A%0A">Signaler une erreur</a>·<a href="../../aviso-legal.html">Mentions légales</a>·<a href="../../privacidad.html">Confidentialité</a>·<a href="../../cookies.html">Cookies</a> · <a href="#" class="pref-cookies">Préférences des cookies</a>· Probabilités <span id="ver"></span> (bêta)</footer>
+</body>
+<script>
+const Pagina = { carpeta: 'probabilidad', guarda: 'probabilidad-v1' };
+const Version = (() => { const registros = {"web":[{"v":"1.22"}],"control":[{"v":"0.2"}],"termo-estadistica":[{"v":"0.2"}],"markowitz":[{"v":"0.3"}],"cavidades":[{"v":"0.2"}],"organica":[{"v":"0.3"}],"transformada-z":[{"v":"0.2"}],"semiconductores":[{"v":"0.2"}],"relatividad":[{"v":"0.2"}],"osc-acopladas":[{"v":"0.2"}],"solubilidad":[{"v":"0.2"}],"lagrange":[{"v":"0.2"}],"series":[{"v":"0.3"}],"no-parametricos":[{"v":"0.3"}],"regresion-multiple":[{"v":"0.2"}],"anova":[{"v":"0.3"}],"black-scholes":[{"v":"0.3"}],"bonos":[{"v":"0.3"}],"solow":[{"v":"0.3"}],"integrales-multiples":[{"v":"0.1"}],"formulacion":[{"v":"0.2"}],"balance":[{"v":"0.2"}],"redox":[{"v":"0.2"}],"lineas-transmision":[{"v":"0.3"}],"superficies":[{"v":"0.2"}],"vsepr":[{"v":"0.2"}],"maxwell":[{"v":"0.3"}],"fresnel":[{"v":"0.2"}],"gravitacion":[{"v":"0.2"}],"convolucion":[{"v":"0.2"}],"laplace-numerica":[{"v":"0.2"}],"imagenes":[{"v":"0.2.1"}],"guias-onda":[{"v":"0.2"}],"antena":[{"v":"0.2"}],"bode":[{"v":"0.3"}],"optica":[{"v":"0.2"}],"simulador":[{"v":"0.4"}],"teoria-juegos":[{"v":"0.2"}],"puertas-logicas":[{"v":"0.4"}],"multiplicador":[{"v":"0.3"}],"is-lm":[{"v":"0.3"}],"choques":[{"v":"0.1"}],"termoquimica":[{"v":"0.3"}],"probabilidad":[{"v":"0.2"}],"unidades":[{"v":"0.2"}],"equilibrio":[{"v":"0.2"}],"oscilaciones":[{"v":"0.1"}],"beneficio":[{"v":"0.3"}],"costes":[{"v":"0.3"}],"sistemas-numericos":[{"v":"0.2"}],"excedentes":[{"v":"0.2"}],"oferta-demanda":[{"v":"0.2"}],"chi2-bondad":[{"v":"0.2"}],"contrastes":[{"v":"0.2"}],"errores":[{"v":"0.2"}],"graficador":[{"v":"0.2"}],"metodos-numericos":[{"v":"0.2"}],"fisica-moderna":[{"v":"0.2"}],"lorenz-gini":[{"v":"0.2"}],"phillips-okun":[{"v":"0.3"}],"tipos-cambio":[{"v":"0.3"}],"elasticidades":[{"v":"0.3"}],"pib-ipc":[{"v":"0.2"}],"numeros-indice":[{"v":"0.2"}],"ratios":[{"v":"0.2"}],"punto-muerto":[{"v":"0.2"}],"ahorro":[{"v":"0.3"}],"van-tir":[{"v":"0.3"}],"amortizacion-inmovilizado":[{"v":"0.2"}],"prestamos":[{"v":"0.3"}],"rentas":[{"v":"0.3"}],"interes":[{"v":"0.3"}],"descriptiva":[{"v":"0.2"}],"regresion-economia":[{"v":"0.2"}],"ajustador":[{"v":"0.2.1"}],"electrostatica":[{"v":"0.11"}],"magnetostatica":[{"v":"0.4"}],"tabla-periodica":[{"v":"0.2"}],"trabajo-y-energia":[{"v":"0.3"}],"masa-molar":[{"v":"0.2"}],"configuracion-electronica":[{"v":"0.2"}],"condensadores":[{"v":"0.4"}],"tiro-parabolico":[{"v":"0.4"}],"disoluciones":[{"v":"0.2"}],"calorimetria":[{"v":"0.2"}],"induccion":[{"v":"0.4"}],"matrices":[{"v":"0.3"}],"derivadas":[{"v":"0.3"}],"laplace":[{"v":"0.2"}],"interferencia":[{"v":"0.2"}],"ondas-em":[{"v":"0.4"}],"intervalos":[{"v":"0.3"}],"fuerza":[{"v":"0.3"}],"campos":[{"v":"0.2.1"}],"cinetica":[{"v":"0.2"}],"edos":[{"v":"0.2"}],"fourier":[{"v":"0.2"}],"taylor":[{"v":"0.3"}],"complejos":[{"v":"0.3"}],"sistemas":[{"v":"0.3"}],"regresion":[{"v":"0.3"}],"estadistica":[{"v":"0.3"}],"dinamica":[{"v":"0.3"}],"solido-rigido":[{"v":"0.3"}],"ondas":[{"v":"0.3"}],"gases":[{"v":"0.6"}],"ciclos":[{"v":"0.2"}],"ph":[{"v":"0.4"}],"fluidos":[{"v":"0.3"}],"doppler":[{"v":"0.2"}],"resistencias":[{"v":"0.3"}],"faraday":[{"v":"0.4"}],"fenomenos":[{"v":"0.9"}]}; const de = (h) => ({ current: registros[h][0].v, log: registros[h] }); return { registros, de }; })();
+
+</script>
+<script src="../../../js/fr/herramienta.fr.8886d3c4.js"></script>
+<script src="../../../js/fr/enunciado.fr.4bd513d9.js"></script>
+<script src="../../../js/fr/mates.fr.b5c3ede5.js"></script>
+<script src="../../../js/fr/probabilidad-calculo.fr.7906afc9.js"></script>
+<script src="../../../js/fr/compartir.fr.8a6ba9d7.js"></script>
+<script>
+(() => {
+  const { $, esc, copia, txt, lienzo } = Herramienta;
+  const P = Probabilidad, CLAVE = 'probabilidad-v1';
+
+  let sc = copia(P.ejemplos.find((e) => e.clave === 'fabrica').sc);
+  try { const g = JSON.parse(localStorage.getItem(CLAVE)); if (g && typeof g === 'object' && g.modo) sc = Object.assign(copia(P.ejemplos[0].sc), g); } catch (e) { /* sin almacenamiento */ }
+  const guarda = () => { try { localStorage.setItem(CLAVE, JSON.stringify(sc)); } catch (e) { /* sin almacenamiento */ } };
+  let sol = null, col = {};
+
+  const opciones = (obj, v) => Object.entries(obj).map(([k, t]) => `<option value="${k}"${k === v ? ' selected' : ''}>${t}</option>`).join('');
+  const fila = (k, nom, un) => `<label for="f-${k}">${nom}${un ? ` <small>(${un})</small>` : ''}</label><input id="f-${k}" class="in" data-k="${k}" value="${esc(sc[k] ?? '')}" inputmode="decimal" autocomplete="off">`;
+  function formulario() {
+    document.querySelectorAll('.modos button').forEach((b) => b.setAttribute('aria-selected', String(b.dataset.modo === sc.modo)));
+    let h = '', nota = '';
+    if (sc.modo === 'comb') {
+      h = `<label for="f-ctipo">Type</label><select id="f-ctipo" class="in" data-k="ctipo">${opciones(P.TIPOS, sc.ctipo)}</select>`;
+      if (sc.ctipo === 'permrep') h += `<label for="f-grupos">Répétitions</label><input id="f-grupos" class="in" data-k="grupos" value="${esc(sc.grupos)}" autocomplete="off">`;
+      else {
+        h += fila('n', 'Éléments', 'n');
+        if (sc.ctipo !== 'perm') h += fila('k', 'Choisis', 'k');
+      }
+      nota = sc.ctipo === 'permrep' ? 'Combien de fois chaque élément se répète, séparé par des virgules : MISSISSIPPI est 1, 4, 4, 2 (M, I, S, P).' : 'Arrangements et permutations : l’ordre compte. Combinaisons : il ne compte pas.';
+    } else if (sc.modo === 'suc') {
+      h = fila('pa', 'Probabilité de A', 'P(A)') + fila('pb', 'Probabilité de B', 'P(B)') + `<label for="f-rel">Relation</label><select id="f-rel" class="in" data-k="rel">${opciones(P.RELACIONES, sc.rel)}</select>`;
+      if (['inter', 'union', 'cond'].includes(sc.rel)) h += fila('pc', sc.rel === 'inter' ? 'Intersection' : sc.rel === 'union' ? 'Réunion' : 'Conditionnelle', sc.rel === 'inter' ? 'P(A ∩ B)' : sc.rel === 'union' ? 'P(A ∪ B)' : 'P(A | B)');
+      nota = 'Les probabilités s’écrivent 0,3, 30 % ou 3/10.';
+    } else if (sc.modo === 'va') {
+      h = `<label for="f-vax">Valeurs de X</label><input id="f-vax" class="in" data-k="vax" value="${esc(sc.vax ?? '')}" autocomplete="off">` +
+        `<label for="f-vap">Probabilités</label><input id="f-vap" class="in" data-k="vap" value="${esc(sc.vap ?? '')}" autocomplete="off">` +
+        fila('vak', 'Probabilités en', 'x, opcional') + fila('vaa', 'Y = aX + b: a', 'facultatif') + fila('vab', 'Y = aX + b: b', 'facultatif');
+      nota = 'Séparez les valeurs par des points-virgules (la virgule est décimale) : 0 ; 1 ; 2 ; 3. Les probabilités, dans le même ordre, sous la forme 0,3, 30 % ou 3/10. S’il en manque une, écrivez ? et elle est calculée pour que la somme fasse 1.';
+    } else if (sc.modo === 'tabla') {
+      const c = (k, t) => `<input class="in" aria-label="${t}" data-k="${k}" value="${esc(sc[k] ?? '')}" inputmode="decimal" autocomplete="off">`;
+      h = `<label for="f-ta">Événement des lignes</label><input id="f-ta" class="in" data-k="ta" value="${esc(sc.ta ?? '')}" maxlength="14" autocomplete="off">` +
+        `<label for="f-tb">Événement des colonnes</label><input id="f-tb" class="in" data-k="tb" value="${esc(sc.tb ?? '')}" maxlength="14" autocomplete="off">` +
+        `<div class="ancho"><div class="causas" id="casillas"><span></span><span>${esc(sc.tb || 'B')}</span><span>Non ${esc(sc.tb || 'B')}</span>` +
+        `<span>${esc(sc.ta || 'A')}</span>${c('t11', `${sc.ta || 'A'} y ${sc.tb || 'B'}`)}${c('t12', `${sc.ta || 'A'} y no ${sc.tb || 'B'}`)}` +
+        `<span>Non ${esc(sc.ta || 'A')}</span>${c('t21', `Non ${sc.ta || 'A'} et ${sc.tb || 'B'}`)}${c('t22', `Ni ${sc.ta || 'A'} ni ${sc.tb || 'B'}`)}</div></div>`;
+      nota = 'Dans chaque case, le nombre de cas (ou la probabilité) où se produisent à la fois ce de sa ligne et ce de sa colonne.';
+    } else {
+      h = `<label for="f-nb">Événement observé</label><input id="f-nb" class="in" data-k="nb" value="${esc(sc.nb)}" maxlength="12" autocomplete="off">` +
+        `<div class="ancho"><div class="causas" id="causas"><span>Cause</span><span>P(Aᵢ)</span><span>P(événement | Aᵢ)</span>` +
+        sc.filas.map((r, i) => `<input class="in" aria-label="Nom de la cause ${i + 1}" data-fila="${i}" data-c="n" value="${esc(r.n)}" placeholder="A${i + 1}" autocomplete="off"><input class="in" aria-label="Probabilité a priori de la cause ${i + 1}" data-fila="${i}" data-c="p" value="${esc(r.p)}" inputmode="decimal" autocomplete="off"><input class="in" aria-label="Probabilité de l’événement sachant la cause ${i + 1}" data-fila="${i}" data-c="l" value="${esc(r.l)}" inputmode="decimal" autocomplete="off">`).join('') + `</div></div>` +
+        `<label for="f-obs">On sait que</label><select id="f-obs" class="in" data-k="obs"><option value="si"${sc.obs === 'si' ? ' selected' : ''}>${esc(sc.nb || 'B')} s’est produit</option><option value="no"${sc.obs === 'no' ? ' selected' : ''}>${esc(sc.nb || 'B')} ne s’est pas produit</option></select>`;
+      nota = 'Laissez vides les causes que vous n’utilisez pas (minimum deux). Les P(Aᵢ) doivent avoir pour somme 1.';
+    }
+    $('#campos').innerHTML = h;
+    $('#nota').textContent = nota;
+  }
+  $('#campos').addEventListener('input', (e) => {
+    const t = e.target;
+    if (t.dataset.fila !== undefined) sc.filas[+t.dataset.fila][t.dataset.c] = t.value;
+    else if (t.dataset.k) {
+      sc[t.dataset.k] = t.value;
+      if (t.tagName === 'SELECT' && (t.dataset.k === 'ctipo' || t.dataset.k === 'rel')) formulario();
+      if (t.dataset.k === 'ta' || t.dataset.k === 'tb') { const cab = document.querySelectorAll('#casillas span'), a = sc.ta || 'A', b = sc.tb || 'B'; cab[1].textContent = b; cab[2].textContent = `No ${b}`; cab[3].textContent = a; cab[4].textContent = `No ${a}`; }
+    } else return;
+    $('#ejemplos').value = ''; calcula();
+  });
+  document.querySelectorAll('.modos button').forEach((b) => b.addEventListener('click', () => { sc.modo = b.dataset.modo; $('#ejemplos').value = ''; formulario(); calcula(); }));
+
+  const sel = $('#ejemplos');
+  sel.innerHTML = '<option value="">Exemples…</option>' + P.ejemplos.map((e) => `<option value="${e.clave}">${e.nombre}</option>`).join('');
+  sel.addEventListener('change', () => { if (sel.value) abrirEjemplo(sel.value); });
+  function abrirEjemplo(clave) {
+    const e = P.ejemplos.find((x) => x.clave === clave);
+    if (!e) return;
+    sc = copia(e.sc); formulario(); calcula(); sel.value = clave;
+  }
+  const azar = () => { sc = P.azar(); formulario(); calcula(); sel.value = ''; };
+  const enunciado = () => {
+    const r = sc.filas.filter((x) => !(x.p === '' && x.l === ''));
+    return `Une usine a ${r.length} machines qui produisent ${r.map((x) => `<b>${esc(String(+x.p * 100).replace('.', ','))} %</b> (${esc(x.n)}, avec <b>${esc(String(+String(x.l).replace(',', '.') * 100).replace('.', ','))} %</b> de pièces défectueuses)`).join(', ')}. On choisit une pièce ${sc.obs === 'no' ? 'sans défaut' : 'défectueuse'} : calculez P(${esc(sc.nb)}) et la probabilité qu’elle provienne de chaque machine.`;
+  };
+
+  const dato = (t, v, pr) => `<div${pr ? ' class="pr"' : ''}><span>${esc(t)}</span><b>${v}</b></div>`;
+  function calcula() {
+    const err = $('#error');
+    try { sol = P.resolver(sc); } catch (e) {
+      sol = null; err.textContent = e.message; err.hidden = false;
+      $('#resumen').innerHTML = ''; $('#pasos').innerHTML = ''; $('#leyenda').textContent = ''; $('#tarjeta-grafica').hidden = true; $('#tarjeta-tabla').hidden = true; dibuja(); return;
+    }
+    err.hidden = true; guarda();
+    $('#resumen').innerHTML = sol.res.map((r) => dato(r.t, r.v, r.pr)).join('');
+    $('#pasos').innerHTML = sol.pasos.map((p) => `<li>${p.t ? `<strong>${Mates.html(p.t)}</strong>` : ''}${Mates.html(p.html)}</li>`).join('');
+    $('#tarjeta-grafica').hidden = sol.modo === 'comb';
+    const tb = sol.tabla, celda = (v, e = 'td') => `<${e}>${e === 'th' ? esc(v) : v}</${e}>`;
+    $('#tarjeta-tabla').hidden = !tb;
+    $('#titulo-tabla').textContent = sol.modo === 'va' ? 'Tableau de la variable' : 'Tableau avec les totaux';
+    $('#tabla').innerHTML = tb ? `<table class="tabla"><thead><tr>${tb.cab.map((c) => `<th scope="col">${esc(c)}</th>`).join('')}</tr></thead><tbody>${tb.filas.map((r) => `<tr>${r.map((v, i) => (i === 0 && sol.modo === 'tabla' ? `<th scope="row">${esc(v)}</th>` : celda(v))).join('')}</tr>`).join('')}</tbody><tfoot><tr>${tb.pie.map((v, i) => (i === 0 ? `<th scope="row">${esc(v)}</th>` : celda(v))).join('')}</tr></tfoot></table>` : '';
+    $('#titulo-grafica').textContent = sol.modo === 'bayes' ? 'Arbre de probabilités' : sol.modo === 'va' ? 'Loi de probabilité et fonction de répartition' : 'Diagramme d’aires';
+    $('#leyenda').textContent = sol.modo === 'bayes'
+      ? `Chaque branche porte sa probabilité ; à la fin, celle du chemin complet. La cause la plus probable sachant que ${sol.nb} ${sol.obs === 'si' ? 's’est produit' : 'ne s’est pas produit'} est ${sol.may.n}.`
+      : sol.modo === 'va' ? 'Les barres sont les probabilités de chaque valeur ; la ligne en escalier est F(x), qui cumule jusqu’à 1 ; la ligne en pointillés marque l’espérance μ.'
+      : sol.modo === 'tabla' ? `Le carré vaut 1 : la largeur répartit ${sol.na} et son contraire, et la hauteur répartit ${sol.nb} à l’intérieur de chacun. Les aires sont les probabilités.`
+      : 'Le carré vaut 1 : la largeur répartit A et son contraire, et la hauteur répartit B à l’intérieur de chacun. Les aires sont les probabilités.';
+    dibuja();
+  }
+
+  function colores() { const cs = getComputedStyle(document.documentElement); for (const k of ['--ink', '--muted', '--line', '--accent', '--accent-soft', '--panel', '--rama', '--rama2']) col[k] = cs.getPropertyValue(k).trim(); }
+  const num = (x) => txt(P.p(x));
+  function arbol(g, w, h) {
+    const fs = sol.filas, n = fs.length, nb = sol.nb, nbn = nb + '̄';
+    const x0 = 14, x1 = Math.min(w * 0.36, 190), x2 = Math.min(w * 0.7, x1 + 240), top = 14, alto = h - 28, filaH = alto / (2 * n);
+    g.font = '12px system-ui, sans-serif'; g.textBaseline = 'middle'; g.lineWidth = 1.8;
+    const raiz = [x0 + 4, top + alto / 2];
+    fs.forEach((r, i) => {
+      const yc = top + (2 * i + 1) * filaH, ys = [yc - filaH / 2, yc + filaH / 2];
+      g.strokeStyle = col['--rama']; g.beginPath(); g.moveTo(...raiz); g.lineTo(x1, yc); g.stroke();
+      const mx = (raiz[0] + x1) / 2, my = (raiz[1] + yc) / 2;
+      g.fillStyle = col['--ink']; g.textAlign = 'center'; g.fillText(num(r.p), mx, my - 9);
+      g.textAlign = 'left'; g.fillText(r.n, x1 + 6, yc - 12 > top ? yc - 14 : yc - 10);
+      [[r.l, r.j, nb, col['--rama']], [1 - r.l, r.jn, nbn, col['--rama2']]].forEach(([pl, pj, et, c], k) => {
+        g.strokeStyle = c; g.beginPath(); g.moveTo(x1, yc); g.lineTo(x2, ys[k]); g.stroke();
+        g.fillStyle = col['--ink']; g.textAlign = 'center'; g.fillText(num(pl), (x1 + x2) / 2, (yc + ys[k]) / 2 + (k ? 10 : -10));
+        g.textAlign = 'left'; g.fillStyle = col['--muted']; g.fillText(`${et}`, x2 + 6, ys[k]);
+        g.fillStyle = col['--ink']; g.fillText(`${num(pj)}`, x2 + 6 + g.measureText(et).width + 10, ys[k]);
+      });
+    });
+    g.fillStyle = col['--accent']; g.beginPath(); g.arc(raiz[0], raiz[1], 4, 0, 7); g.fill();
+  }
+  function areas(g, w, h) {
+    const m = 14, L = Math.min(w - 2 * m, h - 2 * m - 18), x0 = (w - L) / 2, y0 = m;
+    const pa = sol.pa, pb = sol.pb, pi = sol.pi, A = sol.na || 'A', B = sol.nb || 'B', An = sol.na ? `no ${A}` : 'Ā', Bn = sol.nb ? `no ${B}` : 'B̄';
+    const pbA = pa > 0 ? pi / pa : 0, pbN = pa < 1 ? (pb - pi) / (1 - pa) : 0;
+    const trozos = [
+      [0, 0, pa, pbA, `${A} ∩ ${B}`, pi, '--accent'], [0, pbA, pa, 1 - pbA, `${A} ∩ ${Bn}`, pa - pi, '--rama'],
+      [pa, 0, 1 - pa, pbN, `${An} ∩ ${B}`, pb - pi, '--rama2'], [pa, pbN, 1 - pa, 1 - pbN, `${An} ∩ ${Bn}`, 1 - sol.pu, '--line'],
+    ];
+    g.font = '12px system-ui, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
+    for (const [x, y, ww, hh, et, v, c] of trozos) {
+      const X = x0 + x * L, Y = y0 + y * L, W = ww * L, H = hh * L;
+      g.globalAlpha = 0.32; g.fillStyle = col[c]; g.fillRect(X, Y, W, H); g.globalAlpha = 1;
+      g.strokeStyle = col['--ink']; g.lineWidth = 1; g.strokeRect(X, Y, W, H);
+      if (W > Math.max(48, g.measureText(et).width + 6) && H > 30) { g.fillStyle = col['--ink']; g.fillText(et, X + W / 2, Y + H / 2 - 8); g.fillText(num(v), X + W / 2, Y + H / 2 + 8); }
+    }
+    g.fillStyle = col['--muted']; g.textBaseline = 'top';
+    if (pa * L > 40) g.fillText(`${A}: ${num(pa)}`, x0 + pa * L / 2, y0 + L + 4);
+    if ((1 - pa) * L > 40) g.fillText(`${An}: ${num(1 - pa)}`, x0 + (pa + (1 - pa) / 2) * L, y0 + L + 4);
+  }
+  function barras(g, w, h) {
+    const xs = sol.xs, ps = sol.ps, n = xs.length, mi = 34, md = 34, ms = 12, mb = 26, W = w - mi - md, H = h - ms - mb;
+    const a = xs[0], b = xs[n - 1], paso = Math.min(...xs.slice(1).map((x, i) => x - xs[i])), x0 = a - paso * 0.7, x1 = b + paso * 0.7;
+    const X = (x) => mi + ((x - x0) / (x1 - x0)) * W, pm = Math.max(...ps), tope = pm > 0.5 ? 1 : Math.min(1, Math.ceil(pm * 10 + 0.5) / 10);
+    const Y = (v) => ms + H - (v / tope) * H, YF = (v) => ms + H - v * H, ancho = Math.max(3, Math.min(46, (paso / (x1 - x0)) * W * 0.55));
+    g.font = '12px system-ui, sans-serif'; g.lineWidth = 1; g.strokeStyle = col['--line']; g.fillStyle = col['--muted'];
+    g.textAlign = 'right'; g.textBaseline = 'middle';
+    for (const v of [0, tope / 2, tope]) { g.beginPath(); g.moveTo(mi, Y(v)); g.lineTo(mi + W, Y(v)); g.stroke(); g.fillText(num(v), mi - 5, Y(v)); }
+    g.textAlign = 'left'; g.fillStyle = col['--rama2']; for (const v of [0, 0.5, 1]) g.fillText(num(v), mi + W + 5, YF(v));
+    g.textAlign = 'center'; g.textBaseline = 'top';
+    const cada = Math.ceil(n / Math.max(2, Math.floor(W / 38)));
+    xs.forEach((x, i) => {
+      g.globalAlpha = 0.75; g.fillStyle = col['--rama']; g.fillRect(X(x) - ancho / 2, Y(ps[i]), ancho, ms + H - Y(ps[i])); g.globalAlpha = 1;
+      if (i % cada === 0) { g.fillStyle = col['--ink']; g.fillText(txt(P.f(x, 4)), X(x), ms + H + 5); }
+    });
+    g.strokeStyle = col['--rama2']; g.lineWidth = 2; g.beginPath(); g.moveTo(mi, YF(0));
+    xs.forEach((x, i) => { g.lineTo(X(x), YF(i ? sol.F[i - 1] : 0)); g.lineTo(X(x), YF(sol.F[i])); });
+    g.lineTo(mi + W, YF(1)); g.stroke();
+    g.strokeStyle = col['--ink']; g.lineWidth = 1.5; g.setLineDash([5, 4]); g.beginPath(); g.moveTo(X(sol.mu), ms); g.lineTo(X(sol.mu), ms + H); g.stroke(); g.setLineDash([]);
+    g.fillStyle = col['--ink']; g.textBaseline = 'top'; g.textAlign = X(sol.mu) > mi + W - 40 ? 'right' : 'left'; g.fillText('μ', X(sol.mu) + (g.textAlign === 'left' ? 5 : -5), ms + 1);
+  }
+  function dibuja() {
+    const { g, w, h } = lienzo('#grafica');
+    if (!sol || !w || !h || sol.modo === 'comb') return;
+    if (sol.modo === 'bayes') arbol(g, w, h); else if (sol.modo === 'va') barras(g, w, h); else areas(g, w, h);
+  }
+  window.addEventListener('resize', dibuja);
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { colores(); dibuja(); });
+
+  const ver = $('#ver'); if (ver) ver.textContent = Version.de('probabilidad').current;
+  colores(); formulario(); calcula();
+  window.ProbabilidadApp = { abrirEjemplo, azar, enunciado, resultado: () => sol && { res: sol.res.map((r) => r.v) }, estado: () => copia(sc) };
+})();
+
+</script>
+<script src="../../../js/fr/biblioteca.fr.86a7f543.js"></script>
+<script src="../../../js/fr/practica.fr.ebd61c5b.js"></script>
+<script src="../../../js/fr/personal.fr.d7df8991.js"></script>
+<script>
+Biblioteca.monta('probabilidad', 'probabilidad-v1');
+Practica.monta('probabilidad', 'probabilidad-v1');
+Enunciado.monta('probabilidad', 'probabilidad-v1');
+</script>
+</html>

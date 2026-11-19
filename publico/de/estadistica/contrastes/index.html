@@ -1,0 +1,511 @@
+<!doctype html>
+<html lang="de">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTQiIGZpbGw9IiMwZDZiNjYiLz48ZyBmaWxsPSJub25lIiBzdHJva2U9IiNlNmE2NDAiIHN0cm9rZS13aWR0aD0iMi40IiBzdHJva2UtZGFzaGFycmF5PSI0IDYuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIj48cGF0aCBkPSJNMjAgMzJINDQiLz48cGF0aCBkPSJNMjEgMjdDMjcgMTQgMzcgMTQgNDMgMjciLz48cGF0aCBkPSJNMjEgMzdDMjcgNTAgMzcgNTAgNDMgMzciLz48cGF0aCBkPSJNMTcgMjRDMjIgNCA0MiA0IDQ3IDI0Ii8+PHBhdGggZD0iTTE3IDQwQzIyIDYwIDQyIDYwIDQ3IDQwIi8+PC9nPjxjaXJjbGUgY3g9IjE3IiBjeT0iMzIiIHI9IjgiIGZpbGw9IiNlZjdhNjIiLz48Y2lyY2xlIGN4PSI0NyIgY3k9IjMyIiByPSI4IiBmaWxsPSIjNzRhMmYyIi8+PHBhdGggZD0iTTEzIDMyaDhNMTcgMjh2OE00MyAzMmg4IiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iMi42IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48L3N2Zz4K">
+<link rel="apple-touch-icon" href="../../../apple-touch-icon.png">
+<meta property="og:title" content="Hypothesentests Schritt für Schritt: z, t, χ² und F">
+<meta property="og:description" content="Tests für ein und zwei Mittelwerte, Anteile und Varianzen, zweiseitig oder einseitig, mit Teststatistik, kritischem Bereich, p-Wert und Schlussfolgerung">
+<link rel="canonical" href="https://simulaciencia.vercel.app/de/estadistica/contrastes/">
+<link rel="alternate" hreflang="es" href="https://simulaciencia.vercel.app/estadistica/contrastes/">
+<link rel="alternate" hreflang="en" href="https://simulaciencia.vercel.app/en/estadistica/contrastes/">
+<link rel="alternate" hreflang="de" href="https://simulaciencia.vercel.app/de/estadistica/contrastes/">
+<link rel="alternate" hreflang="fr" href="https://simulaciencia.vercel.app/fr/estadistica/contrastes/">
+<link rel="alternate" hreflang="x-default" href="https://simulaciencia.vercel.app/estadistica/contrastes/">
+<meta property="og:locale" content="de">
+<meta property="og:image" content="https://simulaciencia.vercel.app/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebApplication","name":"Hypothesentests","description":"Rechner für Hypothesentests: ein Mittelwert (z oder Student-t), ein Anteil, eine Varianz, zwei Mittelwerte, zwei Anteile und zwei Varianzen, zweiseitig oder einseitig, mit Teststatistik, kritischem Bereich, p-Wert und Schlussfolgerung Schritt für Schritt.","url":"https://simulaciencia.vercel.app/estadistica/contrastes/","inLanguage":"de","isAccessibleForFree":true,"applicationCategory":"EducationalApplication","operatingSystem":"Webbrowser","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://simulaciencia.vercel.app/"},{"@type":"ListItem","position":2,"name":"Statistik","item":"https://simulaciencia.vercel.app/estadistica/"},{"@type":"ListItem","position":3,"name":"Hypothesentests","item":"https://simulaciencia.vercel.app/estadistica/contrastes/"}]},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Wie führt man einen Hypothesentest durch?","acceptedAnswer":{"@type":"Answer","text":"Man stellt H₀ und H₁ auf, berechnet die Teststatistik, vergleicht sie mit dem kritischen Bereich (oder den p-Wert mit α) und entscheidet. Für einen Mittelwert bei bekanntem σ gilt z = (x̄ − μ₀)/(σ/√n): Mit x̄ = 52, μ₀ = 50, σ = 10 und n = 100 ist z = 2 > 1,96, also wird H₀ auf dem 5-%-Niveau verworfen (p ≈ 0,046)."}},{"@type":"Question","name":"Was ist der p-Wert und welche Fehler kann man machen?","acceptedAnswer":{"@type":"Answer","text":"Er ist die Wahrscheinlichkeit, ein gleich extremes oder extremeres Ergebnis zu erhalten, wenn H₀ stimmt; H₀ wird verworfen, wenn p < α. Der Fehler 1. Art (α) ist das Verwerfen einer wahren H₀; der Fehler 2. Art (β) das Nichtverwerfen einer falschen H₀."}}]}]}</script>
+<link rel="manifest" href="../../manifest.webmanifest">
+<meta name="theme-color" content="#0d6b66">
+<script src="../../pwa.js" defer></script>
+<meta name="google-adsense-account" content="ca-pub-6407501780492688">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6407501780492688" crossorigin="anonymous"></script>
+<script>window.googlefc = window.googlefc || {}; googlefc.callbackQueue = googlefc.callbackQueue || [];
+document.addEventListener('click', (e) => { if (!e.target.closest('.pref-cookies')) return; e.preventDefault(); googlefc.callbackQueue.push(() => googlefc.showRevocationMessage()); });</script>
+<style>.anuncio { max-width:860px; margin:28px 0 0; text-align:center; min-height:120px } .anuncio > span { display:block; font:11px/1.6 system-ui, sans-serif; letter-spacing:.06em; text-transform:uppercase; color:var(--muted, #5b6670) } .anuncio ins { display:block }</style>
+<style>.anuncio-lado { display:none } @media (min-width: 901px) { .anuncio-lado { display:block; grid-column:1; grid-row:2; position:sticky; top:96px; margin:8px 0 0; max-width:none; min-height:250px; min-width:0; overflow:hidden } main .layout.con-lado > :nth-child(2) { grid-row:1 / span 2 } }</style>
+<script>document.addEventListener('DOMContentLoaded', () => {
+  const l = document.querySelector('main .layout');
+  if (!l || l.classList.contains('invertido') || l.children.length !== 2 || !l.offsetParent || !matchMedia('(min-width: 901px)').matches) return;
+  l.classList.add('con-lado');
+  const a = document.createElement('div'); a.className = 'anuncio anuncio-lado';
+  a.innerHTML = '<span>Publicidad</span><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-6407501780492688" data-ad-slot="9800921596" data-ad-format="auto" data-full-width-responsive="true"></ins>';
+  l.appendChild(a); (window.adsbygoogle = window.adsbygoogle || []).push({});
+});</script>
+<script>(() => {
+  const raiz = document.documentElement, mq = matchMedia('(prefers-color-scheme: dark)'), oyentes = [];
+  try { const t = localStorage.getItem('simu-tema'); if (t === 'dark' || t === 'light') raiz.dataset.theme = t; } catch (e) { /* sin almacenamiento */ }
+  const orig = MediaQueryList.prototype.addEventListener;
+  MediaQueryList.prototype.addEventListener = function (tipo, f, ...r) { if (tipo === 'change' && /prefers-color-scheme/.test(this.media)) oyentes.push(f); return orig.call(this, tipo, f, ...r); };
+  const oscuro = () => (raiz.dataset.theme ? raiz.dataset.theme === 'dark' : mq.matches);
+  const rotula = () => document.querySelectorAll('.tema').forEach((b) => { const t = oscuro() ? 'Zum hellen Modus wechseln' : 'Zum dunklen Modus wechseln'; b.title = t; b.setAttribute('aria-label', t); });
+  document.addEventListener('DOMContentLoaded', rotula);
+  mq.addEventListener('change', rotula);
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.tema')) return;
+    raiz.dataset.theme = oscuro() ? 'light' : 'dark';
+    try { localStorage.setItem('simu-tema', raiz.dataset.theme); } catch (e) { /* sin almacenamiento */ }
+    rotula();
+    for (const f of oyentes) { try { f.call(mq, { matches: oscuro(), media: mq.media }); } catch (err) { console.error(err); } }
+  });
+})();</script>
+<script>(() => {
+  const ENFOCABLE = 'a[href],button,input,select,textarea,summary,[tabindex]';
+  let espera = 0;
+  const revisa = () => {
+    espera = 0;
+    for (const e of document.querySelectorAll('main *')) {
+      const desborda = e.scrollWidth > e.clientWidth || e.scrollHeight > e.clientHeight;
+      if (e.dataset.sf) { if (!desborda || e.querySelector(ENFOCABLE)) { e.removeAttribute('tabindex'); delete e.dataset.sf; } continue; }
+      if (!desborda || e.hasAttribute('tabindex') || e.matches('svg,svg *,canvas') || e.querySelector(ENFOCABLE)) continue;
+      const o = getComputedStyle(e);
+      if (/auto|scroll/.test(o.overflowX + o.overflowY)) { e.tabIndex = 0; e.dataset.sf = '1'; }
+    }
+  };
+  window.revisaScroll = revisa; // también lo llama pruebas/accesibilidad.js antes de pasar axe
+  const pide = () => { if (!espera) espera = setTimeout(revisa, 400); };
+  addEventListener('load', () => { revisa(); const m = document.querySelector('main'); if (m) new MutationObserver(pide).observe(m, { childList: true, subtree: true, characterData: true }); });
+  addEventListener('resize', pide);
+})();</script>
+<script src="../../buscador.js" defer></script>
+<script src="../../llama.js" defer></script>
+<title>Rechner für Hypothesentests Schritt für Schritt · Ciencify</title>
+<meta name="description" content="Rechner für Hypothesentests: ein Mittelwert (z oder Student-t), ein Anteil, eine Varianz, zwei Mittelwerte, zwei Anteile und zwei Varianzen, zweiseitig oder einseitig, mit Teststatistik, kritischem Bereich, p-Wert und Schlussfolgerung Schritt für Schritt.">
+<style>/* =====================================================================
+   Hoja de estilos común de todas las herramientas (fuente/<herramienta>/pagina.html).
+   diseno.js la mete en cada página, antes de su propio <style>, junto con el color
+   de la asignatura (--accent, --accent-soft) y la cabecera del portal. La guía de uso
+   de cada componente, con su HTML, está en DISENO.md.
+   Una herramienta no vuelve a definir estas reglas: ajusta las variables de medida
+   (--col-datos, --ancho-valor, --alto-grafica) o añade una clase propia.
+   ===================================================================== */
+
+/* ---------- Colores y letras (claro y oscuro) ---------- */
+:root {
+  --bg: #eef1ee; --panel: #fff; --ink: #1a2128; --muted: #5b6670; --line: #d5dbd5; --error: #c0392b;
+  --f-ui: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-math: "STIX Two Text", "Cambria Math", Cambria, Georgia, serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+  --vidrio: rgba(255,255,255,.55); --vidrio-fuerte: rgba(255,255,255,.72); --vidrio-borde: rgba(255,255,255,.7); --vidrio-brillo: inset 0 1px 0 rgba(255,255,255,.8);
+  --vidrio-sombra: 0 1px 2px rgba(20,40,60,.06), 0 8px 28px rgba(20,40,60,.10); --blur: blur(22px) saturate(1.7); --halo1: rgba(13,107,102,.22); --halo2: rgba(42,93,181,.20); --halo3: rgba(107,63,160,.14);
+  /* medidas que cada herramienta puede ajustar */
+  --col-datos: 360px; --ancho-etiqueta: minmax(0, 1fr); --ancho-valor: 150px; --letra-campo: 13px var(--f-ui); --ancho-dato: 190px; --alto-grafica: clamp(260px, 36vw, 380px); --margen-grafica: 10px;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #111619; --panel: #182025; --ink: #e3e8ea; --muted: #a3aeb5; --line: #2a343b; --error: #f08a80; --vidrio: rgba(34,46,54,.50); --vidrio-fuerte: rgba(26,36,42,.70); --vidrio-borde: rgba(255,255,255,.12); --vidrio-brillo: inset 0 1px 0 rgba(255,255,255,.10); --vidrio-sombra: 0 1px 2px rgba(0,0,0,.3), 0 10px 32px rgba(0,0,0,.35); --halo1: rgba(77,188,176,.20); --halo2: rgba(116,162,242,.18); --halo3: rgba(170,120,230,.14); color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #111619; --panel: #182025; --ink: #e3e8ea; --muted: #a3aeb5; --line: #2a343b; --error: #f08a80; --vidrio: rgba(34,46,54,.50); --vidrio-fuerte: rgba(26,36,42,.70); --vidrio-borde: rgba(255,255,255,.12); --vidrio-brillo: inset 0 1px 0 rgba(255,255,255,.10); --vidrio-sombra: 0 1px 2px rgba(0,0,0,.3), 0 10px 32px rgba(0,0,0,.35); --halo1: rgba(77,188,176,.20); --halo2: rgba(116,162,242,.18); --halo3: rgba(170,120,230,.14); color-scheme: dark }
+/* fin de los colores */
+
+/* ---------- Base ---------- */
+* { box-sizing: border-box }
+[hidden] { display: none !important }
+html, body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.45 var(--f-ui) }
+a { color: var(--accent) }
+.wrap { max-width: 1300px; margin: 0 auto; padding: 16px clamp(16px, 3vw, 24px) 32px }
+h1 { font: 600 24px/1.25 var(--f-ui); margin: 0 0 4px }
+.lead { color: var(--muted); margin: 0 0 12px; max-width: 760px }
+/* texto solo para lectores de pantalla; sin position:absolute para que no ensanche las tablas con scroll */
+.solo-lector { display: inline-block; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; vertical-align: top }
+footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 8px 16px 24px }
+footer a { color: var(--muted); margin: 0 6px; white-space: nowrap; display: inline-block }
+
+/* ---------- Diseño A: datos a la izquierda, resultados a la derecha ---------- */
+.layout { display: grid; grid-template-columns: var(--col-datos) minmax(0, 1fr); gap: 16px; align-items: start }
+.layout.invertido { grid-template-columns: minmax(0, 1fr) var(--col-datos) }
+@media (max-width: 900px) { .layout, .layout.invertido { grid-template-columns: minmax(0, 1fr) } }
+
+/* ---------- Tarjetas ---------- */
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 14px; margin-bottom: 14px }
+.card h2 { font: 600 12px/1.4 var(--f-ui); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 0 0 10px }
+.destacado { border-color: var(--line); border-top: 3px solid var(--accent) }
+.destacado h2 { color: var(--accent) }
+
+/* ---------- Datos: campos, separadores, botones y pestañas ---------- */
+.campos { display: grid; grid-template-columns: var(--ancho-etiqueta) var(--ancho-valor); gap: 7px 10px; align-items: center }
+.campos label { font-size: 13.5px }
+.campos label small { color: var(--muted) }
+.campos .ancho { grid-column: 1 / -1 }
+.sep { grid-column: 1 / -1; font: 600 12px var(--f-ui); color: var(--accent); text-transform: uppercase; letter-spacing: .04em; margin-top: 8px }
+.in { font: var(--letra-campo); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; width: 100%; font-variant-numeric: tabular-nums }
+.btn { font: 500 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 5px 10px; cursor: pointer; white-space: nowrap }
+.btn:hover { border-color: var(--accent) }
+/* foco del teclado en todo lo que se pulsa o se escribe (sin especificidad: una herramienta puede ajustarlo) */
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible { outline: 2px solid var(--accent); outline-offset: 1px }
+.controles { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 8px }
+.controles > .nota, .controles > .leyenda { flex: 1 1 220px; margin: 0 }
+.exportar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 8px 0 }
+.exportar-aviso { color: var(--muted); font-size: 12.5px }
+.tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px }
+.tools label { color: var(--muted); font-size: 13px; display: inline-flex; gap: 6px; align-items: center }
+.modos { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; margin-bottom: 14px }
+.modos button { font: 500 13.5px var(--f-ui); border: 0; background: var(--panel); color: var(--muted); padding: 7px 14px; cursor: pointer }
+.modos button[aria-selected=true] { background: var(--accent); color: var(--panel) }
+.error { color: var(--error); font-size: 13px; margin: 10px 0 0 }
+.nota { color: var(--muted); font-size: 12.5px; margin: 8px 0 0 }
+
+/* ---------- Resultados ---------- */
+.res { display: grid; grid-template-columns: repeat(auto-fill, minmax(var(--ancho-dato), 1fr)); gap: 6px 14px; font: 16px var(--f-math) }
+.res div { overflow-x: auto; overflow-y: hidden }
+.res span { display: block; font: 12px var(--f-ui); color: var(--muted) }
+.res div.ancho { grid-column: 1 / -1 }
+.resumen { display: grid; grid-template-columns: repeat(auto-fill, minmax(var(--ancho-dato), 1fr)); gap: 8px; margin: 0 }
+.resumen div { background: var(--accent-soft); border-radius: 8px; padding: 8px 10px; overflow-x: auto; overflow-y: hidden }
+.resumen div span { display: block; font-size: 12px; color: var(--muted) }
+.resumen div b { font: 600 17px var(--f-math) }
+.resumen div.ancho { grid-column: 1 / -1 }
+
+/* ---------- Gráficas ---------- */
+canvas { display: block; width: 100%; height: var(--alto-grafica); border-radius: 8px; background: var(--bg); margin-top: var(--margen-grafica) }
+.leyenda { font-size: 12.5px; color: var(--muted); margin: 6px 0 0 }
+.leyenda b { font-weight: 600 }
+
+/* ---------- Desarrollo paso a paso ---------- */
+/* el número va dentro del paso para que no lo corte el desplazamiento de las fórmulas largas */
+.pasos ol { margin: 0; padding: 0; list-style: none; counter-reset: paso }
+.pasos li { position: relative; margin: 0 0 12px; padding-left: 22px; font-family: var(--f-math); font-size: 15.5px; overflow-x: auto; counter-increment: paso; overflow-y: hidden }
+.pasos li::before { content: counter(paso) "."; position: absolute; left: 0; top: 0; font: 13.5px/1.45 var(--f-ui); color: var(--muted) }
+.pasos li strong { font: 600 13.5px var(--f-ui); display: block; margin-bottom: 2px }
+.pasos table.tabla { border-collapse: collapse; margin: 6px 0; font: 13px var(--f-ui); font-variant-numeric: tabular-nums }
+.pasos table.tabla th, .pasos table.tabla td { border: 1px solid var(--line); padding: 3px 9px; text-align: right }
+.pasos table.tabla th { background: var(--accent-soft); font-weight: 600 }
+.tabla-scroll { overflow-x: auto }
+
+/* matrices con corchetes, dentro de una fórmula */
+.mat { position: relative; display: inline-block; vertical-align: middle; padding: 0 7px; margin: 2px 2px }
+.mat::before, .mat::after { content: ""; position: absolute; top: 0; bottom: 0; width: 5px; border: 1.4px solid currentColor }
+.mat::before { left: 0; border-right: 0 }
+.mat::after { right: 0; border-left: 0 }
+.mat table { border-collapse: collapse }
+.mat td { padding: 2px 7px; text-align: center; white-space: nowrap; font-variant-numeric: tabular-nums }
+
+/* ---------- Teoría ---------- */
+.teoria, .preguntas { margin-top: 28px; max-width: 860px; font-size: 15px; line-height: 1.6 }
+.preguntas h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
+.preguntas h3 { font: 600 15px var(--f-ui); margin: 14px 0 2px }
+.preguntas p { margin: 0 }
+.teoria h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
+.teoria .f { max-width: 100%; overflow-x: auto; overflow-y: hidden; font-family: var(--f-math); font-size: 16.5px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; display: inline-block }
+.teoria ul { padding-left: 20px }
+.teoria li { margin-bottom: 4px }
+.teoria li, .teoria p { overflow-x: auto; overflow-y: hidden }
+
+/* ---------- Liquid Glass ---------- */
+/* Vidrio solo en el marco (tarjetas, controles, barras); el lienzo de las gráficas y las fórmulas no se tocan. */
+body { display: flow-root; background: radial-gradient(60% 50% at 8% 0%, var(--halo1), transparent 70%), radial-gradient(50% 45% at 95% 10%, var(--halo2), transparent 70%), radial-gradient(55% 50% at 60% 100%, var(--halo3), transparent 70%), var(--bg); background-attachment: fixed }
+.card { background: var(--vidrio); border-color: var(--vidrio-borde); border-radius: 18px; box-shadow: var(--vidrio-brillo), var(--vidrio-sombra); -webkit-backdrop-filter: var(--blur); backdrop-filter: var(--blur) }
+.destacado { border-top: 3px solid var(--accent) }
+.in { background: var(--vidrio); border-color: var(--vidrio-borde); border-radius: 10px; box-shadow: var(--vidrio-brillo) }
+.btn { background: var(--vidrio-fuerte); border-color: var(--vidrio-borde); border-radius: 99px; padding: 5px 14px; box-shadow: var(--vidrio-brillo) }
+.modos { border-color: var(--vidrio-borde); border-radius: 99px; background: var(--vidrio); box-shadow: var(--vidrio-brillo); -webkit-backdrop-filter: var(--blur); backdrop-filter: var(--blur) }
+.modos button { background: transparent; border-radius: 99px }
+.modos button[aria-selected=true] { box-shadow: 0 1px 6px rgba(0,0,0,.18) }
+.resumen div { border-radius: 14px }
+.teoria .f { background: var(--vidrio); border-color: var(--vidrio-borde); border-radius: 12px }
+canvas { border-radius: 14px }
+@media (max-width: 900px) { .card, .modos { -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px) } }
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) { .card, .modos, header.top { background: var(--panel); -webkit-backdrop-filter: none; backdrop-filter: none } .in, .btn, .teoria .f { background: var(--panel) } }
+
+:root { --accent:#a3367a; --accent-soft:color-mix(in srgb, #a3367a 12%, #fff); --marca:#0d6b66 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --accent:#e07ab8; --accent-soft:color-mix(in srgb, #e07ab8 16%, #182025); --marca:#4dbcb0 } }
+:root[data-theme="dark"] { --accent:#e07ab8; --accent-soft:color-mix(in srgb, #e07ab8 16%, #182025); --marca:#4dbcb0 }
+header.top { display:flex; align-items:center; gap:8px 20px; flex-wrap:wrap; padding:12px clamp(16px,3vw,28px); position:sticky; top:10px; z-index:10; margin:10px clamp(10px,2vw,20px) 0; border:1px solid var(--vidrio-borde); border-radius:22px; background:var(--vidrio-fuerte); box-shadow:var(--vidrio-brillo),var(--vidrio-sombra); -webkit-backdrop-filter:var(--blur); backdrop-filter:var(--blur) }
+header.top .logo { font:600 18px var(--f-math); margin:0; white-space:nowrap; color:var(--ink); text-decoration:none } header.top .logo i { color:var(--marca) }
+header.top nav { display:flex; gap:4px 14px; font-size:14px; overflow-x:auto; max-width:100%; scrollbar-width:none }
+header.top nav a { white-space:nowrap; padding:2px 0; color:var(--muted); text-decoration:none } header.top nav a:hover { color:var(--ink) }
+header.top nav a[aria-current] { color:var(--ink); font-weight:600; box-shadow:inset 0 -2px 0 var(--accent) }
+header.top form { margin-left:auto; flex:0 1 170px; min-width:130px }
+header.top .foro { margin-left:auto; display:inline-flex; align-items:center; gap:6px; white-space:nowrap; font:600 14px var(--f-ui); color:var(--ink); text-decoration:none; border:1px solid var(--vidrio-borde); background:var(--vidrio); border-radius:99px; padding:6px 12px } header.top .foro:hover, header.top .foro[aria-current] { border-color:var(--accent); color:var(--accent) } header.top .foro + form { margin-left:0 } header.top > .foro ~ .tema { margin-left:0 }
+@media (min-width:701px) { header.top { flex-wrap:nowrap } header.top nav { min-width:0 } }
+header.top .buscar { font:14px var(--f-ui); color:var(--ink); border:1px solid var(--vidrio-borde); border-radius:99px; padding:7px 14px; width:100%; background:var(--vidrio) }
+header.top .buscar:focus-visible, header.top a:focus-visible { outline:2px solid var(--accent); outline-offset:1px }
+.miga { display:flex; align-items:center; flex-wrap:wrap; gap:8px; font-size:13.5px; color:var(--muted); margin:0 0 10px }
+.miga a { color:var(--accent); font-weight:600; text-decoration:none } .miga a:hover { text-decoration:underline }
+.miga-ico { display:inline-grid; place-items:center; width:22px; height:22px; border-radius:6px; background:var(--accent-soft); color:var(--accent); font:italic 600 13px var(--f-math) }
+.miga-der { margin-left:auto; display:flex; gap:8px } .miga-izq:empty, .miga-der:empty { display:none }
+.bib-btn, .prac-btn { border-radius:8px !important; padding:6px 12px !important }
+body.bib-ejemplos select[id^="ejemplo"] { display:none }
+@media print { header.top, .miga, .prac-btn { display:none !important } }
+:root { --vida:#6a4fc2 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --vida:#b39ff7 } }
+:root[data-theme="dark"] { --vida:#b39ff7 }
+.relacionadas { max-width:860px; margin:16px 0 0; background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--accent); border-radius:4px 12px 12px 4px; padding:12px 16px }
+.relacionadas h2 { font:600 12px/1.4 var(--f-ui); text-transform:uppercase; letter-spacing:.06em; color:var(--accent); margin:0 0 4px }
+.relacionadas a { display:flex; gap:10px; align-items:baseline; padding:5px 0; color:var(--ink); text-decoration:none; font-size:14px }
+.relacionadas a b { font-weight:600; white-space:nowrap } .relacionadas a span { color:var(--muted) } .relacionadas a:hover b { color:var(--accent); text-decoration:underline }
+.vida-real { max-width:860px; margin:28px 0 0; background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--vida); border-radius:4px 12px 12px 4px; padding:12px 16px }
+.vida-real h2 { font:600 12px/1.4 var(--f-ui); text-transform:uppercase; letter-spacing:.06em; color:var(--vida); margin:0 0 4px }
+.vida-real a { display:flex; gap:10px; align-items:baseline; padding:5px 0; color:var(--ink); text-decoration:none; font-size:14px }
+.vida-real a b { font-weight:600; white-space:nowrap } .vida-real a span { color:var(--muted) } .vida-real a:hover b { color:var(--vida); text-decoration:underline }
+@media (max-width:600px) { .vida-real a, .relacionadas a { display:block } .vida-real a b, .relacionadas a b { display:block; white-space:normal } }
+@media (max-width:700px) { header.top form { display:none } h1 { font-size:21px }
+  .miga-izq, .miga-der, .miga::after { order:-1 } .miga::after { content:''; flex-basis:100%; height:0 } }
+
+.tema { flex:0 0 auto; margin-left:auto; width:36px; height:36px; display:grid; place-items:center; padding:0; border:1px solid var(--vidrio-borde, var(--line)); border-radius:99px; background:var(--vidrio, var(--bg)); color:var(--ink); cursor:pointer }
+.buscar ~ .tema, form ~ .tema { margin-left:0 }
+.tema:hover { border-color:var(--accent); color:var(--accent) }
+.tema:focus-visible { outline:2px solid var(--accent); outline-offset:1px }
+.tema .sol { display:none }
+:root[data-theme="dark"] .tema .sol { display:block } :root[data-theme="dark"] .tema .luna { display:none }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .tema .sol { display:block } :root:not([data-theme="light"]) .tema .luna { display:none } }
+@media (max-width:700px) { .top > .tema { margin-left:auto } .top > nav { order:1 } }
+</style>
+<style>
+:root {
+  --serie-1: #2a5db5; --serie-2: #c2412a; --serie-3: #1f7a4d }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --serie-1: #74a2f2; --serie-2: #ef7a62; --serie-3: #5fc08a } }
+:root[data-theme="dark"] {
+  --serie-1: #74a2f2; --serie-2: #ef7a62; --serie-3: #5fc08a }
+.tabla-eco { border-collapse: collapse; font: 13.5px var(--f-ui); width: 100%; margin-bottom: 14px }
+.tabla-eco th, .tabla-eco td { padding: 5px 8px; border-bottom: 1px solid var(--line); text-align: left }
+.tabla-eco th { font-weight: 600; color: var(--muted) }
+.tabla-eco caption { text-align: left; font-weight: 600; padding: 2px 0 6px }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../../">Cienci<i>fy</i></a><nav aria-label="Fächer"><a href="../../../">Startseite</a><a href="../../electromagnetismo/">Elektromagnetismus</a><a href="../../fisica/">Allgemeine Physik</a><a href="../../quimica/">Chemie</a><a href="../../matematicas/">Mathematik</a><a href="../" aria-current="page">Statistik</a><a href="../../circuitos/">Schaltungen</a><a href="../../economia/">Wirtschaft</a><a href="../../fenomenos/">Reales Leben</a></nav><a class="foro" href="../../foro/"><span aria-hidden="true">💬</span>Forum</a><form action="../../../" role="search"><input class="buscar" type="search" name="q" placeholder="Suchen: Biot-Savart, Molarität…" aria-label="Werkzeuge suchen (Kürzel: Taste /)" title="Kürzel: / oder Strg+K"></form><style>
+.lg { position:relative; flex:0 0 auto }
+.lg-btn { display:inline-flex; align-items:center; gap:6px; height:36px; padding:0 12px; border:1px solid var(--vidrio-borde, var(--line)); border-radius:99px; background:var(--vidrio, var(--bg)); color:var(--ink); font:600 13px var(--f-ui, system-ui, sans-serif); cursor:pointer }
+.lg-btn:hover { border-color:var(--accent); color:var(--accent) }
+.lg-btn:focus-visible, .lg-pop a:focus-visible, .lg-ban button:focus-visible { outline:2px solid var(--accent); outline-offset:1px }
+.lg-pop { position:absolute; top:44px; right:0; z-index:50; min-width:210px; margin:0; padding:6px; list-style:none; border:1px solid var(--vidrio-borde, var(--line)); border-radius:16px; background:rgba(255,255,255,.98); color:var(--ink); box-shadow:0 12px 36px rgba(0,0,0,.22) }
+.lg-pop[hidden] { display:none }
+:root[data-theme="dark"] .lg-pop, :root[data-theme="dark"] .lg-ban { background:rgba(28,34,38,.98) }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .lg-pop, :root:not([data-theme="light"]) .lg-ban { background:rgba(28,34,38,.98) } }
+.lg-t { font:600 11px var(--f-ui, system-ui, sans-serif); text-transform:uppercase; letter-spacing:.06em; color:var(--muted); padding:6px 10px 4px }
+.lg-pop a { display:flex; justify-content:space-between; align-items:center; gap:14px; padding:8px 10px; border-radius:10px; color:var(--ink); text-decoration:none; font:500 14px var(--f-ui, system-ui, sans-serif) }
+.lg-pop a:hover { background:var(--accent-soft) }
+.lg-pop a > span { display:flex; align-items:center; gap:10px }
+.lg-pop a small { color:var(--muted); font-size:12px }
+.lg-pop a[aria-current="true"] { background:var(--accent-soft); font-weight:700 }
+.lg-pop a[aria-current="true"] small::after { content:' ✓'; color:var(--accent) }
+.lg-fl { flex:none; border-radius:50%; box-shadow:0 0 0 1px rgba(0,0,0,.18) }
+.lg-ban { position:fixed; left:50%; bottom:18px; z-index:60; transform:translateX(-50%); width:min(560px, calc(100vw - 24px)); box-sizing:border-box; display:flex; flex-wrap:wrap; align-items:center; gap:10px 12px; padding:12px 16px; border:1px solid var(--vidrio-borde, var(--line)); border-radius:18px; background:rgba(255,255,255,.98); color:var(--ink); box-shadow:0 12px 36px rgba(0,0,0,.25); font:14px var(--f-ui, system-ui, sans-serif) }
+.lg-ban p { flex:1 1 220px; margin:0 }
+.lg-ban button { font:600 13px var(--f-ui, system-ui, sans-serif); padding:7px 14px; border-radius:99px; border:1px solid var(--vidrio-borde, var(--line)); background:var(--vidrio, var(--bg)); color:var(--ink); cursor:pointer }
+.lg-ban button.lg-si { background:var(--accent); border-color:var(--accent); color:#fff }
+:root[data-theme="dark"] .lg-ban button.lg-si { color:#0d141a }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .lg-ban button.lg-si { color:#0d141a } }
+@media (max-width:700px) { .top > .lg { margin-left:auto } .top > .lg + .tema { margin-left:0 } }
+@media print { .lg, .lg-ban { display:none !important } }
+</style><div class="lg"><button class="lg-btn" type="button" aria-expanded="false" aria-controls="lg-lista" aria-label="Sprache: Deutsch" title="Sprache"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.8 3 2.8 15 0 18M12 3c-2.8 3-2.8 15 0 18"/></svg><span>DE</span><span aria-hidden="true">▾</span></button><ul class="lg-pop" id="lg-lista" hidden><li class="lg-t" aria-hidden="true">Sprache · Language</li><li><a href="../../../" hreflang="es" lang="es"><span><svg class="lg-fl" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false"><rect width="24" height="24" fill="#c60b1e"/><rect y="6" width="24" height="12" fill="#ffc400"/></svg>Español</span><small>ES</small></a></li><li><a href="../../../en/" hreflang="en" lang="en"><span><svg class="lg-fl" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false"><rect width="24" height="24" fill="#012169"/><path d="M0 0L24 24M24 0L0 24" stroke="#fff" stroke-width="5"/><path d="M0 0L24 24M24 0L0 24" stroke="#c8102e" stroke-width="2"/><path d="M12 0V24M0 12H24" stroke="#fff" stroke-width="8"/><path d="M12 0V24M0 12H24" stroke="#c8102e" stroke-width="4.5"/></svg>English</span><small>EN</small></a></li><li><a href="../../../de/" hreflang="de" lang="de" aria-current="true"><span><svg class="lg-fl" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false"><rect width="24" height="8" fill="#000"/><rect y="8" width="24" height="8" fill="#dd0000"/><rect y="16" width="24" height="8" fill="#ffce00"/></svg>Deutsch</span><small>DE</small></a></li><li><a href="../../../fr/" hreflang="fr" lang="fr"><span><svg class="lg-fl" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false"><rect width="8" height="24" fill="#0055a4"/><rect x="8" width="8" height="24" fill="#fff"/><rect x="16" width="8" height="24" fill="#ef4135"/></svg>Français</span><small>FR</small></a></li></ul></div><script>(() => {
+  const L = [{"c":"es","d":"","n":"Español","a":["Esta página está disponible en español.","Cambiar a español","Seguir aquí"]},{"c":"en","d":"en/","n":"English","a":["This page is available in English.","Switch to English","Stay here"]},{"c":"de","d":"de/","n":"Deutsch","a":["Diese Seite ist auf Deutsch verfügbar.","Auf Deutsch ansehen","Hier bleiben"]},{"c":"fr","d":"fr/","n":"Français","a":["Cette page est disponible en français.","Passer en français","Rester ici"]}], ACTUAL = "de", K = 'simu-idioma';
+  const guarda = (c) => { try { localStorage.setItem(K, c); } catch (e) { /* sin almacenamiento */ } };
+  const lee = () => { try { return localStorage.getItem(K); } catch (e) { return null; } };
+  const resto = () => { let p = location.pathname; for (const i of L) if (i.d && p.startsWith('/' + i.d)) { p = '/' + p.slice(i.d.length + 1); break; } return p + location.search + location.hash; };
+  const destino = (i) => '/' + i.d + resto().replace(/^\//, '');
+  const btn = document.querySelector('.lg-btn'), pop = document.querySelector('.lg-pop');
+  if (!btn || !pop) return;
+  pop.querySelectorAll('a[hreflang]').forEach((a) => { const i = L.find((x) => x.c === a.hreflang); if (i && /^https?:$/.test(location.protocol)) a.href = destino(i); a.addEventListener('click', () => guarda(a.hreflang)); });
+  const abre = (v) => { pop.hidden = !v; btn.setAttribute('aria-expanded', String(v)); };
+  btn.addEventListener('click', (e) => { e.stopPropagation(); abre(pop.hidden); });
+  document.addEventListener('click', (e) => { if (!pop.hidden && !e.target.closest('.lg')) abre(false); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !pop.hidden) { abre(false); btn.focus(); } });
+  pop.addEventListener('focusout', (e) => { if (!pop.hidden && !e.relatedTarget?.closest?.('.lg')) abre(false); });
+  // aviso: una vez, sin elección guardada, con el idioma del navegador publicado y distinto del de la página
+  if (lee() || window.__sinAviso) return;
+  const pref = (navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language || '']).map((s) => String(s).toLowerCase().slice(0, 2));
+  const i = pref.map((c) => L.find((x) => x.c === c)).find(Boolean);
+  if (!i || i.c === ACTUAL) { return; }
+  const b = document.createElement('div'); b.className = 'lg-ban'; b.setAttribute('role', 'region'); b.setAttribute('aria-label', "Sprache"); b.lang = i.c;
+  const t = document.createElement('p'); t.textContent = i.a[0];
+  const si = document.createElement('button'); si.type = 'button'; si.className = 'lg-si'; si.textContent = i.a[1];
+  const no = document.createElement('button'); no.type = 'button'; no.textContent = i.a[2];
+  si.addEventListener('click', () => { guarda(i.c); const a = [...pop.querySelectorAll('a[hreflang]')].find((x) => x.hreflang === i.c); location.href = a ? a.href : destino(i); });
+  no.addEventListener('click', () => { guarda(ACTUAL); b.remove(); });
+  b.append(t, si, no); document.body.append(b);
+})();</script><button class="tema" type="button" title="Zwischen hellem und dunklem Modus wechseln" aria-label="Zwischen hellem und dunklem Modus wechseln"><svg class="luna" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.5A8.5 8.5 0 1 1 9.5 3.5a7 7 0 0 0 11 11z"/></svg><svg class="sol" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button></header>
+<main class="wrap">
+<nav class="miga" aria-label="Du bist hier:"><span class="miga-izq"></span><span class="miga-ico" aria-hidden="true">σ</span><a href="../">Statistik</a><span aria-hidden="true">›</span><span>Hypothesentests</span><span class="miga-der"></span></nav>
+<h1>Hypothesentests</h1>
+<p class="lead">Wähle den Test, schreibe die Stichprobendaten und erhalte Teststatistik, kritischen Bereich, p-Wert und ob die Nullhypothese verworfen wird oder nicht, mit Diagramm und Rechenweg.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Daten</h2>
+    <select id="ejemplos" class="in" aria-label="Beispiele" style="margin-bottom:12px"></select>
+    <div class="campos" id="campos"></div>
+    <p class="nota" id="nota"></p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card destacado"><h2>Ergebnisse</h2><div class="resumen" id="resumen"></div></div>
+    <div class="card"><h2>Kritischer Bereich</h2>
+      <canvas id="grafica" aria-label="Dichte der Teststatistik unter der Nullhypothese mit schraffiertem kritischem Bereich und dem Wert der Teststatistik"></canvas>
+      <p class="leyenda" id="leyenda"></p>
+    </div>
+    <div class="card" id="card-potencia" hidden><h2>Gütefunktion</h2>
+      <canvas id="grafica2" aria-label="Teststärke in Abhängigkeit vom wahren Wert des Parameters, mit markiertem gewähltem Wert"></canvas>
+      <p class="leyenda" id="leyenda2"></p>
+    </div>
+    <div class="card pasos"><h2>Rechenweg</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<div class="anuncio"><span>Werbung</span><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-6407501780492688" data-ad-slot="4415753033" data-ad-format="auto" data-full-width-responsive="true"></ins><script>(window.adsbygoogle = window.adsbygoogle || []).push({});</script></div>
+<section class="teoria">
+<h2>Wie ein Test funktioniert</h2>
+<p class="m">Die Nullhypothese $H_0$ ist das, was als gültig angenommen wird, solange die Daten nichts anderes sagen (μ = 500 g, die Maschine ist richtig eingestellt); die Alternative $H_1$ ist das, was man belegen will. Man berechnet eine Teststatistik, die, wenn $H_0$ stimmt, einer bekannten Verteilung folgt, und schaut, ob ein zu seltener Wert herauskommt.</p>
+<h2>Kritischer Bereich und p-Wert</h2>
+<p class="m">Der <b>kritische Bereich</b> sind die Werte der Teststatistik, die so selten sind, dass sie, wenn $H_0$ stimmte, nur mit der Wahrscheinlichkeit α aufträten. Der <b>p-Wert</b> ist die Wahrscheinlichkeit, einen mindestens so extremen Wert wie den erhaltenen zu erhalten. Beide Wege führen zur selben Entscheidung: $H_0$ wird verworfen, wenn die Teststatistik im kritischen Bereich liegt, oder, was dasselbe ist, wenn $p < α$.</p>
+<div class="anuncio"><span>Werbung</span><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-6407501780492688" data-ad-slot="4415753033" data-ad-format="auto" data-full-width-responsive="true"></ins><script>(window.adsbygoogle = window.adsbygoogle || []).push({});</script></div>
+<h2>Welche Teststatistik verwendet wird</h2>
+<p class="f m">$Z = {x̄ − μ_0}/{σ/√n}$ &emsp; $T = {x̄ − μ_0}/{s/√n}$ &emsp; $Z = {p̂ − p_0}/{√(p_0 (1 − p_0)/n)}$</p>
+<p class="f m">$χ^2 = {(n − 1) s^2}/{σ_0^2}$ &emsp; $F = {s_1^2}/{s_2^2}$</p>
+<h2>Fehler 1. und 2. Art, Teststärke und Stichprobenumfang</h2>
+<p class="m">Das Verwerfen von $H_0$, obwohl sie stimmt, ist der Fehler 1. Art, und seine Wahrscheinlichkeit ist α. Sie nicht zu verwerfen, obwohl sie falsch ist, ist der Fehler 2. Art (β), und $1 − β$ ist die <b>Teststärke</b>: die Wahrscheinlichkeit, einen tatsächlich vorhandenen Unterschied zu entdecken. Ein kleineres α erschwert das Verwerfen und erhöht β: Deshalb beweist das Nichtverwerfen von $H_0$ nicht, dass sie wahr ist. Gibst du den wahren Wert des Parameters an, berechnet das Werkzeug β und die Teststärke (mit der nichtzentralen t-Verteilung, wenn die Teststatistik ein t ist) und den nötigen Stichprobenumfang für die gewünschte Teststärke (meist wird 0,8 verlangt).</p>
+<p class="f m">$1 − β = P(\text{H}_0 \text{ verwerfen} \mid \text{wahrer Wert})$; &emsp; beim Mittelwert mit bekanntem σ: $1 − β = Φ(−z_{α/2} + δ) + Φ(−z_{α/2} − δ)$, mit $δ = {μ − μ_0}/{σ/√n}$</p>
+<h2>Effektstärke</h2>
+<p class="m">Der p-Wert hängt vom Stichprobenumfang ab: Mit vielen Daten wird ein winziger Unterschied „signifikant“. Das <b>Cohens d</b>, $d = {x̄ − μ_0}/s$ (oder die Differenz zweier Mittelwerte geteilt durch die gemeinsame Standardabweichung), misst, um wie viele Standardabweichungen das Ergebnis abweicht: 0,2 ist ein kleiner Effekt, 0,5 ein mittlerer und 0,8 ein großer. Für Anteile wird das <b>Cohens h</b> verwendet, $h = 2 \arcsin √{p_1} − 2 \arcsin √{p_2}$, mit denselben Schwellen.</p>
+<h2>Normalität und Varianzen</h2>
+<p class="m">Das t und das χ² setzen normalverteilte Daten voraus. Mit der Datenliste warnt das Werkzeug mit Shapiro-Wilk (dem stärksten bei wenigen Daten; Jarque-Bera braucht viele) und zeichnet den Quantil-Quantil-Plot. Um zu prüfen, ob mehrere Varianzen gleich sind (vor einer ANOVA oder einem t-Test mit gleichen Varianzen), verwende „Mehrere Varianzen“: Levene (mit dem Median) ist robust, und Bartlett ist nur bei normalverteilten Daten stärker.</p>
+<h2>Welchen Test verwende ich?</h2>
+<div class="tabla-scroll"><table class="tabla-eco"><caption>Den Test nach der Frage wählen</caption><thead><tr><th scope="col">Ich möchte…</th><th scope="col">Daten</th><th scope="col">Ich verwende</th></tr></thead><tbody>
+<tr><td>einen Mittelwert mit einem Wert vergleichen</td><td>numerisch, normalverteilt</td><td>Einen Mittelwert (t, wenn σ unbekannt ist)</td></tr>
+<tr><td>vorher und nachher an denselben Individuen vergleichen</td><td>Zahlenpaare</td><td>Gepaarte Daten</td></tr>
+<tr><td>zwei unabhängige Gruppen vergleichen</td><td>numerisch, normalverteilt</td><td>Zwei Mittelwerte (Welch, wenn die Varianzen abweichen)</td></tr>
+<tr><td>drei oder mehr Gruppen vergleichen</td><td>numerisch, normalverteilt</td><td><a href="../anova/">ANOVA</a></td></tr>
+<tr><td>Gruppen ohne Normalität oder mit Rängen vergleichen</td><td>ordinal oder sehr schief</td><td><a href="../no-parametricos/">Mann-Whitney, Wilcoxon, Kruskal-Wallis, Vorzeichen</a></td></tr>
+<tr><td>einen oder zwei Anteile</td><td>Erfolge und Misserfolge</td><td>Anteil (bei wenigen Fällen <a href="../chi2-bondad/">Fisher</a>)</td></tr>
+<tr><td>prüfen, ob zwei kategoriale Variablen zusammenhängen</td><td>Häufigkeitstabelle</td><td><a href="../chi2-bondad/">χ²-Unabhängigkeitstest</a></td></tr>
+<tr><td>die Streuung vergleichen</td><td>numerisch</td><td>Eine oder zwei Varianzen, oder mehrere (Levene)</td></tr>
+<tr><td>wissen, ob die Daten normalverteilt sind</td><td>eine Stichprobe</td><td>Normalität (Shapiro-Wilk)</td></tr>
+<tr><td>einen Wert schätzen statt testen</td><td>numerisch</td><td><a href="../intervalos/">Konfidenzintervalle</a></td></tr>
+</tbody></table></div>
+</section>
+<section class="preguntas" aria-label="Häufig gestellte Fragen">
+<h2>Häufig gestellte Fragen</h2>
+<h3>Wie führt man einen Hypothesentest durch?</h3>
+<p>Man stellt H₀ und H₁ auf, berechnet die Teststatistik, vergleicht sie mit dem kritischen Bereich (oder den p-Wert mit α) und entscheidet. Für einen Mittelwert bei bekanntem σ gilt z = (x̄ − μ₀)/(σ/√n): Mit x̄ = 52, μ₀ = 50, σ = 10 und n = 100 ist z = 2 &gt; 1,96, also wird H₀ auf dem 5-%-Niveau verworfen (p ≈ 0,046).</p>
+<h3>Was ist der p-Wert und welche Fehler kann man machen?</h3>
+<p>Er ist die Wahrscheinlichkeit, ein gleich extremes oder extremeres Ergebnis zu erhalten, wenn H₀ stimmt; H₀ wird verworfen, wenn p &lt; α. Der Fehler 1. Art (α) ist das Verwerfen einer wahren H₀; der Fehler 2. Art (β) das Nichtverwerfen einer falschen H₀.</p>
+</section>
+<div class="anuncio"><span>Werbung</span><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-6407501780492688" data-ad-slot="4415753033" data-ad-format="auto" data-full-width-responsive="true"></ins><script>(window.adsbygoogle = window.adsbygoogle || []).push({});</script></div>
+<section class="relacionadas" aria-label="Verwandte Werkzeuge"><h2>Verwandte Werkzeuge</h2>
+<a href="../intervalos/"><b>Konfidenzintervalle →</b><span>Mittelwert, Anteil, Varianz, Differenzen, gepaarte Daten und Varianzquotient, auch als Schranken, und Stichprobenumfang, mit einer Simulation von 100 Stichproben.</span></a>
+<a href="../chi2-bondad/"><b>χ²-Anpassungs- und Unabhängigkeitstest →</b><span>Anpassungstest, Kontingenztafeln mit standardisierten Residuen, exakter Fisher-Test für 2 × 2 und McNemar für gepaarte Daten.</span></a>
+<a href="../descriptiva/"><b>Deskriptive Statistik →</b><span>Mittelwert, Median, Modus, Quartile und Standardabweichung einer Liste oder Häufigkeitstabelle, mit Histogramm und Boxplot.</span></a>
+<a href="../probabilidad/"><b>Wahrscheinlichkeit →</b><span>Kombinatorik, bedingte Wahrscheinlichkeit, totale Wahrscheinlichkeit und Satz von Bayes mit Baumdiagramm.</span></a>
+</section>
+</main>
+<footer><a href="../../../">Startseite</a>·<a href="../../contacto.html">Kontakt</a>·<a href="mailto:danijimzzz30@gmail.com?subject=Error%20en%20Contrastes%20de%20hip%C3%B3tesis&amp;body=Herramienta%3A%20Contrastes%20de%20hip%C3%B3tesis%20(estadistica%2Fcontrastes)%0A%0AQu%C3%A9%20esperaba%20y%20qu%C3%A9%20ha%20pasado%3A%0A">Fehler melden</a>·<a href="../../aviso-legal.html">Impressum</a>·<a href="../../privacidad.html">Datenschutz</a>·<a href="../../cookies.html">Cookies</a> · <a href="#" class="pref-cookies">Cookie-Einstellungen</a>· Hypothesentests <span id="ver"></span> (Beta)</footer>
+</body>
+<script>
+const Pagina = { carpeta: 'contrastes', guarda: 'contrastes-v1' };
+const Version = (() => { const registros = {"web":[{"v":"1.22"}],"control":[{"v":"0.2"}],"termo-estadistica":[{"v":"0.2"}],"markowitz":[{"v":"0.3"}],"cavidades":[{"v":"0.2"}],"organica":[{"v":"0.3"}],"transformada-z":[{"v":"0.2"}],"semiconductores":[{"v":"0.2"}],"relatividad":[{"v":"0.2"}],"osc-acopladas":[{"v":"0.2"}],"solubilidad":[{"v":"0.2"}],"lagrange":[{"v":"0.2"}],"series":[{"v":"0.3"}],"no-parametricos":[{"v":"0.3"}],"regresion-multiple":[{"v":"0.2"}],"anova":[{"v":"0.3"}],"black-scholes":[{"v":"0.3"}],"bonos":[{"v":"0.3"}],"solow":[{"v":"0.3"}],"integrales-multiples":[{"v":"0.1"}],"formulacion":[{"v":"0.2"}],"balance":[{"v":"0.2"}],"redox":[{"v":"0.2"}],"lineas-transmision":[{"v":"0.3"}],"superficies":[{"v":"0.2"}],"vsepr":[{"v":"0.2"}],"maxwell":[{"v":"0.3"}],"fresnel":[{"v":"0.2"}],"gravitacion":[{"v":"0.2"}],"convolucion":[{"v":"0.2"}],"laplace-numerica":[{"v":"0.2"}],"imagenes":[{"v":"0.2.1"}],"guias-onda":[{"v":"0.2"}],"antena":[{"v":"0.2"}],"bode":[{"v":"0.3"}],"optica":[{"v":"0.2"}],"simulador":[{"v":"0.4"}],"teoria-juegos":[{"v":"0.2"}],"puertas-logicas":[{"v":"0.4"}],"multiplicador":[{"v":"0.3"}],"is-lm":[{"v":"0.3"}],"choques":[{"v":"0.1"}],"termoquimica":[{"v":"0.3"}],"probabilidad":[{"v":"0.2"}],"unidades":[{"v":"0.2"}],"equilibrio":[{"v":"0.2"}],"oscilaciones":[{"v":"0.1"}],"beneficio":[{"v":"0.3"}],"costes":[{"v":"0.3"}],"sistemas-numericos":[{"v":"0.2"}],"excedentes":[{"v":"0.2"}],"oferta-demanda":[{"v":"0.2"}],"chi2-bondad":[{"v":"0.2"}],"contrastes":[{"v":"0.2"}],"errores":[{"v":"0.2"}],"graficador":[{"v":"0.2"}],"metodos-numericos":[{"v":"0.2"}],"fisica-moderna":[{"v":"0.2"}],"lorenz-gini":[{"v":"0.2"}],"phillips-okun":[{"v":"0.3"}],"tipos-cambio":[{"v":"0.3"}],"elasticidades":[{"v":"0.3"}],"pib-ipc":[{"v":"0.2"}],"numeros-indice":[{"v":"0.2"}],"ratios":[{"v":"0.2"}],"punto-muerto":[{"v":"0.2"}],"ahorro":[{"v":"0.3"}],"van-tir":[{"v":"0.3"}],"amortizacion-inmovilizado":[{"v":"0.2"}],"prestamos":[{"v":"0.3"}],"rentas":[{"v":"0.3"}],"interes":[{"v":"0.3"}],"descriptiva":[{"v":"0.2"}],"regresion-economia":[{"v":"0.2"}],"ajustador":[{"v":"0.2.1"}],"electrostatica":[{"v":"0.11"}],"magnetostatica":[{"v":"0.4"}],"tabla-periodica":[{"v":"0.2"}],"trabajo-y-energia":[{"v":"0.3"}],"masa-molar":[{"v":"0.2"}],"configuracion-electronica":[{"v":"0.2"}],"condensadores":[{"v":"0.4"}],"tiro-parabolico":[{"v":"0.4"}],"disoluciones":[{"v":"0.2"}],"calorimetria":[{"v":"0.2"}],"induccion":[{"v":"0.4"}],"matrices":[{"v":"0.3"}],"derivadas":[{"v":"0.3"}],"laplace":[{"v":"0.2"}],"interferencia":[{"v":"0.2"}],"ondas-em":[{"v":"0.4"}],"intervalos":[{"v":"0.3"}],"fuerza":[{"v":"0.3"}],"campos":[{"v":"0.2.1"}],"cinetica":[{"v":"0.2"}],"edos":[{"v":"0.2"}],"fourier":[{"v":"0.2"}],"taylor":[{"v":"0.3"}],"complejos":[{"v":"0.3"}],"sistemas":[{"v":"0.3"}],"regresion":[{"v":"0.3"}],"estadistica":[{"v":"0.3"}],"dinamica":[{"v":"0.3"}],"solido-rigido":[{"v":"0.3"}],"ondas":[{"v":"0.3"}],"gases":[{"v":"0.6"}],"ciclos":[{"v":"0.2"}],"ph":[{"v":"0.4"}],"fluidos":[{"v":"0.3"}],"doppler":[{"v":"0.2"}],"resistencias":[{"v":"0.3"}],"faraday":[{"v":"0.4"}],"fenomenos":[{"v":"0.9"}]}; const de = (h) => ({ current: registros[h][0].v, log: registros[h] }); return { registros, de }; })();
+
+</script>
+<script src="../../../js/de/herramienta.de.74e911cb.js"></script>
+<script src="../../../js/de/enunciado.de.ad25b594.js"></script>
+<script src="../../../js/de/mates.de.b5c3ede5.js"></script>
+<script src="../../../js/de/calculadora.de.f182fff0.js"></script>
+<script src="../../../js/de/estadistica-calculo.de.aa1f739d.js"></script>
+<script src="../../../js/de/estadistica-inferencia.de.0ce3a867.js"></script>
+<script src="../../../js/de/contrastes-calculo.de.417c2ca5.js"></script>
+<script src="../../../js/de/compartir.de.bdf1c7ec.js"></script>
+<script>
+(() => {
+  const C = Contrastes, { f } = Calculadora, pr = Estadistica.prob, IN = Inferencia, D = Estadistica.DIST;
+  const comun = (sc) => [{ k: 'h1', nom: 'Alternativhypothese H₁', tipo: 'sel', ops: Object.entries(C.H1) }, { k: 'alfa', nom: 'Signifikanzniveau α' }];
+  const entrada = (sc) => ({ k: 'entrada', nom: 'Die Daten sind', tipo: 'sel', ops: Object.entries(C.ENTRADA) });
+  const pot = (sc, ayuda) => [{ k: 'real', nom: 'Wahrer Wert (optional)', ayuda, sep: 'Teststärke und Stichprobenumfang' }, { k: 'pot', nom: 'Gewünschte Teststärke 1 − β', ayuda: 'Standard 0,8' }];
+  const CAMPOS = {
+    media: (sc) => [entrada(sc), { k: 'mu0', nom: 'Wert von H₀ μ₀' }, { k: 'sigmaC', nom: 'σ der Grundgesamtheit', tipo: 'sel', ops: [['no', 'Unbekannt (Student-t)'], ['si', 'Bekannt (z)']] },
+      ...(sc.entrada === 'datos' ? [{ k: 'datos', nom: 'Daten', tipo: 'area', ayuda: 'Werte, getrennt durch Leerzeichen oder Zeilenumbrüche', filas: 4 }, ...(sc.sigmaC === 'si' ? [{ k: 's', nom: 'σ der Grundgesamtheit' }] : [])]
+        : [{ k: 'n', nom: 'Umfang der Stichprobe n' }, { k: 'xm', nom: 'Stichprobenmittelwert x̄' }, { k: 's', nom: sc.sigmaC === 'si' ? 'σ der Grundgesamtheit' : 'Stichprobenstandardabweichung s' }]), ...pot(sc, 'der wahre Erwartungswert μ, der entdeckt werden soll')],
+    apareados: (sc) => [{ k: 'mu0', nom: 'Differenz von H₀ μ_d', ayuda: 'normalmente 0' }, { k: 'datos1', nom: 'Stichprobe 1 (vorher)', tipo: 'area', ayuda: 'ein Wert pro Individuum', filas: 3 }, { k: 'datos2', nom: 'Stichprobe 2 (nachher)', tipo: 'area', ayuda: 'in derselben Reihenfolge', filas: 3 }, ...pot(sc, 'die wahre mittlere Differenz μ_d')],
+    proporcion: (sc) => [{ k: 'p0', nom: 'Anteil von H₀ p₀' }, { k: 'n', nom: 'Umfang der Stichprobe n' }, { k: 'x', nom: 'Erfolge in der Stichprobe x' }, ...pot(sc, 'la p verdadera')],
+    varianza: (sc) => [entrada(sc), { k: 's0', nom: 'σ₀ von H₀', ayuda: 'Standardabweichung' },
+      ...(sc.entrada === 'datos' ? [{ k: 'datos', nom: 'Daten', tipo: 'area', ayuda: 'Werte, getrennt durch Leerzeichen oder Zeilenumbrüche', filas: 4 }] : [{ k: 'n', nom: 'Umfang der Stichprobe n' }, { k: 's', nom: 'Stichprobenstandardabweichung s' }]), ...pot(sc, 'das wahre σ (Standardabweichung)')],
+    dosmedias: (sc) => [entrada(sc), { k: 'caso', nom: 'Varianzen', tipo: 'sel', ops: Object.entries(C.CASOS) }, { k: 'd0', nom: 'Differenz von H₀', ayuda: 'normalmente 0' },
+      ...(sc.entrada === 'datos'
+        ? [{ k: 'datos1', nom: 'Stichprobe 1', tipo: 'area', ayuda: 'Werte, getrennt durch Leerzeichen', filas: 3, sep: 'Stichprobe 1' }, { k: 'datos2', nom: 'Stichprobe 2', tipo: 'area', ayuda: 'Werte, getrennt durch Leerzeichen', filas: 3, sep: 'Stichprobe 2' }, ...(sc.caso === 'conocidas' ? [{ k: 's1', nom: 'σ₁' }, { k: 's2', nom: 'σ₂' }] : [])]
+        : [{ k: 'n1', nom: 'n₁', sep: 'Stichprobe 1' }, { k: 'xm1', nom: 'x̄₁' }, { k: 's1', nom: sc.caso === 'conocidas' ? 'σ₁' : 's₁' }, { k: 'n2', nom: 'n₂', sep: 'Stichprobe 2' }, { k: 'xm2', nom: 'x̄₂' }, { k: 's2', nom: sc.caso === 'conocidas' ? 'σ₂' : 's₂' }]), ...pot(sc, 'die wahre Differenz μ₁ − μ₂')],
+    dosprop: (sc) => [{ k: 'n1', nom: 'n₁', sep: 'Stichprobe 1' }, { k: 'x1', nom: 'Erfolge x₁' }, { k: 'n2', nom: 'n₂', sep: 'Stichprobe 2' }, { k: 'x2', nom: 'Erfolge x₂' }, ...pot(sc, 'die wahre Differenz p₁ − p₂, mit dem beobachteten p₂')],
+    dosvar: (sc) => [{ k: 'n1', nom: 'n₁', sep: 'Stichprobe 1' }, { k: 's1', nom: 's₁' }, { k: 'n2', nom: 'n₂', sep: 'Stichprobe 2' }, { k: 's2', nom: 's₂' }, ...pot(sc, 'der wahre Quotient σ₁²/σ₂²')],
+    normalidad: () => [{ k: 'datos', nom: 'Daten', tipo: 'area', ayuda: '3 bis 5000 Werte, getrennt durch Leerzeichen oder Zeilenumbrüche', filas: 6 }],
+    varios: () => [{ k: 'metodo', nom: 'Test', tipo: 'sel', ops: Object.entries(C.METODOS) }, { k: 'datos', nom: 'Daten', tipo: 'area', ayuda: 'eine Gruppe pro Zeile, auf Wunsch mit ihrem Namen vor „:“', filas: 6 }],
+  };
+  function azar() {
+    const e = (a, b) => a + Math.floor(Math.random() * (b - a + 1)), c = (x) => String(x).replace('.', ','), h1 = ['distinto', 'mayor', 'menor'][e(0, 2)], alfa = ['0,05', '0,01', '0,1'][e(0, 2)];
+    if (Math.random() < 0.5) { const mu0 = e(10, 60) * 10, s = e(2, 8) * 5, n = e(3, 8) ** 2, xm = mu0 + (h1 === 'menor' ? -1 : 1) * e(0, 6) * s / 10; return { tipo: 'media', h1, alfa, entrada: 'resumen', sigmaC: Math.random() < 0.5 ? 'si' : 'no', mu0: String(mu0), n: String(n), xm: c(xm), s: String(s) }; }
+    const p0 = [0.2, 0.25, 0.3, 0.4, 0.5][e(0, 4)], n = e(10, 40) * 10, x = Math.round(n * (p0 + (h1 === 'menor' ? -1 : 1) * e(0, 8) / 100));
+    return { tipo: 'proporcion', h1, alfa, p0: c(p0), n: String(n), x: String(x) };
+  }
+  const H = { distinto: '≠', mayor: '>', menor: '<' };
+  const eN = (s) => s.e.replace('^2', '²');
+  const SIN = 'Lässt sich nicht prüfen';
+  const pdfAlt = (m) => (x) => (m.k === 'z' ? Math.exp(-0.5 * ((x - m.mu) / m.sg) ** 2) / (m.sg * Math.sqrt(2 * Math.PI)) : m.k === 't' ? IN.nctPdf(x, m.nu, m.delta) : m.k === 'chi2' ? D.chi2.pdf({ k: m.kk }, x / m.esc) / m.esc : D.f.pdf({ d1: m.d1, d2: m.d2 }, x / m.esc) / m.esc);
+  Calculadora.monta({
+    C, carpeta: 'contrastes', app: 'ContrastesApp', azar,
+    enunciado: (sc, s) => s && (s.tipo === 'media' && sc.entrada !== 'datos'
+      ? `Eine Stichprobe von ${sc.n} Daten ergibt einen Mittelwert von ${sc.xm} ${sc.sigmaC === 'si' ? `(die Grundgesamtheit hat σ = ${sc.s})` : `und eine Standardabweichung s = ${sc.s}`}. Teste mit α = ${sc.alfa}, ob μ ${H[sc.h1]} ${sc.mu0}: Berechne die Teststatistik, den kritischen Wert und den p-Wert.`
+      : s.tipo === 'proporcion' ? `In einer Stichprobe von ${sc.n} Personen erfüllen ${sc.x} die Bedingung. Teste mit α = ${sc.alfa}, ob der Anteil ${H[sc.h1]} ${sc.p0} ist: Berechne die Teststatistik, den kritischen Wert und den p-Wert.`
+        : `Löse den Hypothesentest mit den Daten des Werkzeugs (α = ${sc.alfa}): Berechne die Teststatistik, den kritischen Wert und den p-Wert.`),
+    nota: 'Bei H₁ wählst du, was du belegen willst: „≠“, wenn die Differenz in beide Richtungen gehen kann (zweiseitig), „>“ oder „<“, wenn nur eine Seite interessiert (einseitig). α ist meist 0,05, 0,01 oder 0,1. Gibst du den wahren Wert des Parameters an, werden auch die Teststärke und der nötige Stichprobenumfang berechnet.',
+    campos: (sc) => [{ k: 'tipo', nom: 'Test von', tipo: 'sel', ops: Object.entries(C.TIPOS) }, ...(['normalidad', 'varios'].includes(sc.tipo) ? [{ k: 'alfa', nom: 'Signifikanzniveau α' }] : comun(sc)), ...(CAMPOS[sc.tipo] || CAMPOS.media)(sc)],
+    resumen: (s) => {
+      if (s.tipo === 'normalidad') return [['Entscheidung', s.rechaza ? 'Die Normalität wird verworfen' : 'Die Normalität wird nicht verworfen', true], ['Shapiro-Wilk', `W = ${f(s.sh.W, 4)}`], ['p-valor (Shapiro-Wilk)', f(s.sh.p)], ...(s.jb ? [['Jarque-Bera', `JB = ${f(s.jb.JB)}`], ['p-valor (Jarque-Bera)', f(s.jb.p)]] : []), ['Erwartungswert', f(s.m)], ['Standardabweichung', f(s.s)]];
+      if (s.tipo === 'varios') return [['Entscheidung', s.rechaza ? 'Die Gleichheit der Varianzen wird verworfen' : 'Die Gleichheit der Varianzen wird nicht verworfen', true], ['Levene (Median)', `W = ${f(s.lev.W)}`], ['p-valor (Levene)', f(s.lev.p)], ['Bartlett', `B = ${f(s.bar.B)}`], ['p-valor (Bartlett)', f(s.bar.p)]];
+      const o = [
+        ['Entscheidung', s.rechaza ? 'H₀ wird verworfen' : 'H₀ wird nicht verworfen', true],
+        ['Teststatistik', `${eN(s)} = ${f(s.est)}`],
+        [s.crit.length > 1 ? 'Kritische Werte' : 'Kritischer Wert', s.crit.map((v) => f(v)).join(' y ')],
+        ['p-valor', f(s.pv)],
+        ['Schätzung', f(s.estimado)],
+      ];
+      if (s.efecto) o.push([s.efecto.nom, `${f(s.efecto.val)} (${C.lim(s.efecto.val)})`]);
+      if (s.pot) o.push(['Teststärke 1 − β', f(s.pot.potencia, 4)], ['Fehler 2. Art β', f(s.pot.beta, 4)], [s.pot.n2 ? 'Nötige Umfänge' : 'Nötiger Umfang', s.pot.necAlcanza ? (s.pot.n2 ? `n₁ = ${s.pot.nec[0]} y n₂ = ${s.pot.nec[1]}` : `n = ${s.pot.nec[0]}`) : 'No se alcanza']);
+      const mal = (s.norm || []).filter((q) => q.ok === false);
+      if (s.norm && s.norm.length) o.push(['Normalität der Daten', mal.length ? `No se sostiene (${mal.map((q) => q.nom).join(', ')})` : 'Keine Gegenbeweise'], ...(mal.length ? [['Hinweis', 'Die Daten wirken nicht normalverteilt: Bei wenigen Beobachtungen verliert das t an Zuverlässigkeit; sieh dir die nichtparametrischen Tests an.', true]] : []));
+      return o;
+    },
+    grafica: (s, col) => {
+      if (s.tipo === 'normalidad') {
+        const z = s.q.map((q) => q[0]), zl = Math.min(...z), zh = Math.max(...z), ys = s.q.map((q) => q[1]), lo = Math.min(...ys, s.m + s.s * zl), hi = Math.max(...ys, s.m + s.s * zh), aire = (hi - lo || 1) * 0.08;
+        return { x: [zl - 0.3, zh + 0.3], y: [lo - aire, hi + aire], ejeX: 'Theoretisches Quantil der Normalverteilung', ejeY: 'Geordneter Wert', series: [{ pts: [[zl - 0.3, s.m + s.s * (zl - 0.3)], [zh + 0.3, s.m + s.s * (zh + 0.3)]], color: '--serie-2', grosor: 2 }, { tipo: 'puntos', pts: s.q, color: '--serie-1', radio: 4 }] };
+      }
+      if (s.tipo === 'varios') {
+        const k = s.k, mx = Math.max(...s.grupos.map((g) => g.s)) * 1.15;
+        return { x: [0.4, k + 0.6], y: [0, mx], ejeX: 'Gruppe', ejeY: 'Standardabweichung', fx: (v) => (Number.isInteger(v) && v >= 1 && v <= k ? s.grupos[v - 1].nom.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&') : ''), series: [{ tipo: 'barras', pts: s.grupos.map((g, i) => [i + 1, g.s]), ancho: 0.5, color: '--serie-1' }] };
+      }
+      const [Dd, P] = s.d, sim = s.sim, ext = Math.max(4, Math.abs(s.est) * 1.15, ...s.crit.map((v) => Math.abs(v) * 1.15), ...(s.pot && s.pot.alt.k === 'z' ? [Math.abs(s.pot.alt.mu) + 3 * s.pot.alt.sg] : s.pot && s.pot.alt.k === 't' ? [Math.abs(s.pot.alt.delta) + 3.5] : []));
+      let [a, b] = sim ? [-ext, ext] : Dd.rango(P);
+      if (!sim) { b = Math.max(b, s.est * 1.15, s.crit[s.crit.length - 1] * 1.15); if (s.pot) b = Math.max(b, Dd.rango(P)[1] * Math.max(1, Math.min(6, s.pot.alt.esc || 1))); }
+      const pts = Array.from({ length: 301 }, (_, i) => { const x = a + ((b - a) * i) / 300; return [x, Dd.pdf(P, x)]; }).filter(([, y]) => isFinite(y));
+      const alt = s.pot ? pdfAlt(s.pot.alt) : null, pts1 = alt ? Array.from({ length: 301 }, (_, i) => { const x = a + ((b - a) * i) / 300; return [x, alt(x)]; }).filter(([, y]) => isFinite(y)) : [];
+      const ymax = Math.max(...pts.map((q) => q[1]).filter((y) => y < 5), ...pts1.map((q) => q[1]).filter((y) => y < 5)) * 1.15;
+      const colas = s.h1 === 'mayor' ? [[s.crit[0], b]] : s.h1 === 'menor' ? [[a, s.crit[0]]] : [[a, s.crit[0]], [s.crit[1], b]];
+      const area = colas.map(([u, v]) => ({ tipo: 'area', pts: pts.filter(([x]) => x >= u && x <= v), color: '--serie-2', alfa: 0.4 }));
+      const ac = s.h1 === 'mayor' ? [[a, s.crit[0]]] : s.h1 === 'menor' ? [[s.crit[0], b]] : [[s.crit[0], s.crit[1]]];
+      const beta = alt ? ac.map(([u, v]) => ({ tipo: 'area', pts: pts1.filter(([x]) => x >= u && x <= v), color: '--serie-3', alfa: 0.3 })) : [];
+      return { x: [a, b], y: [0, ymax], ejeX: eN(s), series: [...area, ...beta, { pts: pts.map(([x, y]) => [x, Math.min(y, ymax * 2)]), color: '--serie-1' }, ...(alt ? [{ pts: pts1.map(([x, y]) => [x, Math.min(y, ymax * 2)]), color: '--serie-3', grosor: 2 }] : [])],
+        verticales: [...s.crit.map((v) => ({ x: v, color: '--serie-2' })), { x: s.est, color: '--ink', texto: `${eN(s)} = ${f(s.est)}` }] };
+    },
+    leyenda: (s) => {
+      if (s.tipo === 'normalidad') return `Jeder Punkt ist ein geordneter Wert gegen das Quantil, das ihm in einer Normalverteilung mit Mittelwert und Standardabweichung der Stichprobe zukäme (rote Gerade). Folgen die Punkte der Geraden, sind die Daten mit einer Normalverteilung vereinbar; Kurven oder einzelne Punkte an den Enden deuten auf Schiefe oder schwere Ränder hin. Ergebnis: W = ${f(s.sh.W, 4)}, p = ${pr(s.sh.p)}.`;
+      if (s.tipo === 'varios') return `Jeder Balken ist die Standardabweichung einer Gruppe (${s.grupos.map((g) => `${g.nom}: ${f(g.s)}`).join('; ')}). Sehr verschiedene Balken deuten auf verschiedene Varianzen hin: ${s.rechaza ? 'Der Test hält sie für verschieden' : 'Der Test sieht keine klaren Unterschiede'} (p = ${pr(s.p)}).`;
+      return `Verteilung der Teststatistik, wenn H₀ stimmt (blau). In Rot der <b>kritische Bereich</b> (Fläche α = ${f(s.alfa)}); die schwarze Linie ist die <b>Teststatistik</b>, die ${s.rechaza ? 'hineinfällt: H₀ wird verworfen' : 'außerhalb liegt: H₀ wird nicht verworfen'}.${s.pot ? ` In Grün die Verteilung, wenn der wahre Wert ${f(s.pot.real)} wäre: Der grüne Teil außerhalb des roten Bereichs ist der Fehler 2. Art, β = ${f(s.pot.beta, 4)}, und der Rest ist die Teststärke ${f(s.pot.potencia, 4)}.` : ''}`;
+    },
+    datosExporta: (s) => (s.tipo === 'normalidad' ? { cab: ['Theoretisches Quantil', 'Geordneter Wert'], filas: s.q.map((q) => [+q[0].toFixed(6), q[1]]) } : s.tipo === 'varios' ? { cab: ['Gruppe', 'n', 'Standardabweichung'], filas: s.grupos.map((g) => [g.nom, g.n, +g.s.toFixed(6)]) } : { cab: ['Größe', 'Wert'], filas: [['Teststatistik', +s.est.toFixed(6)], ...s.crit.map((v, i) => [`Kritischer Wert ${i + 1}`, +v.toFixed(6)]), ['p-valor', +s.pv.toFixed(8)], ...(s.pot ? [['Teststärke', +s.pot.potencia.toFixed(6)], ['β', +s.pot.beta.toFixed(6)]] : [])] }),
+    despues: (r, s, col) => {
+      const card = document.querySelector('#card-potencia'), c2 = document.querySelector('#grafica2'); if (!card || !c2) return;
+      card.hidden = !s || !s.pot; if (card.hidden) return;
+      const P = s.pot, ys = P.curva.map((q) => q[1]);
+      Calculadora.grafica(c2, { x: [P.curva[0][0], P.curva[P.curva.length - 1][0]], y: [0, 1.02], ejeX: P.nom.replace(' real', ''), ejeY: 'Teststärke 1 − β', series: [{ pts: P.curva, color: '--serie-1', grosor: 2.5 }, { tipo: 'puntos', pts: [[P.real, P.potencia]], color: '--serie-3', radio: 6 }],
+        verticales: [{ x: P.centro, color: '--muted' }], horizontales: [{ y: P.objetivo, color: '--serie-2', texto: `objetivo ${f(P.objetivo)}` }, { y: s.alfa, color: '--muted' }] }, col);
+      document.querySelector('#leyenda2').textContent = `Die Teststärke wächst, wenn sich der wahre Wert von dem von H₀ entfernt (graue Linie): Sie beträgt ${f(Math.min(...ys), 3)} (nahe α) am ungünstigsten Ende und ${f(Math.max(...ys), 3)} am weitesten entfernten. Der grüne Punkt ist der gewählte wahre Wert, mit Teststärke ${f(P.potencia, 4)}; die rote Linie ist die gewünschte Teststärke.`;
+      if (window.Herramienta && Herramienta.exportar) Herramienta.exportar(c2, { nombre: 'contrastes-potencia', titulo: 'Gütefunktion', datos: () => ({ cab: [P.nom, 'Teststärke'], filas: P.curva.map((q) => [+q[0].toFixed(6), +q[1].toFixed(6)]) }) });
+    },
+  });
+})();
+
+</script>
+<script src="../../../js/de/biblioteca.de.255cecb4.js"></script>
+<script src="../../../js/de/practica.de.c189e4a1.js"></script>
+<script src="../../../js/de/personal.de.c25efcf5.js"></script>
+<script>
+Biblioteca.monta('contrastes', 'contrastes-v1');
+Practica.monta('contrastes', 'contrastes-v1');
+Enunciado.monta('contrastes', 'contrastes-v1');
+</script>
+</html>

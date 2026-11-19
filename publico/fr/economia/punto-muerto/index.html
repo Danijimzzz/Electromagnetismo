@@ -1,0 +1,507 @@
+<!doctype html>
+<html lang="fr">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTQiIGZpbGw9IiMwZDZiNjYiLz48ZyBmaWxsPSJub25lIiBzdHJva2U9IiNlNmE2NDAiIHN0cm9rZS13aWR0aD0iMi40IiBzdHJva2UtZGFzaGFycmF5PSI0IDYuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIj48cGF0aCBkPSJNMjAgMzJINDQiLz48cGF0aCBkPSJNMjEgMjdDMjcgMTQgMzcgMTQgNDMgMjciLz48cGF0aCBkPSJNMjEgMzdDMjcgNTAgMzcgNTAgNDMgMzciLz48cGF0aCBkPSJNMTcgMjRDMjIgNCA0MiA0IDQ3IDI0Ii8+PHBhdGggZD0iTTE3IDQwQzIyIDYwIDQyIDYwIDQ3IDQwIi8+PC9nPjxjaXJjbGUgY3g9IjE3IiBjeT0iMzIiIHI9IjgiIGZpbGw9IiNlZjdhNjIiLz48Y2lyY2xlIGN4PSI0NyIgY3k9IjMyIiByPSI4IiBmaWxsPSIjNzRhMmYyIi8+PHBhdGggZD0iTTEzIDMyaDhNMTcgMjh2OE00MyAzMmg4IiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iMi42IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48L3N2Zz4K">
+<link rel="apple-touch-icon" href="../../../apple-touch-icon.png">
+<meta property="og:title" content="Calculatrice du seuil de rentabilité">
+<meta property="og:description" content="Seuil de rentabilité en unités et en euros, marge sur coût variable, marge de sécurité et levier opérationnel, avec le graphique des recettes et des coûts">
+<link rel="canonical" href="https://simulaciencia.vercel.app/fr/economia/punto-muerto/">
+<link rel="alternate" hreflang="es" href="https://simulaciencia.vercel.app/economia/punto-muerto/">
+<link rel="alternate" hreflang="en" href="https://simulaciencia.vercel.app/en/economia/punto-muerto/">
+<link rel="alternate" hreflang="de" href="https://simulaciencia.vercel.app/de/economia/punto-muerto/">
+<link rel="alternate" hreflang="fr" href="https://simulaciencia.vercel.app/fr/economia/punto-muerto/">
+<link rel="alternate" hreflang="x-default" href="https://simulaciencia.vercel.app/economia/punto-muerto/">
+<meta property="og:locale" content="fr">
+<meta property="og:image" content="https://simulaciencia.vercel.app/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebApplication","name":"Seuil de rentabilité","description":"Calculatrice du seuil de rentabilité en ligne : point mort en unités et en euros, marge sur coût variable, profit, marge de sécurité, levier opérationnel et ventes pour un profit cible, avec le graphique des recettes et des coûts.","url":"https://simulaciencia.vercel.app/economia/punto-muerto/","inLanguage":"fr","isAccessibleForFree":true,"applicationCategory":"EducationalApplication","operatingSystem":"Navigateur web","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://simulaciencia.vercel.app/"},{"@type":"ListItem","position":2,"name":"Économie","item":"https://simulaciencia.vercel.app/economia/"},{"@type":"ListItem","position":3,"name":"Seuil de rentabilité","item":"https://simulaciencia.vercel.app/economia/punto-muerto/"}]},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Comment calcule-t-on le seuil de rentabilité ?","acceptedAnswer":{"@type":"Answer","text":"Q* = CF/(p − cv). Avec des coûts fixes de 10 000 €, un prix de 25 € et un coût variable unitaire de 15 € : Q* = 10 000/10 = 1 000 unités, avec des recettes de 25 000 €."}},{"@type":"Question","name":"Combien faut-il vendre pour un profit cible ?","acceptedAnswer":{"@type":"Answer","text":"Q = (CF + B)/(p − cv). Pour gagner 5 000 € dans l’exemple : (10 000 + 5 000)/10 = 1 500 unités."}}]}]}</script>
+<link rel="manifest" href="../../manifest.webmanifest">
+<meta name="theme-color" content="#0d6b66">
+<script src="../../pwa.js" defer></script>
+<meta name="google-adsense-account" content="ca-pub-6407501780492688">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6407501780492688" crossorigin="anonymous"></script>
+<script>window.googlefc = window.googlefc || {}; googlefc.callbackQueue = googlefc.callbackQueue || [];
+document.addEventListener('click', (e) => { if (!e.target.closest('.pref-cookies')) return; e.preventDefault(); googlefc.callbackQueue.push(() => googlefc.showRevocationMessage()); });</script>
+<style>.anuncio { max-width:860px; margin:28px 0 0; text-align:center; min-height:120px } .anuncio > span { display:block; font:11px/1.6 system-ui, sans-serif; letter-spacing:.06em; text-transform:uppercase; color:var(--muted, #5b6670) } .anuncio ins { display:block }</style>
+<style>.anuncio-lado { display:none } @media (min-width: 901px) { .anuncio-lado { display:block; grid-column:1; grid-row:2; position:sticky; top:96px; margin:8px 0 0; max-width:none; min-height:250px; min-width:0; overflow:hidden } main .layout.con-lado > :nth-child(2) { grid-row:1 / span 2 } }</style>
+<script>document.addEventListener('DOMContentLoaded', () => {
+  const l = document.querySelector('main .layout');
+  if (!l || l.classList.contains('invertido') || l.children.length !== 2 || !l.offsetParent || !matchMedia('(min-width: 901px)').matches) return;
+  l.classList.add('con-lado');
+  const a = document.createElement('div'); a.className = 'anuncio anuncio-lado';
+  a.innerHTML = '<span>Publicidad</span><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-6407501780492688" data-ad-slot="9800921596" data-ad-format="auto" data-full-width-responsive="true"></ins>';
+  l.appendChild(a); (window.adsbygoogle = window.adsbygoogle || []).push({});
+});</script>
+<script>(() => {
+  const raiz = document.documentElement, mq = matchMedia('(prefers-color-scheme: dark)'), oyentes = [];
+  try { const t = localStorage.getItem('simu-tema'); if (t === 'dark' || t === 'light') raiz.dataset.theme = t; } catch (e) { /* sin almacenamiento */ }
+  const orig = MediaQueryList.prototype.addEventListener;
+  MediaQueryList.prototype.addEventListener = function (tipo, f, ...r) { if (tipo === 'change' && /prefers-color-scheme/.test(this.media)) oyentes.push(f); return orig.call(this, tipo, f, ...r); };
+  const oscuro = () => (raiz.dataset.theme ? raiz.dataset.theme === 'dark' : mq.matches);
+  const rotula = () => document.querySelectorAll('.tema').forEach((b) => { const t = oscuro() ? 'Passer en mode clair' : 'Passer en mode sombre'; b.title = t; b.setAttribute('aria-label', t); });
+  document.addEventListener('DOMContentLoaded', rotula);
+  mq.addEventListener('change', rotula);
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.tema')) return;
+    raiz.dataset.theme = oscuro() ? 'light' : 'dark';
+    try { localStorage.setItem('simu-tema', raiz.dataset.theme); } catch (e) { /* sin almacenamiento */ }
+    rotula();
+    for (const f of oyentes) { try { f.call(mq, { matches: oscuro(), media: mq.media }); } catch (err) { console.error(err); } }
+  });
+})();</script>
+<script>(() => {
+  const ENFOCABLE = 'a[href],button,input,select,textarea,summary,[tabindex]';
+  let espera = 0;
+  const revisa = () => {
+    espera = 0;
+    for (const e of document.querySelectorAll('main *')) {
+      const desborda = e.scrollWidth > e.clientWidth || e.scrollHeight > e.clientHeight;
+      if (e.dataset.sf) { if (!desborda || e.querySelector(ENFOCABLE)) { e.removeAttribute('tabindex'); delete e.dataset.sf; } continue; }
+      if (!desborda || e.hasAttribute('tabindex') || e.matches('svg,svg *,canvas') || e.querySelector(ENFOCABLE)) continue;
+      const o = getComputedStyle(e);
+      if (/auto|scroll/.test(o.overflowX + o.overflowY)) { e.tabIndex = 0; e.dataset.sf = '1'; }
+    }
+  };
+  window.revisaScroll = revisa; // también lo llama pruebas/accesibilidad.js antes de pasar axe
+  const pide = () => { if (!espera) espera = setTimeout(revisa, 400); };
+  addEventListener('load', () => { revisa(); const m = document.querySelector('main'); if (m) new MutationObserver(pide).observe(m, { childList: true, subtree: true, characterData: true }); });
+  addEventListener('resize', pide);
+})();</script>
+<script src="../../buscador.js" defer></script>
+<script src="../../llama.js" defer></script>
+<title>Calculatrice du seuil de rentabilité (point mort)</title>
+<meta name="description" content="Calculatrice du seuil de rentabilité en ligne : point mort en unités et en euros, marge sur coût variable, profit, marge de sécurité, levier opérationnel et ventes pour un profit cible, avec le graphique des recettes et des coûts.">
+<style>/* =====================================================================
+   Hoja de estilos común de todas las herramientas (fuente/<herramienta>/pagina.html).
+   diseno.js la mete en cada página, antes de su propio <style>, junto con el color
+   de la asignatura (--accent, --accent-soft) y la cabecera del portal. La guía de uso
+   de cada componente, con su HTML, está en DISENO.md.
+   Una herramienta no vuelve a definir estas reglas: ajusta las variables de medida
+   (--col-datos, --ancho-valor, --alto-grafica) o añade una clase propia.
+   ===================================================================== */
+
+/* ---------- Colores y letras (claro y oscuro) ---------- */
+:root {
+  --bg: #eef1ee; --panel: #fff; --ink: #1a2128; --muted: #5b6670; --line: #d5dbd5; --error: #c0392b;
+  --f-ui: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-math: "STIX Two Text", "Cambria Math", Cambria, Georgia, serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+  --vidrio: rgba(255,255,255,.55); --vidrio-fuerte: rgba(255,255,255,.72); --vidrio-borde: rgba(255,255,255,.7); --vidrio-brillo: inset 0 1px 0 rgba(255,255,255,.8);
+  --vidrio-sombra: 0 1px 2px rgba(20,40,60,.06), 0 8px 28px rgba(20,40,60,.10); --blur: blur(22px) saturate(1.7); --halo1: rgba(13,107,102,.22); --halo2: rgba(42,93,181,.20); --halo3: rgba(107,63,160,.14);
+  /* medidas que cada herramienta puede ajustar */
+  --col-datos: 360px; --ancho-etiqueta: minmax(0, 1fr); --ancho-valor: 150px; --letra-campo: 13px var(--f-ui); --ancho-dato: 190px; --alto-grafica: clamp(260px, 36vw, 380px); --margen-grafica: 10px;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #111619; --panel: #182025; --ink: #e3e8ea; --muted: #a3aeb5; --line: #2a343b; --error: #f08a80; --vidrio: rgba(34,46,54,.50); --vidrio-fuerte: rgba(26,36,42,.70); --vidrio-borde: rgba(255,255,255,.12); --vidrio-brillo: inset 0 1px 0 rgba(255,255,255,.10); --vidrio-sombra: 0 1px 2px rgba(0,0,0,.3), 0 10px 32px rgba(0,0,0,.35); --halo1: rgba(77,188,176,.20); --halo2: rgba(116,162,242,.18); --halo3: rgba(170,120,230,.14); color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #111619; --panel: #182025; --ink: #e3e8ea; --muted: #a3aeb5; --line: #2a343b; --error: #f08a80; --vidrio: rgba(34,46,54,.50); --vidrio-fuerte: rgba(26,36,42,.70); --vidrio-borde: rgba(255,255,255,.12); --vidrio-brillo: inset 0 1px 0 rgba(255,255,255,.10); --vidrio-sombra: 0 1px 2px rgba(0,0,0,.3), 0 10px 32px rgba(0,0,0,.35); --halo1: rgba(77,188,176,.20); --halo2: rgba(116,162,242,.18); --halo3: rgba(170,120,230,.14); color-scheme: dark }
+/* fin de los colores */
+
+/* ---------- Base ---------- */
+* { box-sizing: border-box }
+[hidden] { display: none !important }
+html, body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.45 var(--f-ui) }
+a { color: var(--accent) }
+.wrap { max-width: 1300px; margin: 0 auto; padding: 16px clamp(16px, 3vw, 24px) 32px }
+h1 { font: 600 24px/1.25 var(--f-ui); margin: 0 0 4px }
+.lead { color: var(--muted); margin: 0 0 12px; max-width: 760px }
+/* texto solo para lectores de pantalla; sin position:absolute para que no ensanche las tablas con scroll */
+.solo-lector { display: inline-block; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; vertical-align: top }
+footer { text-align: center; font-size: 12.5px; color: var(--muted); padding: 8px 16px 24px }
+footer a { color: var(--muted); margin: 0 6px; white-space: nowrap; display: inline-block }
+
+/* ---------- Diseño A: datos a la izquierda, resultados a la derecha ---------- */
+.layout { display: grid; grid-template-columns: var(--col-datos) minmax(0, 1fr); gap: 16px; align-items: start }
+.layout.invertido { grid-template-columns: minmax(0, 1fr) var(--col-datos) }
+@media (max-width: 900px) { .layout, .layout.invertido { grid-template-columns: minmax(0, 1fr) } }
+
+/* ---------- Tarjetas ---------- */
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 14px; margin-bottom: 14px }
+.card h2 { font: 600 12px/1.4 var(--f-ui); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 0 0 10px }
+.destacado { border-color: var(--line); border-top: 3px solid var(--accent) }
+.destacado h2 { color: var(--accent) }
+
+/* ---------- Datos: campos, separadores, botones y pestañas ---------- */
+.campos { display: grid; grid-template-columns: var(--ancho-etiqueta) var(--ancho-valor); gap: 7px 10px; align-items: center }
+.campos label { font-size: 13.5px }
+.campos label small { color: var(--muted) }
+.campos .ancho { grid-column: 1 / -1 }
+.sep { grid-column: 1 / -1; font: 600 12px var(--f-ui); color: var(--accent); text-transform: uppercase; letter-spacing: .04em; margin-top: 8px }
+.in { font: var(--letra-campo); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; width: 100%; font-variant-numeric: tabular-nums }
+.btn { font: 500 13px var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 5px 10px; cursor: pointer; white-space: nowrap }
+.btn:hover { border-color: var(--accent) }
+/* foco del teclado en todo lo que se pulsa o se escribe (sin especificidad: una herramienta puede ajustarlo) */
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible { outline: 2px solid var(--accent); outline-offset: 1px }
+.controles { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 8px }
+.controles > .nota, .controles > .leyenda { flex: 1 1 220px; margin: 0 }
+.exportar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 8px 0 }
+.exportar-aviso { color: var(--muted); font-size: 12.5px }
+.tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px }
+.tools label { color: var(--muted); font-size: 13px; display: inline-flex; gap: 6px; align-items: center }
+.modos { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; margin-bottom: 14px }
+.modos button { font: 500 13.5px var(--f-ui); border: 0; background: var(--panel); color: var(--muted); padding: 7px 14px; cursor: pointer }
+.modos button[aria-selected=true] { background: var(--accent); color: var(--panel) }
+.error { color: var(--error); font-size: 13px; margin: 10px 0 0 }
+.nota { color: var(--muted); font-size: 12.5px; margin: 8px 0 0 }
+
+/* ---------- Resultados ---------- */
+.res { display: grid; grid-template-columns: repeat(auto-fill, minmax(var(--ancho-dato), 1fr)); gap: 6px 14px; font: 16px var(--f-math) }
+.res div { overflow-x: auto; overflow-y: hidden }
+.res span { display: block; font: 12px var(--f-ui); color: var(--muted) }
+.res div.ancho { grid-column: 1 / -1 }
+.resumen { display: grid; grid-template-columns: repeat(auto-fill, minmax(var(--ancho-dato), 1fr)); gap: 8px; margin: 0 }
+.resumen div { background: var(--accent-soft); border-radius: 8px; padding: 8px 10px; overflow-x: auto; overflow-y: hidden }
+.resumen div span { display: block; font-size: 12px; color: var(--muted) }
+.resumen div b { font: 600 17px var(--f-math) }
+.resumen div.ancho { grid-column: 1 / -1 }
+
+/* ---------- Gráficas ---------- */
+canvas { display: block; width: 100%; height: var(--alto-grafica); border-radius: 8px; background: var(--bg); margin-top: var(--margen-grafica) }
+.leyenda { font-size: 12.5px; color: var(--muted); margin: 6px 0 0 }
+.leyenda b { font-weight: 600 }
+
+/* ---------- Desarrollo paso a paso ---------- */
+/* el número va dentro del paso para que no lo corte el desplazamiento de las fórmulas largas */
+.pasos ol { margin: 0; padding: 0; list-style: none; counter-reset: paso }
+.pasos li { position: relative; margin: 0 0 12px; padding-left: 22px; font-family: var(--f-math); font-size: 15.5px; overflow-x: auto; counter-increment: paso; overflow-y: hidden }
+.pasos li::before { content: counter(paso) "."; position: absolute; left: 0; top: 0; font: 13.5px/1.45 var(--f-ui); color: var(--muted) }
+.pasos li strong { font: 600 13.5px var(--f-ui); display: block; margin-bottom: 2px }
+.pasos table.tabla { border-collapse: collapse; margin: 6px 0; font: 13px var(--f-ui); font-variant-numeric: tabular-nums }
+.pasos table.tabla th, .pasos table.tabla td { border: 1px solid var(--line); padding: 3px 9px; text-align: right }
+.pasos table.tabla th { background: var(--accent-soft); font-weight: 600 }
+.tabla-scroll { overflow-x: auto }
+
+/* matrices con corchetes, dentro de una fórmula */
+.mat { position: relative; display: inline-block; vertical-align: middle; padding: 0 7px; margin: 2px 2px }
+.mat::before, .mat::after { content: ""; position: absolute; top: 0; bottom: 0; width: 5px; border: 1.4px solid currentColor }
+.mat::before { left: 0; border-right: 0 }
+.mat::after { right: 0; border-left: 0 }
+.mat table { border-collapse: collapse }
+.mat td { padding: 2px 7px; text-align: center; white-space: nowrap; font-variant-numeric: tabular-nums }
+
+/* ---------- Teoría ---------- */
+.teoria, .preguntas { margin-top: 28px; max-width: 860px; font-size: 15px; line-height: 1.6 }
+.preguntas h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
+.preguntas h3 { font: 600 15px var(--f-ui); margin: 14px 0 2px }
+.preguntas p { margin: 0 }
+.teoria h2 { font: 600 19px var(--f-ui); margin: 24px 0 6px }
+.teoria .f { max-width: 100%; overflow-x: auto; overflow-y: hidden; font-family: var(--f-math); font-size: 16.5px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; display: inline-block }
+.teoria ul { padding-left: 20px }
+.teoria li { margin-bottom: 4px }
+.teoria li, .teoria p { overflow-x: auto; overflow-y: hidden }
+
+/* ---------- Liquid Glass ---------- */
+/* Vidrio solo en el marco (tarjetas, controles, barras); el lienzo de las gráficas y las fórmulas no se tocan. */
+body { display: flow-root; background: radial-gradient(60% 50% at 8% 0%, var(--halo1), transparent 70%), radial-gradient(50% 45% at 95% 10%, var(--halo2), transparent 70%), radial-gradient(55% 50% at 60% 100%, var(--halo3), transparent 70%), var(--bg); background-attachment: fixed }
+.card { background: var(--vidrio); border-color: var(--vidrio-borde); border-radius: 18px; box-shadow: var(--vidrio-brillo), var(--vidrio-sombra); -webkit-backdrop-filter: var(--blur); backdrop-filter: var(--blur) }
+.destacado { border-top: 3px solid var(--accent) }
+.in { background: var(--vidrio); border-color: var(--vidrio-borde); border-radius: 10px; box-shadow: var(--vidrio-brillo) }
+.btn { background: var(--vidrio-fuerte); border-color: var(--vidrio-borde); border-radius: 99px; padding: 5px 14px; box-shadow: var(--vidrio-brillo) }
+.modos { border-color: var(--vidrio-borde); border-radius: 99px; background: var(--vidrio); box-shadow: var(--vidrio-brillo); -webkit-backdrop-filter: var(--blur); backdrop-filter: var(--blur) }
+.modos button { background: transparent; border-radius: 99px }
+.modos button[aria-selected=true] { box-shadow: 0 1px 6px rgba(0,0,0,.18) }
+.resumen div { border-radius: 14px }
+.teoria .f { background: var(--vidrio); border-color: var(--vidrio-borde); border-radius: 12px }
+canvas { border-radius: 14px }
+@media (max-width: 900px) { .card, .modos { -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px) } }
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) { .card, .modos, header.top { background: var(--panel); -webkit-backdrop-filter: none; backdrop-filter: none } .in, .btn, .teoria .f { background: var(--panel) } }
+
+:root { --accent:#6b7a12; --accent-soft:color-mix(in srgb, #6b7a12 12%, #fff); --marca:#0d6b66 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --accent:#b8c955; --accent-soft:color-mix(in srgb, #b8c955 16%, #182025); --marca:#4dbcb0 } }
+:root[data-theme="dark"] { --accent:#b8c955; --accent-soft:color-mix(in srgb, #b8c955 16%, #182025); --marca:#4dbcb0 }
+header.top { display:flex; align-items:center; gap:8px 20px; flex-wrap:wrap; padding:12px clamp(16px,3vw,28px); position:sticky; top:10px; z-index:10; margin:10px clamp(10px,2vw,20px) 0; border:1px solid var(--vidrio-borde); border-radius:22px; background:var(--vidrio-fuerte); box-shadow:var(--vidrio-brillo),var(--vidrio-sombra); -webkit-backdrop-filter:var(--blur); backdrop-filter:var(--blur) }
+header.top .logo { font:600 18px var(--f-math); margin:0; white-space:nowrap; color:var(--ink); text-decoration:none } header.top .logo i { color:var(--marca) }
+header.top nav { display:flex; gap:4px 14px; font-size:14px; overflow-x:auto; max-width:100%; scrollbar-width:none }
+header.top nav a { white-space:nowrap; padding:2px 0; color:var(--muted); text-decoration:none } header.top nav a:hover { color:var(--ink) }
+header.top nav a[aria-current] { color:var(--ink); font-weight:600; box-shadow:inset 0 -2px 0 var(--accent) }
+header.top form { margin-left:auto; flex:0 1 170px; min-width:130px }
+header.top .foro { margin-left:auto; display:inline-flex; align-items:center; gap:6px; white-space:nowrap; font:600 14px var(--f-ui); color:var(--ink); text-decoration:none; border:1px solid var(--vidrio-borde); background:var(--vidrio); border-radius:99px; padding:6px 12px } header.top .foro:hover, header.top .foro[aria-current] { border-color:var(--accent); color:var(--accent) } header.top .foro + form { margin-left:0 } header.top > .foro ~ .tema { margin-left:0 }
+@media (min-width:701px) { header.top { flex-wrap:nowrap } header.top nav { min-width:0 } }
+header.top .buscar { font:14px var(--f-ui); color:var(--ink); border:1px solid var(--vidrio-borde); border-radius:99px; padding:7px 14px; width:100%; background:var(--vidrio) }
+header.top .buscar:focus-visible, header.top a:focus-visible { outline:2px solid var(--accent); outline-offset:1px }
+.miga { display:flex; align-items:center; flex-wrap:wrap; gap:8px; font-size:13.5px; color:var(--muted); margin:0 0 10px }
+.miga a { color:var(--accent); font-weight:600; text-decoration:none } .miga a:hover { text-decoration:underline }
+.miga-ico { display:inline-grid; place-items:center; width:22px; height:22px; border-radius:6px; background:var(--accent-soft); color:var(--accent); font:italic 600 13px var(--f-math) }
+.miga-der { margin-left:auto; display:flex; gap:8px } .miga-izq:empty, .miga-der:empty { display:none }
+.bib-btn, .prac-btn { border-radius:8px !important; padding:6px 12px !important }
+body.bib-ejemplos select[id^="ejemplo"] { display:none }
+@media print { header.top, .miga, .prac-btn { display:none !important } }
+:root { --vida:#6a4fc2 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --vida:#b39ff7 } }
+:root[data-theme="dark"] { --vida:#b39ff7 }
+.relacionadas { max-width:860px; margin:16px 0 0; background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--accent); border-radius:4px 12px 12px 4px; padding:12px 16px }
+.relacionadas h2 { font:600 12px/1.4 var(--f-ui); text-transform:uppercase; letter-spacing:.06em; color:var(--accent); margin:0 0 4px }
+.relacionadas a { display:flex; gap:10px; align-items:baseline; padding:5px 0; color:var(--ink); text-decoration:none; font-size:14px }
+.relacionadas a b { font-weight:600; white-space:nowrap } .relacionadas a span { color:var(--muted) } .relacionadas a:hover b { color:var(--accent); text-decoration:underline }
+.vida-real { max-width:860px; margin:28px 0 0; background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--vida); border-radius:4px 12px 12px 4px; padding:12px 16px }
+.vida-real h2 { font:600 12px/1.4 var(--f-ui); text-transform:uppercase; letter-spacing:.06em; color:var(--vida); margin:0 0 4px }
+.vida-real a { display:flex; gap:10px; align-items:baseline; padding:5px 0; color:var(--ink); text-decoration:none; font-size:14px }
+.vida-real a b { font-weight:600; white-space:nowrap } .vida-real a span { color:var(--muted) } .vida-real a:hover b { color:var(--vida); text-decoration:underline }
+@media (max-width:600px) { .vida-real a, .relacionadas a { display:block } .vida-real a b, .relacionadas a b { display:block; white-space:normal } }
+@media (max-width:700px) { header.top form { display:none } h1 { font-size:21px }
+  .miga-izq, .miga-der, .miga::after { order:-1 } .miga::after { content:''; flex-basis:100%; height:0 } }
+
+.tema { flex:0 0 auto; margin-left:auto; width:36px; height:36px; display:grid; place-items:center; padding:0; border:1px solid var(--vidrio-borde, var(--line)); border-radius:99px; background:var(--vidrio, var(--bg)); color:var(--ink); cursor:pointer }
+.buscar ~ .tema, form ~ .tema { margin-left:0 }
+.tema:hover { border-color:var(--accent); color:var(--accent) }
+.tema:focus-visible { outline:2px solid var(--accent); outline-offset:1px }
+.tema .sol { display:none }
+:root[data-theme="dark"] .tema .sol { display:block } :root[data-theme="dark"] .tema .luna { display:none }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .tema .sol { display:block } :root:not([data-theme="light"]) .tema .luna { display:none } }
+@media (max-width:700px) { .top > .tema { margin-left:auto } .top > nav { order:1 } }
+</style>
+<style>
+:root {
+  --serie-1: #2a5db5; --serie-2: #c2412a; --serie-3: #6b3fa0 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --serie-1: #74a2f2; --serie-2: #ef7a62; --serie-3: #b48be8 } }
+:root[data-theme="dark"] {
+  --serie-1: #74a2f2; --serie-2: #ef7a62; --serie-3: #b48be8 }
+textarea.in { font: 13px/1.5 var(--f-mono); resize: vertical; min-height: 120px }
+.tabla-eco { border-collapse: collapse; font: 13.5px var(--f-ui); width: 100%; font-variant-numeric: tabular-nums }
+.tabla-eco th, .tabla-eco td { padding: 5px 8px; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap }
+.tabla-eco th { font-weight: 600; color: var(--muted) } .tabla-eco th:first-child, .tabla-eco td:first-child { text-align: left }
+.tabla-eco tfoot td { font-weight: 600; background: var(--accent-soft) }
+</style>
+<body>
+<header class="top"><a class="logo" href="../../../">Cienci<i>fy</i></a><nav aria-label="Matières"><a href="../../../">Accueil</a><a href="../../electromagnetismo/">Électromagnétisme</a><a href="../../fisica/">Physique générale</a><a href="../../quimica/">Chimie</a><a href="../../matematicas/">Mathématiques</a><a href="../../estadistica/">Statistique</a><a href="../../circuitos/">Circuits</a><a href="../" aria-current="page">Économie</a><a href="../../fenomenos/">Vie réelle</a></nav><a class="foro" href="../../foro/"><span aria-hidden="true">💬</span>Forum</a><form action="../../../" role="search"><input class="buscar" type="search" name="q" placeholder="Rechercher : Biot-Savart, molarité…" aria-label="Rechercher des outils (raccourci : touche /)" title="Raccourci : / ou Ctrl+K"></form><style>
+.lg { position:relative; flex:0 0 auto }
+.lg-btn { display:inline-flex; align-items:center; gap:6px; height:36px; padding:0 12px; border:1px solid var(--vidrio-borde, var(--line)); border-radius:99px; background:var(--vidrio, var(--bg)); color:var(--ink); font:600 13px var(--f-ui, system-ui, sans-serif); cursor:pointer }
+.lg-btn:hover { border-color:var(--accent); color:var(--accent) }
+.lg-btn:focus-visible, .lg-pop a:focus-visible, .lg-ban button:focus-visible { outline:2px solid var(--accent); outline-offset:1px }
+.lg-pop { position:absolute; top:44px; right:0; z-index:50; min-width:210px; margin:0; padding:6px; list-style:none; border:1px solid var(--vidrio-borde, var(--line)); border-radius:16px; background:rgba(255,255,255,.98); color:var(--ink); box-shadow:0 12px 36px rgba(0,0,0,.22) }
+.lg-pop[hidden] { display:none }
+:root[data-theme="dark"] .lg-pop, :root[data-theme="dark"] .lg-ban { background:rgba(28,34,38,.98) }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .lg-pop, :root:not([data-theme="light"]) .lg-ban { background:rgba(28,34,38,.98) } }
+.lg-t { font:600 11px var(--f-ui, system-ui, sans-serif); text-transform:uppercase; letter-spacing:.06em; color:var(--muted); padding:6px 10px 4px }
+.lg-pop a { display:flex; justify-content:space-between; align-items:center; gap:14px; padding:8px 10px; border-radius:10px; color:var(--ink); text-decoration:none; font:500 14px var(--f-ui, system-ui, sans-serif) }
+.lg-pop a:hover { background:var(--accent-soft) }
+.lg-pop a > span { display:flex; align-items:center; gap:10px }
+.lg-pop a small { color:var(--muted); font-size:12px }
+.lg-pop a[aria-current="true"] { background:var(--accent-soft); font-weight:700 }
+.lg-pop a[aria-current="true"] small::after { content:' ✓'; color:var(--accent) }
+.lg-fl { flex:none; border-radius:50%; box-shadow:0 0 0 1px rgba(0,0,0,.18) }
+.lg-ban { position:fixed; left:50%; bottom:18px; z-index:60; transform:translateX(-50%); width:min(560px, calc(100vw - 24px)); box-sizing:border-box; display:flex; flex-wrap:wrap; align-items:center; gap:10px 12px; padding:12px 16px; border:1px solid var(--vidrio-borde, var(--line)); border-radius:18px; background:rgba(255,255,255,.98); color:var(--ink); box-shadow:0 12px 36px rgba(0,0,0,.25); font:14px var(--f-ui, system-ui, sans-serif) }
+.lg-ban p { flex:1 1 220px; margin:0 }
+.lg-ban button { font:600 13px var(--f-ui, system-ui, sans-serif); padding:7px 14px; border-radius:99px; border:1px solid var(--vidrio-borde, var(--line)); background:var(--vidrio, var(--bg)); color:var(--ink); cursor:pointer }
+.lg-ban button.lg-si { background:var(--accent); border-color:var(--accent); color:#fff }
+:root[data-theme="dark"] .lg-ban button.lg-si { color:#0d141a }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .lg-ban button.lg-si { color:#0d141a } }
+@media (max-width:700px) { .top > .lg { margin-left:auto } .top > .lg + .tema { margin-left:0 } }
+@media print { .lg, .lg-ban { display:none !important } }
+</style><div class="lg"><button class="lg-btn" type="button" aria-expanded="false" aria-controls="lg-lista" aria-label="Langue: Français" title="Langue"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.8 3 2.8 15 0 18M12 3c-2.8 3-2.8 15 0 18"/></svg><span>FR</span><span aria-hidden="true">▾</span></button><ul class="lg-pop" id="lg-lista" hidden><li class="lg-t" aria-hidden="true">Langue · Language</li><li><a href="../../../" hreflang="es" lang="es"><span><svg class="lg-fl" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false"><rect width="24" height="24" fill="#c60b1e"/><rect y="6" width="24" height="12" fill="#ffc400"/></svg>Español</span><small>ES</small></a></li><li><a href="../../../en/" hreflang="en" lang="en"><span><svg class="lg-fl" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false"><rect width="24" height="24" fill="#012169"/><path d="M0 0L24 24M24 0L0 24" stroke="#fff" stroke-width="5"/><path d="M0 0L24 24M24 0L0 24" stroke="#c8102e" stroke-width="2"/><path d="M12 0V24M0 12H24" stroke="#fff" stroke-width="8"/><path d="M12 0V24M0 12H24" stroke="#c8102e" stroke-width="4.5"/></svg>English</span><small>EN</small></a></li><li><a href="../../../de/" hreflang="de" lang="de"><span><svg class="lg-fl" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false"><rect width="24" height="8" fill="#000"/><rect y="8" width="24" height="8" fill="#dd0000"/><rect y="16" width="24" height="8" fill="#ffce00"/></svg>Deutsch</span><small>DE</small></a></li><li><a href="../../../fr/" hreflang="fr" lang="fr" aria-current="true"><span><svg class="lg-fl" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false"><rect width="8" height="24" fill="#0055a4"/><rect x="8" width="8" height="24" fill="#fff"/><rect x="16" width="8" height="24" fill="#ef4135"/></svg>Français</span><small>FR</small></a></li></ul></div><script>(() => {
+  const L = [{"c":"es","d":"","n":"Español","a":["Esta página está disponible en español.","Cambiar a español","Seguir aquí"]},{"c":"en","d":"en/","n":"English","a":["This page is available in English.","Switch to English","Stay here"]},{"c":"de","d":"de/","n":"Deutsch","a":["Diese Seite ist auf Deutsch verfügbar.","Auf Deutsch ansehen","Hier bleiben"]},{"c":"fr","d":"fr/","n":"Français","a":["Cette page est disponible en français.","Passer en français","Rester ici"]}], ACTUAL = "fr", K = 'simu-idioma';
+  const guarda = (c) => { try { localStorage.setItem(K, c); } catch (e) { /* sin almacenamiento */ } };
+  const lee = () => { try { return localStorage.getItem(K); } catch (e) { return null; } };
+  const resto = () => { let p = location.pathname; for (const i of L) if (i.d && p.startsWith('/' + i.d)) { p = '/' + p.slice(i.d.length + 1); break; } return p + location.search + location.hash; };
+  const destino = (i) => '/' + i.d + resto().replace(/^\//, '');
+  const btn = document.querySelector('.lg-btn'), pop = document.querySelector('.lg-pop');
+  if (!btn || !pop) return;
+  pop.querySelectorAll('a[hreflang]').forEach((a) => { const i = L.find((x) => x.c === a.hreflang); if (i && /^https?:$/.test(location.protocol)) a.href = destino(i); a.addEventListener('click', () => guarda(a.hreflang)); });
+  const abre = (v) => { pop.hidden = !v; btn.setAttribute('aria-expanded', String(v)); };
+  btn.addEventListener('click', (e) => { e.stopPropagation(); abre(pop.hidden); });
+  document.addEventListener('click', (e) => { if (!pop.hidden && !e.target.closest('.lg')) abre(false); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !pop.hidden) { abre(false); btn.focus(); } });
+  pop.addEventListener('focusout', (e) => { if (!pop.hidden && !e.relatedTarget?.closest?.('.lg')) abre(false); });
+  // aviso: una vez, sin elección guardada, con el idioma del navegador publicado y distinto del de la página
+  if (lee() || window.__sinAviso) return;
+  const pref = (navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language || '']).map((s) => String(s).toLowerCase().slice(0, 2));
+  const i = pref.map((c) => L.find((x) => x.c === c)).find(Boolean);
+  if (!i || i.c === ACTUAL) { return; }
+  const b = document.createElement('div'); b.className = 'lg-ban'; b.setAttribute('role', 'region'); b.setAttribute('aria-label', "Langue"); b.lang = i.c;
+  const t = document.createElement('p'); t.textContent = i.a[0];
+  const si = document.createElement('button'); si.type = 'button'; si.className = 'lg-si'; si.textContent = i.a[1];
+  const no = document.createElement('button'); no.type = 'button'; no.textContent = i.a[2];
+  si.addEventListener('click', () => { guarda(i.c); const a = [...pop.querySelectorAll('a[hreflang]')].find((x) => x.hreflang === i.c); location.href = a ? a.href : destino(i); });
+  no.addEventListener('click', () => { guarda(ACTUAL); b.remove(); });
+  b.append(t, si, no); document.body.append(b);
+})();</script><button class="tema" type="button" title="Passer du mode clair au mode sombre" aria-label="Passer du mode clair au mode sombre"><svg class="luna" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.5A8.5 8.5 0 1 1 9.5 3.5a7 7 0 0 0 11 11z"/></svg><svg class="sol" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button></header>
+<main class="wrap">
+<nav class="miga" aria-label="Vous êtes ici"><span class="miga-izq"></span><span class="miga-ico" aria-hidden="true">€</span><a href="../">Économie</a><span aria-hidden="true">›</span><span>Seuil de rentabilité</span><span class="miga-der"></span></nav>
+<h1>Seuil de rentabilité</h1>
+<p class="lead">Calculez combien d’unités une entreprise doit vendre pour couvrir ses coûts, avec le graphique des recettes et des coûts, le profit avec les ventes prévues et la marge de sécurité.</p>
+<div class="layout">
+  <div class="card">
+    <h2>Données</h2>
+    <select id="ejemplos" class="in" aria-label="Exemples" style="margin-bottom:12px"></select>
+    <div class="campos" id="campos"></div>
+    <p class="nota" id="nota"></p>
+    <p class="error" id="error" hidden></p>
+  </div>
+  <div>
+    <div class="card destacado"><h2>Résultats</h2><div class="resumen" id="resumen"></div></div>
+    <div class="card"><h2>Recettes et coûts</h2>
+      <canvas id="grafica" aria-label="Droites de recettes et de coûts totaux, qui se coupent au seuil de rentabilité"></canvas>
+      <p class="leyenda" id="leyenda"></p>
+    </div>
+    <div class="card"><h2>Sensibilité</h2><div class="tabla-scroll" id="tabla"></div></div>
+    <div class="card pasos"><h2>Développement</h2><ol id="pasos"></ol></div>
+  </div>
+</div>
+<div class="anuncio"><span>Publicité</span><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-6407501780492688" data-ad-slot="4415753033" data-ad-format="auto" data-full-width-responsive="true"></ins><script>(window.adsbygoogle = window.adsbygoogle || []).push({});</script></div>
+<section class="teoria">
+<h2>Coûts fixes et variables</h2>
+<p>Les coûts fixes (loyer, salaires fixes, assurances, amortissements) ne dépendent pas de ce que l’on vend ; les coûts variables (matières premières, commissions, expéditions) croissent avec chaque unité. Les coûts totaux sont CT = CF + c<sub>v</sub> · Q et les recettes, RT = p · Q.</p>
+<h2>Marge sur coût variable et seuil de rentabilité</h2>
+<p class="m">Chaque unité vendue laisse $m = p − c_v$ pour payer les coûts fixes. Le seuil de rentabilité, ou point mort, est la quantité pour laquelle recettes et coûts s’égalisent et le profit est nul :</p>
+<p class="f m">$Q^* = {CF}/{p − c_v}$</p>
+<p>En dessous, il y a des pertes et au-dessus, des profits : chaque unité de plus ajoute m euros au profit.</p>
+<div class="anuncio"><span>Publicité</span><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-6407501780492688" data-ad-slot="4415753033" data-ad-format="auto" data-full-width-responsive="true"></ins><script>(window.adsbygoogle = window.adsbygoogle || []).push({});</script></div>
+<h2>Marge de sécurité et levier</h2>
+<p class="m">La marge de sécurité, $(Q − Q^*)/Q$, indique de combien les ventes peuvent baisser avant de perdre de l’argent. Le degré de levier opérationnel, $DLO = {m · Q}/B$, indique combien de fois une variation des ventes est amplifiée dans le profit : une entreprise avec beaucoup de coûts fixes a un DLO élevé, elle gagne beaucoup quand elle vend et perd beaucoup quand elle ne vend pas.</p>
+<h2>Profit cible</h2>
+<p class="m">Pour gagner un profit B, il faut vendre $Q = (CF + B)/m$ unités.</p>
+</section>
+<section class="preguntas" aria-label="Questions fréquentes">
+<h2>Questions fréquentes</h2>
+<h3>Comment calcule-t-on le seuil de rentabilité ?</h3>
+<p>Q* = CF/(p − cv). Avec des coûts fixes de 10 000 €, un prix de 25 € et un coût variable unitaire de 15 € : Q* = 10 000/10 = 1 000 unités, avec des recettes de 25 000 €.</p>
+<h3>Combien faut-il vendre pour un profit cible ?</h3>
+<p>Q = (CF + B)/(p − cv). Pour gagner 5 000 € dans l’exemple : (10 000 + 5 000)/10 = 1 500 unités.</p>
+</section>
+<div class="anuncio"><span>Publicité</span><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-6407501780492688" data-ad-slot="4415753033" data-ad-format="auto" data-full-width-responsive="true"></ins><script>(window.adsbygoogle = window.adsbygoogle || []).push({});</script></div>
+<section class="relacionadas" aria-label="Outils associés"><h2>Outils associés</h2>
+<a href="../ratios/"><b>Ratios financiers →</b><span>Liquidité, solvabilité, endettement et rentabilités ROA et ROE.</span></a>
+<a href="../amortizacion-inmovilizado/"><b>Amortissement des immobilisations →</b><span>Tableau d’amortissement par les méthodes linéaire, somme des chiffres, dégressive et unités de production.</span></a>
+<a href="../ahorro/"><b>Épargne et inflation à long terme →</b><span>Plan d’épargne avec versements périodiques, inflation, taux réel et pouvoir d’achat.</span></a>
+<a href="../rentas/"><b>Rentes et annuités →</b><span>Valeur actuelle, valeur acquise, terme et nombre de termes des rentes postpayables, prépayables, différées et perpétuelles.</span></a>
+</section>
+</main>
+<footer><a href="../../../">Accueil</a>·<a href="../../contacto.html">Contact</a>·<a href="mailto:danijimzzz30@gmail.com?subject=Error%20en%20Punto%20muerto&amp;body=Herramienta%3A%20Punto%20muerto%20(economia%2Fpunto-muerto)%0A%0AQu%C3%A9%20esperaba%20y%20qu%C3%A9%20ha%20pasado%3A%0A">Signaler une erreur</a>·<a href="../../aviso-legal.html">Mentions légales</a>·<a href="../../privacidad.html">Confidentialité</a>·<a href="../../cookies.html">Cookies</a> · <a href="#" class="pref-cookies">Préférences des cookies</a>· Seuil de rentabilité <span id="ver"></span> (bêta)</footer>
+</body>
+<script>
+const Pagina = { carpeta: 'punto-muerto', guarda: 'punto-muerto-v1' };
+const Version = (() => { const registros = {"web":[{"v":"1.22"}],"control":[{"v":"0.2"}],"termo-estadistica":[{"v":"0.2"}],"markowitz":[{"v":"0.3"}],"cavidades":[{"v":"0.2"}],"organica":[{"v":"0.3"}],"transformada-z":[{"v":"0.2"}],"semiconductores":[{"v":"0.2"}],"relatividad":[{"v":"0.2"}],"osc-acopladas":[{"v":"0.2"}],"solubilidad":[{"v":"0.2"}],"lagrange":[{"v":"0.2"}],"series":[{"v":"0.3"}],"no-parametricos":[{"v":"0.3"}],"regresion-multiple":[{"v":"0.2"}],"anova":[{"v":"0.3"}],"black-scholes":[{"v":"0.3"}],"bonos":[{"v":"0.3"}],"solow":[{"v":"0.3"}],"integrales-multiples":[{"v":"0.1"}],"formulacion":[{"v":"0.2"}],"balance":[{"v":"0.2"}],"redox":[{"v":"0.2"}],"lineas-transmision":[{"v":"0.3"}],"superficies":[{"v":"0.2"}],"vsepr":[{"v":"0.2"}],"maxwell":[{"v":"0.3"}],"fresnel":[{"v":"0.2"}],"gravitacion":[{"v":"0.2"}],"convolucion":[{"v":"0.2"}],"laplace-numerica":[{"v":"0.2"}],"imagenes":[{"v":"0.2.1"}],"guias-onda":[{"v":"0.2"}],"antena":[{"v":"0.2"}],"bode":[{"v":"0.3"}],"optica":[{"v":"0.2"}],"simulador":[{"v":"0.4"}],"teoria-juegos":[{"v":"0.2"}],"puertas-logicas":[{"v":"0.4"}],"multiplicador":[{"v":"0.3"}],"is-lm":[{"v":"0.3"}],"choques":[{"v":"0.1"}],"termoquimica":[{"v":"0.3"}],"probabilidad":[{"v":"0.2"}],"unités":[{"v":"0.2"}],"equilibrio":[{"v":"0.2"}],"oscilaciones":[{"v":"0.1"}],"beneficio":[{"v":"0.3"}],"costes":[{"v":"0.3"}],"sistemas-numericos":[{"v":"0.2"}],"excedentes":[{"v":"0.2"}],"oferta-demanda":[{"v":"0.2"}],"chi2-bondad":[{"v":"0.2"}],"contrastes":[{"v":"0.2"}],"errores":[{"v":"0.2"}],"graficador":[{"v":"0.2"}],"metodos-numericos":[{"v":"0.2"}],"fisica-moderna":[{"v":"0.2"}],"lorenz-gini":[{"v":"0.2"}],"phillips-okun":[{"v":"0.3"}],"tipos-cambio":[{"v":"0.3"}],"elasticidades":[{"v":"0.3"}],"pib-ipc":[{"v":"0.2"}],"numeros-indice":[{"v":"0.2"}],"ratios":[{"v":"0.2"}],"punto-muerto":[{"v":"0.2"}],"ahorro":[{"v":"0.3"}],"van-tir":[{"v":"0.3"}],"amortizacion-inmovilizado":[{"v":"0.2"}],"prestamos":[{"v":"0.3"}],"rentas":[{"v":"0.3"}],"interes":[{"v":"0.3"}],"descriptiva":[{"v":"0.2"}],"regresion-economia":[{"v":"0.2"}],"ajustador":[{"v":"0.2.1"}],"electrostatica":[{"v":"0.11"}],"magnetostatica":[{"v":"0.4"}],"tabla-periodica":[{"v":"0.2"}],"trabajo-y-energia":[{"v":"0.3"}],"masa-molar":[{"v":"0.2"}],"configuracion-electronica":[{"v":"0.2"}],"condensadores":[{"v":"0.4"}],"tiro-parabolico":[{"v":"0.4"}],"disoluciones":[{"v":"0.2"}],"calorimetria":[{"v":"0.2"}],"induccion":[{"v":"0.4"}],"matrices":[{"v":"0.3"}],"derivadas":[{"v":"0.3"}],"laplace":[{"v":"0.2"}],"interferencia":[{"v":"0.2"}],"ondas-em":[{"v":"0.4"}],"intervalos":[{"v":"0.3"}],"fuerza":[{"v":"0.3"}],"campos":[{"v":"0.2.1"}],"cinetica":[{"v":"0.2"}],"edos":[{"v":"0.2"}],"fourier":[{"v":"0.2"}],"taylor":[{"v":"0.3"}],"complejos":[{"v":"0.3"}],"sistemas":[{"v":"0.3"}],"regresion":[{"v":"0.3"}],"estadistica":[{"v":"0.3"}],"dinamica":[{"v":"0.3"}],"solido-rigido":[{"v":"0.3"}],"ondas":[{"v":"0.3"}],"gases":[{"v":"0.6"}],"ciclos":[{"v":"0.2"}],"ph":[{"v":"0.4"}],"fluidos":[{"v":"0.3"}],"doppler":[{"v":"0.2"}],"resistencias":[{"v":"0.3"}],"faraday":[{"v":"0.4"}],"fenomenos":[{"v":"0.9"}]}; const de = (h) => ({ current: registros[h][0].v, log: registros[h] }); return { registros, de }; })();
+
+</script>
+<script src="../../../js/fr/herramienta.fr.8886d3c4.js"></script>
+<script src="../../../js/fr/enunciado.fr.4bd513d9.js"></script>
+<script src="../../../js/fr/mates.fr.b5c3ede5.js"></script>
+<script src="../../../js/fr/calculadora.fr.46a75da8.js"></script>
+<script src="../../../js/fr/economia-comun.fr.6c158b6d.js"></script>
+<script>
+const PuntoMuerto = (() => {
+  const K = typeof Eco !== 'undefined' ? Eco : require('../economia/comun.js');
+  const { f, lee, vacio } = K;
+  const e = (x) => x.toFixed(2).replace('.', ',').replace('-', '−');
+  const u = (x) => f(x, 8).replace(/\./g, '');
+
+  const MODOS = { uno: 'Un produit', varios: 'Plusieurs produits (mix des ventes)' };
+  function mezcla(sc) {
+    const d = K.filas(sc.productos, 3, 'les produits');
+    if (d.length < 2) throw new Error('Saisissez au moins deux produits, un par ligne : prix, coût variable unitaire et unités prévues');
+    if (d.some((r) => r[0] <= 0 || r[1] < 0 || r[2] <= 0)) throw new Error('Pour chaque produit, le prix et les unités doivent être positifs et le coût variable ne peut pas être négatif');
+    const Q = d.reduce((s, r) => s + r[2], 0), w = d.map((r) => r[2] / Q);
+    return { d, Q, w, p: d.reduce((s, r, k) => s + w[k] * r[0], 0), cv: d.reduce((s, r, k) => s + w[k] * r[1], 0) };
+  }
+  function sensibilidad(cf, p, cv, q) {
+    const out = [];
+    for (const [v, nom] of [['p', 'Prix'], ['cv', 'Coût variable'], ['cf', 'Coûts fixes']]) {
+      for (const dl of [-0.2, -0.1, 0, 0.1, 0.2]) {
+        const P = p * (v === 'p' ? 1 + dl : 1), V = cv * (v === 'cv' ? 1 + dl : 1), F = cf * (v === 'cf' ? 1 + dl : 1), m = P - V;
+        out.push({ v, nom, dl, q0: m > 0 ? F / m : null, b: q === null ? null : m * q - F });
+      }
+    }
+    return out;
+  }
+
+  function resolver(sc) {
+    const cf = lee(sc, 'cf', 'les coûts fixes', { min: 0, minEx: true });
+    const modo = sc.modo === 'varios' ? 'varios' : 'uno', M = modo === 'varios' ? mezcla(sc) : null;
+    const p = M ? M.p : lee(sc, 'p', 'le prix de vente', { min: 0, minEx: true });
+    const cv = M ? M.cv : lee(sc, 'cv', 'le coût variable unitaire', { min: 0 });
+    if (cv >= p) throw new Error(M ? 'Avec ce mix de ventes, la marge moyenne n’est pas positive : le coût variable moyen dépasse le prix moyen et il n’y a pas de seuil de rentabilité' : 'Le prix doit être supérieur au coût variable unitaire : sinon, chaque vente fait perdre de l’argent et il n’y a pas de seuil de rentabilité');
+    const q = M ? M.Q : vacio(sc.q) ? null : lee(sc, 'q', 'les ventes prévues', { min: 0, minEx: true });
+    const obj = vacio(sc.objetivo) ? null : lee(sc, 'objetivo', 'le profit cible', { min: 0 });
+    const m = p - cv, rm = m / p, q0 = cf / m, i0 = p * q0, pasos = [];
+    if (M) {
+      pasos.push({ t: 'Mix des ventes', html: `On vend ${M.d.length} produits dans une proportion fixe. Chacun pèse ce qu’il vend du total, $w_i = Q_i/∑Q$ : ${M.d.map((r, k) => `produit ${k + 1}, ${u(r[2])}/${u(M.Q)} = ${f(100 * M.w[k], 4)} %`).join(' ; ')}.` });
+      pasos.push({ t: 'Produit moyen', html: `Prix moyen $\p_{med} = ∑ w_i p_i = ${e(p)}$ € et coût variable moyen $\c_{v,med} = ∑ w_i c_{v,i} = ${e(cv)}$ €. Marge sur coût variable moyenne pondérée : $m = \p_{med} − \c_{v,med} = ${e(p)} − ${e(cv)} = ${e(p - cv)}$ € par unité vendue, qui est $∑ w_i m_i$ avec $m_i = p_i − c_{v,i}$ (${M.d.map((r, k) => `${e(r[0] - r[1])}`).join(' ; ')}).` });
+      const flojos = M.d.map((r, k) => ({ k, mi: r[0] - r[1] })).filter((x) => x.mi <= 0);
+      if (flojos.length) pasos.push({ t: 'Avertissement', html: `Le produit ${flojos.map((x) => x.k + 1).join(', ')} ne dégage pas de marge (prix égal ou inférieur à son coût variable) : le mix le traîne, mais chaque unité vendue de ce produit diminue la marge moyenne.` });
+    }
+    pasos.push({ t: 'Marge sur coût variable', html: `Ce que laisse chaque unité vendue pour payer les coûts fixes : $m = p − c_v = ${e(p)} − ${e(cv)} = ${e(m)}$ €, soit ${f(100 * rm, 4)} % du prix.` });
+    pasos.push({ t: 'Seuil de rentabilité en unités', html: `Au seuil de rentabilité, les recettes égalent les coûts, $p · Q = CF + c_v · Q$, donc<br>$Q^* = {CF}/{p − c_v} = {${e(cf)}}/{${e(m)}} = ${u(q0)}$ unités${Number.isInteger(+q0.toFixed(9)) ? '' : ` (il faut en vendre ${Math.ceil(q0 - 1e-9)} pour ne pas perdre)`}.` });
+    pasos.push({ t: 'Seuil de rentabilité en euros', html: `$p · Q^* = ${e(p)} · ${u(q0)} = ${e(i0)}$ €, ou en divisant les coûts fixes par le taux de marge sur ventes : $${e(cf)}/${f(rm, 6)} = ${e(i0)}$ € de chiffre d’affaires.` });
+    let b = null, ms = null, gao = null, qObj = null;
+    if (q !== null) {
+      b = m * q - cf;
+      pasos.push({ t: 'Profit avec les ventes prévues', html: `$B = m · Q − CF = ${e(m)} · ${u(q)} − ${e(cf)} = ${e(b)}$ € ${b > 0 ? '(bénéfice)' : b < 0 ? '(pertes : le seuil de rentabilité n’est pas atteint)' : '(juste le seuil de rentabilité)'}.` });
+      ms = (q - q0) / q;
+      pasos.push({ t: 'Marge de sécurité', html: `De combien les ventes peuvent baisser avant d’entrer dans les pertes : $(Q − Q^*)/Q = (${u(q)} − ${u(q0)})/${u(q)} = ${f(ms, 6)}$, soit ${f(100 * ms, 4)} %${ms < 0 ? ' (négatif : il y a déjà des pertes)' : ''}.` });
+      if (Math.abs(b) > 1e-9) { gao = (m * q) / b; pasos.push({ t: 'Levier opérationnel', html: `$DLO = {m · Q}/B = {${e(m * q)}}/{${e(b)}} = ${f(gao, 5)}$ : ${gao > 0 ? `si les ventes augmentent de 1 %, le profit augmente de ${f(gao, 4)} %. Plus on est proche du seuil de rentabilité, plus le profit est sensible aux ventes.` : 'avec des pertes, le DLO est négatif et ne s’interprète pas de la même façon.'}` }); }
+    }
+    if (obj !== null) {
+      qObj = (cf + obj) / m;
+      pasos.push({ t: 'Ventes pour le profit cible', html: `Il faut couvrir les coûts fixes et en plus le profit : $Q = {CF + B}/m = {${e(cf)} + ${e(obj)}}/{${e(m)}} = ${u(qObj)}$ unités, soit ${e(p * qObj)} € de ventes.` });
+    }
+    if (M) pasos.push({ t: 'Seuil de rentabilité de chaque produit', html: `Avec un mix constant, ${u(q0)} unités au total se répartissent ainsi : ${M.d.map((r, k) => `produit ${k + 1}, ${u(q0 * M.w[k])} unités (${e(r[0] * q0 * M.w[k])} €)`).join(' ; ')}. Si le mix change, le seuil de rentabilité change.` });
+    const sens = sensibilidad(cf, p, cv, q);
+    pasos.push({ t: 'Sensibilité', html: 'Le tableau de sensibilité modifie une donnée à la fois (±10 % et ±20 %) et laisse les autres : on voit que le seuil de rentabilité dépend surtout des données qui pèsent le plus dans la marge, p − c<sub>v</sub>.' });
+    return { modo, prod: M ? M.d.map((r, k) => ({ p: r[0], cv: r[1], q: r[2], w: M.w[k], q0: q0 * M.w[k] })) : null, cf, p, cv, q, obj, m, rm, q0, i0, b, ms, gao, qObj, sens, pasos };
+  }
+
+  const ejemplos = [
+    { clave: 'fabrica', nombre: 'Atelier : 30 000 € de coûts fixes et 2 000 unités', sc: { cf: '30000', p: '50', cv: '30', q: '2000', objetivo: '' } },
+    { clave: 'cafeteria', nombre: 'Café : combien de cafés par mois pour ne pas perdre', sc: { cf: '4000', p: '2,5', cv: '0,9', q: '3000', objetivo: '' } },
+    { clave: 'objetivo', nombre: 'Unités pour gagner 40 000 €', sc: { cf: '120000', p: '200', cv: '120', q: '1800', objetivo: '40000' } },
+    { clave: 'perdidas', nombre: 'Une entreprise qui n’atteint pas le seuil de rentabilité', sc: { cf: '50000', p: '25', cv: '15', q: '4000', objetivo: '' } },
+    { clave: 'tres-productos', nombre: 'Boutique avec trois produits et un mix de ventes', sc: { modo: 'varios', cf: '12000', productos: '10 6 1000\n25 15 600\n40 22 400', q: '', objetivo: '' } },
+    { clave: 'dos-productos-objetivo', nombre: 'Deux produits : unités pour gagner 8 000 €', sc: { modo: 'varios', cf: '20000', productos: '50 30 500\n80 60 250', q: '', objetivo: '8000' } },
+  ];
+
+  const AZ = K.az, azar = AZ.desde(ejemplos, () => {
+    const cf = AZ.toma([10000, 20000, 30000, 50000]), p = AZ.toma([20, 25, 50, 100]), cv = Math.round(p * AZ.toma([0.4, 0.5, 0.6]) * 100) / 100;
+    return { cf: String(cf), p: String(p), cv: AZ.t(cv, 2), q: String(Math.max(50, Math.round((cf / (p - cv)) * AZ.toma([0.8, 1.2, 1.5]) / 50) * 50)), objetivo: '' };
+  }, (sc) => sc.modo !== 'varios' && !sc.objetivo, (sc) => resolver(sc));
+  const enunciado = (sc) => `Une entreprise a des coûts fixes de ${sc.cf} €, vend à ${sc.p} € l’unité et son coût variable unitaire est de ${sc.cv} €. Calculez le seuil de rentabilité en unités et en euros, la marge sur coût variable et, en vendant ${sc.q} unités, le profit, la marge de sécurité et le levier opérationnel.`;
+
+  return { azar, enunciado, resolver, ejemplos, MODOS };
+})();
+
+</script>
+<script src="../../../js/fr/compartir.fr.8a6ba9d7.js"></script>
+<script>
+(() => {
+  const P = PuntoMuerto, { f, dinero, num } = Eco;
+  const ud = (x) => `${f(x, 6)} unités`;
+  Calculadora.monta({
+    C: P, carpeta: 'punto-muerto', app: 'PuntoMuertoApp', azar: P.azar, enunciado: P.enunciado,
+    nota: 'Les coûts fixes sont ceux de la période considérée (un mois, une année) ; les ventes prévues et le profit cible, de la même période. Les deux derniers peuvent être laissés vides.',
+    campos: (sc) => [
+      { k: 'modo', nom: 'Produits', tipo: 'sel', ops: Object.entries(P.MODOS) },
+      { k: 'cf', nom: 'Coûts fixes CF', un: '€' },
+      ...(sc.modo === 'varios'
+        ? [{ k: 'productos', nom: 'Produits', tipo: 'area', filas: 4, ayuda: 'Un produit par ligne : prix, coût variable unitaire et unités prévues (qui donnent le mix des ventes). Les ventes totales sont la somme des unités.' }]
+        : [{ k: 'p', nom: 'Prix de vente p', un: '€/unité' },
+          { k: 'cv', nom: 'Coût variable unitaire c<sub>v</sub>', un: '€/unité' },
+          { k: 'q', nom: 'Ventes prévues Q', un: 'unités' }]),
+      { k: 'objetivo', nom: 'Profit cible', un: '€' },
+    ],
+    tabla: (s) => `<table class="tabla-eco"><thead><tr><th>Donnée qui change</th><th>Variation</th><th>Seuil de rentabilité</th>${s.q === null ? '' : '<th>Profit avec Q</th>'}</tr></thead><tbody>${s.sens.map((r) => `<tr${r.dl === 0 ? ' class="base"' : ''}><td>${r.nom}</td><td>${r.dl > 0 ? '+' : r.dl < 0 ? '−' : ''}${Math.abs(100 * r.dl)} %</td><td>${r.q0 === null ? 'il n’y en a pas' : ud(r.q0)}</td>${s.q === null ? '' : `<td>${dinero(r.b)}</td>`}</tr>`).join('')}</tbody></table>`,
+    resumen: (s) => [['Seuil de rentabilité', ud(s.q0)], ['Chiffre d’affaires au seuil de rentabilité', dinero(s.i0)], ['Marge sur coût variable', `${dinero(s.m)} par unité`],
+      ...(s.q === null ? [] : [['Profit avec Q', dinero(s.b)], ['Marge de sécurité', `${f(100 * s.ms, 4)} %`]]), ...(s.gao === null ? [] : [['Levier opérationnel', f(s.gao, 4)]]),
+      ...(s.qObj === null ? [] : [['Ventes pour l’objectif', ud(s.qObj), true]])],
+    grafica: (s) => {
+      const X = 1.6 * Math.max(s.q0, s.q ?? 0, s.qObj ?? 0), fy = (v) => num(v, 0);
+      const it = (x) => s.p * x, ct = (x) => s.cf + s.cv * x, rect = (fn) => [[0, fn(0)], [X, fn(X)]];
+      const ver = [{ x: s.q0, color: '--serie-3', texto: 'Q*' }];
+      if (s.q !== null) ver.push({ x: s.q, color: '--muted', texto: 'Q' });
+      return { x: [0, X], y: [0, it(X) * 1.04], fx: (v) => num(v, 0), fy, ejeX: 'Unités vendues Q', ejeY: 'Euros',
+        series: [{ pts: rect(() => s.cf), color: '--muted', discontinua: true }, { pts: rect(ct), color: '--serie-2' }, { pts: rect(it), color: '--serie-1' }, { tipo: 'puntos', pts: [[s.q0, s.i0]], color: '--serie-3', radio: 5 }], verticales: ver };
+    },
+    leyenda: () => '<b>Bleu</b> : recettes, p · Q. <b>Rouge</b> : coûts totaux, CF + c<sub>v</sub> · Q. <b>Pointillés</b> : coûts fixes. À gauche du <b>seuil de rentabilité</b>, les coûts dépassent les recettes (pertes) ; à droite, il y a des profits.',
+  });
+})();
+
+</script>
+<script src="../../../js/fr/biblioteca.fr.86a7f543.js"></script>
+<script src="../../../js/fr/practica.fr.ebd61c5b.js"></script>
+<script src="../../../js/fr/personal.fr.d7df8991.js"></script>
+<script>
+Biblioteca.monta('punto-muerto', 'punto-muerto-v1');
+Practica.monta('punto-muerto', 'punto-muerto-v1');
+Enunciado.monta('punto-muerto', 'punto-muerto-v1');
+</script>
+</html>

@@ -12,6 +12,16 @@
 const Version = (() => {
   const registros = {
     web: [
+      { v: '1.22', fecha: '2026-11-18', titulo: 'Ciencify en francés y alemán', subtitulo: 'Ya puedes usar toda la web en francés y en alemán, con el selector de idioma arreglado en el móvil.', secciones: [
+        { icono: '🌍', titulo: 'Francés y alemán', puntos: [
+          '**Français y Deutsch** en el selector de idioma, junto al español y el inglés: herramientas de todas las asignaturas, fenómenos, portada, novedades y páginas legales.',
+          'Teoría, ejemplos, Mis ejercicios y modo práctica también salen en cada idioma. Los números llevan coma decimal.',
+          'Cada página enlaza con sus versiones en los otros idiomas y Google las indexa por separado.',
+        ] },
+        { icono: '📱', titulo: 'Selector en el móvil', puntos: [
+          'La lista de idiomas ya no queda tapada por la barra de asignaturas de la portada.',
+        ] },
+      ] },
       { v: '1.21', fecha: '2026-11-17', titulo: 'Ciencify también en inglés', subtitulo: 'Una primera versión en inglés con selector de idioma, y un buscador nuevo.', secciones: [
         { icono: '🌐', titulo: 'Inglés (beta)', puntos: [
           '**Selector de idioma** en la cabecera: botón con globo y lista con banderas. Nunca te cambia de idioma por tu cuenta, solo te avisa una vez.',
