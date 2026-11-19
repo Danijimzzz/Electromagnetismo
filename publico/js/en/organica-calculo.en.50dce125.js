@@ -3,78 +3,123 @@ const Organica = (() => {
   const ZA = { H: 1, C: 6, N: 7, O: 8, F: 9, S: 16, Cl: 17, Br: 35, I: 53 };
   const MASA = { H: 1.008, C: 12.011, N: 14.007, O: 15.999, F: 18.998, S: 32.06, Cl: 35.453, Br: 79.904, I: 126.904 };
   const masaDe = (e) => (typeof Elementos !== 'undefined' && Elementos.porSimbolo[e]?.masa) || MASA[e];
-  const coma = (x, d = 2) => String(+x.toFixed(d)).replace('.', ',').replace('-', '−');
+  const coma = (x, d = 2) => String(+x.toFixed(d)).replace('.', '.').replace('-', '−');
   const SUB = '₀₁₂₃₄₅₆₇₈₉';
   const sub = (n) => (n === 1 ? '' : String(n).split('').map((c) => SUB[+c]).join(''));
-  const NUM = ['', 'met', 'et', 'prop', 'but', 'pent', 'hex', 'hept', 'oct', 'non', 'dec', 'undec', 'dodec', 'tridec', 'tetradec', 'pentadec', 'hexadec', 'heptadec', 'octadec', 'nonadec', 'icos'];
-  const MULT = ['', '', 'di', 'tri', 'tetra', 'penta', 'hexa', 'hepta', 'octa', 'nona', 'deca'];
+  const IDI = 'en';
+  const NUM_ES = ['', 'met', 'et', 'prop', 'but', 'pent', 'hex', 'hept', 'oct', 'non', 'dec', 'undec', 'dodec', 'tridec', 'tetradec', 'pentadec', 'hexadec', 'heptadec', 'octadec', 'nonadec', 'icos'];
+  const LX = {
+    es: {
+      NUM: NUM_ES, tetra: 'tetra', deca: 'deca', hal: { F: 'fluoro', Cl: 'cloro', Br: 'bromo', I: 'yodo' }, vo: 'o', eno: 'en', ino: 'in', il: 'il', oxi: 'oxi', tio: 'tio', carbonil: 'carbonil',
+      oxo: 'oxo', hidroxi: 'hidroxi', amino: 'amino', mercapto: 'mercapto', carboxi: 'carboxi', formil: 'formil', carbamoil: 'carbamoil', ciano: 'ciano', fenil: 'fenil', metil: 'metil',
+      ciclo: 'ciclo', benc: 'benc', bencen: 'bencen', benceno: 'benceno', tolueno: 'tolueno',
+      suf: { cooh: 'oico', coor: 'oato', conh2: 'amide', cn: 'nitrile', cho: 'al', ceto: 'ona', oh: 'ol', sh: 'thiol', nh2: 'amine' },
+      pos: { cooh: 'carboxylic', coor: 'carboxilato', conh2: 'carboxamida', cn: 'carbonitrilo', cho: 'carbaldehyde' },
+      bz: { oh: 'fenol', nh2: 'anilina', cooh: 'benzoico', cho: 'benzaldehyde', conh2: 'benzamida', cn: 'benzonitrilo', coor: 'benzoato' },
+      acido: (p, c) => `ácido ${p}${c}`, ester: (p, c, a) => `${p}${c} de ${a}o`,
+    },
+    en: {
+      NUM: ['', 'meth', 'eth', 'prop', 'but', 'pent', 'hex', 'hept', 'oct', 'non', 'dec', 'undec', 'dodec', 'tridec', 'tetradec', 'pentadec', 'hexadec', 'heptadec', 'octadec', 'nonadec', 'eicos'],
+      tetra: 'tetra', deca: 'deca', hal: { F: 'fluoro', Cl: 'chloro', Br: 'bromo', I: 'iodo' }, vo: 'e', eno: 'en', ino: 'yn', il: 'yl', oxi: 'oxy', tio: 'sulfanyl', carbonil: 'carbonyl',
+      oxo: 'oxo', hidroxi: 'hydroxy', amino: 'amino', mercapto: 'sulfanyl', carboxi: 'carboxy', formil: 'formyl', carbamoil: 'carbamoyl', ciano: 'cyano', fenil: 'phenyl', metil: 'methyl',
+      ciclo: 'cyclo', benc: 'benz', bencen: 'benzen', benceno: 'benzene', tolueno: 'toluene',
+      suf: { cooh: 'oic', coor: 'oate', conh2: 'amide', cn: 'nitrile', cho: 'al', ceto: 'one', oh: 'ol', sh: 'thiol', nh2: 'amine' },
+      pos: { cooh: 'carboxylic', coor: 'carboxylate', conh2: 'carboxamide', cn: 'carbonitrile', cho: 'carbaldehyde' },
+      bz: { oh: 'phenol', nh2: 'aniline', cooh: 'benzoic', cho: 'benzaldehyde', conh2: 'benzamide', cn: 'benzonitrile', coor: 'benzoate' },
+      acido: (p, c) => `${p}${c} acid`, ester: (p, c, a) => `${a} ${p}${c}`,
+    },
+    fr: {
+      NUM: ['', 'méth', 'éth', 'prop', 'but', 'pent', 'hex', 'hept', 'oct', 'non', 'déc', 'undéc', 'dodéc', 'tridéc', 'tétradéc', 'pentadéc', 'hexadéc', 'heptadéc', 'octadéc', 'nonadéc', 'eicos'],
+      tetra: 'tétra', deca: 'déca', hal: { F: 'fluoro', Cl: 'chloro', Br: 'bromo', I: 'iodo' }, vo: 'e', eno: 'èn', ino: 'yn', il: 'yl', oxi: 'oxy', tio: 'sulfanyl', carbonil: 'carbonyl',
+      oxo: 'oxo', hidroxi: 'hydroxy', amino: 'amino', mercapto: 'sulfanyl', carboxi: 'carboxy', formil: 'formyl', carbamoil: 'carbamoyl', ciano: 'cyano', fenil: 'phényl', metil: 'méthyl',
+      ciclo: 'cyclo', benc: 'benz', bencen: 'benzèn', benceno: 'benzène', tolueno: 'toluène',
+      suf: { cooh: 'oïque', coor: 'oate', conh2: 'amide', cn: 'nitrile', cho: 'al', ceto: 'one', oh: 'ol', sh: 'thiol', nh2: 'amine' },
+      pos: { cooh: 'carboxylique', coor: 'carboxylate', conh2: 'carboxamide', cn: 'carbonitrile', cho: 'carbaldéhyde' },
+      bz: { oh: 'phénol', nh2: 'aniline', cooh: 'benzoïque', cho: 'benzaldéhyde', conh2: 'benzamide', cn: 'benzonitrile', coor: 'benzoate' },
+      acido: (p, c) => `acide ${p}${c}`, ester: (p, c, a) => `${p}${c} ${/^[aeiouyéèêh]/i.test(a) ? 'd’' : 'de '}${a}e`,
+    },
+    de: {
+      NUM: ['', 'meth', 'eth', 'prop', 'but', 'pent', 'hex', 'hept', 'oct', 'non', 'dec', 'undec', 'dodec', 'tridec', 'tetradec', 'pentadec', 'hexadec', 'heptadec', 'octadec', 'nonadec', 'eicos'],
+      tetra: 'tetra', deca: 'deca', hal: { F: 'fluor', Cl: 'chlor', Br: 'brom', I: 'iod' }, vo: '', eno: 'en', ino: 'in', il: 'yl', oxi: 'oxy', tio: 'sulfanyl', carbonil: 'carbonyl',
+      oxo: 'oxo', hidroxi: 'hydroxy', amino: 'amino', mercapto: 'sulfanyl', carboxi: 'carboxy', formil: 'formyl', carbamoil: 'carbamoyl', ciano: 'cyano', fenil: 'phenyl', metil: 'methyl',
+      ciclo: 'cyclo', benc: 'benz', bencen: 'benzen', benceno: 'benzol', tolueno: 'toluol',
+      suf: { cooh: 'säure', coor: 'säure', conh2: 'amid', cn: 'nitril', cho: 'al', ceto: 'on', oh: 'ol', sh: 'thiol', nh2: 'amin' },
+      pos: { cooh: 'carbonsäure', coor: 'carbonsäure', conh2: 'carbonsäureamid', cn: 'carbonitril', cho: 'carbaldehyd' },
+      bz: { oh: 'phenol', nh2: 'anilin', cooh: 'benzoesäure', cho: 'benzaldehyd', conh2: 'benzamid', cn: 'benzonitril', coor: 'benzoesäure' },
+      acido: (p, c) => `${p}${c}`, ester: (p, c, a) => `${p}${c}${a}ester`,
+    },
+  };
+  const LI = LX[IDI] || LX.es;
+  const NUM = LI.NUM;
+  const MULT = ['', '', 'di', 'tri', LI.tetra, 'penta', 'hexa', 'hepta', 'octa', 'nona', LI.deca];
   const BIS = ['', '', 'bis', 'tris', 'tetrakis', 'pentakis', 'hexakis', 'heptakis', 'octakis', 'nonakis', 'decakis'];
-  const HAL = { F: 'fluoro', Cl: 'cloro', Br: 'bromo', I: 'yodo' };
+  const HAL = LI.hal;
+  const ajusta = (t) => (IDI === 'de' && t ? t.replace(/^(\([^)]*\)-)?((?:cis|trans)-)?([^a-zäöüß]*)([a-zäöüß])/, (m, d = '', ct = '', pre, l) => d + ct + pre + l.toUpperCase()) : t);
 
   function leer(txt) {
     const s = String(txt ?? '').replace(/\s+/g, '');
-    if (!s) throw new Error('Escribe la molécula en notación SMILES, por ejemplo CC(O)C');
+    if (!s) throw new Error('Write the molecule in SMILES notation, for example CC(O)C');
     const at = [], pila = [], abiertos = {};
     let k = 0, actual = -1, ord = 1, marca = null, pendiente = false, nCierres = 0;
     const nuevo = (el, h, chir, aro = false) => {
-      if (!(el in VAL)) throw new Error(`No sé tratar el elemento ${el}: solo C, H, N, O, S, F, Cl, Br e I`);
+      if (!(el in VAL)) throw new Error(`I can't handle the element ${el}: only C, H, N, O, S, F, Cl, Br and I`);
       const arom = aro && actual >= 0 && at[actual].aro && !pendiente;
       at.push({ el, h, chir, auto: h === null, aro, arom, padre: actual, ord: actual < 0 ? 0 : ord, marca: actual < 0 ? null : marca, hijos: [], cierres: [] });
       if (actual >= 0) at[actual].hijos.push(at.length - 1);
       actual = at.length - 1; ord = 1; marca = null; pendiente = false;
     };
     const cierre = (n) => {
-      if (actual < 0) throw new Error('Un número de anillo tiene que ir después de un átomo');
+      if (actual < 0) throw new Error('A ring number must come after an atom');
       const o = pendiente ? ord : null; ord = 1; marca = null; pendiente = false;
       if (!(n in abiertos)) { abiertos[n] = { i: actual, o, pos: at[actual].cierres.length }; at[actual].cierres.push({ n, j: -1, ord: 1 }); return; }
       const ab = abiertos[n]; delete abiertos[n];
-      if (ab.i === actual) throw new Error(`El anillo ${n} se cierra sobre el mismo átomo`);
-      if (at[actual].padre === ab.i || at[ab.i].padre === actual || at[actual].cierres.some((c) => c.j === ab.i)) throw new Error('Un anillo no puede cerrarse sobre un átomo al que ya está unido');
+      if (ab.i === actual) throw new Error(`Ring ${n} closes on the same atom`);
+      if (at[actual].padre === ab.i || at[ab.i].padre === actual || at[actual].cierres.some((c) => c.j === ab.i)) throw new Error('A ring cannot close on an atom it is already bonded to');
       const orden2 = o ?? ab.o ?? 1, arom = at[ab.i].aro && at[actual].aro && o === null && ab.o === null;
       at[ab.i].cierres[ab.pos] = { n, j: actual, ord: orden2, arom };
       at[actual].cierres.push({ n, j: ab.i, ord: orden2, arom });
-      if (++nCierres > 1) throw new Error('De momento solo un anillo por molécula: sin bicíclicos, espiro ni dos anillos');
+      if (++nCierres > 1) throw new Error('For now only one ring per molecule: no bicyclics, spiro or two rings');
     };
     while (k < s.length) {
       const c = s[k];
-      if (c === '(') { if (actual < 0) throw new Error('Un paréntesis no puede ir al principio'); pila.push(actual); k++; }
-      else if (c === ')') { if (!pila.length) throw new Error('Hay un paréntesis de cierre de más'); actual = pila.pop(); ord = 1; marca = null; pendiente = false; k++; }
+      if (c === '(') { if (actual < 0) throw new Error('A parenthesis cannot come first'); pila.push(actual); k++; }
+      else if (c === ')') { if (!pila.length) throw new Error('There is an extra closing parenthesis'); actual = pila.pop(); ord = 1; marca = null; pendiente = false; k++; }
       else if (c === '=') { ord = 2; pendiente = true; k++; }
       else if (c === '#') { ord = 3; pendiente = true; k++; }
       else if (c === '-') { ord = 1; pendiente = true; k++; }
       else if (c === '/' || c === '\\') { marca = c; pendiente = true; k++; }
       else if (/[0-9]/.test(c)) { cierre(+c); k++; }
-      else if (c === '%') { const m = /^%(\d\d)/.exec(s.slice(k)); if (!m) throw new Error('Un número de anillo grande se escribe con dos cifras: %10'); cierre(+m[1]); k += 3; }
-      else if (c === '.') throw new Error('Una sola molécula cada vez: quita el punto');
+      else if (c === '%') { const m = /^%(\d\d)/.exec(s.slice(k)); if (!m) throw new Error('A large ring number is written with two digits: %10'); cierre(+m[1]); k += 3; }
+      else if (c === '.') throw new Error('Only one molecule at a time: remove the dot');
       else if (c === '[') {
-        const f = s.indexOf(']', k); if (f < 0) throw new Error('Falta cerrar un corchete ]');
+        const f = s.indexOf(']', k); if (f < 0) throw new Error('A bracket ] is missing');
         const m = /^(\d+)?([A-Z][a-z]?)(@@?)?(?:H(\d*))?(.*)$/.exec(s.slice(k + 1, f));
-        if (!m) throw new Error(`No entiendo el átomo [${s.slice(k + 1, f)}]`);
-        if (m[5]) throw new Error('Los átomos con carga o con otros datos entre corchetes todavía no están');
+        if (!m) throw new Error(`I don't understand the atom [${s.slice(k + 1, f)}]`);
+        if (m[5]) throw new Error('Charged atoms or atoms with other data in brackets are not supported yet');
         nuevo(m[2], m[4] === undefined ? 0 : (m[4] === '' ? 1 : +m[4]), m[3] || null);
         k = f + 1;
       } else if (c === 'c') nuevo('C', null, null, true), k++;
-      else if (/[a-z]/.test(c)) throw new Error('De los átomos aromáticos solo está el carbono del benceno (c): los heterociclos aromáticos (piridina, furano…) todavía no están');
+      else if (/[a-z]/.test(c)) throw new Error('Of the aromatic atoms only the benzene carbon (c) is supported: aromatic heterocycles (pyridine, furan…) are not supported yet');
       else if (/[A-Z]/.test(c)) {
         const dos = s.slice(k, k + 2);
         if (dos === 'Cl' || dos === 'Br') { nuevo(dos, null, null); k += 2; } else { nuevo(c, null, null); k++; }
-      } else throw new Error(`No entiendo el símbolo «${c}»`);
+      } else throw new Error(`I don't understand the symbol "${c}"`);
     }
-    if (pila.length) throw new Error('Falta cerrar un paréntesis');
-    if (pendiente) throw new Error('El SMILES acaba en un enlace sin átomo');
-    if (!at.length) throw new Error('No hay ningún átomo');
+    if (pila.length) throw new Error('A parenthesis is not closed');
+    if (pendiente) throw new Error('The SMILES ends in a bond with no atom');
+    if (!at.length) throw new Error('There are no atoms');
     const sinCerrar = Object.keys(abiertos);
-    if (sinCerrar.length) throw new Error(`Falta cerrar el anillo ${sinCerrar[0]}: el número tiene que repetirse en el átomo que lo cierra`);
-    if (!nCierres && at.some((a) => a.aro)) throw new Error('Un átomo aromático (c) tiene que estar en el anillo del benceno: c1ccccc1');
+    if (sinCerrar.length) throw new Error(`Ring ${sinCerrar[0]} is not closed: the number must be repeated on the atom that closes it`);
+    if (!nCierres && at.some((a) => a.aro)) throw new Error('An aromatic atom (c) must be in the benzene ring: c1ccccc1');
     const M = { at, anillo: null, enAnillo: new Set(), aromatico: false };
     if (nCierres) anilloDe(M);
     for (const [i, a] of at.entries()) {
       const suma = (a.padre >= 0 ? a.ord : 0) + a.hijos.reduce((t, h) => t + at[h].ord, 0) + a.cierres.reduce((t, c) => t + c.ord, 0);
       if (a.auto) a.h = VAL[a.el] - suma;
-      if (a.h < 0 || suma + a.h > VAL[a.el]) throw new Error(`El átomo ${a.el} (n.º ${i + 1}) tiene demasiados enlaces: su valencia es ${VAL[a.el]}`);
+      if (a.h < 0 || suma + a.h > VAL[a.el]) throw new Error(`Atom ${a.el} (no. ${i + 1}) has too many bonds: its valence is ${VAL[a.el]}`);
       if (a.chir && a.h > 1) a.chir = null;
     }
-    if (at.some((a, i) => vec(M, i).filter((v) => v.o === 2).length >= 2)) throw new Error('Los dienos acumulados (alenos) todavía no están');
+    if (at.some((a, i) => vec(M, i).filter((v) => v.o === 2).length >= 2)) throw new Error('Cumulated dienes (allenes) are not supported yet');
     return M;
   }
   function anilloDe(M) {
@@ -84,11 +129,11 @@ const Organica = (() => {
     const arriba = (x) => { const r = [x]; while (at[r[r.length - 1]].padre >= 0) r.push(at[r[r.length - 1]].padre); return r; };
     const ap = arriba(p), aq = arriba(q), comun = ap.find((x) => aq.includes(x));
     const anillo = [...ap.slice(0, ap.indexOf(comun) + 1), ...aq.slice(0, aq.indexOf(comun)).reverse()];
-    if (anillo.length < 3) throw new Error('Un anillo necesita al menos tres átomos');
+    if (anillo.length < 3) throw new Error('A ring needs at least three atoms');
     M.anillo = anillo; M.enAnillo = new Set(anillo);
     const aro = at.map((a, i) => (a.aro ? i : -1)).filter((i) => i >= 0);
     if (aro.length) {
-      if (aro.length !== 6 || anillo.length !== 6 || !aro.every((i) => M.enAnillo.has(i))) throw new Error('De los anillos aromáticos solo está el benceno: seis carbonos «c» formando un anillo, sin otros anillos unidos');
+      if (aro.length !== 6 || anillo.length !== 6 || !aro.every((i) => M.enAnillo.has(i))) throw new Error('Of the aromatic rings only benzene is supported: six "c" carbons forming a ring, with no other rings attached');
       const ponOrd = (a, b, o) => { if (at[b].padre === a) at[b].ord = o; else if (at[a].padre === b) at[a].ord = o; else { at[a].cierres.find((c) => c.j === b).ord = o; at[b].cierres.find((c) => c.j === a).ord = o; } };
       anillo.forEach((x, k) => ponOrd(x, anillo[(k + 1) % 6], k % 2 ? 1 : 2));
       M.aromatico = true;
@@ -257,7 +302,7 @@ const Organica = (() => {
         for (let p = 0; p < n; p++) { const pos = (((k + d * p) % n) + n) % n, x = porPos.get(pos); t.push(`${cl[M.anillo[pos]]}:${x ? (x.cara ? x.cara * d * (inv ? -1 : 1) : '?') : 0}`); }
         const c = t.join(','); if (mejor === null || c < mejor) mejor = c;
       }
-      return 'anillo ' + mejor;
+      return 'ring ' + mejor;
     };
     const clave = (invierte) => [
       ...centros.filter((c) => !enS.has(c.i)).map((c) => `${cl[c.i]}:${c.label ? (invierte ? (c.label === 'R' ? 'S' : 'R') : c.label) : '?'}`),
@@ -272,8 +317,8 @@ const Organica = (() => {
 
   const PRIO = ['cooh', 'coor', 'conh2', 'cn', 'cho', 'ceto', 'oh', 'sh', 'nh2'];
   const TERMINAL = ['cooh', 'coor', 'conh2', 'cn', 'cho'];
-  const SUFIJO = { cooh: 'oico', coor: 'oato', conh2: 'amida', cn: 'nitrilo', cho: 'al', ceto: 'ona', oh: 'ol', sh: 'tiol', nh2: 'amina' };
-  const GRUPO = { cooh: 'ácido carboxílico', coor: 'éster', conh2: 'amida', cn: 'nitrilo', cho: 'aldehído', ceto: 'cetona', oh: 'alcohol', sh: 'tiol', nh2: 'amina' };
+  const SUFIJO = LI.suf;
+  const GRUPO = { cooh: 'carboxylic acid', coor: 'ester', conh2: 'amide', cn: 'nitrile', cho: 'aldehyde', ceto: 'ketone', oh: 'alcohol', sh: 'thiol', nh2: 'amine' };
   const cmpClave = (a, b) => {
     if (Array.isArray(a)) {
       for (let k = 0; k < Math.min(a.length, b.length); k++) { const c = cmpClave(a[k], b[k]); if (c) return c; }
@@ -281,28 +326,28 @@ const Organica = (() => {
     }
     return a - b;
   };
-  const soloLetras = (t) => t.replace(/[^a-záéíóúñ]/gi, '').toLowerCase();
+  const soloLetras = (t) => t.replace(/[^a-záéíóúñàâçèêëîïôùûüäöß]/gi, '').toLowerCase();
 
   function nombrar(M, est) {
     const n = M.at.length, V = M.at.map((_, i) => vec(M, i)), el = (i) => M.at[i].el;
     const tipoC = new Array(n).fill(null);
     for (let i = 0; i < n; i++) {
       for (const { j, o } of V[i]) {
-        if (o === 2 && !((el(i) === 'C' && (el(j) === 'C' || el(j) === 'O')) || (el(j) === 'C' && el(i) === 'O'))) throw new Error('Solo sé nombrar dobles enlaces C=C y C=O');
-        if (o === 3 && !(el(i) === 'C' && (el(j) === 'C' || el(j) === 'N')) && !(el(j) === 'C' && el(i) === 'N')) throw new Error('Solo sé nombrar triples enlaces C≡C y C≡N');
+        if (o === 2 && !((el(i) === 'C' && (el(j) === 'C' || el(j) === 'O')) || (el(j) === 'C' && el(i) === 'O'))) throw new Error('I can only name C=C and C=O double bonds');
+        if (o === 3 && !(el(i) === 'C' && (el(j) === 'C' || el(j) === 'N')) && !(el(j) === 'C' && el(i) === 'N')) throw new Error('I can only name C≡C and C≡N triple bonds');
       }
       const a = M.at[i];
-      if (a.el === 'O' && V[i].length === 2 && V[i].some((v) => el(v.j) !== 'C')) throw new Error('Los peróxidos y otros enlaces O–O u O–heteroátomo todavía no se nombran');
-      if (a.el === 'N' && !(V[i].length === 1 && (a.h === 2 || V[i][0].o === 3))) throw new Error('Las aminas secundarias y terciarias, las imidas y otros compuestos con nitrógeno todavía no se nombran: solo aminas primarias, amidas primarias y nitrilos');
-      if (a.el === 'S' && V[i].length === 2 && V[i].some((v) => el(v.j) !== 'C')) throw new Error('Este compuesto con azufre todavía no se nombra');
+      if (a.el === 'O' && V[i].length === 2 && V[i].some((v) => el(v.j) !== 'C')) throw new Error('Peroxides and other O–O or O–heteroatom bonds are not named yet');
+      if (a.el === 'N' && !(V[i].length === 1 && (a.h === 2 || V[i][0].o === 3))) throw new Error('Secondary and tertiary amines, imides and other nitrogen compounds are not named yet: only primary amines, primary amides and nitriles');
+      if (a.el === 'S' && V[i].length === 2 && V[i].some((v) => el(v.j) !== 'C')) throw new Error('This sulfur compound is not named yet');
     }
-    if (M.at.some((a, i) => V[i].filter((v) => v.o === 2).length >= 2)) throw new Error('Los dienos acumulados (alenos) todavía no se nombran');
-    if (!M.at.some((a) => a.el === 'C')) throw new Error('Esta herramienta nombra compuestos orgánicos (con carbono)');
+    if (M.at.some((a, i) => V[i].filter((v) => v.o === 2).length >= 2)) throw new Error('Cumulated dienes (allenes) are not named yet');
+    if (!M.at.some((a) => a.el === 'C')) throw new Error('This tool names organic compounds (with carbon)');
     if (M.anillo) {
-      if (M.anillo.some((i) => el(i) !== 'C')) throw new Error('Los heterociclos (anillos con O, N o S, como el oxirano o el tetrahidrofurano) todavía no se nombran');
-      for (const i of M.anillo) for (const { j, o } of V[i]) if (!M.enAnillo.has(j) && o >= 2 && el(j) === 'C') throw new Error('Los dobles enlaces entre un anillo y una cadena (grupos «-ilideno») todavía no se nombran');
-      if (M.anillo.some((x, k) => orden(M, x, M.anillo[(k + 1) % M.anillo.length]) === 3)) throw new Error('Los cicloalquinos todavía no se nombran');
-      if (!M.aromatico && M.anillo.length > 12) throw new Error('Los anillos de más de 12 carbonos todavía no se nombran');
+      if (M.anillo.some((i) => el(i) !== 'C')) throw new Error('Heterocycles (rings with O, N or S, such as oxirane or tetrahydrofuran) are not named yet');
+      for (const i of M.anillo) for (const { j, o } of V[i]) if (!M.enAnillo.has(j) && o >= 2 && el(j) === 'C') throw new Error('Double bonds between a ring and a chain ("-ylidene" groups) are not named yet');
+      if (M.anillo.some((x, k) => orden(M, x, M.anillo[(k + 1) % M.anillo.length]) === 3)) throw new Error('Cycloalkynes are not named yet');
+      if (!M.aromatico && M.anillo.length > 12) throw new Error('Rings of more than 12 carbons are not named yet');
     }
     for (let i = 0; i < n; i++) {
       if (el(i) !== 'C') continue;
@@ -311,9 +356,9 @@ const Organica = (() => {
       else if (oD) {
         const otros = nb.filter((v) => v !== oD), oh = otros.find((v) => el(v.j) === 'O'), nn = otros.find((v) => el(v.j) === 'N');
         const cs = otros.filter((v) => el(v.j) === 'C');
-        if (otros.some((v) => ['F', 'Cl', 'Br', 'I', 'S'].includes(el(v.j)))) throw new Error('Los haluros de ácido y los tioácidos todavía no se nombran');
+        if (otros.some((v) => ['F', 'Cl', 'Br', 'I', 'S'].includes(el(v.j)))) throw new Error('Acid halides and thioacids are not named yet');
         if (oh) tipoC[i] = V[oh.j].length === 1 ? 'cooh' : 'coor';
-        else if (nn) { if (!(V[nn.j].length === 1 && M.at[nn.j].h === 2)) throw new Error('Las amidas N-sustituidas todavía no se nombran'); tipoC[i] = 'conh2'; }
+        else if (nn) { if (!(V[nn.j].length === 1 && M.at[nn.j].h === 2)) throw new Error('N-substituted amides are not named yet'); tipoC[i] = 'conh2'; }
         else tipoC[i] = cs.length === 2 ? 'ceto' : 'cho';
       }
     }
@@ -325,7 +370,7 @@ const Organica = (() => {
       if (!TERMINAL.includes(tipoC[i])) for (const { j } of V[i]) { const g = gk(j); if (g) presentes.add(g); }
     }
     const principal = PRIO.find((t) => presentes.has(t)) || null;
-    if (principal === 'coor' && tipoC.filter((t) => t === 'coor').length > 1) throw new Error('Los diésteres todavía no se nombran');
+    if (principal === 'coor' && tipoC.filter((t) => t === 'coor').length > 1) throw new Error('Diesters are not named yet');
     const elegible = (i) => el(i) === 'C' && !M.enAnillo.has(i) && (!tipoC[i] || tipoC[i] === 'ceto' || tipoC[i] === principal);
 
     const memo = new Map();
@@ -338,28 +383,28 @@ const Organica = (() => {
       const e = el(raiz), o = orden(M, desde, raiz), nb = V[raiz].filter((v) => v.j !== desde);
       if (HAL[e]) return { txt: HAL[e], complejo: false };
       if (e === 'O') {
-        if (o === 2) return { txt: 'oxo', complejo: false };
-        if (!nb.length) return { txt: 'hidroxi', complejo: false };
+        if (o === 2) return { txt: LI.oxo, complejo: false };
+        if (!nb.length) return { txt: LI.hidroxi, complejo: false };
         const q = nombreSub(nb[0].j, raiz);
-        return { txt: q.txt.replace(/il$/, 'oxi'), complejo: q.complejo };
+        return { txt: q.txt.replace(new RegExp(LI.il + '$'), LI.oxi), complejo: q.complejo };
       }
-      if (e === 'N') return { txt: 'amino', complejo: false };
+      if (e === 'N') return { txt: LI.amino, complejo: false };
       if (e === 'S') {
-        if (!nb.length) return { txt: 'mercapto', complejo: false };
+        if (!nb.length) return { txt: LI.mercapto, complejo: false };
         const q = nombreSub(nb[0].j, raiz);
-        return { txt: q.txt + 'tio', complejo: true };
+        return { txt: q.txt + LI.tio, complejo: true };
       }
       if (M.enAnillo.has(raiz)) return nombreAnillo(true, desde);
       const t = tipoC[raiz];
-      if (t === 'cooh') return { txt: 'carboxi', complejo: false };
-      if (t === 'cho') return { txt: 'formil', complejo: false };
-      if (t === 'conh2') return { txt: 'carbamoil', complejo: false };
-      if (t === 'cn') return { txt: 'ciano', complejo: false };
+      if (t === 'cooh') return { txt: LI.carboxi, complejo: false };
+      if (t === 'cho') return { txt: LI.formil, complejo: false };
+      if (t === 'conh2') return { txt: LI.carbamoil, complejo: false };
+      if (t === 'cn') return { txt: LI.ciano, complejo: false };
       if (t === 'coor') {
         const oo = V[raiz].find((v) => el(v.j) === 'O' && v.o === 1 && v.j !== desde), q = nombreSub(V[oo.j].find((v) => v.j !== raiz).j, oo.j);
-        return { txt: q.txt.replace(/il$/, 'oxi') + 'carbonil', complejo: q.complejo };
+        return { txt: q.txt.replace(new RegExp(LI.il + '$'), LI.oxi) + LI.carbonil, complejo: q.complejo };
       }
-      if (t === 'ceto') throw new Error('Un grupo acilo (como el acetilo) como sustituyente todavía no se nombra');
+      if (t === 'ceto') throw new Error('An acyl group (such as acetyl) as a substituent is not named yet');
       return cadena(null, raiz, desde);
     }
 
@@ -413,7 +458,7 @@ const Organica = (() => {
       let cand;
       if (sub) cand = rutas({ lista: [raiz], fijo: true }, desde).filter((p) => p[0] === raiz);
       else cand = rutas({ lista: [...Array(n).keys()] }, -1);
-      if (!cand.length) throw new Error('No encuentro una cadena de carbonos');
+      if (!cand.length) throw new Error('I can\'t find a carbon chain');
       let mejor = null;
       if (!sub && principal) {   // solo cuentan las cadenas con más grupos principales (así no se nombran cadenas descartadas)
         const cuenta = (P) => P.reduce((t, c) => t + (TERMINAL.includes(principal) || principal === 'ceto' ? (tipoC[c] === principal ? 1 : 0) : V[c].filter((v) => !P.includes(v.j) && gk(v.j) === principal).length), 0);
@@ -424,7 +469,7 @@ const Organica = (() => {
     }
     function componer(E, esSub) {
       const { P, L } = E, largo = P.length, orient = L;
-      if (largo > 20) throw new Error('La cadena es demasiado larga (más de 20 carbonos)');
+      if (largo > 20) throw new Error('The chain is too long (more than 20 carbons)');
       const stem = NUM[largo];
       const grupos = new Map();
       for (const s of orient.subs) {
@@ -450,29 +495,29 @@ const Organica = (() => {
       if (!nIns) base = esSub ? stem : stem + 'an';
       else {
         const partes = [];
-        if (orient.dob.length) partes.push((omiteIns ? '' : orient.dob.join(',') + '-') + (orient.dob.length > 1 ? MULT[orient.dob.length] : '') + 'en');
-        if (orient.tri.length) partes.push((omiteIns ? '' : orient.tri.join(',') + '-') + (orient.tri.length > 1 ? MULT[orient.tri.length] : '') + 'in');
+        if (orient.dob.length) partes.push((omiteIns ? '' : orient.dob.join(',') + '-') + (orient.dob.length > 1 ? MULT[orient.dob.length] : '') + LI.eno);
+        if (orient.tri.length) partes.push((omiteIns ? '' : orient.tri.join(',') + '-') + (orient.tri.length > 1 ? MULT[orient.tri.length] : '') + LI.ino);
         const a = (orient.dob.length || orient.tri.length) > 1 && (orient.dob.length ? orient.dob.length > 1 : orient.tri.length > 1) ? 'a' : '';
         base = stem + a + (omiteIns ? '' : '-') + partes.join(omiteIns ? '' : '-');
       }
       let cuerpo;
-      if (esSub) cuerpo = base + 'il';
-      else if (!tipoSuf) cuerpo = base + 'o';
+      if (esSub) cuerpo = base + LI.il;
+      else if (!tipoSuf) cuerpo = base + LI.vo;
       else {
         const m = locsSuf.length, suf = SUFIJO[tipoSuf], vocal = /^[aeiou]/.test(suf);
         const omiteSuf = terminal || omiteTodo || (tipoSuf === 'ceto' && largo === 3 && items === 1 && !nIns);
         const ls = omiteSuf ? '' : locsSuf.join(',');
         const mu = m > 1 ? MULT[m] : '';
         if (m === 1 && vocal) cuerpo = base + (ls ? `-${ls}-` : '') + suf;
-        else cuerpo = base + 'o' + (ls ? `-${ls}-` : '') + mu + suf;
+        else cuerpo = base + LI.vo + (ls ? `-${ls}-` : '') + mu + suf;
       }
       const res = { txt: (prefijo ? prefijo : '') + cuerpo, complejo: /[\d,(]/.test(prefijo + cuerpo) || nSub > 0, E, prefijo, cuerpo, tipoSuf };
       return res;
     }
 
 
-    const POS_PRINC = { cooh: 'carboxílico', coor: 'carboxilato', conh2: 'carboxamida', cn: 'carbonitrilo', cho: 'carbaldehído' };
-    const BENCENO = { oh: 'fenol', nh2: 'anilina', cooh: 'benzoico', cho: 'benzaldehído', conh2: 'benzamida', cn: 'benzonitrilo', coor: 'benzoato' };
+    const POS_PRINC = LI.pos;
+    const BENCENO = LI.bz;
     const gruposAnillo = (x) => {
       const r = [];
       if (!principal) return r;
@@ -506,7 +551,7 @@ const Organica = (() => {
       }
       const L = candidatos.reduce((m, c) => { const q = cmpClave(c.clave, m.clave); return q < 0 || (q === 0 && c.desc < m.desc) ? c : m; });
       const nPrinc = princ.length, tipoSuf = !esSub && nPrinc ? principal : null, nDob = dob.length, nSub = subs.length;
-      const stem = aro ? 'benc' : 'ciclo' + NUM[nR];
+      const stem = aro ? LI.benc : LI.ciclo + NUM[nR];
       const grupos = new Map();
       for (const q of L.subs) { const nm = nombreSub(q.j, q.desde); if (!grupos.has(nm.txt)) grupos.set(nm.txt, { nm, locs: [] }); grupos.get(nm.txt).locs.push(q.loc); }
       const lista = [...grupos.values()].sort((p, q) => soloLetras(p.nm.txt).localeCompare(soloLetras(q.nm.txt)));
@@ -521,28 +566,28 @@ const Organica = (() => {
         const especial = aro && !esSub && !sistematico;
         let prefijo = prefijoDe(omiteSubs), cuerpo;
         if (esSub) {
-          cuerpo = aro ? 'fenil' : !nDob ? stem + 'il' : stem + (nDob > 1 ? 'a-' + L.dob.join(',') + '-' + MULT[nDob] + 'en' : '-' + L.dob[0] + '-en') + '-1-il';
+          cuerpo = aro ? LI.fenil : !nDob ? stem + LI.il : stem + (nDob > 1 ? 'a-' + L.dob.join(',') + '-' + MULT[nDob] + LI.eno : '-' + L.dob[0] + '-' + LI.eno) + '-1-' + LI.il;
           return { prefijo, cuerpo };
         }
         let base;
-        if (aro) base = 'bencen';
+        if (aro) base = LI.bencen;
         else if (!nDob) base = stem + 'an';
-        else if (nDob === 1) base = stem + (tipoSuf ? '-' + L.dob[0] + '-' : '') + 'en';
-        else base = stem + 'a-' + L.dob.join(',') + '-' + MULT[nDob] + 'en';
+        else if (nDob === 1) base = stem + (tipoSuf ? '-' + L.dob[0] + '-' : '') + LI.eno;
+        else base = stem + 'a-' + L.dob.join(',') + '-' + MULT[nDob] + LI.eno;
         if (!tipoSuf) {
-          if (especial && !nSub) return { prefijo: '', cuerpo: 'benceno' };
-          if (especial && nSub === 1 && lista[0].nm.txt === 'metil') return { prefijo: '', cuerpo: 'tolueno' };
-          return { prefijo, cuerpo: base + 'o' };
+          if (especial && !nSub) return { prefijo: '', cuerpo: LI.benceno };
+          if (especial && nSub === 1 && lista[0].nm.txt === LI.metil) return { prefijo: '', cuerpo: LI.tolueno };
+          return { prefijo, cuerpo: base + LI.vo };
         }
         if (especial && nPrinc === 1 && BENCENO[tipoSuf]) {
           const b = BENCENO[tipoSuf];
           return { prefijo, cuerpo: b };
         }
         const m = L.princ.length, locs = L.princ.join(','), mu = m > 1 ? MULT[m] : '', ponLoc = m > 1 || items > 1;
-        if (TERMINAL.includes(tipoSuf)) return { prefijo, cuerpo: base + 'o' + (ponLoc ? `-${locs}-` : '') + mu + POS_PRINC[tipoSuf] };
+        if (TERMINAL.includes(tipoSuf)) return { prefijo, cuerpo: base + LI.vo + (ponLoc ? `-${locs}-` : '') + mu + POS_PRINC[tipoSuf] };
         const suf = SUFIJO[tipoSuf], vocal = /^[aeiou]/.test(suf);
         if (m === 1 && vocal) return { prefijo, cuerpo: base + (ponLoc ? `-${locs}-` : '') + suf };
-        return { prefijo, cuerpo: base + 'o' + (ponLoc ? `-${locs}-` : '') + mu + suf };
+        return { prefijo, cuerpo: base + LI.vo + (ponLoc ? `-${locs}-` : '') + mu + suf };
       };
       const A = compon(false), B = compon(true);
       const txt = A.prefijo + A.cuerpo, sist = B.prefijo + B.cuerpo;
@@ -574,15 +619,15 @@ const Organica = (() => {
     let pre = desc.length ? `(${desc.map((x) => (omiteLoc ? '' : x.l) + x.t).join(',')})-` : '';
     if (R.anillo && !desc.length && est.anillo && est.anillo.relacion) pre = `${est.anillo.relacion}-`;
     const monta = (cuerpo) => {
-      if (R.tipoSuf === 'cooh') return `ácido ${pre}${cuerpo}`;
+      if (R.tipoSuf === 'cooh') return ajusta(LI.acido(pre, cuerpo));
       if (R.tipoSuf === 'coor') {
         const c = R.anillo ? M.at.findIndex((_, a) => tipoC[a] === 'coor') : P.find((a) => tipoC[a] === 'coor'), oo = V[c].find((v) => el(v.j) === 'O' && v.o === 1), alq = nombreSub(V[oo.j].find((v) => v.j !== c).j, oo.j);
-        return `${pre}${cuerpo} de ${alq.txt}o`;
+        return ajusta(LI.ester(pre, cuerpo, alq.txt));
       }
-      return pre + cuerpo;
+      return ajusta(pre + cuerpo);
     };
     const txt = monta(R.txt), alias = R.alias ? monta(R.alias) : '';
-    const fuera = [...est.centros.filter((c) => c.label && locAt(c.i) === null).map((c) => `${c.label} (centro)`), ...est.dobles.filter((d) => d.label && (P.indexOf(d.a) < 0 || P.indexOf(d.b) < 0)).map((d) => `${d.label} (doble enlace)`)];
+    const fuera = [...est.centros.filter((c) => c.label && locAt(c.i) === null).map((c) => `${c.label} (center)`), ...est.dobles.filter((d) => d.label && (P.indexOf(d.a) < 0 || P.indexOf(d.b) < 0)).map((d) => `${d.label} (double bond)`)];
     return { txt, alias, fuera, principal: R.tipoSuf, cadena: P, locAt, tipoC, pre, base: R.txt, E: R.E, anillo: !!R.anillo, aromatico: !!(R.anillo && M.aromatico) };
   }
 
@@ -591,34 +636,34 @@ const Organica = (() => {
     const enA = (i) => M.enAnillo.has(i), arom = (i) => M.aromatico && enA(i);
     if (M.anillo) {
       const nR = M.anillo.length, dob = M.anillo.some((x, k) => orden(M, x, M.anillo[(k + 1) % nR]) === 2);
-      r.add(M.anillo.some((x) => el(x) !== 'C') ? 'heterociclo' : M.aromatico ? 'anillo aromático (benceno)' : dob ? 'cicloalqueno' : 'cicloalcano');
+      r.add(M.anillo.some((x) => el(x) !== 'C') ? 'heterocycle' : M.aromatico ? 'aromatic ring (benzene)' : dob ? 'cycloalkene' : 'cycloalkane');
     }
     for (let i = 0; i < M.at.length; i++) {
       const a = M.at[i];
       for (const { j, o } of V[i]) if (j > i || M.at[j].padre === i) { /* cada enlace una vez */ }
       if (a.el === 'C') {
         for (const v of V[i]) {
-          if (v.o === 2 && el(v.j) === 'C' && v.j > i && !(enA(i) && enA(v.j))) r.add('alqueno');
-          if (v.o === 3 && el(v.j) === 'C' && v.j > i) r.add('alquino');
+          if (v.o === 2 && el(v.j) === 'C' && v.j > i && !(enA(i) && enA(v.j))) r.add('alkene');
+          if (v.o === 3 && el(v.j) === 'C' && v.j > i) r.add('alkyne');
         }
         const oD = V[i].find((v) => v.o === 2 && el(v.j) === 'O');
         const nT = V[i].find((v) => v.o === 3 && el(v.j) === 'N');
-        if (nT) r.add('nitrilo');
+        if (nT) r.add('nitrile');
         else if (oD) {
           const otros = V[i].filter((v) => v !== oD), oo = otros.find((v) => el(v.j) === 'O'), nn = otros.find((v) => el(v.j) === 'N'), cs = otros.filter((v) => el(v.j) === 'C').length;
-          if (oo) r.add(V[oo.j].length === 1 ? 'ácido carboxílico' : 'éster');
-          else if (nn) r.add('amida');
-          else r.add(cs === 2 ? 'cetona' : 'aldehído');
+          if (oo) r.add(V[oo.j].length === 1 ? 'carboxylic acid' : 'ester');
+          else if (nn) r.add('amide');
+          else r.add(cs === 2 ? 'ketone' : 'aldehyde');
         }
       } else if (a.el === 'O' && V[i].length === 2 && V[i].every((v) => el(v.j) === 'C')) {
         const esEster = V[i].some((v) => M.at[v.j].el === 'C' && V[v.j].some((w) => w.o === 2 && el(w.j) === 'O'));
-        if (!esEster) r.add('éter');
+        if (!esEster) r.add('ether');
       } else if (a.el === 'O' && a.h === 1 && V[i].length === 1 && el(V[i][0].j) === 'C') {
         const c = V[i][0].j; if (!V[c].some((w) => w.o === 2 && el(w.j) === 'O')) r.add(arom(c) ? 'fenol' : 'alcohol');
       } else if (a.el === 'N' && V[i].length === 1 && V[i][0].o === 1 && a.h === 2) {
-        const c = V[i][0].j; if (!V[c].some((w) => w.o === 2 && el(w.j) === 'O')) r.add(arom(c) ? 'amina aromática (anilina)' : 'amina');
-      } else if (a.el === 'S') r.add(a.h ? 'tiol' : 'tioéter');
-      else if (HAL[a.el]) r.add(`haluro de ${arom(V[i][0].j) ? 'arilo' : 'alquilo'} (${HAL[a.el]})`);
+        const c = V[i][0].j; if (!V[c].some((w) => w.o === 2 && el(w.j) === 'O')) r.add(arom(c) ? 'aromatic amine (aniline)' : 'amine');
+      } else if (a.el === 'S') r.add(a.h ? 'thiol' : 'thioether');
+      else if (HAL[a.el]) r.add(`${arom(V[i][0].j) ? 'aryl' : 'alkyl'} halide (${HAL[a.el]})`);
     }
     return [...r];
   }
@@ -835,7 +880,7 @@ const Organica = (() => {
     const R = M.anillo, ks = R.map((x, k) => k).filter((k) => fichas(M, R[k]).some((t) => t !== 'H' && !M.enAnillo.has(t)));
     if (ks.length !== 2) return null;
     const d = Math.min((ks[1] - ks[0]) % 6, 6 - ((ks[1] - ks[0]) % 6));
-    return { tipo: ['', 'orto', 'meta', 'para'][d], locs: [1, d + 1] };
+    return { tipo: ['', 'ortho', 'meta', 'para'][d], locs: [1, d + 1] };
   }
   const ALCANOS = [1, 1, 1, 2, 3, 5, 9, 18, 35, 75];   // C1…C10
 
@@ -851,41 +896,41 @@ const Organica = (() => {
       vars = lista.map((v) => {
         let nombre = ''; try { nombre = nombrar(v.M, v.est).txt; } catch (e) { nombre = ''; }
         const desc = v.est.centros.map((c) => c.label || '?').join('');
-        const rel = !est.completo ? '' : v.est.clave === est.clave ? 'este' : (v.est.clave === est.claveEspejo ? 'enantiómero' : 'diastereoisómero');
+        const rel = !est.completo ? '' : v.est.clave === est.clave ? 'este' : (v.est.clave === est.claveEspejo ? 'enantiomer' : 'diastereomer');
         return { smiles: v.smiles, nombre, quiral: v.est.quiral, rel, desc, anillo: (v.est.anillo && v.est.anillo.relacion) || '' };
       });
     }
     const pasos = [];
-    pasos.push({ t: 'Estructura', html: `La molécula tiene ${M.at.length} átomos distintos de H y ${f.c.H || 0} hidrógenos: fórmula molecular <b>${f.txt}</b> y masa molar ${coma(masa, 2)} g/mol.` });
-    pasos.push({ t: 'Grupos funcionales', html: gr.length ? `Encuentro: ${gr.join(', ')}.` : 'Solo hay enlaces sencillos entre carbonos y hidrógenos: es un alcano.' });
+    pasos.push({ t: 'Structure', html: `The molecule has ${M.at.length} non-H atoms and ${f.c.H || 0} hydrogens: molecular formula <b>${f.txt}</b> and molar mass ${coma(masa, 2)} g/mol.` });
+    pasos.push({ t: 'Functional groups', html: gr.length ? `I find: ${gr.join(', ')}.` : 'There are only single bonds between carbons and hydrogens: it is an alkane.' });
     if (nom) {
       const P = nom.cadena, tc = nom.tipoC;
-      if (nom.anillo) pasos.push({ t: 'Anillo o cadena', html: `Hay un anillo de ${M.anillo.length} carbonos. Es el compuesto padre si tiene más grupos principales que la cadena y, si empatan, si tiene tantos carbonos como la cadena más larga o más: aquí el padre es <b>${nom.aromatico ? 'el benceno' : 'el ciclo'}</b>.` });
-      else if (M.anillo) pasos.push({ t: 'Anillo o cadena', html: `Hay un anillo de ${M.anillo.length} carbonos, pero manda la cadena (más grupos principales o más carbonos que el anillo): el anillo pasa a sustituyente (<b>${nom.aromatico || M.aromatico ? 'fenil' : 'ciclo…il'}</b>).` });
-      pasos.push({ t: 'Grupo principal', html: nom.principal ? `El grupo con más prioridad es <b>${GRUPO[nom.principal]}</b>: pasa a ser el sufijo del nombre (orden: ácido > éster > amida > nitrilo > aldehído > cetona > alcohol > tiol > amina).` : 'No hay ningún grupo con sufijo: se nombra como hidrocarburo y todo lo demás son prefijos.' });
+      if (nom.anillo) pasos.push({ t: 'Ring or chain', html: `There is a ring of ${M.anillo.length} carbons. It is the parent compound if it has more principal groups than the chain and, if tied, if it has as many carbons as the longest chain or more: here the parent is <b>${nom.aromatico ? 'benzene' : 'the ring'}</b>.` });
+      else if (M.anillo) pasos.push({ t: 'Ring or chain', html: `There is a ring of ${M.anillo.length} carbons, but the chain rules (more principal groups or more carbons than the ring): the ring becomes a substituent (<b>${nom.aromatico || M.aromatico ? 'phenyl' : 'cyclo…yl'}</b>).` });
+      pasos.push({ t: 'Principal group', html: nom.principal ? `The group with the highest priority is <b>${GRUPO[nom.principal]}</b>: it becomes the suffix of the name (order: acid > ester > amide > nitrile > aldehyde > ketone > alcohol > thiol > amine).` : 'There is no group with a suffix: it is named as a hydrocarbon and everything else is a prefix.' });
       if (nom.anillo) {
-        pasos.push({ t: 'Numeración del anillo', html: `Se numera dando el 1 al átomo con el grupo principal; si no hay, a un carbono del doble enlace (cicloalquenos) o al que da los localizadores más bajos al conjunto de sustituyentes; si empatan, al que va primero por orden alfabético.` });
+        pasos.push({ t: 'Ring numbering', html: `It is numbered giving 1 to the atom with the principal group; if there is none, to a carbon of the double bond (cycloalkenes) or to the one that gives the lowest locants to the set of substituents; if tied, to the one that comes first alphabetically.` });
         const pos = posicionAreno(M);
-        if (pos) pasos.push({ t: 'Orto, meta o para', html: `Los dos sustituyentes del benceno están en las posiciones ${pos.locs.join(' y ')}: se llama <b>${pos.tipo}</b> (orto = posiciones 1,2; meta = 1,3; para = 1,4). En el nombre IUPAC se usan los números.` });
-        pasos.push({ t: 'Nombre', html: `Los sustituyentes se ordenan alfabéticamente (sin contar di-, tri-…) y van delante: <b>${nom.txt}</b>${nom.alias ? ` (forma sistemática: ${esc2(nom.alias)})` : ''}.` });
-        if (nom.fuera.length) pasos.push({ t: 'Configuración en un sustituyente', html: `Hay ${nom.fuera.join(' y ')} dentro de un sustituyente: su configuración no aparece en el nombre de arriba, pero se calcula en los pasos siguientes.` });
+        if (pos) pasos.push({ t: 'Ortho, meta or p-', html: `The two substituents of benzene are at positions ${pos.locs.join(' and ')}: it is called <b>${pos.tipo}</b> (ortho = positions 1,2; meta = 1,3; p- = 1,4). The IUPAC name uses the numbers.` });
+        pasos.push({ t: 'Name', html: `The substituents are ordered alphabetically (not counting di-, tri-…) and go in front: <b>${nom.txt}</b>${nom.alias ? ` (systematic form: ${esc2(nom.alias)})` : ''}.` });
+        if (nom.fuera.length) pasos.push({ t: 'Configuration in a substituent', html: `There is ${nom.fuera.join(' and ')} inside a substituent: its configuration does not appear in the name above, but it is calculated in the following steps.` });
       } else {
-      pasos.push({ t: 'Cadena principal', html: `La cadena principal es la que contiene más grupos principales, luego más enlaces múltiples y después más carbonos: <b>${P.length} carbono${P.length > 1 ? 's' : ''}</b> (${NUM[P.length]}an…).` });
-      pasos.push({ t: 'Numeración', html: `Se numera por el extremo que da los localizadores más bajos, por este orden: grupo principal, enlaces múltiples y sustituyentes.` });
-      pasos.push({ t: 'Nombre', html: `Los sustituyentes se ordenan alfabéticamente (sin contar di-, tri-…) y van delante: <b>${nom.txt}</b>.` });
-      if (nom.fuera.length) pasos.push({ t: 'Configuración en un sustituyente', html: `Hay ${nom.fuera.join(' y ')} dentro de un sustituyente: su configuración no aparece en el nombre de arriba, pero se calcula en los pasos siguientes.` });
+      pasos.push({ t: 'Main chain', html: `The main chain is the one containing the most principal groups, then the most multiple bonds and then the most carbons: <b>${P.length} carbon${P.length > 1 ? 's' : ''}</b> (${NUM[P.length]}an…).` });
+      pasos.push({ t: 'Numbering', html: `It is numbered from the end that gives the lowest locants, in this order: principal group, multiple bonds and substituents.` });
+      pasos.push({ t: 'Name', html: `The substituents are ordered alphabetically (not counting di-, tri-…) and go in front: <b>${nom.txt}</b>.` });
+      if (nom.fuera.length) pasos.push({ t: 'Configuration in a substituent', html: `There is ${nom.fuera.join(' and ')} inside a substituent: its configuration does not appear in the name above, but it is calculated in the following steps.` });
       }
-    } else pasos.push({ t: 'Nombre', html: `No puedo nombrarla: ${errorNombre}.` });
+    } else pasos.push({ t: 'Name', html: `I can't name it: ${errorNombre}.` });
     for (const c of est.centros) {
       const loc = nom ? nom.locAt(c.i) : null;
       const prio = c.rg.map((t, q) => `${q + 1}. ${t === 'H' ? 'H' : M.at[t].el + (M.at[t].h ? `(${M.at[t].h}H)` : '')}`).join(' &gt; ');
-      pasos.push({ t: `Centro quiral${loc ? ' C' + loc : ''}`, html: `Tiene cuatro sustituyentes distintos. Prioridades CIP: ${prio}. ${c.label ? `Con el de menor prioridad detrás, los otros tres giran ${c.label === 'R' ? 'en sentido horario: <b>R</b>' : 'en sentido antihorario: <b>S</b>'}.` : 'Falta la configuración: escribe @ o @@ en el SMILES (por ejemplo [C@H]).'}` });
+      pasos.push({ t: `Chiral center${loc ? ' C' + loc : ''}`, html: `It has four different substituents. CIP priorities: ${prio}. ${c.label ? `With the lowest priority in the back, the other three turn ${c.label === 'R' ? 'clockwise: <b>R</b>' : 'counterclockwise: <b>S</b>'}.` : 'The configuration is missing: write @ or @@ in the SMILES (for example [C@H]).'}` });
     }
     if (est.anillo) {
       const an = est.anillo, locs = an.caras.map((x) => (nom && nom.locAt(x.i)) || '?');
-      pasos.push({ t: 'Isomería cis/trans del anillo', html: an.relacion ? `Los sustituyentes de ${locs.join(' y ')} están en la ${an.relacion === 'cis' ? '<b>misma cara</b> del anillo: <b>cis</b>' : '<b>cara opuesta</b> del anillo: <b>trans</b>'}.` : `El anillo tiene ${an.caras.length} sustituyentes que pueden ir por encima o por debajo del plano (cis o trans). Marca cada uno con @ o @@ en el SMILES (por ejemplo C[C@H]1CCCC[C@H]1C).` });
+      pasos.push({ t: 'Cis/trans isomerism of the ring', html: an.relacion ? `The substituents at ${locs.join(' and ')} are on the ${an.relacion === 'cis' ? '<b>same face</b> of the ring: <b>cis</b>' : '<b>opposite face</b> of the ring: <b>trans</b>'}.` : `The ring has ${an.caras.length} substituents that can go above or below the plane (cis or trans). Mark each one with @ or @@ in the SMILES (for example C[C@H]1CCCC[C@H]1C).` });
     }
-    for (const d of est.dobles) pasos.push({ t: 'Doble enlace con isomería geométrica', html: d.label ? `Los sustituyentes de mayor prioridad de cada carbono están ${d.label === 'Z' ? 'del mismo lado: <b>Z</b>' : 'en lados opuestos: <b>E</b>'}.` : 'Cada carbono tiene dos sustituyentes distintos, así que hay isómeros E y Z. Marca el lado con / y \\ en el SMILES (por ejemplo C/C=C\\C).' });
+    for (const d of est.dobles) pasos.push({ t: 'Double bond with geometric isomerism', html: d.label ? `The highest-priority substituents of each carbon are ${d.label === 'Z' ? 'on the same side: <b>Z</b>' : 'on opposite sides: <b>E</b>'}.` : 'Each carbon has two different substituents, so there are E and Z isomers. Mark the side with / and \\ in the SMILES (for example C/C=C\\C).' });
     return {
       smiles: sc.smiles.replace(/\s+/g, ''), M, formula: f.txt, formulaPlano: f.plano, masa, grupos: gr, nombre: nom ? nom.txt : '', errorNombre, nom,
       estereo: { centros: est.centros, dobles: est.dobles, anillo: est.anillo, quiral: est.quiral, completo: est.completo, lista: vars, nTeorico: 2 ** (est.nTog + est.dobles.length) },
@@ -901,53 +946,53 @@ const Organica = (() => {
   }
 
   const ejemplos = [
-    { clave: 'butano', nombre: 'Butano', sc: { smiles: 'CCCC' } },
-    { clave: 'isobutano', nombre: '2-Metilpropano (isobutano)', sc: { smiles: 'CC(C)C' } },
-    { clave: 'dimetilbutano', nombre: '3-Etil-2-metilpentano', sc: { smiles: 'CCC(CC)C(C)C' } },
-    { clave: 'but1eno', nombre: 'But-1-eno', sc: { smiles: 'C=CCC' } },
-    { clave: 'but2eno-e', nombre: '(E)-but-2-eno', sc: { smiles: 'C/C=C/C' } },
-    { clave: 'but2eno-z', nombre: '(Z)-but-2-eno', sc: { smiles: 'C/C=C\\C' } },
-    { clave: 'dieno', nombre: 'Buta-1,3-dieno', sc: { smiles: 'C=CC=C' } },
-    { clave: 'propino', nombre: 'Propino', sc: { smiles: 'C#CC' } },
-    { clave: 'etanol', nombre: 'Etanol', sc: { smiles: 'CCO' } },
+    { clave: 'butano', nombre: 'Butane', sc: { smiles: 'CCCC' } },
+    { clave: 'isobutano', nombre: '2-Methylpropane (isobutane)', sc: { smiles: 'CC(C)C' } },
+    { clave: 'dimetilbutano', nombre: '3-Ethyl-2-methylpentane', sc: { smiles: 'CCC(CC)C(C)C' } },
+    { clave: 'but1eno', nombre: 'But-1-ene', sc: { smiles: 'C=CCC' } },
+    { clave: 'but2eno-e', nombre: '(E)-but-2-ene', sc: { smiles: 'C/C=C/C' } },
+    { clave: 'but2eno-z', nombre: '(Z)-but-2-ene', sc: { smiles: 'C/C=C\\C' } },
+    { clave: 'dieno', nombre: 'Buta-1,3-diene', sc: { smiles: 'C=CC=C' } },
+    { clave: 'propino', nombre: 'Propyne', sc: { smiles: 'C#CC' } },
+    { clave: 'etanol', nombre: 'Ethanol', sc: { smiles: 'CCO' } },
     { clave: 'propan2ol', nombre: 'Propan-2-ol', sc: { smiles: 'CC(O)C' } },
     { clave: 'butan2ol-s', nombre: '(S)-butan-2-ol', sc: { smiles: 'CC[C@H](C)O' } },
     { clave: 'butan2ol-r', nombre: '(R)-butan-2-ol', sc: { smiles: 'CC[C@@H](C)O' } },
-    { clave: 'eter', nombre: 'Metoxietano (éter)', sc: { smiles: 'COCC' } },
-    { clave: 'propanona', nombre: 'Propanona (acetona)', sc: { smiles: 'CC(C)=O' } },
+    { clave: 'eter', nombre: 'Methoxyethane (ether)', sc: { smiles: 'COCC' } },
+    { clave: 'propanona', nombre: 'Propanone (acetone)', sc: { smiles: 'CC(C)=O' } },
     { clave: 'propanal', nombre: 'Propanal', sc: { smiles: 'CCC=O' } },
-    { clave: 'acetico', nombre: 'Ácido etanoico (acético)', sc: { smiles: 'CC(=O)O' } },
-    { clave: 'lactico', nombre: 'Ácido L-láctico', sc: { smiles: 'C[C@H](O)C(=O)O' } },
-    { clave: 'alanina', nombre: 'L-Alanina', sc: { smiles: 'N[C@@H](C)C(=O)O' } },
-    { clave: 'acetato', nombre: 'Etanoato de etilo (acetato de etilo)', sc: { smiles: 'CC(=O)OCC' } },
-    { clave: 'amida', nombre: 'Etanamida', sc: { smiles: 'CC(=O)N' } },
-    { clave: 'nitrilo', nombre: 'Etanonitrilo', sc: { smiles: 'CC#N' } },
-    { clave: 'etilamina', nombre: 'Etanamina', sc: { smiles: 'CCN' } },
-    { clave: 'cloroalcano', nombre: '2-Clorobutano (quiral)', sc: { smiles: 'CC[C@H](C)Cl' } },
-    { clave: 'tartarico-meso', nombre: 'Ácido tartárico meso', sc: { smiles: 'O=C(O)[C@H](O)[C@@H](O)C(=O)O' } },
-    { clave: 'tartarico-l', nombre: 'Ácido L-(+)-tartárico', sc: { smiles: 'O=C(O)[C@H](O)[C@H](O)C(=O)O' } },
-    { clave: 'dicloropentano', nombre: '2,3-Diclorobutano (2 centros)', sc: { smiles: 'C[C@H](Cl)[C@@H](Cl)C' } },
-    { clave: 'ciclopropano', nombre: 'Ciclopropano', sc: { smiles: 'C1CC1' } },
-    { clave: 'ciclohexano', nombre: 'Ciclohexano', sc: { smiles: 'C1CCCCC1' } },
-    { clave: 'metilciclohexano', nombre: 'Metilciclohexano', sc: { smiles: 'CC1CCCCC1' } },
-    { clave: 'ciclohexanol', nombre: 'Ciclohexanol', sc: { smiles: 'OC1CCCCC1' } },
-    { clave: 'ciclohexeno', nombre: 'Ciclohexeno', sc: { smiles: 'C1=CCCCC1' } },
-    { clave: 'ciclohexilmetanol', nombre: 'Ciclohexilmetanol (el anillo es sustituyente)', sc: { smiles: 'OCC1CCCCC1' } },
-    { clave: 'cis12', nombre: 'cis-1,2-Dimetilciclohexano (meso)', sc: { smiles: 'C[C@H]1CCCC[C@H]1C' } },
-    { clave: 'trans12', nombre: 'trans-1,2-Dimetilciclohexano (quiral)', sc: { smiles: 'C[C@H]1CCCC[C@@H]1C' } },
-    { clave: 'cis14', nombre: 'cis-1,4-Dimetilciclohexano', sc: { smiles: 'C[C@H]1CC[C@@H](C)CC1' } },
-    { clave: 'benceno', nombre: 'Benceno', sc: { smiles: 'c1ccccc1' } },
-    { clave: 'tolueno', nombre: 'Tolueno (metilbenceno)', sc: { smiles: 'Cc1ccccc1' } },
-    { clave: 'fenol', nombre: 'Fenol', sc: { smiles: 'Oc1ccccc1' } },
-    { clave: 'anilina', nombre: 'Anilina', sc: { smiles: 'Nc1ccccc1' } },
-    { clave: 'benzoico', nombre: 'Ácido benzoico', sc: { smiles: 'OC(=O)c1ccccc1' } },
-    { clave: 'benzaldehido', nombre: 'Benzaldehído', sc: { smiles: 'O=Cc1ccccc1' } },
-    { clave: 'xileno-o', nombre: '1,2-Dimetilbenceno (orto)', sc: { smiles: 'Cc1ccccc1C' } },
-    { clave: 'xileno-m', nombre: '1,3-Dimetilbenceno (meta)', sc: { smiles: 'Cc1cccc(C)c1' } },
-    { clave: 'xileno-p', nombre: '1,4-Dimetilbenceno (para)', sc: { smiles: 'Cc1ccc(C)cc1' } },
-    { clave: 'cresol', nombre: '4-Metilfenol (p-cresol)', sc: { smiles: 'Cc1ccc(O)cc1' } },
-    { clave: 'salicilico', nombre: 'Ácido 2-hidroxibenzoico (salicílico)', sc: { smiles: 'OC(=O)c1ccccc1O' } },
-    { clave: 'fenilbutano', nombre: 'sec-Butilbenceno (centro S en el sustituyente)', sc: { smiles: 'CC[C@H](C)c1ccccc1' } },
+    { clave: 'acetico', nombre: 'Ethanoic acid (acetic)', sc: { smiles: 'CC(=O)O' } },
+    { clave: 'lactico', nombre: 'L-lactic acid', sc: { smiles: 'C[C@H](O)C(=O)O' } },
+    { clave: 'alanina', nombre: 'L-Alanine', sc: { smiles: 'N[C@@H](C)C(=O)O' } },
+    { clave: 'acetato', nombre: 'Ethyl ethanoate (ethyl acetate)', sc: { smiles: 'CC(=O)OCC' } },
+    { clave: 'amide', nombre: 'Ethanamide', sc: { smiles: 'CC(=O)N' } },
+    { clave: 'nitrile', nombre: 'Ethanenitrile', sc: { smiles: 'CC#N' } },
+    { clave: 'etilamina', nombre: 'Ethanamine', sc: { smiles: 'CCN' } },
+    { clave: 'cloroalcano', nombre: '2-Chlorobutane (chiral)', sc: { smiles: 'CC[C@H](C)Cl' } },
+    { clave: 'tartarico-meso', nombre: 'meso-Tartaric acid', sc: { smiles: 'O=C(O)[C@H](O)[C@@H](O)C(=O)O' } },
+    { clave: 'tartarico-l', nombre: 'L-(+)-tartaric acid', sc: { smiles: 'O=C(O)[C@H](O)[C@H](O)C(=O)O' } },
+    { clave: 'dicloropentano', nombre: '2,3-Dichlorobutane (2 centers)', sc: { smiles: 'C[C@H](Cl)[C@@H](Cl)C' } },
+    { clave: 'ciclopropano', nombre: 'Cyclopropane', sc: { smiles: 'C1CC1' } },
+    { clave: 'ciclohexano', nombre: 'Cyclohexane', sc: { smiles: 'C1CCCCC1' } },
+    { clave: 'metilciclohexano', nombre: 'Methylcyclohexane', sc: { smiles: 'CC1CCCCC1' } },
+    { clave: 'ciclohexanol', nombre: 'Cyclohexanol', sc: { smiles: 'OC1CCCCC1' } },
+    { clave: 'ciclohexeno', nombre: 'Cyclohexene', sc: { smiles: 'C1=CCCCC1' } },
+    { clave: 'ciclohexilmetanol', nombre: 'Cyclohexylmethanol (the ring is a substituent)', sc: { smiles: 'OCC1CCCCC1' } },
+    { clave: 'cis12', nombre: 'cis-1,2-Dimethylcyclohexane (meso)', sc: { smiles: 'C[C@H]1CCCC[C@H]1C' } },
+    { clave: 'trans12', nombre: 'trans-1,2-Dimethylcyclohexane (chiral)', sc: { smiles: 'C[C@H]1CCCC[C@@H]1C' } },
+    { clave: 'cis14', nombre: 'cis-1,4-Dimethylcyclohexane', sc: { smiles: 'C[C@H]1CC[C@@H](C)CC1' } },
+    { clave: 'benceno', nombre: 'Benzene', sc: { smiles: 'c1ccccc1' } },
+    { clave: 'tolueno', nombre: 'Toluene (methylbenzene)', sc: { smiles: 'Cc1ccccc1' } },
+    { clave: 'fenol', nombre: 'Phenol', sc: { smiles: 'Oc1ccccc1' } },
+    { clave: 'anilina', nombre: 'Aniline', sc: { smiles: 'Nc1ccccc1' } },
+    { clave: 'benzoico', nombre: 'Benzoic acid', sc: { smiles: 'OC(=O)c1ccccc1' } },
+    { clave: 'benzaldehido', nombre: 'Benzaldehyde', sc: { smiles: 'O=Cc1ccccc1' } },
+    { clave: 'xileno-o', nombre: '1,2-Dimethylbenzene (ortho)', sc: { smiles: 'Cc1ccccc1C' } },
+    { clave: 'xileno-m', nombre: '1,3-Dimethylbenzene (meta)', sc: { smiles: 'Cc1cccc(C)c1' } },
+    { clave: 'xileno-p', nombre: '1,4-Dimethylbenzene (para)', sc: { smiles: 'Cc1ccc(C)cc1' } },
+    { clave: 'cresol', nombre: '4-Methylphenol (p-cresol)', sc: { smiles: 'Cc1ccc(O)cc1' } },
+    { clave: 'salicilico', nombre: '2-Hydroxybenzoic acid (salicylic)', sc: { smiles: 'OC(=O)c1ccccc1O' } },
+    { clave: 'fenilbutano', nombre: 'sec-Butylbenzene (S center in the substituent)', sc: { smiles: 'CC[C@H](C)c1ccccc1' } },
   ];
 
   return { resolver, leer, escribe, nombrar, estereo, coordenadas, etiquetaGeometrica, diedro, centroEstereo, enantiomero, isomerosDe, variantes, formulaDe, ejemplos, ISOMEROS, ALCANOS, NUM, v3 };

@@ -27,10 +27,58 @@ const Organica = (() => {
   const coma = (x, d = 2) => String(+x.toFixed(d)).replace('.', ',').replace('-', '−');
   const SUB = '₀₁₂₃₄₅₆₇₈₉';
   const sub = (n) => (n === 1 ? '' : String(n).split('').map((c) => SUB[+c]).join(''));
-  const NUM = ['', 'met', 'et', 'prop', 'but', 'pent', 'hex', 'hept', 'oct', 'non', 'dec', 'undec', 'dodec', 'tridec', 'tetradec', 'pentadec', 'hexadec', 'heptadec', 'octadec', 'nonadec', 'icos'];
-  const MULT = ['', '', 'di', 'tri', 'tetra', 'penta', 'hexa', 'hepta', 'octa', 'nona', 'deca'];
+  // idioma de los nombres IUPAC: el diccionario de cada idioma cambia este texto por «en», «fr» o «de»
+  const IDI = 'idioma-es';
+  const NUM_ES = ['', 'met', 'et', 'prop', 'but', 'pent', 'hex', 'hept', 'oct', 'non', 'dec', 'undec', 'dodec', 'tridec', 'tetradec', 'pentadec', 'hexadec', 'heptadec', 'octadec', 'nonadec', 'icos'];
+  const LX = {
+    // vo: vocal final del hidrocarburo («etano»/«ethane»/«Ethan»); eno/ino: insaturaciones; il/oxi: sustituyente alquilo y alcoxi
+    es: {
+      NUM: NUM_ES, tetra: 'tetra', deca: 'deca', hal: { F: 'fluoro', Cl: 'cloro', Br: 'bromo', I: 'yodo' }, vo: 'o', eno: 'en', ino: 'in', il: 'il', oxi: 'oxi', tio: 'tio', carbonil: 'carbonil',
+      oxo: 'oxo', hidroxi: 'hidroxi', amino: 'amino', mercapto: 'mercapto', carboxi: 'carboxi', formil: 'formil', carbamoil: 'carbamoil', ciano: 'ciano', fenil: 'fenil', metil: 'metil',
+      ciclo: 'ciclo', benc: 'benc', bencen: 'bencen', benceno: 'benceno', tolueno: 'tolueno',
+      suf: { cooh: 'oico', coor: 'oato', conh2: 'amida', cn: 'nitrilo', cho: 'al', ceto: 'ona', oh: 'ol', sh: 'tiol', nh2: 'amina' },
+      pos: { cooh: 'carboxílico', coor: 'carboxilato', conh2: 'carboxamida', cn: 'carbonitrilo', cho: 'carbaldehído' },
+      bz: { oh: 'fenol', nh2: 'anilina', cooh: 'benzoico', cho: 'benzaldehído', conh2: 'benzamida', cn: 'benzonitrilo', coor: 'benzoato' },
+      acido: (p, c) => `ácido ${p}${c}`, ester: (p, c, a) => `${p}${c} de ${a}o`,
+    },
+    en: {
+      NUM: ['', 'meth', 'eth', 'prop', 'but', 'pent', 'hex', 'hept', 'oct', 'non', 'dec', 'undec', 'dodec', 'tridec', 'tetradec', 'pentadec', 'hexadec', 'heptadec', 'octadec', 'nonadec', 'eicos'],
+      tetra: 'tetra', deca: 'deca', hal: { F: 'fluoro', Cl: 'chloro', Br: 'bromo', I: 'iodo' }, vo: 'e', eno: 'en', ino: 'yn', il: 'yl', oxi: 'oxy', tio: 'sulfanyl', carbonil: 'carbonyl',
+      oxo: 'oxo', hidroxi: 'hydroxy', amino: 'amino', mercapto: 'sulfanyl', carboxi: 'carboxy', formil: 'formyl', carbamoil: 'carbamoyl', ciano: 'cyano', fenil: 'phenyl', metil: 'methyl',
+      ciclo: 'cyclo', benc: 'benz', bencen: 'benzen', benceno: 'benzene', tolueno: 'toluene',
+      suf: { cooh: 'oic', coor: 'oate', conh2: 'amide', cn: 'nitrile', cho: 'al', ceto: 'one', oh: 'ol', sh: 'thiol', nh2: 'amine' },
+      pos: { cooh: 'carboxylic', coor: 'carboxylate', conh2: 'carboxamide', cn: 'carbonitrile', cho: 'carbaldehyde' },
+      bz: { oh: 'phenol', nh2: 'aniline', cooh: 'benzoic', cho: 'benzaldehyde', conh2: 'benzamide', cn: 'benzonitrile', coor: 'benzoate' },
+      acido: (p, c) => `${p}${c} acid`, ester: (p, c, a) => `${a} ${p}${c}`,
+    },
+    fr: {
+      NUM: ['', 'méth', 'éth', 'prop', 'but', 'pent', 'hex', 'hept', 'oct', 'non', 'déc', 'undéc', 'dodéc', 'tridéc', 'tétradéc', 'pentadéc', 'hexadéc', 'heptadéc', 'octadéc', 'nonadéc', 'eicos'],
+      tetra: 'tétra', deca: 'déca', hal: { F: 'fluoro', Cl: 'chloro', Br: 'bromo', I: 'iodo' }, vo: 'e', eno: 'èn', ino: 'yn', il: 'yl', oxi: 'oxy', tio: 'sulfanyl', carbonil: 'carbonyl',
+      oxo: 'oxo', hidroxi: 'hydroxy', amino: 'amino', mercapto: 'sulfanyl', carboxi: 'carboxy', formil: 'formyl', carbamoil: 'carbamoyl', ciano: 'cyano', fenil: 'phényl', metil: 'méthyl',
+      ciclo: 'cyclo', benc: 'benz', bencen: 'benzèn', benceno: 'benzène', tolueno: 'toluène',
+      suf: { cooh: 'oïque', coor: 'oate', conh2: 'amide', cn: 'nitrile', cho: 'al', ceto: 'one', oh: 'ol', sh: 'thiol', nh2: 'amine' },
+      pos: { cooh: 'carboxylique', coor: 'carboxylate', conh2: 'carboxamide', cn: 'carbonitrile', cho: 'carbaldéhyde' },
+      bz: { oh: 'phénol', nh2: 'aniline', cooh: 'benzoïque', cho: 'benzaldéhyde', conh2: 'benzamide', cn: 'benzonitrile', coor: 'benzoate' },
+      acido: (p, c) => `acide ${p}${c}`, ester: (p, c, a) => `${p}${c} ${/^[aeiouyéèêh]/i.test(a) ? 'd’' : 'de '}${a}e`,
+    },
+    de: {
+      NUM: ['', 'meth', 'eth', 'prop', 'but', 'pent', 'hex', 'hept', 'oct', 'non', 'dec', 'undec', 'dodec', 'tridec', 'tetradec', 'pentadec', 'hexadec', 'heptadec', 'octadec', 'nonadec', 'eicos'],
+      tetra: 'tetra', deca: 'deca', hal: { F: 'fluor', Cl: 'chlor', Br: 'brom', I: 'iod' }, vo: '', eno: 'en', ino: 'in', il: 'yl', oxi: 'oxy', tio: 'sulfanyl', carbonil: 'carbonyl',
+      oxo: 'oxo', hidroxi: 'hydroxy', amino: 'amino', mercapto: 'sulfanyl', carboxi: 'carboxy', formil: 'formyl', carbamoil: 'carbamoyl', ciano: 'cyano', fenil: 'phenyl', metil: 'methyl',
+      ciclo: 'cyclo', benc: 'benz', bencen: 'benzen', benceno: 'benzol', tolueno: 'toluol',
+      suf: { cooh: 'säure', coor: 'säure', conh2: 'amid', cn: 'nitril', cho: 'al', ceto: 'on', oh: 'ol', sh: 'thiol', nh2: 'amin' },
+      pos: { cooh: 'carbonsäure', coor: 'carbonsäure', conh2: 'carbonsäureamid', cn: 'carbonitril', cho: 'carbaldehyd' },
+      bz: { oh: 'phenol', nh2: 'anilin', cooh: 'benzoesäure', cho: 'benzaldehyd', conh2: 'benzamid', cn: 'benzonitril', coor: 'benzoesäure' },
+      acido: (p, c) => `${p}${c}`, ester: (p, c, a) => `${p}${c}${a}ester`,
+    },
+  };
+  const LI = LX[IDI] || LX.es;
+  const NUM = LI.NUM;
+  const MULT = ['', '', 'di', 'tri', LI.tetra, 'penta', 'hexa', 'hepta', 'octa', 'nona', LI.deca];
   const BIS = ['', '', 'bis', 'tris', 'tetrakis', 'pentakis', 'hexakis', 'heptakis', 'octakis', 'nonakis', 'decakis'];
-  const HAL = { F: 'fluoro', Cl: 'cloro', Br: 'bromo', I: 'yodo' };
+  const HAL = LI.hal;
+  // la primera letra del nombre en mayúscula (alemán): «2-Methylbutan», «(2R)-2-Chlorbutan»
+  const ajusta = (t) => (IDI === 'de' && t ? t.replace(/^(\([^)]*\)-)?((?:cis|trans)-)?([^a-zäöüß]*)([a-zäöüß])/, (m, d = '', ct = '', pre, l) => d + ct + pre + l.toUpperCase()) : t);
 
   /* ---------- Lectura del SMILES (árbol: raíz = primer átomo) ---------- */
   function leer(txt) {
@@ -311,7 +359,7 @@ const Organica = (() => {
   /* ---------- Nombre IUPAC (cadenas acíclicas) ---------- */
   const PRIO = ['cooh', 'coor', 'conh2', 'cn', 'cho', 'ceto', 'oh', 'sh', 'nh2'];
   const TERMINAL = ['cooh', 'coor', 'conh2', 'cn', 'cho'];
-  const SUFIJO = { cooh: 'oico', coor: 'oato', conh2: 'amida', cn: 'nitrilo', cho: 'al', ceto: 'ona', oh: 'ol', sh: 'tiol', nh2: 'amina' };
+  const SUFIJO = LI.suf;
   const GRUPO = { cooh: 'ácido carboxílico', coor: 'éster', conh2: 'amida', cn: 'nitrilo', cho: 'aldehído', ceto: 'cetona', oh: 'alcohol', sh: 'tiol', nh2: 'amina' };
   const cmpClave = (a, b) => {
     if (Array.isArray(a)) {
@@ -320,7 +368,7 @@ const Organica = (() => {
     }
     return a - b;
   };
-  const soloLetras = (t) => t.replace(/[^a-záéíóúñ]/gi, '').toLowerCase();
+  const soloLetras = (t) => t.replace(/[^a-záéíóúñàâçèêëîïôùûüäöß]/gi, '').toLowerCase();
 
   function nombrar(M, est) {
     const n = M.at.length, V = M.at.map((_, i) => vec(M, i)), el = (i) => M.at[i].el;
@@ -380,26 +428,26 @@ const Organica = (() => {
       const e = el(raiz), o = orden(M, desde, raiz), nb = V[raiz].filter((v) => v.j !== desde);
       if (HAL[e]) return { txt: HAL[e], complejo: false };
       if (e === 'O') {
-        if (o === 2) return { txt: 'oxo', complejo: false };
-        if (!nb.length) return { txt: 'hidroxi', complejo: false };
+        if (o === 2) return { txt: LI.oxo, complejo: false };
+        if (!nb.length) return { txt: LI.hidroxi, complejo: false };
         const q = nombreSub(nb[0].j, raiz);
-        return { txt: q.txt.replace(/il$/, 'oxi'), complejo: q.complejo };
+        return { txt: q.txt.replace(new RegExp(LI.il + '$'), LI.oxi), complejo: q.complejo };
       }
-      if (e === 'N') return { txt: 'amino', complejo: false };
+      if (e === 'N') return { txt: LI.amino, complejo: false };
       if (e === 'S') {
-        if (!nb.length) return { txt: 'mercapto', complejo: false };
+        if (!nb.length) return { txt: LI.mercapto, complejo: false };
         const q = nombreSub(nb[0].j, raiz);
-        return { txt: q.txt + 'tio', complejo: true };
+        return { txt: q.txt + LI.tio, complejo: true };
       }
       if (M.enAnillo.has(raiz)) return nombreAnillo(true, desde);
       const t = tipoC[raiz];
-      if (t === 'cooh') return { txt: 'carboxi', complejo: false };
-      if (t === 'cho') return { txt: 'formil', complejo: false };
-      if (t === 'conh2') return { txt: 'carbamoil', complejo: false };
-      if (t === 'cn') return { txt: 'ciano', complejo: false };
+      if (t === 'cooh') return { txt: LI.carboxi, complejo: false };
+      if (t === 'cho') return { txt: LI.formil, complejo: false };
+      if (t === 'conh2') return { txt: LI.carbamoil, complejo: false };
+      if (t === 'cn') return { txt: LI.ciano, complejo: false };
       if (t === 'coor') {
         const oo = V[raiz].find((v) => el(v.j) === 'O' && v.o === 1 && v.j !== desde), q = nombreSub(V[oo.j].find((v) => v.j !== raiz).j, oo.j);
-        return { txt: q.txt.replace(/il$/, 'oxi') + 'carbonil', complejo: q.complejo };
+        return { txt: q.txt.replace(new RegExp(LI.il + '$'), LI.oxi) + LI.carbonil, complejo: q.complejo };
       }
       if (t === 'ceto') throw new Error('Un grupo acilo (como el acetilo) como sustituyente todavía no se nombra');
       return cadena(null, raiz, desde);
@@ -497,21 +545,21 @@ const Organica = (() => {
       if (!nIns) base = esSub ? stem : stem + 'an';
       else {
         const partes = [];
-        if (orient.dob.length) partes.push((omiteIns ? '' : orient.dob.join(',') + '-') + (orient.dob.length > 1 ? MULT[orient.dob.length] : '') + 'en');
-        if (orient.tri.length) partes.push((omiteIns ? '' : orient.tri.join(',') + '-') + (orient.tri.length > 1 ? MULT[orient.tri.length] : '') + 'in');
+        if (orient.dob.length) partes.push((omiteIns ? '' : orient.dob.join(',') + '-') + (orient.dob.length > 1 ? MULT[orient.dob.length] : '') + LI.eno);
+        if (orient.tri.length) partes.push((omiteIns ? '' : orient.tri.join(',') + '-') + (orient.tri.length > 1 ? MULT[orient.tri.length] : '') + LI.ino);
         const a = (orient.dob.length || orient.tri.length) > 1 && (orient.dob.length ? orient.dob.length > 1 : orient.tri.length > 1) ? 'a' : '';
         base = stem + a + (omiteIns ? '' : '-') + partes.join(omiteIns ? '' : '-');
       }
       let cuerpo;
-      if (esSub) cuerpo = base + 'il';
-      else if (!tipoSuf) cuerpo = base + 'o';
+      if (esSub) cuerpo = base + LI.il;
+      else if (!tipoSuf) cuerpo = base + LI.vo;
       else {
         const m = locsSuf.length, suf = SUFIJO[tipoSuf], vocal = /^[aeiou]/.test(suf);
         const omiteSuf = terminal || omiteTodo || (tipoSuf === 'ceto' && largo === 3 && items === 1 && !nIns);
         const ls = omiteSuf ? '' : locsSuf.join(',');
         const mu = m > 1 ? MULT[m] : '';
         if (m === 1 && vocal) cuerpo = base + (ls ? `-${ls}-` : '') + suf;
-        else cuerpo = base + 'o' + (ls ? `-${ls}-` : '') + mu + suf;
+        else cuerpo = base + LI.vo + (ls ? `-${ls}-` : '') + mu + suf;
       }
       const res = { txt: (prefijo ? prefijo : '') + cuerpo, complejo: /[\d,(]/.test(prefijo + cuerpo) || nSub > 0, E, prefijo, cuerpo, tipoSuf };
       return res;
@@ -519,8 +567,8 @@ const Organica = (() => {
 
 
     // ---- anillo: como padre (ciclohexanol, benceno, fenol…) o como sustituyente (ciclohexil, fenil…)
-    const POS_PRINC = { cooh: 'carboxílico', coor: 'carboxilato', conh2: 'carboxamida', cn: 'carbonitrilo', cho: 'carbaldehído' };
-    const BENCENO = { oh: 'fenol', nh2: 'anilina', cooh: 'benzoico', cho: 'benzaldehído', conh2: 'benzamida', cn: 'benzonitrilo', coor: 'benzoato' };
+    const POS_PRINC = LI.pos;
+    const BENCENO = LI.bz;
     // los grupos principales que cuelgan de un átomo del anillo
     const gruposAnillo = (x) => {
       const r = [];
@@ -556,7 +604,7 @@ const Organica = (() => {
       }
       const L = candidatos.reduce((m, c) => { const q = cmpClave(c.clave, m.clave); return q < 0 || (q === 0 && c.desc < m.desc) ? c : m; });
       const nPrinc = princ.length, tipoSuf = !esSub && nPrinc ? principal : null, nDob = dob.length, nSub = subs.length;
-      const stem = aro ? 'benc' : 'ciclo' + NUM[nR];
+      const stem = aro ? LI.benc : LI.ciclo + NUM[nR];
       const grupos = new Map();
       for (const q of L.subs) { const nm = nombreSub(q.j, q.desde); if (!grupos.has(nm.txt)) grupos.set(nm.txt, { nm, locs: [] }); grupos.get(nm.txt).locs.push(q.loc); }
       const lista = [...grupos.values()].sort((p, q) => soloLetras(p.nm.txt).localeCompare(soloLetras(q.nm.txt)));
@@ -572,28 +620,28 @@ const Organica = (() => {
         const especial = aro && !esSub && !sistematico;
         let prefijo = prefijoDe(omiteSubs), cuerpo;
         if (esSub) {
-          cuerpo = aro ? 'fenil' : !nDob ? stem + 'il' : stem + (nDob > 1 ? 'a-' + L.dob.join(',') + '-' + MULT[nDob] + 'en' : '-' + L.dob[0] + '-en') + '-1-il';
+          cuerpo = aro ? LI.fenil : !nDob ? stem + LI.il : stem + (nDob > 1 ? 'a-' + L.dob.join(',') + '-' + MULT[nDob] + LI.eno : '-' + L.dob[0] + '-' + LI.eno) + '-1-' + LI.il;
           return { prefijo, cuerpo };
         }
         let base;
-        if (aro) base = 'bencen';
+        if (aro) base = LI.bencen;
         else if (!nDob) base = stem + 'an';
-        else if (nDob === 1) base = stem + (tipoSuf ? '-' + L.dob[0] + '-' : '') + 'en';
-        else base = stem + 'a-' + L.dob.join(',') + '-' + MULT[nDob] + 'en';
+        else if (nDob === 1) base = stem + (tipoSuf ? '-' + L.dob[0] + '-' : '') + LI.eno;
+        else base = stem + 'a-' + L.dob.join(',') + '-' + MULT[nDob] + LI.eno;
         if (!tipoSuf) {
-          if (especial && !nSub) return { prefijo: '', cuerpo: 'benceno' };
-          if (especial && nSub === 1 && lista[0].nm.txt === 'metil') return { prefijo: '', cuerpo: 'tolueno' };
-          return { prefijo, cuerpo: base + 'o' };
+          if (especial && !nSub) return { prefijo: '', cuerpo: LI.benceno };
+          if (especial && nSub === 1 && lista[0].nm.txt === LI.metil) return { prefijo: '', cuerpo: LI.tolueno };
+          return { prefijo, cuerpo: base + LI.vo };
         }
         if (especial && nPrinc === 1 && BENCENO[tipoSuf]) {
           const b = BENCENO[tipoSuf];
           return { prefijo, cuerpo: b };
         }
         const m = L.princ.length, locs = L.princ.join(','), mu = m > 1 ? MULT[m] : '', ponLoc = m > 1 || items > 1;
-        if (TERMINAL.includes(tipoSuf)) return { prefijo, cuerpo: base + 'o' + (ponLoc ? `-${locs}-` : '') + mu + POS_PRINC[tipoSuf] };
+        if (TERMINAL.includes(tipoSuf)) return { prefijo, cuerpo: base + LI.vo + (ponLoc ? `-${locs}-` : '') + mu + POS_PRINC[tipoSuf] };
         const suf = SUFIJO[tipoSuf], vocal = /^[aeiou]/.test(suf);
         if (m === 1 && vocal) return { prefijo, cuerpo: base + (ponLoc ? `-${locs}-` : '') + suf };
-        return { prefijo, cuerpo: base + 'o' + (ponLoc ? `-${locs}-` : '') + mu + suf };
+        return { prefijo, cuerpo: base + LI.vo + (ponLoc ? `-${locs}-` : '') + mu + suf };
       };
       const A = compon(false), B = compon(true);
       const txt = A.prefijo + A.cuerpo, sist = B.prefijo + B.cuerpo;
@@ -627,12 +675,12 @@ const Organica = (() => {
     let pre = desc.length ? `(${desc.map((x) => (omiteLoc ? '' : x.l) + x.t).join(',')})-` : '';
     if (R.anillo && !desc.length && est.anillo && est.anillo.relacion) pre = `${est.anillo.relacion}-`;
     const monta = (cuerpo) => {
-      if (R.tipoSuf === 'cooh') return `ácido ${pre}${cuerpo}`;
+      if (R.tipoSuf === 'cooh') return ajusta(LI.acido(pre, cuerpo));
       if (R.tipoSuf === 'coor') {
         const c = R.anillo ? M.at.findIndex((_, a) => tipoC[a] === 'coor') : P.find((a) => tipoC[a] === 'coor'), oo = V[c].find((v) => el(v.j) === 'O' && v.o === 1), alq = nombreSub(V[oo.j].find((v) => v.j !== c).j, oo.j);
-        return `${pre}${cuerpo} de ${alq.txt}o`;
+        return ajusta(LI.ester(pre, cuerpo, alq.txt));
       }
-      return pre + cuerpo;
+      return ajusta(pre + cuerpo);
     };
     const txt = monta(R.txt), alias = R.alias ? monta(R.alias) : '';
     // configuraciones de centros y dobles enlaces que están en un sustituyente y no entran en el nombre
