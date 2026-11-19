@@ -12,6 +12,21 @@
 const Version = (() => {
   const registros = {
     web: [
+      { v: '1.23', fecha: '2026-11-19', titulo: 'PDF e impresión con otro aire', subtitulo: 'Todo lo que imprimes o guardas en PDF sale ahora con un diseño editorial y una ventana para elegir qué incluir.', secciones: [
+        { icono: '📄', titulo: 'Un formato nuevo', puntos: [
+          'Cada herramienta se imprime con la **marca Ciencify** arriba, una línea del color de su asignatura, el título en cursiva, el enunciado con su barra y los datos y resultados limpios, sin botones ni desplegables.',
+          'Letra **IBM Plex** y, al pie de cada página, la dirección con la versión y «página / total».',
+          'Sin publicidad en el papel.',
+        ] },
+        { icono: '🪟', titulo: 'Ventana de impresión', puntos: [
+          'Al imprimir desde Mis ejercicios eliges **qué ejercicios**, si van **seguidos o cada uno en una página**, si llevan **índice**, qué partes incluir (enunciado, datos, resultados, desarrollo, escena) y si quieres **color o ahorrar tinta**.',
+          'El **índice** tiene forma de línea de tiempo y cada entrada lleva a su ejercicio dentro del PDF.',
+          '**Descargar PDF** usa la misma ventana: al final eliges «Guardar como PDF» como destino.',
+        ] },
+        { icono: '☑️', titulo: 'Mis ejercicios', puntos: [
+          '**Seleccionar** está arriba, y **Imprimir** y **Descargar PDF** están en los menús de cada ejercicio y de la selección.',
+        ] },
+      ] },
       { v: '1.22.1', fecha: '2026-11-19', cambios: [
         'Formulación inorgánica y Química orgánica dan ya los nombres de los compuestos en el idioma de la página: en inglés (sodium chloride, 2-methylbutane), en francés (chlorure de sodium, 2-méthylbutane) y en alemán (Natriumchlorid, 2-Methylbutan). Antes salían mezclados con español. Escribir un nombre y pasar a fórmula también funciona en cada idioma.',
       ] },

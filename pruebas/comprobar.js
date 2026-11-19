@@ -33,7 +33,7 @@ const asienta = (page) => page.evaluate(() => new Promise((ok) => requestAnimati
 // lo único que puede haber en publico/ (lo que sirven Vercel y Cloudflare): los archivos sueltos,
 // la portada, una página por asignatura y una por herramienta disponible del catálogo
 const Catalogo = require(path.join(fuente, 'catalogo.js')), Biblioteca = require(path.join(fuente, 'biblioteca.js'));
-const PUBLICABLES = ['index.html', 'novedades/index.html', 'foro/index.html', 'og.png', 'apple-touch-icon.png', 'buscador.js', 'llama.js', 'legal.css', 'aviso-legal.html', 'privacidad.html', 'cookies.html', 'contacto.html', 'fuentes/stix-two-math.woff2', 'fuentes/OFL-STIX-Two.txt', 'sitemap.xml', 'robots.txt', 'manifest.webmanifest', 'sw.js', 'pwa.js', 'offline.html', '_headers', 'icono-192.png', 'icono-512.png', 'icono-maskable-512.png',
+const PUBLICABLES = ['index.html', 'novedades/index.html', 'foro/index.html', 'og.png', 'apple-touch-icon.png', 'buscador.js', 'llama.js', 'legal.css', 'aviso-legal.html', 'privacidad.html', 'cookies.html', 'contacto.html', 'fuentes/stix-two-math.woff2', 'fuentes/OFL-STIX-Two.txt', 'fuentes/OFL-IBM-Plex.txt', 'fuentes/plex-mono-400.woff2', 'fuentes/plex-mono-500.woff2', 'fuentes/plex-sans.woff2', 'fuentes/plex-serif-400.woff2', 'fuentes/plex-serif-600.woff2', 'fuentes/plex-serif-it-400.woff2', 'sitemap.xml', 'robots.txt', 'manifest.webmanifest', 'sw.js', 'pwa.js', 'offline.html', '_headers', 'icono-192.png', 'icono-512.png', 'icono-maskable-512.png',
   ...Catalogo.asignaturas.flatMap((a) => [`${a.clave}/index.html`, ...a.herramientas.filter((h) => h.disponible).map((h) => `${a.clave}/${h.clave}/index.html`)]),
   // «Física en la vida real»: el índice y una página por fenómeno disponible
   'fenomenos/index.html', ...Catalogo.fenomenos.lista.filter((f) => f.disponible).flatMap((f) => [`fenomenos/${f.clave}/index.html`, `fenomenos/${f.clave}/imagen.webp`]),
@@ -611,12 +611,13 @@ async function navegador() {
       await p2.close();
     }
     // hoja para imprimir: dos ejercicios con su desarrollo y el estado de antes intacto
-    await page.click('.bib [data-acc=menu-general]'); await page.click('.bib [data-acc=sel-modo]'); await page.click('.bib [data-acc=sel-todos]');
+    await page.click('.bib [data-acc=sel-modo]'); await page.click('.bib [data-acc=sel-todos]');
     await page.evaluate(() => { window.print = () => { window.__hoja = document.getElementById('hoja-imp').innerHTML; }; });
     await page.click('.bib [data-acc=sel-imprimir]');
+    await page.waitForSelector('form.vi .vi-ok'); await page.click('form.vi .vi-ok');
     await page.waitForFunction(() => window.__hoja, null, { timeout: 30000 });
     const hoja = await page.evaluate(() => window.__hoja);
-    if ((hoja.match(/<section class="hoja-ej">/g) || []).length !== 2 || !/1\. Uno/.test(hoja) || !/2\. Dos/.test(hoja)) mal('Hoja: no salen los dos ejercicios');
+    if ((hoja.match(/<section class="hoja-ej"/g) || []).length !== 2 || !/<b>1<\/b>[^<]*Uno/.test(hoja) || !/<b>2<\/b>[^<]*Dos/.test(hoja)) mal('Hoja: no salen los dos ejercicios');
     if (!/Desarrollo/i.test(hoja) || !/<math/.test(hoja)) mal('Hoja: faltan el desarrollo o sus fórmulas');
     if ((await page.evaluate((k) => localStorage.getItem(k), K)) !== datos) mal('Hoja: no se devuelve el estado de antes');
     await page.evaluate(() => dispatchEvent(new Event('afterprint')));

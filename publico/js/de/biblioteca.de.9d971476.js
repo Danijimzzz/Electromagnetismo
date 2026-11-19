@@ -86,6 +86,7 @@ const Biblioteca = (() => {
 .bib-x, .bib-dots { border: 0; background: none; color: var(--muted); cursor: pointer; display: grid; place-items: center; border-radius: 50% }
 .bib-x { width: 28px; height: 28px; background: color-mix(in srgb, var(--ink) 9%, transparent) } .bib-x .bib-i { width: 13px; height: 13px }
 .bib-dots { width: 30px; height: 30px; flex: 0 0 auto } .bib-dots:hover, .bib-dots[aria-expanded=true] { background: color-mix(in srgb, var(--ink) 9%, transparent); color: var(--accent) } .bib-dots .bib-i { width: 17px; height: 17px }
+.bib-dots:disabled { opacity: .4; cursor: default; pointer-events: none }
 .bib-h .bib-dots { background: var(--vidrio, var(--bg)); border: 1px solid var(--vidrio-borde, var(--line)) }
 .bib-seg { display: grid; grid-template-columns: 1fr 1fr; margin: 0 14px 10px; padding: 3px; border-radius: 99px; background: color-mix(in srgb, var(--ink) 8%, transparent) }
 .bib-seg button { border: 0; background: none; color: var(--muted); font: 500 13px var(--f-ui, system-ui); padding: 6px; border-radius: 99px; cursor: pointer }
@@ -335,6 +336,12 @@ const Biblioteca = (() => {
       }
       return out.innerHTML;
     }
+    function exporta(its, accion, origen) {
+      if (!its.length) return;
+      if (typeof Biblioteca.abrirVentanaExportar === 'function') { Biblioteca.abrirVentanaExportar({ ids: its.map((x) => x.id), accion, origen }); return; }
+      if (accion === 'pdf') aviso('Wähle im Druckfenster „Als PDF speichern“');
+      imprimeHoja(its);
+    }
     async function imprimeHoja(its, op = {}) {
       if (!its.length) return;
       op = { ...(typeof VentanaImprimir !== 'undefined' ? VentanaImprimir.BASE : {}), indice: false, ...op };
@@ -400,7 +407,7 @@ const Biblioteca = (() => {
         const it = lib.items.find((x) => x.id === menu.id); if (!it) return '';
         g = borrando === it.id
           ? `<div class="bib-grp"><button class="bib-mi peligro" role="menuitem" data-acc="si-borrar"><span class="bib-sq" style="--c:var(--ic-rojo)">${ico('trash')}</span><span>Ja, „${esc(it.titulo.length > 20 ? it.titulo.slice(0, 19) + '…' : it.titulo)}“ löschen</span></button>${mi('no-borrar', 'x', 'cielo', 'No borrar')}</div>`
-          : `<div class="bib-grp">${mi('abrir', 'open', 'azul', 'Öffnen')}${mi('seleccionar', 'sel', 'violeta', 'Auswählen', 'um mehrere zu drucken oder zu teilen')}${mi('editar', 'pencil', 'naranja', 'Titel und Ordner')}${mi('mover', 'move', 'cielo', 'In Ordner verschieben')}${mi('fijar', 'pin', 'Gold', it.fijado ? 'Nicht mehr anheften' : 'Oben anheften')}</div><div class="bib-grp">${mi('enlace-fila', 'link', 'verde', 'Link kopieren')}${mi('exportar', 'exp', 'cielo', 'Exportieren')}${mi('borrar', 'trash', 'rojo', 'Löschen', '', ' peligro')}</div>`;
+          : `<div class="bib-grp">${mi('abrir', 'open', 'azul', 'Öffnen')}${mi('seleccionar', 'sel', 'violeta', 'Auswählen', 'um mehrere zu drucken oder zu teilen')}${mi('editar', 'pencil', 'naranja', 'Titel und Ordner')}${mi('mover', 'move', 'cielo', 'In Ordner verschieben')}${mi('fijar', 'pin', 'oro', it.fijado ? 'Nicht mehr anheften' : 'Oben anheften')}</div><div class="bib-grp">${mi('imprimir', 'print', 'naranja', 'Drucken')}${mi('pdf', 'exp', 'rosa', 'PDF herunterladen')}${mi('enlace-fila', 'link', 'verde', 'Link kopieren')}${mi('exportar', 'exp', 'cielo', 'Exportieren')}${mi('borrar', 'trash', 'rojo', 'Löschen', '', ' peligro')}</div>`;
       } else if (menu.tipo === 'carpeta') {
         g = `<div class="bib-grp">${mi('sel-carpeta', 'sel', 'violeta', 'Den Ordner auswählen')}${mi('carp-renombrar', 'pencil', 'naranja', 'Ordner umbenennen')}${mi('carp-quitar', 'folder', 'cielo', 'Ordner entfernen', 'die Aufgaben bleiben ohne Ordner erhalten')}</div>`;
       } else {
@@ -454,12 +461,12 @@ const Biblioteca = (() => {
       }
       const cab = sel
         ? `<div class="bib-h bib-hsel"><button class="bib-lnk" data-acc="sel-cancelar">Abbrechen</button><b>${sel.size ? `${sel.size} seleccionado${sel.size === 1 ? '' : 's'}` : 'Aufgaben auswählen'}</b><button class="bib-lnk" data-acc="sel-todos">${vis.length && vis.every((i) => sel.has(i.id)) ? 'Keine' : 'Alle'}</button></div>`
-        : `<div class="bib-h"><b>Meine Aufgaben</b><span class="bib-n">${n}</span><button class="bib-dots" data-acc="menu-general" aria-haspopup="menu" aria-expanded="${menu?.tipo === 'general'}" aria-label="Weitere Optionen" title="Weitere Optionen: Sicherung, Import, mehrere auswählen …">${ico('dots')}</button><button class="bib-x" data-acc="cerrar" title="Schließen" aria-label="„Meine Aufgaben“ schließen">${ico('x')}</button></div>`;
+        : `<div class="bib-h"><b>Meine Aufgaben</b><span class="bib-n">${n}</span><button class="bib-dots" data-acc="sel-modo"${n ? '' : ' disabled'} aria-label="Auswählen" title="Auswählen">${ico('sel')}</button><button class="bib-dots" data-acc="menu-general" aria-haspopup="menu" aria-expanded="${menu?.tipo === 'general'}" aria-label="Weitere Optionen" title="Weitere Optionen: Sicherung, Import, mehrere auswählen …">${ico('dots')}</button><button class="bib-x" data-acc="cerrar" title="Schließen" aria-label="„Meine Aufgaben“ schließen">${ico('x')}</button></div>`;
       const tabs = sel || !hayEj ? '' : `<div class="bib-seg" role="tablist"><button role="tab" data-acc="pestana-guardados" aria-selected="${pestana === 'guardados'}">Gespeichert</button><button role="tab" data-acc="pestana-ejemplos" aria-selected="${pestana === 'ejemplos'}">Beispiele</button></div>`;
       const cta = sel || pestana !== 'guardados' ? '' : `<div class="bib-cta"><button class="bib-prim" data-acc="nuevo">${ico('plus')} Aktuelle speichern</button><button class="bib-circ" data-acc="actualizar"${it ? '' : ' disabled'} aria-label="${it ? `Änderungen in „${esc(it.titulo)}“ speichern` : 'Änderungen speichern'}" title="${it ? `Die aktuellen Daten in „${esc(it.titulo)}“ speichern` : 'Öffne oder speichere zuerst eine Aufgabe'}">${ico('refresh')}</button></div>`;
       const buscar = (pestana === 'ejemplos' ? selsEj().some((s) => s.options.length > 5) : n > 3) ? `<input type="search" class="bib-busca" placeholder="${pestana === 'ejemplos' ? 'Beispiel suchen …' : 'Nach Titel oder Ordner suchen …'}" aria-label="Suchen" value="${esc(busca)}">` : '';
       const nSel = sel ? sel.size : 0, conf = borrando === '#sel';
-      const barra = sel ? `<div class="bib-selbar"><div class="bib-grp">${mi('sel-imprimir', 'print', 'naranja', `Blatt drucken${nSel ? ` (${nSel})` : ''}`).replace('<button', nSel ? '<button' : '<button disabled')}${mi('sel-enlaces', 'link', 'azul', 'Links kopieren').replace('<button', nSel ? '<button' : '<button disabled')}${mi('sel-exportar', 'exp', 'cielo', 'Auswahl exportieren').replace('<button', nSel ? '<button' : '<button disabled')}${mi('sel-mover', 'move', 'verde', 'In Ordner verschieben …').replace('<button', nSel ? '<button' : '<button disabled')}${conf ? `<button class="bib-mi peligro" data-acc="sel-si-borrar"><span class="bib-sq" style="--c:var(--ic-rojo)">${ico('trash')}</span><span>Ja, ${nSel} löschen</span></button>${mi('no-borrar', 'x', 'cielo', 'No borrar')}` : mi('sel-borrar', 'trash', 'rojo', 'Löschen', '', ' peligro').replace('<button', nSel ? '<button' : '<button disabled')}</div></div>` : '';
+      const barra = sel ? `<div class="bib-selbar"><div class="bib-grp">${mi('sel-imprimir', 'print', 'naranja', `Blatt drucken${nSel ? ` (${nSel})` : ''}`).replace('<button', nSel ? '<button' : '<button disabled')}${mi('sel-pdf', 'exp', 'rosa', `PDF herunterladen${nSel ? ` (${nSel})` : ''}`).replace('<button', nSel ? '<button' : '<button disabled')}${mi('sel-enlaces', 'link', 'azul', 'Links kopieren').replace('<button', nSel ? '<button' : '<button disabled')}${mi('sel-exportar', 'exp', 'cielo', 'Auswahl exportieren').replace('<button', nSel ? '<button' : '<button disabled')}${mi('sel-mover', 'move', 'verde', 'In Ordner verschieben …').replace('<button', nSel ? '<button' : '<button disabled')}${conf ? `<button class="bib-mi peligro" data-acc="sel-si-borrar"><span class="bib-sq" style="--c:var(--ic-rojo)">${ico('trash')}</span><span>Ja, ${nSel} löschen</span></button>${mi('no-borrar', 'x', 'cielo', 'No borrar')}` : mi('sel-borrar', 'trash', 'rojo', 'Löschen', '', ' peligro').replace('<button', nSel ? '<button' : '<button disabled')}</div></div>` : '';
       const pie = sel || pestana !== 'guardados' ? '' : '<div class="bib-pie"><p>Sie werden in diesem Browser gespeichert. Mach ab und zu eine Sicherung (⋮ oben): Wenn du die Browserdaten löschst, gehen sie verloren. Du kannst auch eine <code>.simu.json</code>-Datei hierher ziehen.</p></div>';
       panel.innerHTML = `${cab}${tabs}<div class="bib-acc">${cta}${f || ''}${buscar}</div><div class="bib-lista">${lista}</div>${pie}${barra}${menuHTML()}`;
       if (f) { const t = panel.querySelector('#bib-t') || panel.querySelector('#bib-c'); t.focus(); t.select(); }
@@ -488,6 +495,8 @@ const Biblioteca = (() => {
         case 'copia': descargaCopia(); break;
         case 'exportar-todo': descarga(nombreArchivo(nombre + ' ejercicios'), archivoDe(lib.items)); break;
         case 'enlace': copiaEnlace(); break;
+        case 'imprimir': if (it) exporta([it], 'imprimir', 'menu-fila'); break;
+        case 'pdf': if (it) exporta([it], 'pdf', 'menu-fila'); break;
         case 'enlace-fila': if (it) copiaEnlace(it.datos); break;
         case 'sel-modo': sel = new Set(); form = null; pestana = 'guardados'; break;
         case 'seleccionar': if (it) { sel = new Set([it.id]); form = null; } break;
@@ -495,7 +504,8 @@ const Biblioteca = (() => {
         case 'sel-cancelar': sel = null; borrando = null; break;
         case 'sel-todos': { const q = norm(busca), vis = lib.items.filter((i) => !q || norm(i.titulo + ' ' + (i.carpeta || '')).includes(q)); if (vis.every((i) => sel.has(i.id))) vis.forEach((i) => sel.delete(i.id)); else vis.forEach((i) => sel.add(i.id)); break; }
         case 'marcar': if (it) { if (sel.has(it.id)) sel.delete(it.id); else sel.add(it.id); pinta(); [...panel.querySelectorAll('.bib-it')].find((x) => x.dataset.id === it.id)?.querySelector('.bib-abre')?.focus(); } return;
-        case 'sel-imprimir': { const its = itemsSel(); if (its.length) abrirVentanaExportar({ ids: its.map((x) => x.id), accion: 'imprimir', origen: 'seleccion' }); break; }
+        case 'sel-imprimir': { const its = itemsSel(); if (its.length) exporta(its, 'imprimir', 'seleccion'); break; }
+        case 'sel-pdf': { const its = itemsSel(); if (its.length) exporta(its, 'pdf', 'seleccion'); break; }
         case 'sel-enlaces': { const its = itemsSel(); if (its.length) copiaEnlaces(its); break; }
         case 'sel-exportar': { const its = itemsSel(); if (its.length) descarga(nombreArchivo(nombre + ' seleccion'), archivoDe(its)); break; }
         case 'sel-mover': if (sel.size) form = { ids: [...sel] }; break;
@@ -524,7 +534,7 @@ const Biblioteca = (() => {
       pinta();
     });
     panel.addEventListener('keydown', (e) => {
-      if (e.target.closest('.bib-form') && e.key === 'Enter') { e.preventDefault(); guardaForm(); }
+      if (e.target.closest('.bib-form') && e.key === 'Eingabe') { e.preventDefault(); guardaForm(); }
       else if (e.key === 'Escape') { if (menu) { menu = null; borrando = null; pinta(); } else if (form) { form = null; pinta(); } else if (sel) { sel = null; pinta(); } else { abre(false); btn.focus(); } }
     });
     panel.addEventListener('input', (e) => { if (e.target.classList.contains('bib-busca')) { busca = e.target.value; const pos = e.target.selectionStart; pinta(); const s = panel.querySelector('.bib-busca'); s.focus(); s.setSelectionRange(pos, pos); } });
