@@ -135,7 +135,21 @@ const Biblioteca = (() => {
 .bib-pop { position: absolute; right: 12px; z-index: 5; width: 240px; max-width: calc(100% - 24px); max-height: calc(100% - 20px); overflow-y: auto; padding: 8px; border-radius: 20px; background: var(--vidrio-fuerte, var(--panel)); border: 1px solid var(--vidrio-borde, var(--line)); box-shadow: var(--vidrio-brillo, none), 0 14px 40px rgba(0,0,0,.28); -webkit-backdrop-filter: var(--blur, none); backdrop-filter: var(--blur, none) }
 #hoja-imp { display: none }
 @media print { .bib, .bib-scrim, .bib-aviso, .bib-btn { display: none !important } body.bib-fija { padding-left: 0 !important } }
-@media print { body.hoja-imprimiendo > *:not(#hoja-imp) { display: none !important } body.hoja-imprimiendo #hoja-imp { display: block !important } body.hoja-imprimiendo { padding: 0 !important; background: #fff !important } #hoja-imp { color: #000; font: 11pt/1.4 var(--f-ui, system-ui) } #hoja-imp h1 { font-size: 17pt; margin: 0 0 4px } #hoja-imp .hoja-sub { color: #555; margin: 0 0 14px } #hoja-imp section.hoja-ej { margin: 0 0 18px; padding-top: 10px; border-top: 1px solid #999 } #hoja-imp h2 { font-size: 13pt; margin: 0 0 8px; break-after: avoid } #hoja-imp .card { box-shadow: none !important; border: 0 !important; padding: 0 0 6px !important; background: none !important; break-inside: avoid } #hoja-imp img { max-width: 100%; max-height: 9cm; object-fit: contain } #hoja-imp .pasos li { break-inside: avoid } #hoja-imp .hoja-enun h3 { font-size: 11pt; margin: 0 0 4px } #hoja-imp .enun-imp { white-space: pre-wrap } }
+@media print { body.hoja-imprimiendo > *:not(#hoja-imp) { display: none !important } body.hoja-imprimiendo #hoja-imp { display: block !important } body.hoja-imprimiendo { padding: 0 !important; background: #fff !important }
+  #hoja-imp { color: #222; font: 10pt/1.45 "IBM Plex Sans", system-ui, sans-serif; --i-serif: "IBM Plex Serif", Georgia, serif; --i-mono: "IBM Plex Mono", ui-monospace, monospace }
+  #hoja-imp .hoja-marca { display: flex; align-items: baseline; justify-content: space-between; padding-bottom: 10pt; margin-bottom: 14pt; border-bottom: 1.5pt solid var(--accent, #555) }
+  #hoja-imp .hoja-marca .mk { font: 600 15pt var(--i-serif); color: #111 } #hoja-imp .hoja-marca .mk i { color: var(--marca, #0d6b66) }
+  #hoja-imp .hoja-marca .as { font: 500 7.5pt var(--i-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--accent, #555) }
+  #hoja-imp h1 { font: italic 400 24pt/1.2 var(--i-serif); letter-spacing: -.01em; margin: 0 0 10pt }
+  #hoja-imp .hoja-sub { color: #666; font-size: 9pt; margin: -4pt 0 16pt }
+  #hoja-imp section.hoja-ej { margin: 0 0 22pt; padding-top: 14pt; border-top: .5pt solid #bbb } #hoja-imp section.hoja-ej:first-of-type { border-top: 0; padding-top: 0 }
+  #hoja-imp h2 { font: 500 7.5pt var(--i-mono); text-transform: uppercase; letter-spacing: .14em; color: #222; border-bottom: .5pt solid var(--accent, #555); padding-bottom: 3pt; margin: 12pt 0 6pt; break-after: avoid }
+  #hoja-imp h2.hoja-tit { font: italic 400 17pt var(--i-serif); text-transform: none; letter-spacing: 0; border: 0; padding: 0; margin: 0 0 6pt; display: flex; gap: 8pt; align-items: baseline } #hoja-imp h2.hoja-tit b { font: 600 17pt var(--f-ui, system-ui); font-style: normal; color: var(--accent, #555) } #hoja-imp h2.hoja-tit small { font: 8pt var(--f-ui, system-ui); font-style: normal; color: #777 }
+  #hoja-imp h3 { font: 600 10.5pt var(--f-ui, system-ui); margin: 0 0 2pt } #hoja-imp h4 { font: 600 8pt var(--f-ui, system-ui); text-transform: uppercase; letter-spacing: .1em; color: #777; margin: 8pt 0 3pt }
+  #hoja-imp .card { box-shadow: none !important; border: 0 !important; border-radius: 0 !important; padding: 0 0 6pt !important; background: none !important; break-inside: avoid }
+  #hoja-imp .hoja-enun, #hoja-imp .stmt { border-left: 2pt solid var(--accent, #555) !important; background: none !important; padding: 0 0 0 12pt !important; margin: 0 0 12pt; font: italic 10.5pt/1.5 var(--i-serif); white-space: pre-wrap } #hoja-imp .hoja-enun h3 { font: 700 7.5pt var(--f-ui, system-ui); font-style: normal; text-transform: uppercase; letter-spacing: .12em; color: var(--accent, #555); margin: 0 0 3pt }
+  #hoja-imp .result, #hoja-imp .destacado { border-left: 3pt solid var(--accent, #555); padding-left: 10pt }
+  #hoja-imp img { max-width: 100%; max-height: 9cm; object-fit: contain } #hoja-imp .pasos li, #hoja-imp .steps-b { break-inside: avoid } #hoja-imp .enun-imp { white-space: pre-wrap } }
 `;
 
   function monta(herramienta, clave, opts = {}) {
@@ -316,12 +330,14 @@ const Biblioteca = (() => {
         c.querySelectorAll('button, .controles, .compartir, .tools, .chips, .teoria, footer, header.top, nav, script, style, [hidden]').forEach((e) => e.remove());
         c.querySelectorAll('[id]').forEach((e) => e.removeAttribute('id'));
         c.querySelectorAll('details').forEach((e) => { e.open = true; });
+        c.dataset.h = n.querySelector('.campos') ? 'datos' : n.classList.contains('pasos') ? 'desarrollo' : n.querySelector('canvas, img') ? 'escena' : 'resultados';
         c.classList.add('card'); out.appendChild(c);
       }
       return out.innerHTML;
     }
-    async function imprimeHoja(its) {
+    async function imprimeHoja(its, op = {}) {
       if (!its.length) return;
+      op = { ...(typeof VentanaImprimir !== 'undefined' ? VentanaImprimir.BASE : {}), indice: false, ...op };
       aviso('Préparation de la feuille…');
       let original = null; try { original = localStorage.getItem(clave); } catch (e) { /* sin almacenamiento */ }
       const fr = document.createElement('iframe');
@@ -344,13 +360,25 @@ const Biblioteca = (() => {
       document.getElementById('hoja-imp')?.remove();
       const cont = document.createElement('div'); cont.id = 'hoja-imp';
       const fecha = new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
-      cont.innerHTML = `<h1>${esc(nombre)}</h1><p class="hoja-sub">Feuille d'exercices · ${its.length} exercice${its.length === 1 ? '' : 's'} · ${esc(fecha)} · Ciencify</p>`
-        + trozos.map((t, i) => `<section class="hoja-ej"><h2>${i + 1}. ${esc(t.it.titulo)}${t.it.carpeta ? ` <small>(${esc(t.it.carpeta)})</small>` : ''}</h2>${t.html}</section>`).join('');
+      const marca = `<div class="hoja-marca"><span class="mk">${document.querySelector('header.top .logo')?.innerHTML || 'Cienci<i>fy</i>'}</span><span class="as">${esc(document.querySelector('.miga a')?.textContent || '')}</span></div>`;
+      const uno = its.length === 1, tituloHoja = op.titulo || (uno ? trozos[0].it.titulo : nombre);
+      const enunDe = (html) => { const d = new DOMParser().parseFromString(html, 'text/html'), e = d.querySelector('.stmt, .hoja-enun .enun-imp, .hoja-enun'); return (e ? e.textContent.replace(/^\s*Enunciado\s*/, '').trim() : '').replace(/\s+/g, ' ').slice(0, 150); };
+      const indice = !uno && op.indice && (typeof VentanaImprimir !== 'undefined') ? VentanaImprimir.indiceHTML(tituloHoja, `${its.length} exercices · ${fecha}`, trozos.map((t) => ({ titulo: t.it.titulo, carpeta: t.it.carpeta, enun: op.estilo === 'enunciado' ? enunDe(t.html) : '' })), op.estilo === 'enunciado') : '';
+      cont.innerHTML = uno
+        ? `${marca}<h1>${esc(tituloHoja)}</h1>${trozos[0].html}<div class="hoja-fin"></div>`
+        : `${marca}${indice ? '' : `<h1>${esc(tituloHoja)}</h1><p class="hoja-sub">Feuille d'exercices · ${its.length} exercices · ${esc(fecha)}</p>`}${indice}`
+          + trozos.map((t, i) => `<section class="hoja-ej" id="hoja-ej-${i + 1}"><h2 class="hoja-tit"><b>${i + 1}</b>${esc(t.it.titulo)}${t.it.carpeta ? ` <small>(${esc(t.it.carpeta)})</small>` : ''}</h2>${t.html}</section>`).join('');
+      cont.classList.toggle('uno', uno); cont.classList.toggle('hoja-sep', !uno && op.disposicion === 'paginas');
+      cont.classList.toggle('sin-enun', op.enun === false); cont.classList.toggle('sin-datos', op.datos === false);
+      cont.classList.toggle('sin-res', op.res === false || op.tipo === 'enunciados'); cont.classList.toggle('sin-des', op.des === false || op.tipo === 'enunciados' || op.tipo === 'resultados');
+      cont.classList.toggle('sin-esc', op.esc === false); cont.classList.toggle('solo-enun', op.tipo === 'enunciados'); cont.classList.toggle('bn', op.tinta === 'bn');
+      if ((typeof VentanaImprimir !== 'undefined')) VentanaImprimir.estilos();
+      const tituloAntes = document.title; if (op.titulo) document.title = op.titulo;
       document.body.appendChild(cont);
       const tema = document.documentElement.getAttribute('data-theme');
       const fin = () => {
         removeEventListener('afterprint', fin);
-        document.body.classList.remove('hoja-imprimiendo'); cont.remove();
+        document.body.classList.remove('hoja-imprimiendo'); cont.remove(); document.title = tituloAntes;
         if (tema === null) document.documentElement.removeAttribute('data-theme'); else document.documentElement.setAttribute('data-theme', tema);
       };
       addEventListener('afterprint', fin);
@@ -467,7 +495,7 @@ const Biblioteca = (() => {
         case 'sel-cancelar': sel = null; borrando = null; break;
         case 'sel-todos': { const q = norm(busca), vis = lib.items.filter((i) => !q || norm(i.titulo + ' ' + (i.carpeta || '')).includes(q)); if (vis.every((i) => sel.has(i.id))) vis.forEach((i) => sel.delete(i.id)); else vis.forEach((i) => sel.add(i.id)); break; }
         case 'marcar': if (it) { if (sel.has(it.id)) sel.delete(it.id); else sel.add(it.id); pinta(); [...panel.querySelectorAll('.bib-it')].find((x) => x.dataset.id === it.id)?.querySelector('.bib-abre')?.focus(); } return;
-        case 'sel-imprimir': { const its = itemsSel(); if (its.length) imprimeHoja(its); break; }
+        case 'sel-imprimir': { const its = itemsSel(); if (its.length) abrirVentanaExportar({ ids: its.map((x) => x.id), accion: 'imprimir', origen: 'seleccion' }); break; }
         case 'sel-enlaces': { const its = itemsSel(); if (its.length) copiaEnlaces(its); break; }
         case 'sel-exportar': { const its = itemsSel(); if (its.length) descarga(nombreArchivo(nombre + ' seleccion'), archivoDe(its)); break; }
         case 'sel-mover': if (sel.size) form = { ids: [...sel] }; break;
@@ -512,8 +540,19 @@ const Biblioteca = (() => {
     document.addEventListener('change', sigue); document.addEventListener('input', sigue);
     pinta(); abre(!!ui.abierta);
     if (selsEj().some((s) => s.options.length > 1)) document.body.classList.add('bib-ejemplos');
-    return { get items() { return lib.items; }, abre, importa: (t) => { const n = importa(t); guardaLib(); pinta(); return n; }, archivoDe };
+    function abrirVentanaExportar({ ids, accion = 'imprimir', origen = '' } = {}) {
+      refresca();
+      const its = ids && ids.length ? ids.map((id) => lib.items.find((x) => x.id === id)).filter(Boolean) : (sel && sel.size ? itemsSel() : lib.items);
+      if (!its.length) { aviso('Aucun exercice enregistré à imprimer'); return; }
+      if (typeof VentanaImprimir === 'undefined') { imprimeHoja(its); return; }
+      sel = null; menu = null; pinta();
+      VentanaImprimir.abre({ titulo: nombre, items: its, accion, origen, imprime: (op) => imprimeHoja(its, op) });
+    }
+    const inst = { get items() { return lib.items; }, abre, abrirVentanaExportar, importa: (t) => { const n = importa(t); guardaLib(); pinta(); return n; }, archivoDe };
+    ultima = inst; return inst;
   }
-  return { monta, FORMATO, FORMATO_COPIA, copia, restaura, migraElectro };
+  let ultima = null;
+  const abrirVentanaExportar = (a) => (ultima ? ultima.abrirVentanaExportar(a) : null);
+  return { monta, abrirVentanaExportar, FORMATO, FORMATO_COPIA, copia, restaura, migraElectro };
 })();
 

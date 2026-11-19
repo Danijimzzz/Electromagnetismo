@@ -58,7 +58,7 @@ const lista = () => [...Catalogo.asignaturas.flatMap((a) => a.herramientas.filte
 // Enunciado (enunciado.js): en toda herramienta con estado que guardar, salvo las del catálogo con `enunciado: false`
 const conEnunciado = (h) => h.asignatura !== 'fenomenos' && h.guarda !== null && h.enunciado !== false;
 // (enunciado.js va el primero tras herramienta.js: lee el enunciado guardado antes de que arranquen las apps)
-const ficherosDe = (h) => ['herramienta.js', ...(conEnunciado(h) ? ['enunciado.js'] : []), ...h.scripts, ...(h.asignatura === 'fenomenos' ? [] : ['biblioteca.js', 'practica.js']), 'personal.js'];
+const ficherosDe = (h) => ['herramienta.js', 'imprimir.js', ...(conEnunciado(h) ? ['enunciado.js'] : []), ...h.scripts, ...(h.asignatura === 'fenomenos' ? [] : ['biblioteca.js', 'ventana-imprimir.js', 'practica.js']), 'personal.js'];
 let _externos = null;
 const externos = () => {
   if (_externos) return _externos;

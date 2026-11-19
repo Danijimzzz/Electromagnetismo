@@ -28,11 +28,11 @@ const Enunciado = (() => {
 .enun-bloque .enun-imp { display: none }
 body:has(.prac) .enun-bloque { display: none }
 @media print {
-  .enun-bloque { border: 0; border-left: 3px solid #555; border-radius: 0; background: none; margin: 0 0 12px; break-inside: avoid }
+  .enun-bloque { border: 0; border-left: 2pt solid var(--accent, #555); border-radius: 0; background: none; margin: 0 0 12px; break-inside: avoid }
   .enun-bloque > summary, .enun-bloque .enun-cuerpo, .enun-bloque .enun-ayuda { display: none !important }
   .enun-bloque.vacio { display: none !important }
-  .enun-bloque .enun-imp { display: block; padding: 2px 0 2px 12px; color: #000; font: 11.5pt/1.45 var(--f-ui, system-ui); white-space: pre-wrap }
-  .enun-bloque .enun-imp::before { content: 'Enunciado'; display: block; font: 700 9.5pt var(--f-ui, system-ui); text-transform: uppercase; letter-spacing: .06em; color: #444; margin-bottom: 3px }
+  .enun-bloque .enun-imp { display: block; padding: 2px 0 2px 12px; color: #222; font: italic 11pt/1.5 "IBM Plex Serif", Georgia, serif; white-space: pre-wrap }
+  .enun-bloque .enun-imp::before { content: 'Enunciado'; display: block; font: normal 500 7.5pt "IBM Plex Mono", ui-monospace, monospace; text-transform: uppercase; letter-spacing: .12em; color: var(--accent, #555); margin-bottom: 3px }
 }`;
 
   function monta(carpeta, clave) {
@@ -43,16 +43,16 @@ body:has(.prac) .enun-bloque { display: none }
     let texto = INICIAL, pendiente = false;
     const st = document.createElement('style'); st.textContent = CSS; document.head.appendChild(st);
     const sec = document.createElement('details'); sec.className = 'enun-bloque';
-    sec.innerHTML = `<summary><span>Énoncé de l'exercice</span><span class="enun-n" aria-hidden="true"></span></summary>
-<div class="enun-cuerpo"><textarea id="enunciado-texto" maxlength="${MAX}" rows="4" aria-label="Énoncé de l'exercice" placeholder="Écrivez ici l'énoncé de l'exercice (facultatif). Il est enregistré avec l'exercice dans « Mes exercices » et apparaît à l'impression."></textarea>
-<p class="enun-ayuda">Les formules s'écrivent entre $…$, par exemple $E = k·q/r^2$.</p></div>
+    sec.innerHTML = `<summary><span>Aufgabenstellung</span><span class="enun-n" aria-hidden="true"></span></summary>
+<div class="enun-cuerpo"><textarea id="enunciado-texto" maxlength="${MAX}" rows="4" aria-label="Aufgabenstellung" placeholder="Schreibe hier die Aufgabenstellung (optional). Sie wird mit der Aufgabe unter „Meine Aufgaben“ gespeichert und beim Drucken ausgegeben."></textarea>
+<p class="enun-ayuda">Formeln stehen zwischen $…$, zum Beispiel $E = k·q/r^2$.</p></div>
 <div class="enun-imp" aria-hidden="true"></div>`;
     ancla.after(sec);
     const area = sec.querySelector('textarea'), imp = sec.querySelector('.enun-imp'), n = sec.querySelector('.enun-n');
     function pintaImp() {
       const t = texto.trim();
       sec.classList.toggle('vacio', !t);
-      n.textContent = t ? (t.length > 60 ? t.slice(0, 57).replace(/\s+\S*$/, '') + '…' : t).replace(/\s+/g, ' ') : 'facultatif';
+      n.textContent = t ? (t.length > 60 ? t.slice(0, 57).replace(/\s+\S*$/, '') + '…' : t).replace(/\s+/g, ' ') : 'optional';
       imp.innerHTML = t && typeof Mates !== 'undefined' && t.includes('$') ? Mates.html(esc(t)) : esc(t);
     }
     const enMarco = window.top !== window;

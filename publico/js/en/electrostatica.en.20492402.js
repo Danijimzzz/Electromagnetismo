@@ -3613,7 +3613,7 @@ const Canvas = (() => {
     const srcRows = scen.sources.map((s) => { const def = SOURCES[s.type]; return `<li><b>${esc(s.name)}</b> (${esc(def.label)}): ${isUnk(s.id) ? '<i>unknown value</i>' : `valor = ${esc(s.s.c)}${s.s.sym ? '·' + esc(s.s.sym) : ''}`}; ${esc(describe(def, s))}</li>`; }).join('');
     let unk = '';
     if (out?.unknown) {
-      unk = `<section class="card"><h2>Unknowns</h2><ul>${scen.unknown.conds.map((c, j) => `<li>Condition ${j + 1}: ${esc(CONDS[c.type].label)}; ${esc(describe(CONDS[c.type], c))}</li>`).join('')}</ul>
+      unk = `<section class="card" data-h="resultados"><h2>Unknowns</h2><ul>${scen.unknown.conds.map((c, j) => `<li>Condition ${j + 1}: ${esc(CONDS[c.type].label)}; ${esc(describe(CONDS[c.type], c))}</li>`).join('')}</ul>
         <div class="result math">${out.unknown.error ? `<div class="warn">${out.unknown.error}</div>` : out.unknown.html}</div>${out.unknown.steps ? `<h4>Working</h4><div class="steps-b math">${out.unknown.steps}</div>` : ''}</section>`;
     }
     const qs = scen.analyses.map((an, i) => {
@@ -3624,7 +3624,7 @@ const Canvas = (() => {
     return `${h1 ? `<${h1}>${esc(titulo)}</${h1}>` : ''}${enunciado.trim() ? `<div class="stmt">${esc(enunciado.trim())}</div>` : ''}
 <p class="hint">Length unit: ${scen.mode === 'si' ? 'm (SI numeric mode)' : esc(scen.unit || 'a')}</p>
 ${img ? `<img class="snap" alt="Problem diagram" src="${img}">` : ''}
-<section class="card"><h2>Data</h2><ul>${srcRows}</ul></section>${unk}<h2>Questions</h2>${qs}`;
+<section class="card" data-h="datos"><h2>Data</h2><ul>${srcRows}</ul></section>${unk}<h2>Questions</h2>${qs}`;
   }
   function exportHTML() {
     const esc = Fmt.esc;
@@ -3649,7 +3649,7 @@ ${fichaHTML(cur.title, cur.statement, { img, charts })}
 
   // La hoja para imprimir varios ejercicios es la de «Mis ejercicios» (biblioteca.js): abre cada ejercicio en un marco oculto
   // de esta misma página y pide su ficha con window.simuFicha (el título y el número los pone la hoja).
-  window.simuFicha = () => (out ? fichaHTML(cur.title, cur.statement, { h1: null }) : '');
+  window.simuFicha = () => (out ? fichaHTML(cur.title, cur.statement, { h1: null, img: Canvas.snapshot() }) : '');
 
   /* ---------------- controles fijos ---------------- */
   const typing = (t) => !!t && (t.id === 'title' || t.id === 'statement' || t.id === 'search' || !!t.closest?.('.prac'));

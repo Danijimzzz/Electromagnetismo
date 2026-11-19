@@ -172,7 +172,6 @@ select.in { font-family: var(--f-ui); padding-right: 4px }
 #flash { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(18px + env(safe-area-inset-bottom, 0px)); background: var(--ink); color: var(--bg); padding: 7px 14px; border-radius: 8px; font-size: 13px; z-index: 20 }
 @container main (max-width: 520px) { .row { grid-template-columns: minmax(0, 1fr) } }
 #hoja-imp { display: none }
-@media print { body.hoja-imprimiendo > *:not(#hoja-imp) { display: none !important } body.hoja-imprimiendo #hoja-imp { display: block !important } body.hoja-imprimiendo { padding: 0 !important; background: #fff !important } #hoja-imp { color: #000; font: 11pt/1.4 var(--f-ui) } #hoja-imp h1 { font-size: 17pt; margin: 0 0 4px } #hoja-imp .hoja-sub { color: #555; margin: 0 0 14px } #hoja-imp section.hoja-ej { margin: 0 0 18px; padding-top: 10px; border-top: 1px solid #999 } #hoja-imp section.hoja-ej h2 { font: 600 10pt var(--f-ui); text-transform: uppercase; letter-spacing: .06em; color: #555; margin: 10px 0 4px; break-after: avoid } #hoja-imp section.hoja-ej > h2:first-child { font: 600 13pt var(--f-ui); text-transform: none; letter-spacing: 0; color: #000; margin: 0 0 8px } #hoja-imp .card { box-shadow: none !important; border: 0 !important; padding: 0 0 6px !important; background: none !important; break-inside: avoid } #hoja-imp .stmt { white-space: pre-wrap; font: 11pt/1.4 var(--f-math); background: none; border: 1px solid #bbb; padding: 6px 8px } #hoja-imp img { max-width: 100%; max-height: 9cm; object-fit: contain } }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important } }
 
 body { font: 14px/1.45 var(--f-ui); margin: 0 }
@@ -434,6 +433,28 @@ body.bib-ejemplos select[id^="ejemplo"] { display:none }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .tema .sol { display:block } :root:not([data-theme="light"]) .tema .luna { display:none } }
 @media (max-width:700px) { .top > .tema { margin-left:auto } .top > nav { order:1 } }
 
+.imp-marca { display:none }
+@media print {
+  :root { --i-serif:"IBM Plex Serif", Georgia, serif; --i-sans:"IBM Plex Sans", system-ui, sans-serif; --i-mono:"IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace }
+  header.top, .miga, .prac-btn, .fav-btn, .bib, .bib-scrim, .bib-aviso, .bib-btn, footer, .teoria, .preguntas, .limites, .compartir, .anuncio, .adsbygoogle, .relacionadas, .vida-real, .llama, .lg, .lg-ban, #ejemplos, .controles, .nota:empty, .error, .chips, .stage-bar, .x, .tools, .exportar, .exportar-aviso, .enun-bloque > summary, .enun-cuerpo, .enun-ayuda, .sv-ads { display:none !important }
+  html, body { background:#fff !important; color:#222 !important }
+  body { padding:0 !important; font:10pt/1.45 var(--i-sans) !important }
+  .wrap { max-width:none !important; padding:0 !important; margin:0 !important }
+  .imp-marca { display:flex !important; align-items:baseline; justify-content:space-between; padding-bottom:10pt; margin-bottom:14pt; border-bottom:1.5pt solid var(--accent) }
+  .imp-marca .mk { font:600 15pt var(--i-serif); color:#111 } .imp-marca .mk i { color:var(--marca, #0d6b66) }
+  .imp-marca .as { font:500 7.5pt var(--i-mono); letter-spacing:.1em; text-transform:uppercase; color:var(--accent) }
+  h1 { font:italic 400 24pt/1.2 var(--i-serif) !important; letter-spacing:-.01em; margin:0 0 10pt !important }
+  .lead { color:#555 !important; font-size:9.5pt !important; margin:0 0 12pt !important }
+  .layout { display:block !important }
+  .card { background:none !important; border:0 !important; border-radius:0 !important; box-shadow:none !important; backdrop-filter:none !important; padding:0 !important; margin:0 0 14pt !important; break-inside:avoid }
+  .card h2 { font:500 7.5pt var(--i-mono) !important; text-transform:uppercase; letter-spacing:.14em; color:#222 !important; border-bottom:.5pt solid var(--accent); padding-bottom:3pt; margin:0 0 6pt !important; break-after:avoid }
+  .destacado { border-left:3pt solid var(--accent) !important; padding-left:10pt !important }
+  .campos select, .campos input, .campos textarea, select.in, input.in { -webkit-appearance:none !important; appearance:none !important; background:none !important; border:0 !important; padding:0 !important; box-shadow:none !important; color:#222 !important }
+  .pasos li, .resumen > * { break-inside:avoid }
+  canvas { max-height:9cm; object-fit:contain }
+  .cvwrap { height:9cm !important; min-height:0 !important }
+  .enun-bloque { border:0 !important; border-left:2pt solid var(--accent) !important; background:none !important; padding:0 0 0 12pt !important; margin:0 0 12pt !important; break-inside:avoid }
+}
 .main, .app:not(.closed) .main { padding:0 }
 .app, .app.closed { display:block !important }
 footer { text-align:center; font-size:12.5px; color:var(--muted); padding:20px 16px 8px } footer a { color:var(--muted); margin:0 6px; white-space:nowrap; display:inline-block }
@@ -450,7 +471,7 @@ footer { text-align:center; font-size:12.5px; color:var(--muted); padding:20px 1
 .teoria, .preguntas { margin-top:28px; max-width:860px; font-size:15px; line-height:1.6; color:var(--ink) }
 .teoria h2, .preguntas h2 { font:600 19px var(--f-ui); margin:24px 0 6px } .preguntas h3 { font:600 15px var(--f-ui); margin:14px 0 2px } .preguntas p { margin:0 } .teoria ul { padding-left:20px } .teoria li { margin-bottom:4px }
 .limites { margin-top:28px; max-width:860px; font-size:15px; line-height:1.6; padding:12px 18px 14px; background:var(--panel); border:1px solid var(--line); border-left:4px solid var(--accent); border-radius:8px } .limites h2 { font:600 17px var(--f-ui); margin:0 0 6px } .limites ul { margin:0; padding-left:20px } .limites li + li { margin-top:4px }
-.teoria .f { font-size:16px; background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:8px 12px; display:inline-block; max-width:100%; overflow-x:auto }</style>
+.teoria .f { font-size:16px; background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:8px 12px; display:inline-block; max-width:100%; overflow-x:auto }@page { size:A4; margin:1.4cm 1.5cm 1.8cm; @bottom-left { content :"simulaciencia.vercel.app/electromagnetismo/electrostatica/\00a0·\00a0v0.11"; font:7pt "IBM Plex Mono", ui-monospace, monospace; color:#666 } @bottom-right { content :counter(page) " / " counter(pages); font:7pt "IBM Plex Mono", ui-monospace, monospace; color:#666 } }</style>
 <div class="app" id="app">
   <main class="main">
 <header class="top"><a class="logo" href="../../../">Cienci<i>fy</i></a><nav aria-label="Fächer"><a href="../../../">Start</a><a href="../" aria-current="page">Elektromagnetismus</a><a href="../../fisica/">Allgemeine Physik</a><a href="../../quimica/">Chemie</a><a href="../../matematicas/">Mathematik</a><a href="../../estadistica/">Statistik</a><a href="../../circuitos/">Schaltungen</a><a href="../../economia/">Wirtschaft</a><a href="../../fenomenos/">Alltagsphysik</a></nav><a class="foro" href="../../foro/"><span aria-hidden="true">💬</span>Forum</a><form action="../../../" role="search"><input class="buscar" type="search" name="q" placeholder="Suchen: Biot-Savart, Molarität …" aria-label="Werkzeuge suchen (Kürzel: Taste /)" title="Kürzel: / oder Strg+K"></form><style>
@@ -758,6 +779,8 @@ window.GUIA_IMG = {
   "vista3d": "guia/vista3d.webp",
 };
 </script>
-<script src="../../../js/de/biblioteca.de.255cecb4.js"></script>
-<script src="../../../js/de/electrostatica.de.26ec5d4e.js"></script>
+<script src="../../../js/de/imprimir.de.4a9fb719.js"></script>
+<script src="../../../js/de/biblioteca.de.50b3cc44.js"></script>
+<script src="../../../js/de/ventana-imprimir.de.85d0f7b2.js"></script>
+<script src="../../../js/de/electrostatica.de.93c13954.js"></script>
 </html>

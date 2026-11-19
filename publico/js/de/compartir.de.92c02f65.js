@@ -122,7 +122,7 @@ const Compartir = (() => {
   const filas = (res, tex) => { const ds = [...res.children].filter((d) => !d.hidden && d.tagName === 'DIV' && d.querySelector(':scope > span')); return ds.length ? ds.map((d) => fila(d, tex)) : [limpia(lee(res, tex))].filter(Boolean); };
   function bloques(tex) {
     const preguntas = [...document.querySelectorAll('[data-res]')];
-    if (preguntas.length) return preguntas.map((r, i) => { const p = r.closest('.pieza'), nom = p && p.querySelector('.badge'), st = document.querySelector(`[data-steps="${r.dataset.res}"] ol`); return { titulo: nom ? nom.textContent : `Question ${i + 1}`, items: [limpia(lee(r, tex))], pasos: st ? [...st.children] : [] }; });
+    if (preguntas.length) return preguntas.map((r, i) => { const p = r.closest('.pieza'), nom = p && p.querySelector('.badge'), st = document.querySelector(`[data-steps="${r.dataset.res}"] ol`); return { titulo: nom ? nom.textContent : `Frage ${i + 1}`, items: [limpia(lee(r, tex))], pasos: st ? [...st.children] : [] }; });
     const res = document.querySelector('#resumen') || document.querySelector('#res');
     const vis = (e) => !e.hidden && e.offsetParent !== null;
     const grupos = res && !res.querySelector(':scope > div > span') ? [...res.querySelectorAll('.resumen')] : res ? [] : [...document.querySelectorAll('.resumen, .valores, .resultado')].filter(vis);
@@ -142,7 +142,7 @@ const Compartir = (() => {
     const bs = bloques(tex);
     const tabla = (b) => (b.tabla ? [...b.tabla.querySelectorAll('tr')].map((tr) => [...tr.children].map((c) => limpia(lee(c, tex)).replace(/\n+/g, ' ').replace(/\|/g, '/'))) : null);
     const enun = (window.EnunciadoApp?.texto || '').trim();
-    if (!tex) return [tit, ...(enun ? ['', 'Statement', enun] : []), ...bs.flatMap((b) => ['', ...(b.titulo ? [b.titulo] : []), ...(b.items.length ? ['Results', ...b.items.map((q) => `· ${q.replace(/\n+/g, '; ')}`)] : []), ...(b.pasos.length ? ['', 'Working', ...b.pasos.map((li, i) => { const q = paso(li); return `${i + 1}. ${q.t}${q.t ? ': ' : ''}${q.c}`; })] : []), ...(b.tabla ? ['', 'Table', ...tabla(b).map((f) => f.join(' | '))] : [])]), '', enlace()].join('\n');
+    if (!tex) return [tit, ...(enun ? ['', 'Aufgabenstellung', enun] : []), ...bs.flatMap((b) => ['', ...(b.titulo ? [b.titulo] : []), ...(b.items.length ? ['Ergebnisse', ...b.items.map((q) => `· ${q.replace(/\n+/g, '; ')}`)] : []), ...(b.pasos.length ? ['', 'Rechenweg', ...b.pasos.map((li, i) => { const q = paso(li); return `${i + 1}. ${q.t}${q.t ? ': ' : ''}${q.c}`; })] : []), ...(b.tabla ? ['', 'Tabelle', ...tabla(b).map((f) => f.join(' | '))] : [])]), '', enlace()].join('\n');
     return [`% ${tit} · Ciencify`, `% ${enlace()}`, ...(enun ? ['\\section*{Enunciado}', enun.split('$').map((t, i) => (i % 2 && typeof Mates !== 'undefined' ? `$${latex(t)}$` : i % 2 ? `$${escTex(t)}$` : escTex(t).replace(/\n/g, ' \\\\ '))).join('')] : []), ...bs.flatMap((b) => { const sec = b.titulo ? '\\subsection*' : '\\section*'; return [...(b.titulo ? [`\\section*{${escTex(b.titulo)}}`] : []), ...(b.items.length ? [`${sec}{Resultados}`, '\\begin{itemize}', ...b.items.map((q) => `  \\item ${q.replace(/\n+/g, '; ')}`), '\\end{itemize}'] : []), ...(b.pasos.length ? [`${sec}{Desarrollo}`, '\\begin{enumerate}', ...b.pasos.map((li) => { const q = paso(li); return `  \\item ${q.t ? `\\textbf{${q.t}.} ` : ''}${q.c}`; }), '\\end{enumerate}'] : []), ...(b.tabla ? ((f) => [`${sec}{Tabla}`, `\\begin{tabular}{l${'r'.repeat(Math.max(0, Math.max(...f.map((x) => x.length)) - 1))}}`, '\\hline', ...f.map((x) => `${x.join(' & ')} \\\\`), '\\hline', '\\end{tabular}'])(tabla(b)) : [])]; })].join('\n');
   }
 
@@ -160,7 +160,7 @@ const Compartir = (() => {
     if ((!card && !lead) || document.querySelector('.compartir')) return;
     const caja = document.createElement('div');
     caja.className = 'controles compartir';
-    caja.innerHTML = '<button class="btn" type="button" data-a="enlace">Copy link</button><button class="btn" type="button" data-a="texto">Copy as text</button><button class="btn" type="button" data-a="latex">Copy as LaTeX</button><button class="btn" type="button" data-a="imprimir">Print or PDF</button>' + (document.querySelector('#tabla') ? '<button class="btn" type="button" data-a="tabla">Copy table</button>' : '');
+    caja.innerHTML = '<button class="btn" type="button" data-a="enlace">Link kopieren</button><button class="btn" type="button" data-a="texto">Als Text kopieren</button><button class="btn" type="button" data-a="latex">Als LaTeX kopieren</button><button class="btn" type="button" data-a="imprimir">Drucken oder PDF</button>' + (document.querySelector('#tabla') ? '<button class="btn" type="button" data-a="tabla">Tabelle kopieren</button>' : '');
     caja.style.margin = '0 0 10px';
     if (card) card.querySelector('h2').after(caja); else lead.after(caja);
     caja.addEventListener('click', async (e) => {
@@ -168,16 +168,10 @@ const Compartir = (() => {
       const a = b.dataset.a;
       if (a === 'imprimir') { window.print(); return; }
       const ok = await copia(a === 'enlace' ? enlace() : a === 'tabla' ? tablaTSV() : ejercicio(a === 'latex'));
-      const antes = b.textContent; b.textContent = ok ? 'Copied!' : 'Could not copy'; setTimeout(() => { b.textContent = antes; }, 1600);
+      const antes = b.textContent; b.textContent = ok ? 'Kopiert!' : 'Kopieren war nicht möglich'; setTimeout(() => { b.textContent = antes; }, 1600);
     });
-    const css = document.createElement('style');
-    css.textContent = '@media print { .top, .miga, .bib, .bib-scrim, footer, .teoria, .preguntas, .compartir, #ejemplos, .controles, .nota:empty, .error[hidden] { display: none !important } html, body { background: #fff !important } .wrap { max-width: none; padding: 0 } .layout { display: block !important } .card { break-inside: avoid; box-shadow: none !important } .pasos li { break-inside: avoid } canvas { max-height: 9cm; object-fit: contain } .chips, .stage-bar, .x, .tools { display: none !important } .cvwrap { height: 9cm !important; min-height: 0 !important } }';
-    document.head.appendChild(css);
-    let tema = null, cerrados = [];
-    addEventListener('beforeprint', () => { tema = document.documentElement.getAttribute('data-theme'); document.documentElement.setAttribute('data-theme', 'light'); cerrados = [...document.querySelectorAll('details:not([open])')]; cerrados.forEach((d) => { d.open = true; }); dispatchEvent(new Event('resize')); });
-    addEventListener('afterprint', () => { if (tema === null) document.documentElement.removeAttribute('data-theme'); else document.documentElement.setAttribute('data-theme', tema); cerrados.forEach((d) => { d.open = false; }); dispatchEvent(new Event('resize')); });
     const err = document.querySelector('#error');
-    if (err && ['taylor', 'fourier', 'edos', 'laplace', 'derivadas', 'campos'].includes(CLAVE.slice(0, -3))) { const q = document.createElement('p'); q.className = 'nota'; q.id = 'nota-log'; q.textContent = 'ln is the natural logarithm and log is the decimal one (log₁₀).'; err.before(q); }
+    if (err && ['taylor', 'fourier', 'edos', 'laplace', 'derivadas', 'campos'].includes(CLAVE.slice(0, -3))) { const q = document.createElement('p'); q.className = 'nota'; q.id = 'nota-log'; q.textContent = 'ln ist der natürliche Logarithmus und log der dekadische (log₁₀).'; err.before(q); }
   }
   botones();
   return { enlace, ejercicio, tablaTSV, latex, texto, CLAVE };
