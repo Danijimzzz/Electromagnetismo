@@ -12,6 +12,9 @@
 const Version = (() => {
   const registros = {
     web: [
+      { v: '1.22.1', fecha: '2026-11-19', cambios: [
+        'En inglés, francés y alemán, los subíndices de máximo y mínimo de las fórmulas ya salen como «max» y «min», como en cada idioma, en vez de quedarse en español.',
+      ] },
       { v: '1.22', fecha: '2026-11-18', titulo: 'Ciencify en francés y alemán', subtitulo: 'Ya puedes usar toda la web en francés y en alemán, con el selector de idioma arreglado en el móvil.', secciones: [
         { icono: '🌍', titulo: 'Francés y alemán', puntos: [
           '**Français y Deutsch** en el selector de idioma, junto al español y el inglés: herramientas de todas las asignaturas, fenómenos, portada, novedades y páginas legales.',

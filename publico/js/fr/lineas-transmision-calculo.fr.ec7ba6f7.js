@@ -167,7 +167,7 @@ const LineasTransmision = (() => {
       const t2 = resto(th, 2 * PI), dmax = t2 / (4 * PI), dmin = resto(dmax + 0.25, 0.5);
       r.dmax = dmax * lam; r.dmin = dmin * lam; r.dmaxL = dmax; r.dminL = dmin;
       r.Zmax = Z0 * roe; r.Zmin = Z0 / roe;
-      pasos.push({ t: 'Maximums et minimums de tension', html: `Le premier maximum de $|V|$ se trouve là où $θ − 2β d = 0$ : $d_"max" = {θ λ}/{4π} = ${f(dmax)} λ = ${f(r.dmax)} "m"$ de la charge, et le premier minimum $λ/4$ plus loin : $d_"mín" = ${f(dmin)} λ = ${f(r.dmin)} "m"$ (ils se répètent tous les $λ/2$). La tension varie entre $V_"max" = (1 + |Γ|)|V^+| = ${f(1 + g)} |V^+|$ et $V_"mín" = (1 − |Γ|)|V^+| = ${f(1 - g)} |V^+|$. Au maximum, l'impédance est réelle, $Z_0 "ROE" = ${f(r.Zmax)} "Ω"$, et au minimum $Z_0/"ROE" = ${f(r.Zmin)} "Ω"$.` });
+      pasos.push({ t: 'Maximums et minimums de tension', html: `Le premier maximum de $|V|$ se trouve là où $θ − 2β d = 0$ : $d_"max" = {θ λ}/{4π} = ${f(dmax)} λ = ${f(r.dmax)} "m"$ de la charge, et le premier minimum $λ/4$ plus loin : $d_"min" = ${f(dmin)} λ = ${f(r.dmin)} "m"$ (ils se répètent tous les $λ/2$). La tension varie entre $V_"max" = (1 + |Γ|)|V^+| = ${f(1 + g)} |V^+|$ et $V_"min" = (1 − |Γ|)|V^+| = ${f(1 - g)} |V^+|$. Au maximum, l'impédance est réelle, $Z_0 "ROE" = ${f(r.Zmax)} "Ω"$, et au minimum $Z_0/"ROE" = ${f(r.Zmin)} "Ω"$.` });
       const sols = [];
       let ts;
       if (Math.abs(R - Z0) < 1e-9 * Z0) ts = [-X / (2 * Z0), Infinity];
@@ -184,7 +184,7 @@ const LineasTransmision = (() => {
         { t: 'Longueur du stub', html: `Le stub doit fournir la susceptance opposée, $−b$. Un stub en court-circuit a $y_s = −j cot(β l_s)$, donc $l_s = λ/{2π} arctg(1/b)$ ; un stub ouvert a $y_s = j tg(β l_s)$, donc $l_s = λ/{2π} arctg(−b)$. ` + sols.map((s, i) => `Solution ${i + 1} : en court-circuit $l_s = ${f(s.lcc)} λ = ${f(s.lccm)} "m"$, en circuit ouvert $l_s = ${f(s.lab)} λ = ${f(s.labm)} "m"$`).join('; ') + '.' });
       const zt1 = Z0 * Math.sqrt(roe), zt2 = Z0 / Math.sqrt(roe);
       r.cuarto = { dmax: r.dmax, dmin: r.dmin, Zt1: zt1, Zt2: zt2 };
-      pasos.push({ t: 'Adaptation par un transformateur λ/4', html: `À un maximum de tension, l'impédance est réelle, $Z_0 "ROE" = ${f(r.Zmax)} "Ω"$, et un tronçon de ligne de longueur $λ/4 = ${f(lam / 4)} "m"$ et $Z_T = √(Z_0 · Z_0 "ROE") = Z_0 √("ROE") = ${f(zt1)} "Ω"$ la ramène à $Z_0$. On le place à $d_"máx" = ${f(r.dmax)} "m"$ de la charge (ou à un minimum, $d_"mín" = ${f(r.dmin)} "m"$, avec $Z_T = Z_0/√("ROE") = ${f(zt2)} "Ω"$).` });
+      pasos.push({ t: 'Adaptation par un transformateur λ/4', html: `À un maximum de tension, l'impédance est réelle, $Z_0 "ROE" = ${f(r.Zmax)} "Ω"$, et un tronçon de ligne de longueur $λ/4 = ${f(lam / 4)} "m"$ et $Z_T = √(Z_0 · Z_0 "ROE") = Z_0 √("ROE") = ${f(zt1)} "Ω"$ la ramène à $Z_0$. On le place à $d_"max" = ${f(r.dmax)} "m"$ de la charge (ou à un minimum, $d_"min" = ${f(r.dmin)} "m"$, avec $Z_T = Z_0/√("ROE") = ${f(zt2)} "Ω"$).` });
     }
     const dMaxPerf = Math.max(ld, 1), n = 400, perf = [];
     for (let i = 0; i <= n; i++) {
