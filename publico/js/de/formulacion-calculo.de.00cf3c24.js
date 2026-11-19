@@ -3,6 +3,15 @@ const Formulacion = (() => {
   const PREF = ['', 'mono', 'di', 'tri', 'tetra', 'penta', 'hexa', 'hepta', 'octa', 'nona', 'deca'];
   const PREFG = ['', '', 'bis', 'tris', 'tetrakis', 'pentakis', 'hexakis', 'heptakis'];
   const SIMBOLOS = new Set('H He Li Be B C N O F Ne Na Mg Al Si P S Cl Ar K Ca Sc Ti V Cr Mn Fe Co Ni Cu Zn Ga Ge As Se Br Kr Rb Sr Y Zr Nb Mo Tc Ru Rh Pd Ag Cd In Sn Sb Te I Xe Cs Ba La Ce Pr Nd Pm Sm Eu Gd Tb Dy Ho Er Tm Yb Lu Hf Ta W Re Os Ir Pt Au Hg Tl Pb Bi Po At Rn Fr Ra Ac Th Pa U Np Pu Am Cm Bk Cf Es Fm Md No Lr Rf Db Sg Bh Hs Mt Ds Rg Cn Nh Fl Mc Lv Ts Og'.split(' '));
+  const IDI = 'de';
+  const ajusta = (t) => {
+    if (!t || !t.replace) return t;
+    if (IDI === 'fr') return t.replace(/(^|[\s(])de (?=[aeiouyhéèêAEIOUYH])/g, '$1d’');
+    if (IDI === 'de') return t.toLowerCase().replace(/^./, (c) => c.toUpperCase()).replace(/\(([ivx]+)\)/g, (m, r) => '(' + r.toUpperCase() + ')').replace(/ säure/g, ' Säure');
+    return t;
+  };
+  const ordTrad = (a, m) => (IDI === 'en' ? `${m} ${a}` : `${a} ${m}`);
+  const MONOXIDO = ['Monooxid', 'Monoxid']; // «monoóxido» se escribe «monóxido»
   const mcd = (a, b) => (b ? mcd(b, a % b) : a);
   const sa = (s) => String(s).normalize('NFD').replace(/[̀-ͯ]/g, '');
   const norm = (s) => sa(String(s).toLowerCase()).replace(/[^a-z0-9]/g, '');
@@ -12,69 +21,69 @@ const Formulacion = (() => {
   const ionH = (f, z) => `${fh(f)}<sup>${Math.abs(z) > 1 ? Math.abs(z) : ''}${z > 0 ? '+' : '−'}</sup>`;
 
   const METALES = [
-    ['Li', 'litio', [1], [], {}, 1], ['Na', 'sodio', [1], [], {}, 1], ['K', 'potasio', [1], [], {}, 1], ['Rb', 'rubidio', [1]], ['Cs', 'cesio', [1]], ['Ag', 'plata', [1], [], {}, 1],
-    ['Be', 'berilio', [2]], ['Mg', 'magnesio', [2], [], {}, 1], ['Ca', 'calcio', [2], [], {}, 1], ['Sr', 'estroncio', [2]], ['Ba', 'bario', [2], [], {}, 1],
-    ['Zn', 'zinc', [2], [], {}, 1], ['Cd', 'cadmio', [2]], ['Al', 'aluminio', [3], [], {}, 1],
-    ['Cu', 'cobre', [1, 2], [], { 1: 'cuproso', 2: 'Kupfer(II)' }, 1], ['Hg', 'mercurio', [1, 2], [], { 1: 'mercurioso', 2: 'Quecksilber(II)' }, 1],
-    ['Au', 'oro', [1, 3], [], { 1: 'auroso', 3: 'Gold(III)' }, 1], ['Fe', 'hierro', [2, 3], [], { 2: 'ferroso', 3: 'Eisen(III)' }, 1],
-    ['Co', 'cobalto', [2, 3], [], { 2: 'cobaltoso', 3: 'Cobalt(III)' }, 1], ['Ni', 'Nickel', [2, 3], [], { 2: 'niqueloso', 3: 'Nickel(III)' }, 1],
-    ['Sn', 'Zinn', [2, 4], [], { 2: 'estannoso', 4: 'Zinn(IV)' }, 1], ['Pb', 'plomo', [2, 4], [], { 2: 'plumboso', 4: 'Blei(IV)' }, 1],
-    ['Pt', 'platino', [2, 4], [], { 2: 'platinoso', 4: 'Platin(IV)' }],
-    ['Cr', 'cromo', [2, 3], [6], { 2: 'cromoso', 3: 'Chrom(III)' }, 1], ['Mn', 'manganeso', [2, 3], [4, 7], { 2: 'manganoso', 3: 'Mangan(III)' }, 1],
-    ['Ti', 'titanio', [3, 4]], ['Bi', 'bismuto', [3]],
+    ['Li', 'Lithium', [1], [], {}, 1], ['Na', 'Natrium', [1], [], {}, 1], ['K', 'Kalium', [1], [], {}, 1], ['Rb', 'Rubidium', [1]], ['Cs', 'Caesium', [1]], ['Ag', 'Silber', [1], [], {}, 1],
+    ['Be', 'Beryllium', [2]], ['Mg', 'Magnesium', [2], [], {}, 1], ['Ca', 'Calcium', [2], [], {}, 1], ['Sr', 'Strontium', [2]], ['Ba', 'Barium', [2], [], {}, 1],
+    ['Zn', 'Zink', [2], [], {}, 1], ['Cd', 'Cadmium', [2]], ['Al', 'Aluminium', [3], [], {}, 1],
+    ['Cu', 'Kupfer', [1, 2], [], { 1: 'cuproso', 2: 'Kupfer(II)' }, 1], ['Hg', 'Quecksilber', [1, 2], [], { 1: 'mercurioso', 2: 'Quecksilber(II)' }, 1],
+    ['Au', 'Gold', [1, 3], [], { 1: 'auroso', 3: 'Gold(III)' }, 1], ['Fe', 'Eisen', [2, 3], [], { 2: 'ferroso', 3: 'Eisen(III)' }, 1],
+    ['Co', 'Cobalt', [2, 3], [], { 2: 'cobaltoso', 3: 'Cobalt(III)' }, 1], ['Ni', 'Nickel', [2, 3], [], { 2: 'niqueloso', 3: 'Nickel(III)' }, 1],
+    ['Sn', 'Zinn', [2, 4], [], { 2: 'estannoso', 4: 'Zinn(IV)' }, 1], ['Pb', 'Blei', [2, 4], [], { 2: 'plumboso', 4: 'Blei(IV)' }, 1],
+    ['Pt', 'Platin', [2, 4], [], { 2: 'platinoso', 4: 'Platin(IV)' }],
+    ['Cr', 'Chrom', [2, 3], [6], { 2: 'cromoso', 3: 'Chromsäure' }, 1], ['Mn', 'Mangan', [2, 3], [4, 7], { 2: 'manganoso', 3: 'Mangansäure' }, 1],
+    ['Ti', 'Titan', [3, 4]], ['Bi', 'Bismut', [3]],
   ];
   const PEROXIDOS = ['Li', 'Na', 'K', 'Rb', 'Cs', 'Mg', 'Ca', 'Sr', 'Ba', 'Zn', 'Cd', 'Cu', 'Ag'];
   const NOMETALES = [
-    ['N', 'Stickstoff', [1, 2, 3, 4, 5], [3], [3], [], 1], ['P', 'Phosphor', [3, 5], [3, 5], [3, 5], [3, 5], 1], ['As', 'Arsen', [3, 5], [3, 5], [3, 5], [3, 5]], ['Sb', 'antimonio', [3, 5], [3, 5], [3, 5], [3, 5]],
-    ['C', 'carbono', [2, 4], [4], [4], [4], 1], ['Si', 'silicio', [4], [4], [4], [4], 1], ['B', 'boro', [3], [3], [3], [3], 1],
-    ['S', 'azufre', [4, 6], [4, 6], [2], [], 1], ['Se', 'selenio', [4, 6], [4, 6], [4], []], ['Te', 'telurio', [4, 6], [4, 6], [4], []],
-    ['Cl', 'cloro', [1, 3, 5, 7], [1, 3, 5], [], [], 1], ['Br', 'bromo', [1, 3, 5, 7], [1, 3, 5], [], []], ['I', 'yodo', [1, 3, 5, 7], [1, 3, 5, 7], [], []],
+    ['N', 'Stickstoff', [1, 2, 3, 4, 5], [3], [3], [], 1], ['P', 'Phosphor', [3, 5], [3, 5], [3, 5], [3, 5], 1], ['As', 'Arsen', [3, 5], [3, 5], [3, 5], [3, 5]], ['Sb', 'Antimon', [3, 5], [3, 5], [3, 5], [3, 5]],
+    ['C', 'Kohlenstoff', [2, 4], [4], [4], [4], 1], ['Si', 'Silicium', [4], [4], [4], [4], 1], ['B', 'Bor', [3], [3], [3], [3], 1],
+    ['S', 'Schwefel', [4, 6], [4, 6], [2], [], 1], ['Se', 'Selen', [4, 6], [4, 6], [4], []], ['Te', 'Tellur', [4, 6], [4, 6], [4], []],
+    ['Cl', 'Chlor', [1, 3, 5, 7], [1, 3, 5], [], [], 1], ['Br', 'Brom', [1, 3, 5, 7], [1, 3, 5], [], []], ['I', 'Iod', [1, 3, 5, 7], [1, 3, 5, 7], [], []],
   ];
   const MONO = [
-    ['F', 'fluoruro', 1, 'Fluorwasserstoff', 1], ['Cl', 'cloruro', 1, 'Chlorwasserstoff', 1], ['Br', 'bromuro', 1, 'Bromwasserstoff', 1], ['I', 'yoduro', 1, 'Iodwasserstoff', 1],
-    ['S', 'sulfuro', 2, 'Schwefelwasserstoff', 1], ['Se', 'seleniuro', 2, 'Selenwasserstoff'], ['Te', 'telururo', 2, 'Tellurwasserstoff'],
-    ['N', 'nitruro', 3], ['P', 'fosfuro', 3], ['As', 'arseniuro', 3], ['C', 'carburo', 4], ['Si', 'siliciuro', 4], ['B', 'boruro', 3],
+    ['F', 'Fluorid', 1, 'Fluorwasserstoff', 1], ['Cl', 'Chlorid', 1, 'Chlorwasserstoff', 1], ['Br', 'Bromid', 1, 'Bromwasserstoff', 1], ['I', 'Iodid', 1, 'Iodwasserstoff', 1],
+    ['S', 'Sulfid', 2, 'Schwefelwasserstoff', 1], ['Se', 'Selenid', 2, 'Selenwasserstoff'], ['Te', 'Tellurid', 2, 'Tellurwasserstoff'],
+    ['N', 'Nitrid', 3], ['P', 'Phosphid', 3], ['As', 'Arsenid', 3], ['C', 'Carbid', 4], ['Si', 'Silicid', 4], ['B', 'Borid', 3],
   ];
   const OXO = [
-    ['Cl', 1, 1, 1, 1, 'hipocloroso', 'hipoclorito', 1], ['Cl', 3, 2, 1, 1, 'cloroso', 'clorito', 1], ['Cl', 5, 3, 1, 1, 'Chlor', 'clorato', 1], ['Cl', 7, 4, 1, 1, 'Perchlor', 'perclorato', 1],
-    ['Br', 1, 1, 1, 1, 'hipobromoso', 'hipobromito'], ['Br', 3, 2, 1, 1, 'bromoso', 'bromito'], ['Br', 5, 3, 1, 1, 'Brom', 'bromato'], ['Br', 7, 4, 1, 1, 'Perbrom', 'perbromato'],
-    ['I', 1, 1, 1, 1, 'hipoyodoso', 'hipoyodito'], ['I', 3, 2, 1, 1, 'yodoso', 'yodito'], ['I', 5, 3, 1, 1, 'Iod', 'yodato'], ['I', 7, 4, 1, 1, 'Period', 'peryodato'],
-    ['S', 4, 3, 2, 1, 'sulfuroso', 'sulfito', 1], ['S', 6, 4, 2, 1, 'Schwefel', 'sulfato', 1],
-    ['Se', 4, 3, 2, 1, 'selenioso', 'selenito'], ['Se', 6, 4, 2, 1, 'Selen', 'selenato'], ['Te', 4, 3, 2, 1, 'teluroso', 'telurito'], ['Te', 6, 4, 2, 1, 'Tellur', 'telurato'],
-    ['N', 3, 2, 1, 1, 'nitroso', 'nitrito', 1], ['N', 5, 3, 1, 1, 'Salpeter', 'nitrato', 1],
-    ['P', 3, 3, 3, 1, 'fosforoso', 'fosfito'], ['P', 5, 4, 3, 1, 'Phosphor', 'fosfato', 1],
-    ['As', 3, 3, 3, 1, 'arsenioso', 'arsenito'], ['As', 5, 4, 3, 1, 'Arsen', 'arseniato'],
-    ['C', 4, 3, 2, 1, 'Kohlen', 'carbonato', 1], ['Si', 4, 3, 2, 1, 'Kiesel', 'silicato'], ['B', 3, 3, 3, 1, 'Bor', 'borato'],
-    ['Cr', 6, 4, 2, 1, 'Chrom(III)', 'cromato', 1], ['Cr', 6, 7, 2, 2, 'Dichrom', 'dicromato', 1],
-    ['Mn', 7, 4, 1, 1, 'Permangan', 'permanganato', 1],
-    ['P', 5, 7, 4, 2, 'Diphosphor', 'difosfato'], ['S', 6, 7, 2, 2, 'Dischwefel', 'disulfato'],
-    ['Si', 4, 4, 4, 1, 'Orthokiesel', 'ortosilicato'], ['B', 3, 2, 1, 1, 'Metabor', 'metaborato'],
+    ['Cl', 1, 1, 1, 1, 'hypochlorige Säure', 'Hypochlorit', 1], ['Cl', 3, 2, 1, 1, 'chlorige Säure', 'Chlorit', 1], ['Cl', 5, 3, 1, 1, 'Chlorsäure', 'Chlorat', 1], ['Cl', 7, 4, 1, 1, 'Perchlorsäure', 'Perchlorat', 1],
+    ['Br', 1, 1, 1, 1, 'hypobromige Säure', 'Hypobromit'], ['Br', 3, 2, 1, 1, 'bromige Säure', 'Bromit'], ['Br', 5, 3, 1, 1, 'Bromsäure', 'Bromat'], ['Br', 7, 4, 1, 1, 'Perbromsäure', 'Perbromat'],
+    ['I', 1, 1, 1, 1, 'hypoiodige Säure', 'Hypoiodit'], ['I', 3, 2, 1, 1, 'iodige Säure', 'Iodit'], ['I', 5, 3, 1, 1, 'Iodsäure', 'Iodat'], ['I', 7, 4, 1, 1, 'Periodsäure', 'Periodat'],
+    ['S', 4, 3, 2, 1, 'schweflige Säure', 'Sulfit', 1], ['S', 6, 4, 2, 1, 'Schwefelsäure', 'Sulfat', 1],
+    ['Se', 4, 3, 2, 1, 'selenige Säure', 'Selenit'], ['Se', 6, 4, 2, 1, 'Selensäure', 'Selenat'], ['Te', 4, 3, 2, 1, 'tellurige Säure', 'Tellurit'], ['Te', 6, 4, 2, 1, 'Tellursäure', 'Tellurat'],
+    ['N', 3, 2, 1, 1, 'salpetrige Säure', 'Nitrit', 1], ['N', 5, 3, 1, 1, 'Salpetersäure', 'Nitrat', 1],
+    ['P', 3, 3, 3, 1, 'phosphorige Säure', 'Phosphit'], ['P', 5, 4, 3, 1, 'Phosphorsäure', 'Phosphat', 1],
+    ['As', 3, 3, 3, 1, 'arsenige Säure', 'Arsenit'], ['As', 5, 4, 3, 1, 'Arsen' + 'säure', 'Arsenat'],
+    ['C', 4, 3, 2, 1, 'Kohlensäure', 'Carbonat', 1], ['Si', 4, 3, 2, 1, 'Kieselsäure', 'Silicat'], ['B', 3, 3, 3, 1, 'Borsäure', 'Borat'],
+    ['Cr', 6, 4, 2, 1, 'Chromsäure', 'Chromat', 1], ['Cr', 6, 7, 2, 2, 'Dichromsäure', 'Dichromat', 1],
+    ['Mn', 7, 4, 1, 1, 'Permangansäure', 'Permanganat', 1],
+    ['P', 5, 7, 4, 2, 'Diphosphorsäure', 'Diphosphat'], ['S', 6, 7, 2, 2, 'Dischwefelsäure', 'Disulfat'],
+    ['Si', 4, 4, 4, 1, 'Orthokieselsäure', 'Orthosilicat'], ['B', 3, 2, 1, 1, 'Metaborsäure', 'Metaborat'],
   ];
-  const ALIAS_EXTRA = [['H2SiO3', ['Metakieselsäure']], ['Na2SiO3', ['metasilicato de sodio']], ['H3BO3', ['Orthoborsäure']], ['H3PO4', ['Orthophosphorsäure']], ['H4P2O7', ['Pyrophosphorsäure']], ['H2S2O7', ['Dischwefelsäure']], ['Na2S2O7', ['pirosulfato de sodio']], ['Na4P2O7', ['pirofosfato de sodio']], ['H2O2', ['agua oxigenada']], ['NH3', ['azano']]];
-  const ATO = { Cl: 'clorato', Br: 'bromato', I: 'yodato', S: 'sulfato', Se: 'selenato', Te: 'telurato', N: 'nitrato', P: 'fosfato', As: 'arsenato', C: 'carbonato', Si: 'silicato', B: 'borato', Cr: 'cromato', Mn: 'manganato' };
-  const ICO = { Cl: 'Chlor', Br: 'Brom', I: 'Iod', S: 'Schwefel', Se: 'Selen', Te: 'Tellur', N: 'Salpeter', P: 'Phosphor', As: 'Arsen', C: 'Kohlen', Si: 'Kiesel', B: 'Bor', Cr: 'Chrom(III)', Mn: 'Mangan(III)' };
+  const ALIAS_EXTRA = [['H2SiO3', ['Metakieselsäure']], ['Na2SiO3', ['Natriummetasilicat']], ['H3BO3', ['Orthoborsäure']], ['H3PO4', ['Orthophosphorsäure']], ['H4P2O7', ['Pyrophosphorsäure']], ['H2S2O7', ['Dischwefelsäure']], ['Na2S2O7', ['Natriumpyrosulfat']], ['Na4P2O7', ['Natriumpyrophosphat']], ['H2O2', ['Wasserstoffperoxid-Lösung']], ['NH3', ['Azan']]];
+  const ATO = { Cl: 'Chlorat', Br: 'Bromat', I: 'Iodat', S: 'Sulfat', Se: 'Selenat', Te: 'Tellurat', N: 'Nitrat', P: 'Phosphat', As: 'Arsenat', C: 'Carbonat', Si: 'Silicat', B: 'Borat', Cr: 'Chromat', Mn: 'Manganat' };
+  const ICO = { Cl: 'Chlorsäure', Br: 'Bromsäure', I: 'Iodsäure', S: 'Schwefelsäure', Se: 'Selensäure', Te: 'Tellursäure', N: 'Salpetersäure', P: 'Phosphorsäure', As: 'Arsen' + 'säure', C: 'Kohlensäure', Si: 'Kieselsäure', B: 'Borsäure', Cr: 'Chromsäure', Mn: 'Mangansäure' };
   const ESPECIALES = [
-    ['H2O', 'Wasser', [['Systematisch', 'Dihydrogenoxid'], ['Trivialname', 'agua']], 1],
-    ['NH3', 'Nichtmetallhydrid', [['Systematisch', 'Stickstofftrihydrid'], ['IUPAC (hidruros)', 'azano'], ['Trivialname', 'amoniaco']], 1],
-    ['PH3', 'Nichtmetallhydrid', [['Systematisch', 'Phosphortrihydrid'], ['IUPAC (hidruros)', 'fosfano'], ['Trivialname', 'fosfina']]],
-    ['AsH3', 'Nichtmetallhydrid', [['Systematisch', 'Arsentrihydrid'], ['IUPAC (hidruros)', 'arsano'], ['Trivialname', 'arsina']]],
-    ['SbH3', 'Nichtmetallhydrid', [['Systematisch', 'trihidruro de antimonio'], ['IUPAC (hidruros)', 'estibano'], ['Trivialname', 'estibina']]],
-    ['CH4', 'Nichtmetallhydrid', [['Systematisch', 'tetrahidruro de carbono'], ['IUPAC (hidruros)', 'metano']], 1],
-    ['SiH4', 'Nichtmetallhydrid', [['Systematisch', 'tetrahidruro de silicio'], ['IUPAC (hidruros)', 'silano']], 1],
-    ['BH3', 'Nichtmetallhydrid', [['Systematisch', 'trihidruro de boro'], ['IUPAC (hidruros)', 'borano']]],
-    ['H2MnO4', 'Oxosäure', [['Traditionell', 'Mangansäure'], ['Systematisch', 'Dihydrogentetraoxidomanganat']]], ['K2MnO4', 'Oxosalz', [['Traditionell', 'manganato de potasio'], ['Systematisch', 'tetraoxidomanganato de dipotasio']]], ['Na2MnO4', 'Oxosalz', [['Traditionell', 'manganato de sodio']]],
+    ['H2O', 'Wasser', [['Systematisch', 'Dihydrogenoxid'], ['Trivialname', 'Wasser']], 1],
+    ['NH3', 'Nichtmetallhydrid', [['Systematisch', 'Stickstofftrihydrid'], ['IUPAC (Hydride)', 'Azan'], ['Trivialname', 'Ammoniak']], 1],
+    ['PH3', 'Nichtmetallhydrid', [['Systematisch', 'Phosphortrihydrid'], ['IUPAC (Hydride)', 'Phosphan'], ['Trivialname', 'Phosphin']]],
+    ['AsH3', 'Nichtmetallhydrid', [['Systematisch', 'Arsentrihydrid'], ['IUPAC (Hydride)', 'Arsan'], ['Trivialname', 'Arsin']]],
+    ['SbH3', 'Nichtmetallhydrid', [['Systematisch', 'Antimontrihydrid'], ['IUPAC (Hydride)', 'Stiban'], ['Trivialname', 'Stibin']]],
+    ['CH4', 'Nichtmetallhydrid', [['Systematisch', 'Kohlenstofftetrahydrid'], ['IUPAC (Hydride)', 'Methan']], 1],
+    ['SiH4', 'Nichtmetallhydrid', [['Systematisch', 'Siliciumtetrahydrid'], ['IUPAC (Hydride)', 'Silan']], 1],
+    ['BH3', 'Nichtmetallhydrid', [['Systematisch', 'Bortrihydrid'], ['IUPAC (Hydride)', 'Boran']]],
+    ['H2MnO4', 'Oxosäure', [['Traditionell', 'Mangansäure'], ['Systematisch', 'Dihydrogentetraoxidomanganat']]], ['K2MnO4', 'Oxosalz', [['Traditionell', 'Kaliummanganat'], ['Systematisch', 'Dikaliumtetraoxidomanganat']]], ['Na2MnO4', 'Oxosalz', [['Traditionell', 'Natriummanganat']]],
     ['HPO3', 'Oxosäure', [['Traditionell', 'Metaphosphorsäure'], ['Systematisch', 'Hydrogentrioxidophosphat']]],
-    ['O3', 'Element', [['Systematisch', 'Trioxygen'], ['Trivialname', 'ozono']], 1], ['O2', 'Element', [['Systematisch', 'Dioxygen'], ['Trivialname', 'Sauerstoff']], 1], ['H2', 'Element', [['Systematisch', 'Dihydrogen'], ['Trivialname', 'Wasserstoff']], 1],
-    ['N2', 'Element', [['Systematisch', 'Distickstoff'], ['Trivialname', 'Stickstoff']], 1], ['F2', 'Element', [['Systematisch', 'Difluor'], ['Trivialname', 'Fluor']]], ['Cl2', 'Element', [['Systematisch', 'dicloro'], ['Trivialname', 'cloro']], 1],
-    ['Br2', 'Element', [['Systematisch', 'dibromo'], ['Trivialname', 'bromo']]], ['I2', 'Element', [['Systematisch', 'diyodo'], ['Trivialname', 'yodo']]], ['P4', 'Element', [['Systematisch', 'Tetraphosphor'], ['Trivialname', 'weißer Phosphor']]], ['S8', 'Element', [['Systematisch', 'octaazufre'], ['Trivialname', 'azufre']]],
+    ['O3', 'Element', [['Systematisch', 'Trioxygen'], ['Trivialname', 'Ozon']], 1], ['O2', 'Element', [['Systematisch', 'Dioxygen'], ['Trivialname', 'Sauerstoff']], 1], ['H2', 'Element', [['Systematisch', 'Dihydrogen'], ['Trivialname', 'Hydrogen']], 1],
+    ['N2', 'Element', [['Systematisch', 'Distickstoff'], ['Trivialname', 'Stickstoff']], 1], ['F2', 'Element', [['Systematisch', 'Difluor'], ['Trivialname', 'Fluor']]], ['Cl2', 'Element', [['Systematisch', 'Dichlor'], ['Trivialname', 'Chlor']], 1],
+    ['Br2', 'Element', [['Systematisch', 'Dibrom'], ['Trivialname', 'Brom']]], ['I2', 'Element', [['Systematisch', 'Diiod'], ['Trivialname', 'Iod']]], ['P4', 'Element', [['Systematisch', 'Tetraphosphor'], ['Trivialname', 'weißer Phosphor']]], ['S8', 'Element', [['Systematisch', 'Octaschwefel'], ['Trivialname', 'Schwefel']]],
     ['H3PO2', 'Oxosäure', [['Traditionell', 'Hypophosphorige Säure'], ['IUPAC', 'Phosphinsäure']]],
-    ['H2S2O3', 'Thiosäure', [['Traditionell', 'Thioschwefelsäure'], ['Systematisch', 'Dihydrogentrioxidosulfidosulfat']]], ['Na2S2O3', 'Thiosulfat', [['Traditionell', 'tiosulfato de sodio'], ['Systematisch', 'trioxidosulfidosulfato de disodio']]], ['K2S2O3', 'Thiosulfat', [['Traditionell', 'tiosulfato de potasio']]],
-    ['HSCN', 'Thiosäure', [['Traditionell', 'Thiocyansäure'], ['IUPAC', 'Hydrogenthiocyanat']]], ['KSCN', 'Thiocyanat', [['Traditionell', 'tiocianato de potasio']]], ['NaSCN', 'Thiocyanat', [['Traditionell', 'tiocianato de sodio']]], ['NH4SCN', 'Thiocyanat', [['Traditionell', 'tiocianato de amonio']]],
+    ['H2S2O3', 'Thiosäure', [['Traditionell', 'Thioschwefelsäure'], ['Systematisch', 'Dihydrogentrioxidosulfidosulfat']]], ['Na2S2O3', 'Thiosulfat', [['Traditionell', 'Natriumthiosulfat'], ['Systematisch', 'Dinatriumtrioxidosulfidosulfat']]], ['K2S2O3', 'Thiosulfat', [['Traditionell', 'Kaliumthiosulfat']]],
+    ['HSCN', 'Thiosäure', [['Traditionell', 'Thiocyansäure'], ['IUPAC', 'Hydrogenthiocyanat']]], ['KSCN', 'Thiocyanat', [['Traditionell', 'Kaliumthiocyanat']]], ['NaSCN', 'Thiocyanat', [['Traditionell', 'Natriumthiocyanat']]], ['NH4SCN', 'Thiocyanat', [['Traditionell', 'Ammoniumthiocyanat']]],
     ['H2SO5', 'Peroxosäure', [['Traditionell', 'Peroxoschwefelsäure'], ['Systematisch', 'Dihydrogenperoxidotrioxidosulfat']]], ['H2S2O8', 'Peroxosäure', [['Traditionell', 'Peroxodischwefelsäure']]], ['HNO4', 'Peroxosäure', [['Traditionell', 'Peroxosalpetersäure']]],
-    ['K2S2O8', 'Peroxosalz', [['Traditionell', 'peroxodisulfato de potasio']]], ['Na2S2O8', 'Peroxosalz', [['Traditionell', 'peroxodisulfato de sodio']]], ['(NH4)2S2O8', 'Peroxosalz', [['Traditionell', 'peroxodisulfato de amonio']]],
-    ['CaC2', 'Carbid', [['Traditionell', 'carburo de calcio'], ['Systematisch', 'dicarburo de calcio'], ['IUPAC', 'acetiluro de calcio']]],
-    ['KAl(SO4)2', 'Doppelsalz', [['Traditionell', 'sulfato de aluminio y potasio'], ['Systematisch', 'bis(tetraoxidosulfato) de aluminio y potasio']]], ['NaKCO3', 'Doppelsalz', [['Traditionell', 'carbonato de potasio y sodio']]],
-    ['CaMg(CO3)2', 'Doppelsalz', [['Traditionell', 'carbonato de calcio y magnesio']]], ['MgNH4PO4', 'Doppelsalz', [['Traditionell', 'fosfato de amonio y magnesio']]], ['KNaSO4', 'Doppelsalz', [['Traditionell', 'sulfato de potasio y sodio']]],
+    ['K2S2O8', 'Peroxosalz', [['Traditionell', 'Kaliumperoxodisulfat']]], ['Na2S2O8', 'Peroxosalz', [['Traditionell', 'Natriumperoxodisulfat']]], ['(NH4)2S2O8', 'Peroxosalz', [['Traditionell', 'Ammoniumperoxodisulfat']]],
+    ['CaC2', 'Carbid', [['Traditionell', 'Calciumcarbid'], ['Systematisch', 'Calciumdicarbid'], ['IUPAC', 'Calciumacetylid']]],
+    ['KAl(SO4)2', 'Doppelsalz', [['Traditionell', 'Aluminiumkaliumsulfat'], ['Systematisch', 'Aluminiumkaliumbis(tetraoxidosulfat)']]], ['NaKCO3', 'Doppelsalz', [['Traditionell', 'Kaliumnatriumcarbonat']]],
+    ['CaMg(CO3)2', 'Doppelsalz', [['Traditionell', 'Calciummagnesiumcarbonat']]], ['MgNH4PO4', 'Doppelsalz', [['Traditionell', 'Ammoniummagnesiumphosphat']]], ['KNaSO4', 'Doppelsalz', [['Traditionell', 'Kaliumnatriumsulfat']]],
   ];
 
   function leeFormula(texto) {
@@ -108,26 +117,26 @@ const Formulacion = (() => {
   const cationes = [], aniones = [];
   for (const [sim, nombre, vs, ox = [], trad = {}, comun] of METALES) {
     const multi = vs.length + ox.length > 1;
-    for (const v of vs) cationes.push({ cl: 'm', f: sim, nombre, v, multi, trad: trad[v] || null, comun: !!comun, peroxido: PEROXIDOS.includes(sim) });
-    for (const v of ox) cationes.push({ cl: 'm', f: sim, nombre, v, multi, trad: trad[v] || null, comun: !!comun, soloOxido: true });
+    for (const v of vs) cationes.push({ cl: 'm', f: sim, nombre, v, multi, trad: (IDI !== 'de' && trad[v]) || null, comun: !!comun, peroxido: PEROXIDOS.includes(sim) });
+    for (const v of ox) cationes.push({ cl: 'm', f: sim, nombre, v, multi, trad: (IDI !== 'de' && trad[v]) || null, comun: !!comun, soloOxido: true });
   }
-  const CAT_NH4 = { cl: 'am', f: 'NH4', poli: true, nombre: 'amonio', v: 1, multi: false, trad: null, comun: true };
-  const CAT_H = { cl: 'h', f: 'H', nombre: 'Wasserstoff', v: 1, multi: false, trad: null, comun: true };
+  const CAT_NH4 = { cl: 'am', f: 'NH4', poli: true, nombre: 'Ammonium', v: 1, multi: false, trad: null, comun: true };
+  const CAT_H = { cl: 'h', f: 'H', nombre: 'Hydrogen', v: 1, multi: false, trad: null, comun: true };
 
   for (const [sim, base, w, hidra, comun] of MONO) aniones.push({ cl: 'mono', f: sim, w, base, hidra, comun: !!comun, hidracido: !!hidra });
-  const AN_O = { cl: 'mono', f: 'O', w: 2, base: 'oxid', comun: true, esO: true }, AN_H = { cl: 'mono', f: 'H', w: 1, base: 'hidruro', comun: true, esH: true };
+  const AN_O = { cl: 'mono', f: 'O', w: 2, base: 'Oxid', comun: true, esO: true }, AN_H = { cl: 'mono', f: 'H', w: 1, base: 'Hydrid', comun: true, esH: true };
   const AN_OH = { cl: 'mono', f: 'OH', w: 1, base: 'Hydroxid', poli: true, comun: true, esOH: true }, AN_O2 = { cl: 'per', f: 'O2', w: 2, poli: true, comun: true };
   aniones.push(AN_O, AN_H, AN_OH, AN_O2);
-  for (const sim of ['S', 'Se', 'Te']) aniones.push({ cl: 'mono', f: 'H' + sim, w: 1, base: 'hidrogeno' + MONO.find((m) => m[0] === sim)[1], poli: true, grupo: true, comun: false, hs: true });
+  for (const sim of ['S', 'Se', 'Te']) aniones.push({ cl: 'mono', f: 'H' + sim, w: 1, base: 'hydrogen' + MONO.find((m) => m[0] === sim)[1], poli: true, grupo: true, comun: false, hs: true });
   const pOxido = (k) => (k === 1 ? '' : PREF[k]) + 'oxido', pOxo = (k) => (k === 1 ? '' : PREF[k]) + 'oxo';
   for (const [centro, v, nO, h, k, tAc, tAn, comun] of OXO) {
     const ato = (k === 2 ? 'di' : '') + ATO[centro], ico = (k === 2 ? 'di' : '') + ICO[centro];
     const baseF = `${centro}${k > 1 ? k : ''}O${nO > 1 ? nO : ''}`;
     for (let j = 0; j < h; j++) {
-      const ph = j ? (j > 1 ? PREF[j] : '') + 'hidrogeno' : '';
+      const ph = j ? (j > 1 ? PREF[j] : '') + 'hydrogen' : '';
       aniones.push({
         cl: 'oxo', f: (j ? 'H' + (j > 1 ? j : '') : '') + baseF, w: h - j, poli: true, grupo: true, comun: !!comun && (j === 0 || ['SO4', 'CO3', 'PO4', 'SO3'].includes(baseF)),
-        centro, v, nO, h, j, tAn,
+        centro, v, nO, h, j, tAn, bajo: OXO.some((o) => o[0] === centro && o[4] === k && o[1] > v), hipo: v === 1 && ['Cl', 'Br', 'I'].includes(centro), per: v === 7 && ['Cl', 'Br', 'I', 'Mn'].includes(centro),
         sist: `${ph}${pOxido(nO)}${ato}`, stock: `${ph}${pOxo(nO)}${ato}(${ROM[v]})`, trad: `${ph}${tAn}`,
         stockSal: `${pOxo(nO)}${ato}(${ROM[v]})`,
         acidoStock: `${pOxo(nO)}${ico}(${ROM[v]})`, acidoTrad: tAc,
@@ -138,28 +147,28 @@ const Formulacion = (() => {
   function nombres(cat, n, an, m) {
     const L = [], alias = [];
     const ca = (k) => pre(k) + cat.nombre; // dihierro
-    const stockCat = cat.nombre + (cat.multi ? `(${ROM[cat.v]})` : '');
+    const stockCat = cat.nombre + (cat.multi ? `(${ROM[cat.v]})` + (IDI === 'de' ? '-' : '') : '');
     const uno = (et, nombre, regla, nota) => { if (nombre) L.push({ et, nombre, regla, nota }); };
     const RS = 'Die Zahlpräfixe (mono-, di-, tri-, tetra-, penta-, hexa-, hepta-…) sagen, wie viele Atome oder Gruppen von jedem vorhanden sind.';
     if (cat.cl === 'h' && an.cl === 'oxo') {
-      uno('Systematisch', `${an.sist} de ${ca(n)}`, `${RS} Die Sauerstoffatome werden als „${pOxido(an.nO)}“ benannt, das Zentralelement endet auf -at und, da es eine Säure ist, ist das Kation Wasserstoff${n > 1 ? ' (' + PREF[n] + 'hydrogen wegen der ' + n + ' Atome)' : ''}.`);
-      uno('Stock', `${an.acidoStock}säure`, `Man schreibt die Sauerstoffpräfixe mit „oxo“, den Stamm des Zentralelements und seine Oxidationszahl in römischen Zahlen: ${ROM[an.v]}.`);
-      uno('Traditionell', `${an.acidoTrad}säure`, tradOxoRegla(an));
-      alias.push(`${an.stockSal}wasserstoff`);
+      uno('Systematisch', `${ca(n)}${an.sist}`, `${RS} Die Sauerstoffatome werden als „${pOxido(an.nO)}“ benannt, das Zentralelement endet auf -at und, da es eine Säure ist, ist das Kation Wasserstoff${n > 1 ? ' (' + PREF[n] + 'hydrogen wegen der ' + n + ' Atome)' : ''}.`);
+      uno('Stock', `${an.acidoStock}`, `Man schreibt die Sauerstoffpräfixe mit „oxo“, den Stamm des Zentralelements und seine Oxidationszahl in römischen Zahlen: ${ROM[an.v]}.`);
+      uno('Traditionell', `${an.acidoTrad}`, tradOxoRegla(an));
+      alias.push(`Hydrogen${an.stockSal}`);
     } else if (cat.cl === 'h' && an.cl === 'mono') {
-      uno('Systematisch', `${pre(m)}${an.base} de ${ca(n)}`, `Man benennt das Anion mit -id und dann „wasserstoff“${n > 1 ? ', mit dem Präfix ' + PREF[n] + '- wegen der ' + n + ' Wasserstoffatome' : ''}.`);
-      uno('Stock', `${an.base}wasserstoff`, 'Wasserstoff wirkt immer mit +1: Seine Oxidationszahl muss nicht angegeben werden.');
+      uno('Systematisch', `${ca(n)}${pre(m)}${an.base}`, `Man benennt das Anion mit -id und dann „wasserstoff“${n > 1 ? ', mit dem Präfix ' + PREF[n] + '- wegen der ' + n + ' Wasserstoffatome' : ''}.`);
+      uno('Stock', `Hydrogen${an.base}`, 'Wasserstoff wirkt immer mit +1: Seine Oxidationszahl muss nicht angegeben werden.');
       uno('Traditionell', `${an.hidra}säure`, 'In wässriger Lösung heißt sie Stamm des Elements + „-wasserstoffsäure“.', 'in wässriger Lösung');
     } else if (cat.cl === 'h' && an.cl === 'per') {
       uno('Systematisch', `${ca(n)}${PREF[2 * m]}oxid`, `${RS} Es sind ${2 * m} Sauerstoffatome und ${n} Wasserstoffatome.`);
       uno('Stock', 'Wasserstoffperoxid', 'Die Gruppe O₂²⁻ heißt Peroxid.');
-      uno('Trivialname', 'agua oxigenada', null, 'in Lösung');
+      uno('Trivialname', 'Wasserstoffperoxid-Lösung', null, 'in Lösung');
     } else if (cat.cl === 'nm') {
       const anh = an.esO ? OXO.find((o) => o[0] === cat.f && o[1] === cat.v && o[4] === 1) : null;
-      uno('Systematisch', `${PREF[m]}${an.base} de ${ca(n)}`, `${RS} Hier ${PREF[m]}- für ${an.base.replace('uro', 'uro')} (${m} Atome)${n > 1 ? ' und ' + PREF[n] + '- für ' + cat.nombre + ' (' + n + ' Atome)' : ' und keines für ' + cat.nombre + ' (es gibt nur eines)'}.`);
-      uno('Stock', `${an.base} de ${stockCat}`, `In Klammern steht, in römischen Zahlen, die Oxidationszahl von ${cat.nombre}: ${ROM[cat.v]}${cat.multi ? '' : ' (hier hat es nur eine, sie kann weggelassen werden)'}.`);
-      if (anh) uno('Traditionell', `${anh[5]}säureanhydrid`, `Die Oxide der Nichtmetalle hießen früher „Anhydride“ (der ${anh[5]}säure).`);
-      alias.push(...L.filter((l) => l.et === 'Systematisch').flatMap((l) => (m === 1 && n === 1 ? [l.nombre.replace(/^mono/, '')] : [])));
+      uno('Systematisch', `${ca(n)}${PREF[m]}${an.base}`, `${RS} Hier ${PREF[m]}- für ${an.base.replace('uro', 'uro')} (${m} Atome)${n > 1 ? ' und ' + PREF[n] + '- für ' + cat.nombre + ' (' + n + ' Atome)' : ' und keines für ' + cat.nombre + ' (es gibt nur eines)'}.`);
+      uno('Stock', `${stockCat}${an.base}`, `In Klammern steht, in römischen Zahlen, die Oxidationszahl von ${cat.nombre}: ${ROM[cat.v]}${cat.multi ? '' : ' (hier hat es nur eine, sie kann weggelassen werden)'}.`);
+      if (anh) uno('Traditionell', `${anh[5]}-Anhydrid`, `Die Oxide der Nichtmetalle hießen früher „Anhydride“ (der ${anh[5]}säure).`);
+      alias.push(...L.filter((l) => l.et === 'Systematisch').flatMap((l) => (m === 1 && n === 1 ? [l.nombre.replace(new RegExp('^' + PREF[1], 'i'), '')] : [])));
     } else if (an.cl === 'per') {
       uno('Systematisch', `${ca(n)}${PREF[2 * m]}oxid`, `${RS} Es gibt ${2 * m} Sauerstoffatome (${m} Gruppe${m > 1 ? 'n' : ''} O₂)${n > 1 ? ' und ' + n + ' von ' + cat.nombre : ''}.`);
       uno('Stock', `${stockCat}peroxid`, `Die Gruppe O₂²⁻ heißt Peroxid${cat.multi ? '; die Oxidationszahl von ' + cat.nombre + ' steht in römischen Zahlen' : ''}.`);
@@ -167,20 +176,20 @@ const Formulacion = (() => {
     } else if (an.cl === 'mono') {
       const monoEn = cat.multi || cat.cl === 'nm';
       const grupo = an.grupo ? (m > 1 ? `${PREFG[m]}(${an.base})` : an.base) : pre(m, monoEn) + an.base;
-      uno('Systematisch', `${grupo} de ${ca(n)}`, `${RS}${an.grupo ? ' Bei Gruppen aus mehreren Atomen verwendet man bis-, tris-… und Klammern.' : ''} ${prefijosTxt(cat, n, an, m, monoEn)}`);
-      uno('Stock', `${an.base} de ${stockCat}`, stockRegla(cat));
-      uno('Traditionell', cat.trad ? `${an.base} ${cat.trad}` : cat.multi ? null : `${an.base} de ${cat.nombre}`, cat.trad ? tradMetalRegla(cat) : 'Bei nur einer Oxidationszahl genügt „' + an.base + ' …“.');
-      if (!an.grupo) alias.push(`${PREF[m]}${an.base} de ${ca(n)}`, `${pre(m)}${an.base} de ${ca(n)}`);
+      uno('Systematisch', `${ca(n)}${grupo}`, `${RS}${an.grupo ? ' Bei Gruppen aus mehreren Atomen verwendet man bis-, tris-… und Klammern.' : ''} ${prefijosTxt(cat, n, an, m, monoEn)}`);
+      uno('Stock', `${stockCat}${an.base}`, stockRegla(cat));
+      uno('Traditionell', cat.trad ? ordTrad(an.base, cat.trad) : cat.multi ? null : `${cat.nombre}${an.base}`, cat.trad ? tradMetalRegla(cat) : 'Bei nur einer Oxidationszahl genügt „' + an.base + ' …“.');
+      if (!an.grupo) alias.push(`${ca(n)}${PREF[m]}${an.base}`, `${ca(n)}${pre(m)}${an.base}`);
       if (an.esO && m >= 4) alias.push(`${ca(n)}${PREF[m].slice(0, -1)}oxid`);
     } else if (an.cl === 'oxo') {
       const w = m > 1 ? `${PREFG[m]}(${an.sist})` : an.sist;
-      uno('Systematisch', `${w} de ${ca(n)}`, `${RS} ${m > 1 ? `Das Anion kommt ${m}-mal vor und steht in Klammern mit ${PREFG[m]}-. ` : ''}Die Sauerstoffatome werden als „${pOxido(an.nO)}“ benannt${an.j ? ' und die Wasserstoffatome des Anions mit „hydrogen“' : ''}, und das Zentralelement endet auf -at.`);
-      uno('Stock', `${an.stock} de ${stockCat}`, `Die Sauerstoffatome mit „${pOxo(an.nO)}“, das zentrale mit -at und seiner Oxidationszahl in Klammern (${ROM[an.v]}); außerdem die von ${cat.nombre === 'amonio' ? 'Ammonium' : 'dem Metall'}${cat.multi ? ' (' + ROM[cat.v] + ')' : ''}.`);
-      uno('Traditionell', `${an.trad} de ${stockCat}`, tradOxoRegla(an, true));
-      if (cat.trad) L[L.length - 1].otros = [`${an.trad} ${cat.trad}`];
+      uno('Systematisch', `${ca(n)}${w}`, `${RS} ${m > 1 ? `Das Anion kommt ${m}-mal vor und steht in Klammern mit ${PREFG[m]}-. ` : ''}Die Sauerstoffatome werden als „${pOxido(an.nO)}“ benannt${an.j ? ' und die Wasserstoffatome des Anions mit „hydrogen“' : ''}, und das Zentralelement endet auf -at.`);
+      uno('Stock', `${stockCat}${an.stock}`, `Die Sauerstoffatome mit „${pOxo(an.nO)}“, das zentrale mit -at und seiner Oxidationszahl in Klammern (${ROM[an.v]}); außerdem die von ${cat.nombre === 'amonio' ? 'Ammonium' : 'dem Metall'}${cat.multi ? ' (' + ROM[cat.v] + ')' : ''}.`);
+      uno('Traditionell', `${stockCat}${an.trad}`, tradOxoRegla(an, true));
+      if (cat.trad) L[L.length - 1].otros = [ordTrad(an.trad, cat.trad)];
     }
-    const mo = (t) => (t && t.replace ? t.replace(/monoóxido/g, 'monoxid') : t);
-    for (const l of L) l.nombre = mo(l.nombre);
+    const mo = (t) => ajusta(t && t.replace ? t.replace(new RegExp(MONOXIDO[0], 'g'), MONOXIDO[1]) : t);
+    for (const l of L) { l.nombre = mo(l.nombre); if (l.otros) l.otros = l.otros.map(mo); }
     return { L, alias: alias.map(mo) };
   }
   const prefijosTxt = (cat, n, an, m, monoEn) => `Hier: ${m === 1 && !monoEn ? 'nur ein ' + an.base + ' (mono- entfällt)' : PREF[m] + '- für ' + an.base}${n > 1 ? ' und ' + PREF[n] + '- für ' + cat.nombre : ''}.`;
@@ -188,8 +197,8 @@ const Formulacion = (() => {
   const tradMetalRegla = (cat) => `In der traditionellen Nomenklatur bekommt das Metall mit zwei Oxidationszahlen die Endung -(o)so (die kleinere) oder -ico (die größere): Mit +${cat.v} ist es „${cat.trad}“.`;
   function tradOxoRegla(an, sal) {
     const t = sal ? an.tAn : an.acidoTrad;
-    const sufijo = sal ? (/ito$/.test(t) ? '-it (niedrigere Oxidationszahl)' : '-at (höhere Oxidationszahl)') : (/oso$/.test(t) ? '-ige Säure (niedrigere Oxidationszahl)' : '-säure (höhere Oxidationszahl)');
-    const pf = /^hipo/.test(t) ? ', mit Hypo- (die niedrigste der vier)' : /^per/.test(t) ? ', mit Per- (die höchste der vier)' : '';
+    const sufijo = sal ? (an.bajo ? '-it (niedrigere Oxidationszahl)' : '-at (höhere Oxidationszahl)') : (an.bajo ? '-ige Säure (niedrigere Oxidationszahl)' : '-säure (höhere Oxidationszahl)');
+    const pf = an.hipo ? ', mit Hypo- (die niedrigste der vier)' : an.per ? ', mit Per- (die höchste der vier)' : '';
     return `Das Zentralelement (${an.centro}) wirkt mit +${an.v}: ${sal ? 'Das Anion' : 'Die Säure'} endet auf ${sufijo}${pf}.${sal && an.j ? ' Die Wasserstoffatome, die es behält, werden mit „hydrogen“ davor angegeben.' : ''}`;
   }
 
@@ -265,7 +274,7 @@ const Formulacion = (() => {
   function añade(nombre, c, et) { const k = norm(nombre); if (!porNombre.has(k) || (c.esp && !porNombre.get(k).c.esp && c.formula === "CaC2")) porNombre.set(k, { c, et, nombre }); }
   const todos = () => compuestos;
 
-    const anionTxt = (an) => (an.cl === 'oxo' ? `ion ${an.trad} ${ionH(an.f, -an.w)}` : an.cl === 'per' ? `Peroxidion ${ionH('O2', -2)}` : `ion ${an.base} ${ionH(an.f, -an.w)}`);
+    const anionTxt = (an) => (an.cl === 'oxo' ? `${an.trad}-Ion ${ionH(an.f, -an.w)}` : an.cl === 'per' ? `Peroxid-Ion ${ionH('O2', -2)}` : `${an.base}-Ion ${ionH(an.f, -an.w)}`);
   function tipoTxt(c) {
     const { cat, an } = c;
     switch (c.tipo) {
@@ -285,7 +294,7 @@ const Formulacion = (() => {
   }
   function oxTxt(c) {
     const { cat, an, n, m } = c, tot = m * an.w;
-    const el = cat.cl === 'h' ? 'Wasserstoff' : cat.nombre;
+    const el = cat.cl === 'h' ? 'Hydrogen' : cat.nombre;
     const sumas = `${n > 1 ? n : ''}x ${m > 1 || an.w > 1 ? '+ ' + (m > 1 ? m + '·' : '') + '(−' + an.w + ')' : '+ (−1)'}`;
     const quien = anionTxt(an);
     return `Das Anion ist ${quien}, mit der Ladung ${an.w}−${m > 1 ? `; es sind ${m}, insgesamt ${tot}−` : ''}. Damit die Verbindung neutral ist, müssen ${n > 1 ? `die ${n} Atome ${el}` : `${el}`} +${tot} beisteuern: $${sumas} = 0 ⇒ x = +${cat.v}$. ${cat.cl === 'h' ? '' : cat.multi ? `${cat.nombre} kann mit mehreren Oxidationszahlen wirken; hier wirkt es mit +${cat.v}.` : `${cat.nombre} wirkt nur mit +${cat.v}.`}`;
@@ -301,7 +310,7 @@ const Formulacion = (() => {
   }
   function pasosNF(c, usada) {
     if (c.esp) return [{ t: 'Den Namen erkennen', html: `„${usada.nombre}“ ist ein Name ${c.tipo === 'Agua' ? 'für Wasser' : `einer Verbindung vom Typ ${c.tipo.toLowerCase()}`}: Ihre Formel ist $${c.formula.replace(/\d+/g, (d) => '_{' + d + '}')}$.` }, { t: 'Die Formel schreiben', html: `Ihre Formel ist <b>${c.html}</b>.` }];
-    const { cat, an, n, m, g } = c, sist = /Sistem/.test(usada.et);
+    const { cat, an, n, m, g } = c, sist = usada.et.includes('Systematisch');
     const p = [];
     p.push({ t: 'Den Namen deuten', html: `„${usada.nombre}“ steht in der Nomenklatur ${usada.et.toLowerCase().replace(/ · /g, ', ')}. ${tipoTxt(c)}` });
     p.push({ t: 'Die Ladungen notieren', html: `${cat.cl === 'nm' ? '' : ''}${cat.nombre} wirkt mit +${cat.v}${cat.multi && !sist ? ` (die römische Zahl ${ROM[cat.v]} oder die Endung ${cat.trad ? '„' + cat.trad + '“' : ''} geben es an)` : ''}: ${ionH(cat.f, cat.v)}. ${anionTxt(an)} hat die Ladung ${an.w}−.` });
@@ -320,13 +329,14 @@ const Formulacion = (() => {
   }
   function errorConSug(msg, sug) { const e = new Error(msg); e.sugerencias = sug || []; return e; }
   const CompL = typeof Complejos !== 'undefined' ? Complejos : require('./complejos.js');
+  const HIDRATO = 'hydrat', pfh = (p) => (IDI === 'de' ? p.replace(/^./, (c) => c.toUpperCase()) : p);
   const PREFH = ['', 'mono', 'di', 'tri', 'tetra', 'penta', 'hexa', 'hepta', 'octa', 'nona', 'deca'];
   function hidrato(base, n, usadaBase) {
-    const r = base, pf = PREFH[n] || `${n}-`, c0 = r.c;
-    const lineas = r.lineas.filter((l) => l.et !== 'Trivialname').map((l) => ({ ...l, nombre: `${l.nombre} ${pf}hidrato`, regla: `${l.regla || ''} Das Kristallwasser wird mit dem Präfix ${pf}- und dem Wort „hydrat“ angefügt.` }));
+    const r = base, pf = pfh(PREFH[n] || `${n}-`), c0 = r.c;
+    const lineas = r.lineas.filter((l) => l.et !== 'Trivialname').map((l) => ({ ...l, nombre: IDI === 'de' ? `${l.nombre}-${pf}${HIDRATO}` : `${l.nombre} ${pf}${HIDRATO}`, regla: `${l.regla || ''} Das Kristallwasser wird mit dem Präfix ${pf}- und dem Wort „hydrat“ angefügt.` }));
     const formula = `${c0.formula}·${n === 1 ? '' : n}H2O`, html = `${c0.html}·${n === 1 ? '' : n}H<sub>2</sub>O`;
     const c = { ...c0, formula, html, texto: ft(c0.formula) + `·${n === 1 ? '' : n}H₂O`, tipo: 'Hydrat', lineas, alias: [], esp: true, hidrato: n };
-    const pasos = [...r.pasos, { t: 'Kristallwasser', html: `Die Formel endet auf <b>·${n === 1 ? '' : n}H<sub>2</sub>O</b>: Pro Einheit ${c0.html} gibt es ${n} Wassermolekül${n > 1 ? 'e' : ''} im Kristall. Man benennt die Verbindung und schließt mit <b>${pf}hydrat</b> ab.` }];
+    const pasos = [...r.pasos, { t: 'Kristallwasser', html: `Die Formel endet auf <b>·${n === 1 ? '' : n}H<sub>2</sub>O</b>: Pro Einheit ${c0.html} gibt es ${n} Wassermolekül${n > 1 ? 'e' : ''} im Kristall. Man benennt die Verbindung und schließt mit <b>${pf}${HIDRATO}</b> ab.` }];
     return { modo: r.modo, c, formula, html, tipo: 'Hydrat', lineas, alt: [], pasos, usada: usadaBase || null };
   }
   function resolver(sc) {
@@ -335,7 +345,7 @@ const Formulacion = (() => {
       if (sc && sc.modo !== 'n2f' && /\[/.test(t0)) { let x = null, e1 = null; try { x = CompL.leer(t0); } catch (e) { e1 = e; } if (!x) { try { return resolver({ ...sc, texto: t0.replace(/\[/g, '(').replace(/\]/g, ')') }); } catch (e2) { throw e1; } } return { modo: 'f2n', c: { formula: x.formula, html: x.html, texto: x.formula, tipo: x.tipo, lineas: x.nombres, alias: [], esp: true, complejo: x }, formula: x.formula, html: x.html, tipo: x.tipo, lineas: x.nombres, alt: [], pasos: x.pasos, usada: null }; }
       const mh = /^(.*?)\s*[·.*•]\s*(\d*)\s*H2O\s*$/i.exec(t0.replace(/[₀-₉]/g, (d) => SUBS.indexOf(d)));
       if (sc && sc.modo !== 'n2f' && mh && mh[1]) return hidrato(resolver({ modo: 'f2n', texto: mh[1] }), +mh[2] || 1);
-      const mn = /^(.*?)\s+(mono|di|tri|tetra|penta|hexa|hepta|octa|nona|deca)hidrato\s*$/i.exec(t0);
+      const mn = new RegExp('^(.*?)[\\s-]+(' + PREFH.slice(1).join('|') + ')' + HIDRATO + '\\s*$', 'i').exec(t0);
       if (sc && sc.modo === 'n2f' && mn) { const n = PREFH.indexOf(mn[2].toLowerCase()); const b = resolver({ modo: 'n2f', texto: mn[1] }); return hidrato({ ...b, modo: 'n2f' }, n, b.usada); } }
     const modo = sc && sc.modo === 'n2f' ? 'n2f' : 'f2n', texto = String(sc?.texto ?? '').trim();
     const romanos = (t) => t.replace(/\(\s*\+?([1-7])\s*\+?\s*\)/g, (_, d) => `(${ROM[d]})`);
@@ -368,9 +378,9 @@ const Formulacion = (() => {
   const ejemplos = [];
   const ej = (grupo, modo, texto, nombre) => ejemplos.push({ clave: `${modo}-${norm(texto)}`, grupo, nombre: nombre || (modo === 'f2n' ? `${ft(texto)}` : texto), sc: { modo, texto } });
   for (const [g, fs] of [['Von der Formel zum Namen · Oxide und Hydride', ['Fe2O3', 'CO2', 'Na2O', 'H2O2', 'CaH2', 'NH3']], ['Von der Formel zum Namen · Hydroxide und Säuren', ['Ca(OH)2', 'Fe(OH)3', 'HCl', 'H2S', 'H2SO4', 'HNO3', 'H3PO4', 'HClO4']], ['Von der Formel zum Namen · Salze', ['NaCl', 'FeCl3', 'Cu2S', 'PCl5', 'CaCO3', 'Al2(SO4)3', 'KMnO4', 'NaClO', 'NaHCO3', 'Ca(H2PO4)2', '(NH4)2SO4']]]) for (const f of fs) ej(g, 'f2n', f);
-  for (const [g, ns] of [['Vom Namen zur Formel', ['Eisen(III)-oxid', 'Dieisentrioxid', 'Kohlenstoffdioxid', 'Aluminiumhydroxid', 'Schwefelsäure', 'Salzsäure', 'dicloruro de calcio', 'sulfato de aluminio', 'carbonato de calcio', 'nitrato de plata', 'hidrogenocarbonato de sodio', 'tetraoxosulfato(VI) de cobre(II)', 'Schwefelwasserstoff', 'Perchlorsäure']]]) for (const t of ns) ej(g, 'n2f', t);
+  for (const [g, ns] of [['Vom Namen zur Formel', ['Eisen(III)-oxid', 'Dieisentrioxid', 'Kohlenstoffdioxid', 'Aluminiumhydroxid', 'Schwefelsäure', 'Chlorwasserstoffsäure', 'Calciumdichlorid', 'Aluminiumsulfat', 'Calciumcarbonat', 'Silbernitrat', 'Natriumhydrogencarbonat', 'Kupfer(II)-tetraoxosulfat(VI)', 'Hydrogensulfid', 'Perchlorsäure']]]) for (const t of ns) ej(g, 'n2f', t);
 
-  for (const [g, m, ts] of [['Komplexe und Hydrate · von der Formel zum Namen', 'f2n', ['[Cu(NH3)4]SO4', 'K3[Fe(CN)6]', 'Na[Al(OH)4]', 'CuSO4·5H2O', 'O3']], ['Komplexe und Hydrate · vom Namen zur Formel', 'n2f', ['hexacianoferrato(III) de potasio', 'Calciumsulfat-Dihydrat', 'Thioschwefelsäure']]]) for (const t of ts) ej(g, m, t);
+  for (const [g, m, ts] of [['Komplexe und Hydrate · von der Formel zum Namen', 'f2n', ['[Cu(NH3)4]SO4', 'K3[Fe(CN)6]', 'Na[Al(OH)4]', 'CuSO4·5H2O', 'O3']], ['Komplexe und Hydrate · vom Namen zur Formel', 'n2f', ['Kalium-hexacyanoferrat(III)', 'Calciumsulfat-Dihydrat', 'Thioschwefelsäure']]]) for (const t of ts) ej(g, m, t);
   return { resolver, ejemplos, todos, aceptadas, nombreEnunciado, leeFormula, norm, ft, fh, ionH, porFormula: () => { indice(); return porFormula; }, porNombre: () => { indice(); return porNombre; } };
 })();
 

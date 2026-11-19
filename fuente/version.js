@@ -12,6 +12,9 @@
 const Version = (() => {
   const registros = {
     web: [
+      { v: '1.22.1', fecha: '2026-11-19', cambios: [
+        'Formulación inorgánica y Química orgánica dan ya los nombres de los compuestos en el idioma de la página: en inglés (sodium chloride, 2-methylbutane), en francés (chlorure de sodium, 2-méthylbutane) y en alemán (Natriumchlorid, 2-Methylbutan). Antes salían mezclados con español. Escribir un nombre y pasar a fórmula también funciona en cada idioma.',
+      ] },
       { v: '1.22', fecha: '2026-11-18', titulo: 'Ciencify en francés y alemán', subtitulo: 'Ya puedes usar toda la web en francés y en alemán, con el selector de idioma arreglado en el móvil.', secciones: [
         { icono: '🌍', titulo: 'Francés y alemán', puntos: [
           '**Français y Deutsch** en el selector de idioma, junto al español y el inglés: herramientas de todas las asignaturas, fenómenos, portada, novedades y páginas legales.',
@@ -753,6 +756,7 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-11-02', cambios: ['Primera versión: cavidades rectangulares, cilíndricas y esféricas de paredes conductoras. Frecuencia de resonancia de cualquier modo TE o TM, factor de calidad de las paredes y del dieléctrico, ancho de banda, tabla de los modos más bajos y mapa del campo eléctrico o magnético en el plano de corte que elijas. Con desarrollo paso a paso.'] },
     ],
     organica: [
+      { v: '0.3.1', fecha: '2026-11-19', cambios: ['Los nombres IUPAC salen en inglés, francés y alemán con sus propias reglas (ethanoic acid, acide éthanoïque, Ethansäure; ésteres, cetonas, benceno y anillos incluidos).'] },
       { v: '0.3', fecha: '2026-11-15', cambios: ['Anillos y benceno: la herramienta lee ciclos (ciclopropano a ciclododecano, con dobles enlaces) y el benceno con sus derivados, los nombra (ciclo o benceno como padre o como sustituyente, tolueno, fenol, anilina, ácido benzoico, orto, meta y para), saca el cis/trans y los estereoisómeros de un anillo, el R/S de sus centros, y los dibuja en 3D. Quedan fuera los heterociclos y las moléculas con más de un anillo.'] },
       { v: '0.2', fecha: '2026-11-08', cambios: ['Entrada con la fórmula semidesarrollada como se escribe en clase (CH₃-CH(OH)-CH₃), con botones para los grupos, además de SMILES; el resultado enseña también la fórmula semidesarrollada.'] },
       { v: '0.1', fecha: '2026-11-02', cambios: ['Primera versión: escribe una molécula (cadenas con ramas, dobles y triples enlaces, alcoholes, aldehídos, cetonas, ácidos, ésteres, amidas, nitrilos, aminas, éteres y halógenos) y obtén su nombre IUPAC, los grupos funcionales, la fórmula y la masa molar. Marca los centros quirales (R/S) y los dobles enlaces E/Z con las reglas de Cahn-Ingold-Prelog, lista todos los estereoisómeros (enantiómeros, diastereoisómeros y formas meso) y las isomerías de cadena, posición y función. La molécula se ve en 3D con los hidrógenos y se gira con el ratón o el dedo. Con desarrollo paso a paso.'] },
@@ -819,6 +823,7 @@ const Version = (() => {
       { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: integrales dobles (en cartesianas, con dy dx o dx dy, y en polares) y triples (en cartesianas, cilíndricas y esféricas) sobre la región que escribas con sus límites, de fuera adentro. Dibuja la región o el sólido en perspectiva, que se gira arrastrando; escribe el cambio de variables con su jacobiano, el integrando transformado y cada integral iterada de dentro afuera con su primitiva (y la numérica si alguna no sale), y da el valor exacto, el área o volumen de la región y el valor medio. Con 13 ejemplos de clase, modo práctica y enlace para compartir.'] },
     ],
     formulacion: [
+      { v: '0.2.1', fecha: '2026-11-19', cambios: ['Los nombres salen bien en inglés, francés y alemán (iron(III) oxide, oxyde de fer(III), Eisen(III)-oxid), en las tres nomenclaturas, con los complejos y los hidratos; y se puede escribir el nombre en cada idioma para obtener la fórmula.'] },
       { v: '0.2', fecha: '2026-11-08', cambios: ['Compuestos de coordinación ([Cu(NH₃)₄]SO₄, K₃[Fe(CN)₆]…) con estado de oxidación, número de coordinación y geometría; hidratos (CuSO₄·5H₂O); más de 40 compuestos con nombre propio y los prefijos meta, orto y piro.'] },
       { v: '0.1', fecha: '2026-11-01', cambios: ['Primera versión: escribe una fórmula y obtén su nombre, o escribe un nombre y obtén su fórmula, en nomenclatura sistemática, de Stock y tradicional. Reconoce óxidos, peróxidos, hidruros, hidróxidos, hidrácidos, oxoácidos, sales binarias, oxisales, sales ácidas y compuestos entre no metales (casi 3.000 compuestos), con el desarrollo paso a paso (tipo de compuesto, estados de oxidación y cruce de cargas), sugerencias si te equivocas, ejemplos, tabla de oxoácidos, modo práctica y enlace para compartir.'] },
     ],

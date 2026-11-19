@@ -20,6 +20,18 @@ const Formulacion = (() => {
   const PREF = ['', 'mono', 'di', 'tri', 'tetra', 'penta', 'hexa', 'hepta', 'octa', 'nona', 'deca'];
   const PREFG = ['', '', 'bis', 'tris', 'tetrakis', 'pentakis', 'hexakis', 'heptakis'];
   const SIMBOLOS = new Set('H He Li Be B C N O F Ne Na Mg Al Si P S Cl Ar K Ca Sc Ti V Cr Mn Fe Co Ni Cu Zn Ga Ge As Se Br Kr Rb Sr Y Zr Nb Mo Tc Ru Rh Pd Ag Cd In Sn Sb Te I Xe Cs Ba La Ce Pr Nd Pm Sm Eu Gd Tb Dy Ho Er Tm Yb Lu Hf Ta W Re Os Ir Pt Au Hg Tl Pb Bi Po At Rn Fr Ra Ac Th Pa U Np Pu Am Cm Bk Cf Es Fm Md No Lr Rf Db Sg Bh Hs Mt Ds Rg Cn Nh Fl Mc Lv Ts Og'.split(' '));
+  // idioma de los nombres que se generan: el diccionario de cada idioma cambia este texto por «en», «fr» o «de»
+  const IDI = 'idioma-es';
+  // ajustes de escritura de un nombre ya compuesto: elisión en francés («d’aluminium») y mayúsculas del alemán («Eisen(III)-oxid»)
+  const ajusta = (t) => {
+    if (!t || !t.replace) return t;
+    if (IDI === 'fr') return t.replace(/(^|[\s(])de (?=[aeiouyhéèêAEIOUYH])/g, '$1d’');
+    if (IDI === 'de') return t.toLowerCase().replace(/^./, (c) => c.toUpperCase()).replace(/\(([ivx]+)\)/g, (m, r) => '(' + r.toUpperCase() + ')').replace(/ säure/g, ' Säure');
+    return t;
+  };
+  // anión + metal en la nomenclatura tradicional: «óxido cuproso» (en inglés al revés: «cuprous oxide»)
+  const ordTrad = (a, m) => (IDI === 'en' ? `${m} ${a}` : `${a} ${m}`);
+  const MONOXIDO = ['monoóxido', 'monóxido']; // «monoóxido» se escribe «monóxido»
   const mcd = (a, b) => (b ? mcd(b, a % b) : a);
   const sa = (s) => String(s).normalize('NFD').replace(/[̀-ͯ]/g, '');
   const norm = (s) => sa(String(s).toLowerCase()).replace(/[^a-z0-9]/g, '');
@@ -65,7 +77,7 @@ const Formulacion = (() => {
     ['Se', 4, 3, 2, 1, 'selenioso', 'selenito'], ['Se', 6, 4, 2, 1, 'selénico', 'selenato'], ['Te', 4, 3, 2, 1, 'teluroso', 'telurito'], ['Te', 6, 4, 2, 1, 'telúrico', 'telurato'],
     ['N', 3, 2, 1, 1, 'nitroso', 'nitrito', 1], ['N', 5, 3, 1, 1, 'nítrico', 'nitrato', 1],
     ['P', 3, 3, 3, 1, 'fosforoso', 'fosfito'], ['P', 5, 4, 3, 1, 'fosfórico', 'fosfato', 1],
-    ['As', 3, 3, 3, 1, 'arsenioso', 'arsenito'], ['As', 5, 4, 3, 1, 'arsénico', 'arseniato'],
+    ['As', 3, 3, 3, 1, 'arsenioso', 'arsenito'], ['As', 5, 4, 3, 1, 'arsén' + 'ico', 'arseniato'],
     ['C', 4, 3, 2, 1, 'carbónico', 'carbonato', 1], ['Si', 4, 3, 2, 1, 'silícico', 'silicato'], ['B', 3, 3, 3, 1, 'bórico', 'borato'],
     ['Cr', 6, 4, 2, 1, 'crómico', 'cromato', 1], ['Cr', 6, 7, 2, 2, 'dicrómico', 'dicromato', 1],
     ['Mn', 7, 4, 1, 1, 'permangánico', 'permanganato', 1],
@@ -75,7 +87,7 @@ const Formulacion = (() => {
   // nombres alternativos (meta, orto, piro…) de compuestos que ya salen de las tablas
   const ALIAS_EXTRA = [['H2SiO3', ['ácido metasilícico']], ['Na2SiO3', ['metasilicato de sodio']], ['H3BO3', ['ácido ortobórico']], ['H3PO4', ['ácido ortofosfórico']], ['H4P2O7', ['ácido pirofosfórico']], ['H2S2O7', ['ácido pirosulfúrico']], ['Na2S2O7', ['pirosulfato de sodio']], ['Na4P2O7', ['pirofosfato de sodio']], ['H2O2', ['agua oxigenada']], ['NH3', ['azano']]];
   const ATO = { Cl: 'clorato', Br: 'bromato', I: 'yodato', S: 'sulfato', Se: 'selenato', Te: 'telurato', N: 'nitrato', P: 'fosfato', As: 'arsenato', C: 'carbonato', Si: 'silicato', B: 'borato', Cr: 'cromato', Mn: 'manganato' };
-  const ICO = { Cl: 'clórico', Br: 'brómico', I: 'yódico', S: 'sulfúrico', Se: 'selénico', Te: 'telúrico', N: 'nítrico', P: 'fosfórico', As: 'arsénico', C: 'carbónico', Si: 'silícico', B: 'bórico', Cr: 'crómico', Mn: 'mangánico' };
+  const ICO = { Cl: 'clórico', Br: 'brómico', I: 'yódico', S: 'sulfúrico', Se: 'selénico', Te: 'telúrico', N: 'nítrico', P: 'fosfórico', As: 'arsén' + 'ico', C: 'carbónico', Si: 'silícico', B: 'bórico', Cr: 'crómico', Mn: 'mangánico' };
   // hidruros y otros compuestos con nombre propio: fórmula, tipo, nombres [etiqueta, nombre]
   const ESPECIALES = [
     ['H2O', 'Agua', [['Sistemática', 'óxido de dihidrógeno'], ['Nombre común', 'agua']], 1],
@@ -138,8 +150,8 @@ const Formulacion = (() => {
   const cationes = [], aniones = [];
   for (const [sim, nombre, vs, ox = [], trad = {}, comun] of METALES) {
     const multi = vs.length + ox.length > 1;
-    for (const v of vs) cationes.push({ cl: 'm', f: sim, nombre, v, multi, trad: trad[v] || null, comun: !!comun, peroxido: PEROXIDOS.includes(sim) });
-    for (const v of ox) cationes.push({ cl: 'm', f: sim, nombre, v, multi, trad: trad[v] || null, comun: !!comun, soloOxido: true });
+    for (const v of vs) cationes.push({ cl: 'm', f: sim, nombre, v, multi, trad: (IDI !== 'de' && trad[v]) || null, comun: !!comun, peroxido: PEROXIDOS.includes(sim) });
+    for (const v of ox) cationes.push({ cl: 'm', f: sim, nombre, v, multi, trad: (IDI !== 'de' && trad[v]) || null, comun: !!comun, soloOxido: true });
   }
   const CAT_NH4 = { cl: 'am', f: 'NH4', poli: true, nombre: 'amonio', v: 1, multi: false, trad: null, comun: true };
   const CAT_H = { cl: 'h', f: 'H', nombre: 'hidrógeno', v: 1, multi: false, trad: null, comun: true };
@@ -157,7 +169,7 @@ const Formulacion = (() => {
       const ph = j ? (j > 1 ? PREF[j] : '') + 'hidrogeno' : '';
       aniones.push({
         cl: 'oxo', f: (j ? 'H' + (j > 1 ? j : '') : '') + baseF, w: h - j, poli: true, grupo: true, comun: !!comun && (j === 0 || ['SO4', 'CO3', 'PO4', 'SO3'].includes(baseF)),
-        centro, v, nO, h, j, tAn,
+        centro, v, nO, h, j, tAn, bajo: OXO.some((o) => o[0] === centro && o[4] === k && o[1] > v), hipo: v === 1 && ['Cl', 'Br', 'I'].includes(centro), per: v === 7 && ['Cl', 'Br', 'I', 'Mn'].includes(centro),
         sist: `${ph}${pOxido(nO)}${ato}`, stock: `${ph}${pOxo(nO)}${ato}(${ROM[v]})`, trad: `${ph}${tAn}`,
         stockSal: `${pOxo(nO)}${ato}(${ROM[v]})`,
         acidoStock: `${pOxo(nO)}${ico}(${ROM[v]})`, acidoTrad: tAc,
@@ -170,7 +182,7 @@ const Formulacion = (() => {
   function nombres(cat, n, an, m) {
     const L = [], alias = [];
     const ca = (k) => pre(k) + cat.nombre; // dihierro
-    const stockCat = cat.nombre + (cat.multi ? `(${ROM[cat.v]})` : '');
+    const stockCat = cat.nombre + (cat.multi ? `(${ROM[cat.v]})` + (IDI === 'de' ? '-' : '') : '');
     const uno = (et, nombre, regla, nota) => { if (nombre) L.push({ et, nombre, regla, nota }); };
     const RS = 'Los prefijos numerales (mono-, di-, tri-, tetra-, penta-, hexa-, hepta-…) dicen cuántos átomos o grupos hay de cada uno.';
     if (cat.cl === 'h' && an.cl === 'oxo') {
@@ -191,7 +203,7 @@ const Formulacion = (() => {
       uno('Sistemática', `${PREF[m]}${an.base} de ${ca(n)}`, `${RS} Aquí ${PREF[m]}- para el ${an.base.replace('uro', 'uro')} (${m} átomos)${n > 1 ? ' y ' + PREF[n] + '- para el ' + cat.nombre + ' (' + n + ' átomos)' : ' y ninguno para el ' + cat.nombre + ' (solo hay uno)'}.`);
       uno('Stock', `${an.base} de ${stockCat}`, `Se pone entre paréntesis, en romanos, el estado de oxidación del ${cat.nombre}: ${ROM[cat.v]}${cat.multi ? '' : ' (aquí solo tiene uno y se puede omitir)'}.`);
       if (anh) uno('Tradicional', `anhídrido ${anh[5]}`, `Los óxidos de los no metales se llamaban «anhídridos» (del ácido ${anh[5]}).`);
-      alias.push(...L.filter((l) => l.et === 'Sistemática').flatMap((l) => (m === 1 && n === 1 ? [l.nombre.replace(/^mono/, '')] : [])));
+      alias.push(...L.filter((l) => l.et === 'Sistemática').flatMap((l) => (m === 1 && n === 1 ? [l.nombre.replace(new RegExp('^' + PREF[1], 'i'), '')] : [])));
     } else if (an.cl === 'per') {
       uno('Sistemática', `${PREF[2 * m]}óxido de ${ca(n)}`, `${RS} Hay ${2 * m} átomos de oxígeno (${m} grupo${m > 1 ? 's' : ''} O₂)${n > 1 ? ' y ' + n + ' de ' + cat.nombre : ''}.`);
       uno('Stock', `peróxido de ${stockCat}`, `El grupo O₂²⁻ se llama peróxido${cat.multi ? '; el estado de oxidación del ' + cat.nombre + ' va en romanos' : ''}.`);
@@ -201,7 +213,7 @@ const Formulacion = (() => {
       const grupo = an.grupo ? (m > 1 ? `${PREFG[m]}(${an.base})` : an.base) : pre(m, monoEn) + an.base;
       uno('Sistemática', `${grupo} de ${ca(n)}`, `${RS}${an.grupo ? ' Con grupos de varios átomos se usan bis-, tris-… y paréntesis.' : ''} ${prefijosTxt(cat, n, an, m, monoEn)}`);
       uno('Stock', `${an.base} de ${stockCat}`, stockRegla(cat));
-      uno('Tradicional', cat.trad ? `${an.base} ${cat.trad}` : cat.multi ? null : `${an.base} de ${cat.nombre}`, cat.trad ? tradMetalRegla(cat) : 'Con un solo estado de oxidación basta «' + an.base + ' de …».');
+      uno('Tradicional', cat.trad ? ordTrad(an.base, cat.trad) : cat.multi ? null : `${an.base} de ${cat.nombre}`, cat.trad ? tradMetalRegla(cat) : 'Con un solo estado de oxidación basta «' + an.base + ' de …».');
       if (!an.grupo) alias.push(`${PREF[m]}${an.base} de ${ca(n)}`, `${pre(m)}${an.base} de ${ca(n)}`);
       if (an.esO && m >= 4) alias.push(`${PREF[m].slice(0, -1)}óxido de ${ca(n)}`);
     } else if (an.cl === 'oxo') {
@@ -209,10 +221,10 @@ const Formulacion = (() => {
       uno('Sistemática', `${w} de ${ca(n)}`, `${RS} ${m > 1 ? `El anión se repite ${m} veces y va entre paréntesis con ${PREFG[m]}-. ` : ''}Los oxígenos se nombran como «${pOxido(an.nO)}»${an.j ? ' y los hidrógenos del anión con «hidrogeno»' : ''}, y el elemento central termina en -ato.`);
       uno('Stock', `${an.stock} de ${stockCat}`, `Los oxígenos con «${pOxo(an.nO)}», el central con -ato y su estado de oxidación entre paréntesis (${ROM[an.v]}); además el del ${cat.nombre === 'amonio' ? 'amonio' : 'metal'}${cat.multi ? ' (' + ROM[cat.v] + ')' : ''}.`);
       uno('Tradicional', `${an.trad} de ${stockCat}`, tradOxoRegla(an, true));
-      if (cat.trad) L[L.length - 1].otros = [`${an.trad} ${cat.trad}`];
+      if (cat.trad) L[L.length - 1].otros = [ordTrad(an.trad, cat.trad)];
     }
-    const mo = (t) => (t && t.replace ? t.replace(/monoóxido/g, 'monóxido') : t);
-    for (const l of L) l.nombre = mo(l.nombre);
+    const mo = (t) => ajusta(t && t.replace ? t.replace(new RegExp(MONOXIDO[0], 'g'), MONOXIDO[1]) : t);
+    for (const l of L) { l.nombre = mo(l.nombre); if (l.otros) l.otros = l.otros.map(mo); }
     return { L, alias: alias.map(mo) };
   }
   const prefijosTxt = (cat, n, an, m, monoEn) => `Aquí: ${m === 1 && !monoEn ? 'un solo ' + an.base + ' (mono- se omite)' : PREF[m] + '- para el ' + an.base}${n > 1 ? ' y ' + PREF[n] + '- para el ' + cat.nombre : ''}.`;
@@ -220,8 +232,8 @@ const Formulacion = (() => {
   const tradMetalRegla = (cat) => `En la nomenclatura tradicional el metal con dos estados de oxidación lleva la terminación -oso (el menor) o -ico (el mayor): con +${cat.v} es «${cat.trad}».`;
   function tradOxoRegla(an, sal) {
     const t = sal ? an.tAn : an.acidoTrad;
-    const sufijo = sal ? (/ito$/.test(t) ? '-ito (estado de oxidación menor)' : '-ato (estado de oxidación mayor)') : (/oso$/.test(t) ? '-oso (estado de oxidación menor)' : '-ico (estado de oxidación mayor)');
-    const pf = /^hipo/.test(t) ? ', con hipo- (el estado más bajo de los cuatro)' : /^per/.test(t) ? ', con per- (el estado más alto de los cuatro)' : '';
+    const sufijo = sal ? (an.bajo ? '-ito (estado de oxidación menor)' : '-ato (estado de oxidación mayor)') : (an.bajo ? '-oso (estado de oxidación menor)' : '-ico (estado de oxidación mayor)');
+    const pf = an.hipo ? ', con hipo- (el estado más bajo de los cuatro)' : an.per ? ', con per- (el estado más alto de los cuatro)' : '';
     return `El elemento central (${an.centro}) actúa con +${an.v}: ${sal ? 'el anión' : 'el ácido'} termina en ${sufijo}${pf}.${sal && an.j ? ' Los hidrógenos que conserva se indican con «hidrogeno» delante.' : ''}`;
   }
 
@@ -343,7 +355,7 @@ const Formulacion = (() => {
   }
   function pasosNF(c, usada) {
     if (c.esp) return [{ t: 'Reconoce el nombre', html: `«${usada.nombre}» es un nombre ${c.tipo === 'Agua' ? 'del agua' : `de un compuesto de tipo ${c.tipo.toLowerCase()}`}: su fórmula es $${c.formula.replace(/\d+/g, (d) => '_{' + d + '}')}$.` }, { t: 'Escribe la fórmula', html: `Su fórmula es <b>${c.html}</b>.` }];
-    const { cat, an, n, m, g } = c, sist = /Sistem/.test(usada.et);
+    const { cat, an, n, m, g } = c, sist = usada.et.includes('Sistemática');
     const p = [];
     p.push({ t: 'Interpreta el nombre', html: `«${usada.nombre}» está en nomenclatura ${usada.et.toLowerCase().replace(/ · /g, ', ')}. ${tipoTxt(c)}` });
     p.push({ t: 'Anota las cargas', html: `${cat.cl === 'nm' ? 'El' : 'El'} ${cat.nombre} actúa con +${cat.v}${cat.multi && !sist ? ` (el número romano ${ROM[cat.v]} o la terminación ${cat.trad ? '«' + cat.trad + '»' : ''} lo indican)` : ''}: ${ionH(cat.f, cat.v)}. El ${anionTxt(an)} tiene carga ${an.w}−.` });
@@ -363,14 +375,15 @@ const Formulacion = (() => {
   }
   function errorConSug(msg, sug) { const e = new Error(msg); e.sugerencias = sug || []; return e; }
   const CompL = typeof Complejos !== 'undefined' ? Complejos : require('./complejos.js');
+  const HIDRATO = 'hidrato', pfh = (p) => (IDI === 'de' ? p.replace(/^./, (c) => c.toUpperCase()) : p);
   const PREFH = ['', 'mono', 'di', 'tri', 'tetra', 'penta', 'hexa', 'hepta', 'octa', 'nona', 'deca'];
   // hidratos: «CuSO4·5H2O» ↔ «sulfato de cobre(II) pentahidrato»
   function hidrato(base, n, usadaBase) {
-    const r = base, pf = PREFH[n] || `${n}-`, c0 = r.c;
-    const lineas = r.lineas.filter((l) => l.et !== 'Nombre común').map((l) => ({ ...l, nombre: `${l.nombre} ${pf}hidrato`, regla: `${l.regla || ''} El agua de cristalización se añade con el prefijo ${pf}- y la palabra «hidrato».` }));
+    const r = base, pf = pfh(PREFH[n] || `${n}-`), c0 = r.c;
+    const lineas = r.lineas.filter((l) => l.et !== 'Nombre común').map((l) => ({ ...l, nombre: IDI === 'de' ? `${l.nombre}-${pf}${HIDRATO}` : `${l.nombre} ${pf}${HIDRATO}`, regla: `${l.regla || ''} El agua de cristalización se añade con el prefijo ${pf}- y la palabra «hidrato».` }));
     const formula = `${c0.formula}·${n === 1 ? '' : n}H2O`, html = `${c0.html}·${n === 1 ? '' : n}H<sub>2</sub>O`;
     const c = { ...c0, formula, html, texto: ft(c0.formula) + `·${n === 1 ? '' : n}H₂O`, tipo: 'Hidrato', lineas, alias: [], esp: true, hidrato: n };
-    const pasos = [...r.pasos, { t: 'Agua de cristalización', html: `La fórmula acaba en <b>·${n === 1 ? '' : n}H<sub>2</sub>O</b>: por cada unidad de ${c0.html} hay ${n} molécula${n > 1 ? 's' : ''} de agua en el cristal. Se nombra el compuesto y se termina con <b>${pf}hidrato</b>.` }];
+    const pasos = [...r.pasos, { t: 'Agua de cristalización', html: `La fórmula acaba en <b>·${n === 1 ? '' : n}H<sub>2</sub>O</b>: por cada unidad de ${c0.html} hay ${n} molécula${n > 1 ? 's' : ''} de agua en el cristal. Se nombra el compuesto y se termina con <b>${pf}${HIDRATO}</b>.` }];
     return { modo: r.modo, c, formula, html, tipo: 'Hidrato', lineas, alt: [], pasos, usada: usadaBase || null };
   }
   function resolver(sc) {
@@ -379,7 +392,7 @@ const Formulacion = (() => {
       if (sc && sc.modo !== 'n2f' && /\[/.test(t0)) { let x = null, e1 = null; try { x = CompL.leer(t0); } catch (e) { e1 = e; } if (!x) { try { return resolver({ ...sc, texto: t0.replace(/\[/g, '(').replace(/\]/g, ')') }); } catch (e2) { throw e1; } } return { modo: 'f2n', c: { formula: x.formula, html: x.html, texto: x.formula, tipo: x.tipo, lineas: x.nombres, alias: [], esp: true, complejo: x }, formula: x.formula, html: x.html, tipo: x.tipo, lineas: x.nombres, alt: [], pasos: x.pasos, usada: null }; }
       const mh = /^(.*?)\s*[·.*•]\s*(\d*)\s*H2O\s*$/i.exec(t0.replace(/[₀-₉]/g, (d) => SUBS.indexOf(d)));
       if (sc && sc.modo !== 'n2f' && mh && mh[1]) return hidrato(resolver({ modo: 'f2n', texto: mh[1] }), +mh[2] || 1);
-      const mn = /^(.*?)\s+(mono|di|tri|tetra|penta|hexa|hepta|octa|nona|deca)hidrato\s*$/i.exec(t0);
+      const mn = new RegExp('^(.*?)[\\s-]+(' + PREFH.slice(1).join('|') + ')' + HIDRATO + '\\s*$', 'i').exec(t0);
       if (sc && sc.modo === 'n2f' && mn) { const n = PREFH.indexOf(mn[2].toLowerCase()); const b = resolver({ modo: 'n2f', texto: mn[1] }); return hidrato({ ...b, modo: 'n2f' }, n, b.usada); } }
     const modo = sc && sc.modo === 'n2f' ? 'n2f' : 'f2n', texto = String(sc?.texto ?? '').trim();
     const romanos = (t) => t.replace(/\(\s*\+?([1-7])\s*\+?\s*\)/g, (_, d) => `(${ROM[d]})`);

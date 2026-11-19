@@ -13,6 +13,9 @@
    ===================================================================== */
 const Complejos = (() => {
   const SUBS = '₀₁₂₃₄₅₆₇₈₉';
+  const IDI = 'idioma-es'; // el diccionario de cada idioma lo cambia por «en», «fr» o «de»
+  const ES = IDI !== 'en' && IDI !== 'fr' && IDI !== 'de';
+  const nom = (t) => (IDI === 'de' ? t.toLowerCase().replace(/^./, (c) => c.toUpperCase()).replace(/\(([ivx]+)\)/g, (m, r) => '(' + r.toUpperCase() + ')').replace(/κ([a-z])/g, (m, c) => 'κ' + c.toUpperCase()) : IDI === 'fr' ? t.replace(/(^|[\s(])de (?=[aeiouyhéèêAEIOUYH])/g, '$1d’') : t);
   const sa = (s) => String(s).normalize('NFD').replace(/[̀-ͯ]/g, '');
   const norm = (s) => sa(String(s).toLowerCase()).replace(/[^a-z0-9]/g, '');
   const ROM = ['0', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII'];
@@ -20,17 +23,28 @@ const Complejos = (() => {
   const fh = (f) => String(f).replace(/\d+/g, '<sub>$&</sub>');
   const sup = (z) => (z === 0 ? '' : `<sup>${Math.abs(z) > 1 ? Math.abs(z) : ''}${z > 0 ? '+' : '−'}</sup>`);
   // ligandos: fórmula → carga, nombre de libro, nombre IUPAC 2005, denticidad, ¿lleva bis/tris?
-  const LIG = {
+  const LIG_ES = {
     NH3: { q: 0, t: 'amino', i: 'amina', d: 1 }, H2O: { q: 0, t: 'acuo', i: 'aqua', d: 1 }, CO: { q: 0, t: 'carbonilo', i: 'carbonilo', d: 1 },
     CN: { q: -1, t: 'ciano', i: 'cianido', d: 1 }, Cl: { q: -1, t: 'cloro', i: 'cloruro', d: 1 }, Br: { q: -1, t: 'bromo', i: 'bromuro', d: 1 }, I: { q: -1, t: 'yodo', i: 'yoduro', d: 1 }, F: { q: -1, t: 'fluoro', i: 'fluoruro', d: 1 },
     OH: { q: -1, t: 'hidroxo', i: 'hidroxido', d: 1 }, NO2: { q: -1, t: 'nitro', i: 'nitrito-κN', d: 1 }, SCN: { q: -1, t: 'tiocianato', i: 'tiocianato-κS', d: 1, bis: true },
     en: { q: 0, t: 'etilendiamina', i: 'etano-1,2-diamina', d: 2, bis: true }, ox: { q: -2, t: 'oxalato', i: 'oxalato', d: 2, bis: true },
   };
+  // nombres de los ligandos fuera del español: [libro, IUPAC 2005]
+  const LIG_N = {
+    en: { NH3: ['ammine', 'ammine'], H2O: ['aqua', 'aqua'], CO: ['carbonyl', 'carbonyl'], CN: ['cyano', 'cyanido'], Cl: ['chloro', 'chlorido'], Br: ['bromo', 'bromido'], I: ['iodo', 'iodido'], F: ['fluoro', 'fluorido'], OH: ['hydroxo', 'hydroxido'], NO2: ['nitro', 'nitrito-κN'], SCN: ['thiocyanato', 'thiocyanato-κS'], en: ['ethylenediamine', 'ethane-1,2-diamine'], ox: ['oxalato', 'oxalato'] },
+    fr: { NH3: ['ammine', 'ammine'], H2O: ['aqua', 'aqua'], CO: ['carbonyle', 'carbonyle'], CN: ['cyano', 'cyanido'], Cl: ['chloro', 'chlorido'], Br: ['bromo', 'bromido'], I: ['iodo', 'iodido'], F: ['fluoro', 'fluorido'], OH: ['hydroxo', 'hydroxido'], NO2: ['nitro', 'nitrito-κN'], SCN: ['thiocyanato', 'thiocyanato-κS'], en: ['éthylènediamine', 'éthane-1,2-diamine'], ox: ['oxalato', 'oxalato'] },
+    de: { NH3: ['ammin', 'ammin'], H2O: ['aqua', 'aqua'], CO: ['carbonyl', 'carbonyl'], CN: ['cyano', 'cyanido'], Cl: ['chloro', 'chlorido'], Br: ['bromo', 'bromido'], I: ['iodo', 'iodido'], F: ['fluoro', 'fluorido'], OH: ['hydroxo', 'hydroxido'], NO2: ['nitro', 'nitrito-κN'], SCN: ['thiocyanato', 'thiocyanato-κS'], en: ['ethylendiamin', 'ethan-1,2-diamin'], ox: ['oxalato', 'oxalato'] },
+  };
+  const LIG = ES ? LIG_ES : Object.fromEntries(Object.entries(LIG_ES).map(([f, l]) => [f, { ...l, t: LIG_N[IDI][f][0], i: LIG_N[IDI][f][1] }]));
   // metales: símbolo → nombre (neutro y catión), raíz del anión (-ato), grupo (para los electrones d)
-  const MET = {
+  const ATO_N = { en: { Cu: 'cuprate', Ag: 'argentate', Au: 'aurate', Zn: 'zincate', Hg: 'mercurate', Fe: 'ferrate', Co: 'cobaltate', Ni: 'nickelate', Cr: 'chromate', Mn: 'manganate', Pt: 'platinate', Pd: 'palladate', Al: 'aluminate', Ti: 'titanate' },
+    fr: { Cu: 'cuprate', Ag: 'argentate', Au: 'aurate', Zn: 'zincate', Hg: 'mercurate', Fe: 'ferrate', Co: 'cobaltate', Ni: 'nickelate', Cr: 'chromate', Mn: 'manganate', Pt: 'platinate', Pd: 'palladate', Al: 'aluminate', Ti: 'titanate' },
+    de: { Cu: 'cuprat', Ag: 'argentat', Au: 'aurat', Zn: 'zinkat', Hg: 'mercurat', Fe: 'ferrat', Co: 'cobaltat', Ni: 'nickelat', Cr: 'chromat', Mn: 'manganat', Pt: 'platinat', Pd: 'palladat', Al: 'aluminat', Ti: 'titanat' } };
+  const MET_ES = {
     Cu: ['cobre', 'cuprato', 11], Ag: ['plata', 'argentato', 11], Au: ['oro', 'aurato', 11], Zn: ['zinc', 'zincato', 12], Hg: ['mercurio', 'mercurato', 12], Fe: ['hierro', 'ferrato', 8], Co: ['cobalto', 'cobaltato', 9], Ni: ['níquel', 'niquelato', 10],
     Cr: ['cromo', 'cromato', 6], Mn: ['manganeso', 'manganato', 7], Pt: ['platino', 'platinato', 10], Pd: ['paladio', 'paladato', 10], Al: ['aluminio', 'aluminato', 3], Ti: ['titanio', 'titanato', 4],
   };
+  const MET = ES ? MET_ES : Object.fromEntries(Object.entries(MET_ES).map(([f, m]) => [f, [m[0], ATO_N[IDI][f], m[2]]]));
   const CAT = { Li: ['litio', 1], Na: ['sodio', 1], K: ['potasio', 1], Rb: ['rubidio', 1], Cs: ['cesio', 1], NH4: ['amonio', 1], Ca: ['calcio', 2], Mg: ['magnesio', 2], Ba: ['bario', 2], Ag: ['plata', 1] };
   const ANI = { Cl: ['cloruro', 1], Br: ['bromuro', 1], I: ['yoduro', 1], F: ['fluoruro', 1], NO3: ['nitrato', 1], SO4: ['sulfato', 2], OH: ['hidróxido', 1], ClO4: ['perclorato', 1], NO2: ['nitrito', 1], CO3: ['carbonato', 2] };
 
@@ -91,10 +105,10 @@ const Complejos = (() => {
     };
     const ext = (v) => {
       const base = nombreIon(v);
-      if (z < 0 && catExt.length) return `${base} de ${catExt.map((x) => CAT[x.f][0]).join(' y ')}`;
-      if (z > 0 && aniExt.length) return `${aniExt.map((x) => ANI[x.f][0]).join(' y ')} de ${base}`;
-      if (z === 0 && !catExt.length && !aniExt.length) return base;
-      return `ion ${base}`;
+      if (z < 0 && catExt.length) return nom(`${base} de ${catExt.map((x) => CAT[x.f][0]).join(' y ')}`);
+      if (z > 0 && aniExt.length) return nom(`${aniExt.map((x) => ANI[x.f][0]).join(' y ')} de ${base}`);
+      if (z === 0 && !catExt.length && !aniExt.length) return nom(base);
+      return nom(`ion ${base}`);
     };
     const formula = `${izq}[${cuerpo}]${zs ? (+zn > 1 ? zn : '') + zs.replace('−', '-') : ''}${der}`;
     const html = fh(izq) + '[' + fh(cuerpo) + ']' + (zs ? sup(z) : '') + fh(der);
@@ -107,7 +121,7 @@ const Complejos = (() => {
       { t: 'Electrones d', html: info[2] <= 3 ? `El ${info[0]} no es un metal de transición con orbitales d ocupados en este estado.` : `El ${info[0]} está en el grupo ${info[2]}: con estado +${ox} le quedan <b>d<sup>${dN}</sup></b> electrones.` },
       { t: 'Nombre', html: `Primero los ligandos por orden alfabético, con prefijos di-, tri-… (bis-, tris-… si el nombre del ligando ya los lleva), y luego el metal con su estado de oxidación en números romanos${z < 0 ? ' y terminado en -ato porque el complejo es un anión' : ''}: <b>${nombres[0].nombre}</b> (libros de texto) o <b>${nombres[1].nombre}</b> (IUPAC 2005, que usa los nombres «aniónicos» de los ligandos: cloruro, cianido…).` },
     ];
-    return { formula, html, tipo: 'Compuesto de coordinación', nombres, metal, ox, cn, dN, geo, z, ligandos: ligs, pasos, texto: formula, cuenta: null };
+    return { formula, html, tipo: 'Compuesto de coordinación', nombres, bases: [nombreIon('t'), nombreIon('i')].map(nom), exterior: !!(catExt.length || aniExt.length), metal, ox, cn, dN, geo, z, ligandos: ligs, pasos, texto: formula, cuenta: null };
   }
 
   const LISTA = [
@@ -120,7 +134,7 @@ const Complejos = (() => {
   function indice() {
     if (mapa) return mapa;
     mapa = new Map();
-    for (const f of LISTA) { const r = leer(f); for (const n of r.nombres) { mapa.set(norm(n.nombre), f); if (r.z !== 0 && !/ de /.test(n.nombre)) { mapa.set(norm(n.nombre.replace(/^ion /, '')), f); mapa.set(norm('cation ' + n.nombre.replace(/^ion /, '')), f); mapa.set(norm('anion ' + n.nombre.replace(/^ion /, '')), f); } } }
+    for (const f of LISTA) { const r = leer(f); r.nombres.forEach((n, k) => { mapa.set(norm(n.nombre), f); if (r.z !== 0 && !r.exterior) { mapa.set(norm(r.bases[k]), f); mapa.set(norm('cation ' + r.bases[k]), f); mapa.set(norm('anion ' + r.bases[k]), f); } }); }
     return mapa;
   }
   const porNombre = (k) => indice().get(k) || null;
