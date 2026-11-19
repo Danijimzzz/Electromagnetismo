@@ -27,6 +27,9 @@ const Version = (() => {
           '**Seleccionar** está arriba, y **Imprimir** y **Descargar PDF** están en los menús de cada ejercicio y de la selección.',
         ] },
       ] },
+      { v: '1.22.2', fecha: '2026-11-19', cambios: [
+        'En inglés, francés y alemán, los subíndices de máximo y mínimo de las fórmulas ya salen como «max» y «min», como en cada idioma, en vez de quedarse en español.',
+      ] },
       { v: '1.22.1', fecha: '2026-11-19', cambios: [
         'Formulación inorgánica y Química orgánica dan ya los nombres de los compuestos en el idioma de la página: en inglés (sodium chloride, 2-methylbutane), en francés (chlorure de sodium, 2-méthylbutane) y en alemán (Natriumchlorid, 2-Methylbutan). Antes salían mezclados con español. Escribir un nombre y pasar a fórmula también funciona en cada idioma.',
       ] },

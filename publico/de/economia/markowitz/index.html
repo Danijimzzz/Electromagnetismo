@@ -413,7 +413,7 @@ const Version = (() => { const registros = {"web":[{"v":"1.23"}],"control":[{"v"
 <script src="../../../js/de/herramienta.de.74e911cb.js"></script>
 <script src="../../../js/de/imprimir.de.4a9fb719.js"></script>
 <script src="../../../js/de/enunciado.de.9e13e5b4.js"></script>
-<script src="../../../js/de/mates.de.b5c3ede5.js"></script>
+<script src="../../../js/de/mates.de.15d27dbf.js"></script>
 <script src="../../../js/de/calculadora.de.e177d0ba.js"></script>
 <script src="../../../js/de/economia-comun.de.fdf6c4a3.js"></script>
 <script>
@@ -577,7 +577,7 @@ const Markowitz = (() => {
     const filaCov = (i, j) => `$σ_{${i + 1}${j + 1}} = ρ_{${i + 1}${j + 1}}·σ_${i + 1}·σ_${j + 1} = ${e(rho[i][j])}·${e(sg[i])}·${e(sg[j])} = ${e6(cov[i][j])}$`;
     pasos.push({ t: 'Kovarianzmatrix', html: `Mit den Volatilitäten σ und den Korrelationen ρ ist die Kovarianz zwischen zwei Anlagen $σ_{ij} = ρ_{ij}·σ_i·σ_j$ (und die Diagonale ist die Varianz $σ_i^2$).<br>${filaCov(0, 1)}${n > 2 ? `<br>${filaCov(0, 2)}` : ''}<table class="tabla"><thead><tr><th>Vermögen</th>${nombres.map((x) => `<th>${esc(x)}</th>`).join('')}</tr></thead><tbody>${cov.map((r, i) => `<tr><th>${esc(nombres[i])}</th>${r.map((x) => `<td>${e6(x)}</td>`).join('')}</tr>`).join('')}</tbody></table>Rendite und Varianz eines Portfolios mit den Gewichten $w$ sind $μ_p = w^T·μ$ und $σ_p^2 = w^T·Σ·w$.` });
     const sin = ventas ? '' : ' Ohne Leerverkäufe wird jede mögliche Gruppe von Anlagen ausprobiert und die beste mit allen positiven Gewichten behalten; die übrigen Anlagen bleiben bei 0.';
-    pasos.push({ t: 'Minimum-Varianz-Portfolio', html: `${ventas ? '$w = {Σ^{−1}·1}/{1^T·Σ^{−1}·1}$.' : 'Minimiere $σ_p^2$ mit $Σw_i = 1$ und $w_i ≥ 0$.'}${sin}<br>Gewichte: ${pesos(mv.w)}<br>$μ_{mín} = ${e(mv.mu)}$ = <b>${pct(mv.mu)}</b> und $σ_{mín} = ${e(mv.sg)}$ = <b>${pct(mv.sg)}</b>. Keine Kombination dieser Anlagen hat weniger Risiko.` });
+    pasos.push({ t: 'Minimum-Varianz-Portfolio', html: `${ventas ? '$w = {Σ^{−1}·1}/{1^T·Σ^{−1}·1}$.' : 'Minimiere $σ_p^2$ mit $Σw_i = 1$ und $w_i ≥ 0$.'}${sin}<br>Gewichte: ${pesos(mv.w)}<br>$μ_{min} = ${e(mv.mu)}$ = <b>${pct(mv.mu)}</b> und $σ_{min} = ${e(mv.sg)}$ = <b>${pct(mv.sg)}</b>. Keine Kombination dieser Anlagen hat weniger Risiko.` });
     if (tg) pasos.push({ t: 'Tangentialportfolio', html: `Es ist das mit der höchsten Sharpe-Ratio $S = (μ_p − r_f)/σ_p$ bei $r_f$ = ${pct(rf)}: ${ventas ? '$w ∝ Σ^{−1}·(μ − r_f·1)$, normiert, sodass es sich zu 1 summiert.' : 'dasselbe Kriterium, mit $w_i ≥ 0$.'}<br>Gewichte: ${pesos(tg.w)}<br>$μ_T = ${e(tg.mu)}$ = <b>${pct(tg.mu)}</b>, $σ_T = ${e(tg.sg)}$ = <b>${pct(tg.sg)}</b> y $S = {${e(tg.mu)} − ${e(rf)}}/${e(tg.sg)} = ${e(tg.sharpe)}$.` });
     else if (M.arbitraje) pasos.push({ t: 'Tangentialportfolio', html: 'Es existiert nicht: Bei Korrelation ±1 und einem risikolosen Portfolio, das nicht dasselbe rentiert wie die risikolose Anlage, gibt es Arbitrage, und die Sharpe-Ratio wäre unendlich.' });
     else if (extremo && ventas) pasos.push({ t: 'Tangentialportfolio', html: 'Es ist nicht definiert: Mit Leerverkäufen und Korrelation ±1 haben alle Portfolios dieselbe Sharpe-Ratio oder wachsen unbegrenzt. Probiere es ohne Leerverkäufe.' });

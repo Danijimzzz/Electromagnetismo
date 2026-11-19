@@ -127,7 +127,7 @@ const Fuerza = (() => {
   }
 
   function espejo(sc) {
-    const pasos = [], P = particula(sc, true), v = velocidad(sc, P, pasos), B0 = num(sc, 'B0', 'le champ B₀ au centre'), Rm = num(sc, 'Rm', 'le rapport de miroir Bmáx/B₀'), L = num(sc, 'L', 'la longueur caractéristique L'), al = num(sc, 'au', 'l\'angle α₀', { signo: true });
+    const pasos = [], P = particula(sc, true), v = velocidad(sc, P, pasos), B0 = num(sc, 'B0', 'le champ B₀ au centre'), Rm = num(sc, 'Rm', 'le rapport de miroir Bmax/B₀'), L = num(sc, 'L', 'la longueur caractéristique L'), al = num(sc, 'au', 'l\'angle α₀', { signo: true });
     if (!(Rm > 1)) throw new Error('Le rapport de miroir doit être supérieur à 1');
     if (!(al > 0 && al <= 90)) throw new Error('L\'angle α₀ entre v et B doit être compris entre 0° (exclu) et 90°');
     const a0 = (al * Math.PI) / 180, s0 = Math.sin(a0), c0 = Math.abs(Math.cos(a0)) < 1e-12 ? 0 : Math.cos(a0), aq = Math.abs(P.q), zm = L * Math.sqrt(Rm - 1), ac = Math.asin(1 / Math.sqrt(Rm)), atrapada = s0 > 1 / Math.sqrt(Rm) + 1e-12;
@@ -186,7 +186,7 @@ const Fuerza = (() => {
     if (P.pre) pasos.push({ t: 'Données de la particule', html: datosP(P) });
     const fr = (aq * B) / (2 * Math.PI * P.m), vmax = (aq * B * R) / P.m, Ec = 0.5 * P.m * vmax * vmax;
     pasos.push({ t: 'Fréquence de l\'oscillateur', html: `À l'intérieur des dees, la particule fait des demi-tours avec $T = {2π m}/{|q| B}$, qui ne dépend pas du rayon. La tension entre les dees doit changer de signe à cette fréquence : $f = {|q| B}/{2π m} = {${f(aq)}·${f(B)}}/{2π·${f(P.m)}}$ = <b>${f(fr)} Hz</b>` });
-    pasos.push({ t: 'Vitesse et énergie à la sortie', html: `Elle sort lorsque son rayon est celui des dees : $R = {m v}/{|q| B} ⇒ v_máx = {|q| B R}/m$ = <b>${f(vmax)} m/s</b>${vmax > 0.1 * C ? ' (plus de 10 % de c : le calcul classique n’est plus exact)' : ''}. $E_c = 1/2 m v_máx^2 = {q^2 B^2 R^2}/{2m}$ = <b>${f(Ec)} J</b> = ${f(Ec / E0 / 1e6)} MeV` });
+    pasos.push({ t: 'Vitesse et énergie à la sortie', html: `Elle sort lorsque son rayon est celui des dees : $R = {m v}/{|q| B} ⇒ v_max = {|q| B R}/m$ = <b>${f(vmax)} m/s</b>${vmax > 0.1 * C ? ' (plus de 10 % de c : le calcul classique n’est plus exact)' : ''}. $E_c = 1/2 m v_max^2 = {q^2 B^2 R^2}/{2m}$ = <b>${f(Ec)} J</b> = ${f(Ec / E0 / 1e6)} MeV` });
     let n = null, t = null;
     if (V !== null) {
       n = Ec / (2 * aq * V); t = n / fr;

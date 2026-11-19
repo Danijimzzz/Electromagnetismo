@@ -392,7 +392,7 @@ const Version = (() => { const registros = {"web":[{"v":"1.23"}],"control":[{"v"
 <script src="../../../js/fr/herramienta.fr.8886d3c4.js"></script>
 <script src="../../../js/fr/imprimir.fr.4a9fb719.js"></script>
 <script src="../../../js/fr/enunciado.fr.f7925f83.js"></script>
-<script src="../../../js/fr/mates.fr.b5c3ede5.js"></script>
+<script src="../../../js/fr/mates.fr.15d27dbf.js"></script>
 <script src="../../../js/fr/calculadora.fr.690a2e7c.js"></script>
 <script>
 const Oscilaciones = (() => {
@@ -436,7 +436,7 @@ const Oscilaciones = (() => {
     }
     const vmax = A * w, amax = A * w * w, E = 0.5 * k * A * A;
     const x = A * Math.cos(w * t + phi), v = -A * w * Math.sin(w * t + phi), a = -w * w * x, Ep = 0.5 * k * x * x, Ec = 0.5 * m * v * v;
-    pasos.push({ t: 'Équations du mouvement', html: `$x(t) = A cos(ω t + φ) = ${n(A, 5)} cos(${n(w, 5)} t + ${n(phi, 4)})$, $v = −A ω sin(ω t + φ)$ et $a = −ω^2 x$. Maxima : $v_{máx} = A ω = ${n(vmax, 5)} "m/s"$ et $a_{máx} = A ω^2 = ${n(amax, 5)} "m/s"^2$.` });
+    pasos.push({ t: 'Équations du mouvement', html: `$x(t) = A cos(ω t + φ) = ${n(A, 5)} cos(${n(w, 5)} t + ${n(phi, 4)})$, $v = −A ω sin(ω t + φ)$ et $a = −ω^2 x$. Maxima : $v_{max} = A ω = ${n(vmax, 5)} "m/s"$ et $a_{max} = A ω^2 = ${n(amax, 5)} "m/s"^2$.` });
     pasos.push({ t: `À t = ${n(t)} s`, html: `$x = ${n(x, 5)} "m"$, $v = ${n(v, 5)} "m/s"$ y $a = −ω^2 x = ${n(a, 5)} "m/s"^2$.` });
     pasos.push({ t: 'Énergie', html: `$E = 1/2 k A^2 = ${n(E, 5)} "J"$ reste constante. À cet instant : $E_p = 1/2 k x^2 = ${n(Ep, 5)} "J"$ et $E_c = 1/2 m v^2 = ${n(Ec, 5)} "J"$ (leur somme vaut ${n(Ep + Ec, 5)} J).` });
     let Texacto = null;
@@ -491,7 +491,7 @@ const Oscilaciones = (() => {
     pasos.push({ t: 'Amplitude en régime permanent', html: `$A = {F_0/m}/√((ω_0^2 − ω^2)^2 + 4 γ^2 ω^2) = {${n(F0 / m, 5)}}/√((${n(w0 * w0, 5)} − ${n(w * w, 5)})^2 + (${n(2 * gm * w, 5)})^2) = ${n(A, 5)} "m"$` });
     pasos.push({ t: 'Déphasage', html: `$δ = "atan2"(2γω, ω_0^2 − ω^2) = ${n(delta, 5)} "rad"$ = ${n(delta / RAD, 4)}° : le corps ${delta < 1e-3 ? 'est en phase avec la force' : Math.abs(delta - Math.PI / 2) < 1e-3 ? 'est en retard d’un quart de période (90°), exactement à la résonance de vitesse' : 'est en retard sur la force'}, et $x(t) = A cos(ω t − δ)$.` });
     const hayRes = w0 * w0 > 2 * gm * gm, wr = hayRes ? Math.sqrt(w0 * w0 - 2 * gm * gm) : 0, Amax = hayRes ? (F0 / m) / (2 * gm * Math.sqrt(w0 * w0 - gm * gm)) : (F0 / m) / (w0 * w0);
-    pasos.push({ t: 'Résonance', html: hayRes ? `L’amplitude est maximale en $ω_r = √(ω_0^2 − 2γ^2) = ${n(wr, 5)} "rad/s"$, avec $A_{máx} = {F_0/m}/(2γ√(ω_0^2 − γ^2)) = ${n(Amax, 5)} "m"$. Facteur de qualité $Q = ω_0/(2γ) = ${n(Q, 4)}$.` : `Avec un frottement aussi fort ($2γ^2 ≥ ω_0^2$), il n’y a pas de maximum d’amplitude : elle diminue quand ω augmente, et la valeur la plus élevée est la valeur statique, $F_0/k = ${n(F0 / k, 5)} "m"$.` });
+    pasos.push({ t: 'Résonance', html: hayRes ? `L’amplitude est maximale en $ω_r = √(ω_0^2 − 2γ^2) = ${n(wr, 5)} "rad/s"$, avec $A_{max} = {F_0/m}/(2γ√(ω_0^2 − γ^2)) = ${n(Amax, 5)} "m"$. Facteur de qualité $Q = ω_0/(2γ) = ${n(Q, 4)}$.` : `Avec un frottement aussi fort ($2γ^2 ≥ ω_0^2$), il n’y a pas de maximum d’amplitude : elle diminue quand ω augmente, et la valeur la plus élevée est la valeur statique, $F_0/k = ${n(F0 / k, 5)} "m"$.` });
     const est = F0 / k;
     pasos.push({ t: 'Comparaison avec la force statique', html: `Une force constante $F_0$ étirerait le ressort de $F_0/k = ${n(est, 5)} "m"$ ; l’amplitude vaut ${n(A / est, 4)} fois cette déformation (amplification).` });
     const P = 0.5 * b * w * w * A * A;
