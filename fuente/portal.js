@@ -7,24 +7,25 @@ const Catalogo = require('./catalogo.js'), Version = require('./version.js'), Te
 const publico = path.join(__dirname, '..', 'publico');
 
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-const icono = 'data:image/svg+xml;base64,' + fs.readFileSync(path.join(__dirname, 'icono.svg')).toString('base64');
+// iconos de pestaña: la marca general (icono.svg) y uno por asignatura (iconos/<clave>.svg, con el color de la asignatura); se copian a publico/ más abajo
+const ICONOS_SVG = { 'icono.svg': fs.readFileSync(path.join(__dirname, 'icono.svg'), 'utf8'), ...Object.fromEntries(fs.readdirSync(path.join(__dirname, 'iconos')).filter((f) => f.endsWith('.svg')).map((f) => ['iconos/' + f, fs.readFileSync(path.join(__dirname, 'iconos', f), 'utf8')])) };
 const [m1, m2] = Catalogo.marca, marca = m1 + m2;
 const disponibles = (a) => a.herramientas.filter((h) => h.disponible);
 const V = Catalogo.fenomenos;
 
 const CSS = `
 [style*="--cl:"] { --c:var(--cl) }
-:root { --bg:#eef1ee; --panel:#fff; --ink:#1a2128; --muted:#5b6670; --line:#d5dbd5; --accent:#0d6b66; --accent-soft:#e0efec;
+:root { --bg:#eef1ee; --panel:#fff; --ink:#1a2128; --muted:#5b6670; --line:#d5dbd5; --accent:#0d6b66; --accent-soft:#e0efec; --marca:#0b6f7c;
   --f-ui:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif; --f-math:"STIX Two Text","Cambria Math",Cambria,Georgia,serif }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg:#111619; --panel:#182025; --ink:#e3e8ea; --muted:#a3aeb5; --line:#2a343b; --accent:#4dbcb0; --accent-soft:#173431; color-scheme:dark }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg:#111619; --panel:#182025; --ink:#e3e8ea; --muted:#a3aeb5; --line:#2a343b; --accent:#4dbcb0; --accent-soft:#173431; --marca:#4db8c4; color-scheme:dark }
   :root:not([data-theme="light"]) [style*="--cl:"] { --c:var(--co) } }
-:root[data-theme="dark"] { --bg:#111619; --panel:#182025; --ink:#e3e8ea; --muted:#a3aeb5; --line:#2a343b; --accent:#4dbcb0; --accent-soft:#173431; color-scheme:dark }
+:root[data-theme="dark"] { --bg:#111619; --panel:#182025; --ink:#e3e8ea; --muted:#a3aeb5; --line:#2a343b; --accent:#4dbcb0; --accent-soft:#173431; --marca:#4db8c4; color-scheme:dark }
 :root[data-theme="dark"] [style*="--cl:"] { --c:var(--co) }
 * { box-sizing:border-box } [hidden] { display:none !important }
 html, body { margin:0; background:var(--bg); color:var(--ink); font:15px/1.5 var(--f-ui) }
 a { color:inherit; text-decoration:none }
 .top { display:flex; align-items:center; gap:8px 20px; flex-wrap:wrap; padding:12px clamp(16px,3vw,28px); background:var(--panel); border-bottom:1px solid var(--line) }
-.logo { font:600 18px var(--f-math); white-space:nowrap } .logo i { color:var(--accent) }
+.logo { font:600 18px var(--f-math); white-space:nowrap } .logo i { color:var(--marca) }
 .top nav { display:flex; gap:4px 14px; font-size:14px; color:var(--muted); overflow-x:auto; max-width:100%; scrollbar-width:none }
 .top nav a { white-space:nowrap; padding:2px 0 } .top nav a:hover, .top nav a[aria-current] { color:var(--ink) } .top nav a[aria-current] { font-weight:600 }
 .buscar { margin-left:auto; font:14px var(--f-ui); color:var(--ink); border:1px solid var(--line); border-radius:8px; padding:7px 12px; width:min(300px,100%); background:var(--bg) }
@@ -162,11 +163,11 @@ function pagina({ titulo, desc, raiz, actual, cuerpo, buscar, script, pwa, ruta 
 ${raiz === '' && Catalogo.google ? `<meta name="google-site-verification" content="${esc(Catalogo.google)}">\n` : ''}<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${esc(titulo)}</title>
 <meta name="description" content="${esc(desc)}">
-<link rel="icon" type="image/svg+xml" href="${icono}">
+<link rel="icon" type="image/svg+xml" href="${raiz}${ICONOS_SVG[`iconos/${actual}.svg`] ? `iconos/${actual}.svg` : 'icono.svg'}">
 <link rel="apple-touch-icon" href="${raiz}apple-touch-icon.png">
 <meta property="og:title" content="${esc(titulo)}">
 <meta property="og:description" content="${esc(desc)}">
-<meta property="og:image" content="${Catalogo.web}/og.png">
+<meta property="og:image" content="${Catalogo.web}/${ICONOS_SVG[`iconos/${actual}.svg`] ? `og/${actual}.png` : 'og.png'}">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -477,7 +478,8 @@ archivos['buscador.js'] = Buscador.archivo();
 // web instalable y sin conexión (pwa.js): manifiesto, service worker, su registro, la página sin conexión y los iconos
 archivos._headers = '/sw.js\n  Cache-Control: no-cache\n/manifest.webmanifest\n  Cache-Control: no-cache\n/js/*\n  Cache-Control: public, max-age=31536000, immutable\n'; // Cloudflare (Vercel: vercel.json)
 archivos['manifest.webmanifest'] = Pwa.manifiesto(); archivos['sw.js'] = Pwa.sw(); archivos['pwa.js'] = Pwa.cliente(); archivos['offline.html'] = Pwa.offline();
-for (const [f] of Pwa.ICONOS) fs.copyFileSync(path.join(__dirname, 'pwa', f), path.join(publico, f));
+for (const f of [...Pwa.ICONOS.map((i) => i[0]), 'apple-touch-icon.png']) fs.copyFileSync(path.join(__dirname, 'pwa', f), path.join(publico, f));
+Object.assign(archivos, ICONOS_SVG);
 archivos['llama.js'] = Llama.archivo();
 // datos del contador de visitas (worker/contador.mjs): herramientas válidas y webs que pueden contar
 fs.mkdirSync(path.join(__dirname, '..', 'worker'), { recursive: true });

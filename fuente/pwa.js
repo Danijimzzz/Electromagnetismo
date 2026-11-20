@@ -13,7 +13,7 @@
    Subir la versión de la web (version.js) o cambiar la lista de páginas cambia sw.js y, con él, la caché.
    Pruebas: pruebas/pwa.js (servidor local, instala, corta la red y comprueba).
    ===================================================================== */
-const crypto = require('crypto');
+const crypto = require('crypto'), fs = require('fs'), path = require('path');
 const Catalogo = require('./catalogo.js'), Version = require('./version.js');
 
 const V = Catalogo.fenomenos, ver = () => Version.de('web').current;
@@ -30,7 +30,7 @@ const imagenes = () => [...V.lista.filter((f) => f.disponible).map((f) => `fenom
 const ICONOS = [['icono-192.png', 192, 'any'], ['icono-512.png', 512, 'any'], ['icono-maskable-512.png', 512, 'maskable']];
 // TRV.10.15: los scripts compartidos (publico/js/, con huella en el nombre) se guardan al instalar: así una página guardada siempre tiene sus scripts
 const scriptsComunes = () => Object.values(require('./herramientas.js').externos()).map((e) => `js/${e.nombre}`);
-const nucleo = () => [...basicas(), ...scriptsComunes(), 'offline.html', 'buscador.js', 'pwa.js', 'legal.css', 'fuentes/stix-two-math.woff2', 'apple-touch-icon.png', 'manifest.webmanifest', ...ICONOS.map((i) => i[0])];
+const nucleo = () => [...basicas(), ...scriptsComunes(), 'offline.html', 'buscador.js', 'pwa.js', 'legal.css', 'fuentes/stix-two-math.woff2', 'apple-touch-icon.png', 'icono.svg', ...fs.readdirSync(path.join(__dirname, 'iconos')).filter((f) => f.endsWith('.svg')).map((f) => 'iconos/' + f), 'manifest.webmanifest', ...ICONOS.map((i) => i[0])];
 
 // Idiomas traducidos (i18n.js): carpetas de publico/ con sus páginas, scripts propios y archivos comunes. Se leen del disco
 // (la primera vez que portal.js escribe sw.js puede estar vacío o viejo; i18n.js lo vuelve a escribir al terminar).
