@@ -12,14 +12,14 @@ if [ "$1" = privado ]; then presets=../privado/tema3-pdf.js; out=${2:?falta el a
 {
   if [ "$1" != privado ]; then
     printf '<!doctype html>\n<html lang="es">\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n'
-    # Icono de la pestaña (fuente/icono.svg, incrustado) y lo que se ve al instalar o compartir el enlace.
-    printf '<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,'; base64 < icono.svg | tr -d '\n'; printf '">\n'
+    # Icono de la pestaña (el de Electromagnetismo, fuente/iconos/electromagnetismo.svg) y lo que se ve al instalar o compartir el enlace.
+    printf '<link rel="icon" type="image/svg+xml" href="../../iconos/electromagnetismo.svg">\n'
     printf '<link rel="apple-touch-icon" href="../../apple-touch-icon.png">\n'
     ficha() { node -p "require('./catalogo.js').asignaturas.flatMap((a) => a.herramientas).find((h) => h.clave === 'electrostatica').$1"; }
     printf '<meta property="og:title" content="%s">\n<meta property="og:description" content="%s">\n' "$(ficha titulo)" "$(ficha descripcion)"
     web=$(node -p "require('./catalogo.js').web")
     printf '<link rel="canonical" href="%s/electromagnetismo/electrostatica/">\n' "$web"
-    printf '<meta property="og:image" content="%s/og.png">\n<meta name="twitter:card" content="summary_large_image">\n' "$web"
+    printf '<meta property="og:image" content="%s/og/electromagnetismo.png">\n<meta name="twitter:card" content="summary_large_image">\n' "$web"
     # lo que sale en Google bajo el título y los datos estructurados (seo.js)
     desc='Simulador de electrostática en español: campo eléctrico, potencial, fuerza y energía de cargas puntuales, hilos, planos, esferas y dipolos, con líneas de campo, vista 3D y el desarrollo paso a paso como en el solucionario.'
     printf '<meta name="description" content="%s">\n' "$desc"

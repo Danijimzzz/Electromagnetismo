@@ -13,7 +13,7 @@ const CSS = `
   body { padding:0 !important; font:10pt/1.45 var(--i-sans) !important }
   .wrap { max-width:none !important; padding:0 !important; margin:0 !important }
   .imp-marca { display:flex !important; align-items:baseline; justify-content:space-between; padding-bottom:10pt; margin-bottom:14pt; border-bottom:1.5pt solid var(--accent) }
-  .imp-marca .mk { font:600 15pt var(--i-serif); color:#111 } .imp-marca .mk i { color:var(--marca, #0d6b66) }
+  .imp-marca .mk { font:600 15pt var(--i-serif); color:#111 } .imp-marca .mk i { color:var(--marca, #0b6f7c) }
   .imp-marca .as { font:500 7.5pt var(--i-mono); letter-spacing:.1em; text-transform:uppercase; color:var(--accent) }
   h1 { font:italic 400 24pt/1.2 var(--i-serif) !important; letter-spacing:-.01em; margin:0 0 10pt !important }
   .lead { color:#555 !important; font-size:9.5pt !important; margin:0 0 12pt !important }

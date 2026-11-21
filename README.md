@@ -31,7 +31,7 @@ Ciencify es una colección de herramientas interactivas para estudiar ciencias: 
 | --- | --- |
 | **111** herramientas | repartidas en 7 asignaturas |
 | **29** fenómenos de «Física en la vida real» | animaciones que explican cosas cotidianas |
-| **Web 1.23** | última versión (19 nov 2026) |
+| **Web 1.24** | última versión (21 nov 2026) |
 <!-- cifras:fin -->
 
 ## 🗂️ Asignaturas
@@ -78,6 +78,12 @@ No hay framework ni dependencias: JavaScript puro concatenado por `fuente/build.
 | `publico/` | Lo único que se publica (generado, no se edita a mano) |
 | `pruebas/` | Pruebas de cálculo, navegador, accesibilidad, rendimiento e idiomas |
 | `worker/` | Contador de visitas (Cloudflare Worker, sin cookies ni IP) |
+
+## 📄 Licencia
+
+El código de este repositorio es software libre bajo la [GNU Affero General Public License v3.0](LICENSE) (AGPL-3.0). Puedes usarlo, estudiarlo y modificarlo; si lo ofreces como servicio en red, debes publicar tu código fuente con la misma licencia.
+
+**La AGPL no cubre la marca ni los contenidos:** el nombre «Ciencify», su logo y los textos e imágenes de la web quedan reservados (© Daniel Jiménez García, Dani). Si publicas una versión modificada, usa otro nombre y otro logo.
 
 ## 🤝 Contribuir
 

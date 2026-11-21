@@ -13,7 +13,7 @@
    (fenómenos también) el de «Herramientas relacionadas» (o «Más fenómenos»):
      node diseno.js ASIGNATURA HERRAMIENTA < pagina.html
    ===================================================================== */
-const Limites = require('./limites.js'), Catalogo = require('./catalogo.js'), Tema = require('./tema.js'), Idiomas = require('./idiomas.js'), Accesibilidad = require('./accesibilidad.js'), Buscador = require('./buscador.js'), Llama = require('./llama.js'), Anuncios = require('./anuncios.js'), Pwa = require('./pwa.js'), Preguntas = require('./preguntas.js'), Imprimir = require('./imprimir-css.js'), Version = require('./version.js');
+const Limites = require('./limites.js'), Catalogo = require('./catalogo.js'), Tema = require('./tema.js'), Idiomas = require('./idiomas.js'), Accesibilidad = require('./accesibilidad.js'), Buscador = require('./buscador.js'), Llama = require('./llama.js'), Anuncios = require('./anuncios.js'), Licencia = require('./licencia.js'), Pwa = require('./pwa.js'), Preguntas = require('./preguntas.js'), Imprimir = require('./imprimir-css.js'), Version = require('./version.js');
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
 // Hoja común de las herramientas (estilos.css) y la cabecera del portal, que comparten con el simulador de
@@ -22,9 +22,9 @@ const ESTILOS = require('fs').readFileSync(require('path').join(__dirname, 'esti
 const ESTILOS_FENOMENOS = require('fs').readFileSync(require('path').join(__dirname, 'fenomenos', 'estilos.css'), 'utf8');
 const V = Catalogo.fenomenos;
 const acento = (a) => `
-:root { --accent:${a.color}; --accent-soft:color-mix(in srgb, ${a.color} 12%, #fff); --marca:#0d6b66 }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --accent:${a.colorOscuro}; --accent-soft:color-mix(in srgb, ${a.colorOscuro} 16%, #182025); --marca:#4dbcb0 } }
-:root[data-theme="dark"] { --accent:${a.colorOscuro}; --accent-soft:color-mix(in srgb, ${a.colorOscuro} 16%, #182025); --marca:#4dbcb0 }`;
+:root { --accent:${a.color}; --accent-soft:color-mix(in srgb, ${a.color} 12%, #fff); --marca:#0b6f7c }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --accent:${a.colorOscuro}; --accent-soft:color-mix(in srgb, ${a.colorOscuro} 16%, #182025); --marca:#4db8c4 } }
+:root[data-theme="dark"] { --accent:${a.colorOscuro}; --accent-soft:color-mix(in srgb, ${a.colorOscuro} 16%, #182025); --marca:#4db8c4 }`;
 const cabecera = `
 header.top { display:flex; align-items:center; gap:8px 20px; flex-wrap:wrap; padding:12px clamp(16px,3vw,28px); position:sticky; top:10px; z-index:10; margin:10px clamp(10px,2vw,20px) 0; border:1px solid var(--vidrio-borde); border-radius:22px; background:var(--vidrio-fuerte); box-shadow:var(--vidrio-brillo),var(--vidrio-sombra); -webkit-backdrop-filter:var(--blur); backdrop-filter:var(--blur) }
 header.top .logo { font:600 18px var(--f-math); margin:0; white-space:nowrap; color:var(--ink); text-decoration:none } header.top .logo i { color:var(--marca) }
@@ -159,7 +159,7 @@ function aplica(html, clave, herramienta) {
 <script>${Accesibilidad.SCRIPT}</script>
 ${Buscador.ETIQUETA('../../')}
 ${Llama.ETIQUETA('../../')}
-` + Anuncios.pie(clave === 'electrostatica' ? aplicaElectrostatica(html) : aplicaHerramienta(html, clave, herramienta));
+` + Anuncios.pie(Licencia.pie(clave === 'electrostatica' ? aplicaElectrostatica(html) : aplicaHerramienta(html, clave, herramienta)));
 }
 
 function aplicaHerramienta(html, clave, herramienta) {
