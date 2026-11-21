@@ -19,6 +19,8 @@ if [ "$1" = privado ]; then presets=../privado/tema3-pdf.js; out=${2:?falta el a
     printf '<meta property="og:title" content="%s">\n<meta property="og:description" content="%s">\n' "$(ficha titulo)" "$(ficha descripcion)"
     web=$(node -p "require('./catalogo.js').web")
     printf '<link rel="canonical" href="%s/electromagnetismo/electrostatica/">\n' "$web"
+    # idiomas de la página (hreflang): los mismos que lleva el sitemap.xml (vacío si solo existe en español)
+    node -e "const h = require('./idiomas.js').HREFLANG('electromagnetismo/electrostatica/', require('./catalogo.js').web); if (h) console.log(h)"
     printf '<meta property="og:image" content="%s/og/electromagnetismo.png">\n<meta name="twitter:card" content="summary_large_image">\n' "$web"
     # lo que sale en Google bajo el título y los datos estructurados (seo.js)
     desc='Simulador de electrostática en español: campo eléctrico, potencial, fuerza y energía de cargas puntuales, hilos, planos, esferas y dipolos, con líneas de campo, vista 3D y el desarrollo paso a paso como en el solucionario.'
