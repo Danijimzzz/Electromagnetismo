@@ -31,7 +31,7 @@ Ciencify es una colección de herramientas interactivas para estudiar ciencias: 
 | --- | --- |
 | **111** herramientas | repartidas en 7 asignaturas |
 | **29** fenómenos de «Física en la vida real» | animaciones que explican cosas cotidianas |
-| **Web 1.23** | última versión (19 nov 2026) |
+| **Web 1.24** | última versión (21 nov 2026) |
 <!-- cifras:fin -->
 
 ## 🗂️ Asignaturas

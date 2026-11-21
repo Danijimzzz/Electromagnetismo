@@ -12,6 +12,16 @@
 const Version = (() => {
   const registros = {
     web: [
+      { v: '1.24', fecha: '2026-11-21', titulo: 'Un icono nuevo para Ciencify', subtitulo: 'Una imagen de marca renovada, con una variante de color para cada asignatura.', secciones: [
+        { icono: '✨', titulo: 'Icono nuevo', puntos: [
+          'La **C con la integral** sobre un fondo de espacio con órbita, estrellas y electrones brillantes, en el icono de la pestaña, al instalar la web en el móvil y en la pantalla de inicio.',
+          '**Cada asignatura tiene su propia variante de color**: al abrir una asignatura o una herramienta, la pestaña del navegador lleva su icono.',
+          'El «fy» del nombre de Ciencify usa ahora el mismo tono azul turquesa del icono.',
+        ] },
+        { icono: '🖼', titulo: 'Imágenes al compartir', puntos: [
+          'Al compartir un enlace de Ciencify aparece una **imagen nueva**, y cada asignatura (y «Física en la vida real») tiene la suya, con su color.',
+        ] },
+      ] },
       { v: '1.23', fecha: '2026-11-19', titulo: 'PDF e impresión con otro aire', subtitulo: 'Todo lo que imprimes o guardas en PDF sale ahora con un diseño editorial y una ventana para elegir qué incluir.', secciones: [
         { icono: '📄', titulo: 'Un formato nuevo', puntos: [
           'Cada herramienta se imprime con la **marca Ciencify** arriba, una línea del color de su asignatura, el título en cursiva, el enunciado con su barra y los datos y resultados limpios, sin botones ni desplegables.',
