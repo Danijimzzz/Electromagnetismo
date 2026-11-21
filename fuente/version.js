@@ -12,6 +12,12 @@
 const Version = (() => {
   const registros = {
     web: [
+      { v: '1.25', fecha: '2026-11-21', titulo: 'Google encuentra mejor cada página', subtitulo: 'Un mapa del sitio más preciso, con la fecha real de cada cambio y los cuatro idiomas bien enlazados.', secciones: [
+        { icono: '🔎', titulo: 'Búsqueda', puntos: [
+          'El mapa del sitio que lee Google lleva ahora la **fecha real de la última modificación** de cada página.',
+          '**Electrostática** indica ya en su propia página sus versiones en inglés, alemán y francés, como el resto de herramientas.',
+        ] },
+      ] },
       { v: '1.24', fecha: '2026-11-21', titulo: 'Un icono nuevo para Ciencify', subtitulo: 'Una imagen de marca renovada, con una variante de color para cada asignatura.', secciones: [
         { icono: '✨', titulo: 'Icono nuevo', puntos: [
           'La **C con la integral** sobre un fondo de espacio con órbita, estrellas y electrones brillantes, en el icono de la pestaña, al instalar la web en el móvil y en la pantalla de inicio.',
