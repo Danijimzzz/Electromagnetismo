@@ -13,7 +13,7 @@
    (fenómenos también) el de «Herramientas relacionadas» (o «Más fenómenos»):
      node diseno.js ASIGNATURA HERRAMIENTA < pagina.html
    ===================================================================== */
-const Limites = require('./limites.js'), Catalogo = require('./catalogo.js'), Tema = require('./tema.js'), Idiomas = require('./idiomas.js'), Accesibilidad = require('./accesibilidad.js'), Buscador = require('./buscador.js'), Llama = require('./llama.js'), Anuncios = require('./anuncios.js'), Pwa = require('./pwa.js'), Preguntas = require('./preguntas.js'), Imprimir = require('./imprimir-css.js'), Version = require('./version.js');
+const Limites = require('./limites.js'), Catalogo = require('./catalogo.js'), Tema = require('./tema.js'), Idiomas = require('./idiomas.js'), Accesibilidad = require('./accesibilidad.js'), Buscador = require('./buscador.js'), Llama = require('./llama.js'), Anuncios = require('./anuncios.js'), Licencia = require('./licencia.js'), Pwa = require('./pwa.js'), Preguntas = require('./preguntas.js'), Imprimir = require('./imprimir-css.js'), Version = require('./version.js');
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
 // Hoja común de las herramientas (estilos.css) y la cabecera del portal, que comparten con el simulador de
@@ -159,7 +159,7 @@ function aplica(html, clave, herramienta) {
 <script>${Accesibilidad.SCRIPT}</script>
 ${Buscador.ETIQUETA('../../')}
 ${Llama.ETIQUETA('../../')}
-` + Anuncios.pie(clave === 'electrostatica' ? aplicaElectrostatica(html) : aplicaHerramienta(html, clave, herramienta));
+` + Anuncios.pie(Licencia.pie(clave === 'electrostatica' ? aplicaElectrostatica(html) : aplicaHerramienta(html, clave, herramienta)));
 }
 
 function aplicaHerramienta(html, clave, herramienta) {

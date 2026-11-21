@@ -3,7 +3,7 @@
    las novedades y el índice de «Física en la vida real» (publico/fenomenos/index.html) a partir de catalogo.js.
    Lo llama build.sh; no hace falta ejecutarlo a mano. Las páginas de cada fenómeno las hace herramientas.js. */
 const fs = require('fs'), path = require('path');
-const Catalogo = require('./catalogo.js'), Version = require('./version.js'), Tema = require('./tema.js'), Idiomas = require('./idiomas.js'), Buscador = require('./buscador.js'), Llama = require('./llama.js'), Anuncios = require('./anuncios.js'), Pwa = require('./pwa.js');
+const Catalogo = require('./catalogo.js'), Version = require('./version.js'), Tema = require('./tema.js'), Idiomas = require('./idiomas.js'), Buscador = require('./buscador.js'), Llama = require('./llama.js'), Anuncios = require('./anuncios.js'), Licencia = require('./licencia.js'), Pwa = require('./pwa.js');
 const publico = path.join(__dirname, '..', 'publico');
 
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -182,7 +182,7 @@ ${Anuncios.cabeza()}<script>${Tema.SCRIPT}</script>
 <a class="foro" href="${raiz}foro/"${actual === 'foro' ? ' aria-current="page"' : ''}><span aria-hidden="true">💬</span>Foro</a>
 ${buscar ? '<input type="search" id="buscar" class="buscar" placeholder="Buscar: Biot-Savart, molaridad…" aria-label="Buscar herramientas (atajo: barra /)" title="Atajo: / o Ctrl+K" autocomplete="off">' : ''}<!--LG-->${Tema.BOTON}</header>
 ${cuerpo}
-${CON_ANUNCIO.includes(actual) && Anuncios.hueco() ? `<div role="region" aria-label="Publicidad">${Anuncios.hueco()}</div>` : ''}${Anuncios.pie(`<footer><a href="${raiz}contacto.html">Contacto</a>·<a href="${raiz}aviso-legal.html">Aviso legal</a>·<a href="${raiz}privacidad.html">Privacidad</a>·<a href="${raiz}cookies.html">Cookies</a>· <a href="${raiz}novedades/">Versión ${esc(Version.de('web').current)}</a></footer>`)}
+${CON_ANUNCIO.includes(actual) && Anuncios.hueco() ? `<div role="region" aria-label="Publicidad">${Anuncios.hueco()}</div>` : ''}${Anuncios.pie(Licencia.pie(`<footer><a href="${raiz}contacto.html">Contacto</a>·<a href="${raiz}aviso-legal.html">Aviso legal</a>·<a href="${raiz}privacidad.html">Privacidad</a>·<a href="${raiz}cookies.html">Cookies</a>· <a href="${raiz}novedades/">Versión ${esc(Version.de('web').current)}</a></footer>`))}
 ${Buscador.ETIQUETA(raiz)}\n${Llama.ETIQUETA(raiz)}\n${script ? `<script>${script}</script>\n` : ''}</body>
 </html>
 `;
@@ -446,7 +446,8 @@ for (const [vieja, nueva] of Object.entries(redir)) {
 // páginas legales (fuente/legal/): las líneas data-sin-anuncios solo salen con los anuncios apagados y las
 // data-con-anuncios solo con ellos encendidos (anuncios.js)
 const legal = path.join(__dirname, 'legal'), quita = Anuncios.activos ? 'data-sin-anuncios' : 'data-con-anuncios';
-for (const f of fs.readdirSync(legal)) archivos[f] = fs.readFileSync(path.join(legal, f), 'utf8').split('\n').filter((l) => !l.includes(quita)).join('\n').replace(/ data-(sin|con)-anuncios/g, '');
+for (const f of fs.readdirSync(legal)) archivos[f] = fs.readFileSync(path.join(legal, f), 'utf8').split('\n').filter((l) => !l.includes(quita)).join('\n').replace(/ data-(sin|con)-anuncios/g, ''); // el pie de las páginas legales también lleva la licencia
+for (const f of Object.keys(archivos)) if (/^(aviso-legal|privacidad|cookies|contacto)\.html$/.test(f)) archivos[f] = Licencia.pie(archivos[f]);
 // ads.txt de AdSense, solo con anuncios.js activo (si no, se borra el que hubiera)
 if (Anuncios.adsTxt()) archivos['ads.txt'] = Anuncios.adsTxt();
 else fs.rmSync(path.join(publico, 'ads.txt'), { force: true });
