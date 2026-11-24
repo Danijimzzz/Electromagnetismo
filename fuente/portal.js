@@ -312,8 +312,9 @@ ${vida}<p class="otras">Otras asignaturas: ${otras}</p>
   });
 }
 
-// foro: de momento solo una página que avisa de que está en construcción
-archivos['foro/index.html'] = pagina({
+// foro (con noindex hasta tener contenido: sin él Google lo rastrea y lo descarta por pobre): de momento solo una página que avisa de que está en construcción
+const noindex = (h) => h.replace('</head>', '<meta name="robots" content="noindex">\n</head>');
+archivos['foro/index.html'] = noindex(pagina({
   titulo: `Foro · ${marca}`, desc: `El foro de ${marca} para preguntar dudas y compartir ejercicios llegará pronto.`, raiz: '../', actual: 'foro',
   cuerpo: `<main style="--cl:#0d6b66;--co:#4dbcb0">
 <div class="crumb"><a href="../">Inicio</a> / Foro</div>
@@ -323,7 +324,7 @@ archivos['foro/index.html'] = pagina({
 <p>Mientras tanto, <a href="../">vuelve al inicio</a> o mira las <a href="../novedades/">novedades</a>.</p>
 </section>
 </main>`,
-});
+}));
 
 // «Física en la vida real»: tarjetas de todos los fenómenos (primero los disponibles), con las asignaturas que tocan
 // y un filtro por asignatura
@@ -454,9 +455,12 @@ else fs.rmSync(path.join(publico, 'ads.txt'), { force: true });
 // archivo de verificación de Google Search Console (catalogo.js → googleArchivo)
 if (Catalogo.googleArchivo) archivos[`${Catalogo.googleArchivo}.html`] = `google-site-verification: ${Catalogo.googleArchivo}.html`;
 // Cloudflare (Workers con assets) lee publico/_redirects; Vercel, vercel.json
-archivos._redirects = Object.entries(redir).flatMap(([v, n]) => [`/${v} /${n} 301`, `/${v.replace(/\/$/, '')} /${n} 301`]).join('\n') + '\n';
+// páginas legales sin .html (/contacto, /en/privacidad…): con trailingSlash acababan en un 404; van al .html (solo reglas, sin página)
+const sinHtml = ['', 'en/', 'de/', 'fr/'].flatMap((l) => ['aviso-legal', 'privacidad', 'cookies', 'contacto'].map((n) => [`${l}${n}`, `${l}${n}.html`]));
+archivos._redirects = Object.entries(redir).flatMap(([v, n]) => [`/${v} /${n} 301`, `/${v.replace(/\/$/, '')} /${n} 301`]).concat(sinHtml.flatMap(([v, n]) => [`/${v} /${n} 301`, `/${v}/ /${n} 301`])).join('\n') + '\n';
 const vercel = path.join(__dirname, '..', 'vercel.json'), conf = JSON.parse(fs.readFileSync(vercel, 'utf8'));
 conf.redirects = Object.entries(redir).flatMap(([v, n]) => [`/${v.replace(/\/$/, '')}`, `/${v}`].map((source) => ({ source, destination: `/${n}`, permanent: true })));
+conf.redirects.push(...sinHtml.flatMap(([v, n]) => [`/${v}`, `/${v}/`].map((source) => ({ source, destination: `/${n}`, permanent: true }))));
 fs.writeFileSync(vercel, JSON.stringify(conf, null, 2) + '\n');
 
 // para Google: la lista de páginas (sitemap.xml), dónde está (robots.txt) y, en cada página, su dirección principal
