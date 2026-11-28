@@ -466,14 +466,11 @@ fs.writeFileSync(vercel, JSON.stringify(conf, null, 2) + '\n');
 // para Google: la lista de páginas (sitemap.xml), dónde está (robots.txt) y, en cada página, su dirección principal
 // (canonical), para que la copia de Cloudflare no cuente como contenido duplicado. Las páginas de herramientas y
 // fenómenos las escribe herramientas.js, y Electrostática build.sh, con la misma etiqueta.
-const Lastmod = require('./lastmod.js'), enlaces = Lastmod.enlaces();
+const enlaces = ['', 'novedades/', ...Catalogo.asignaturas.flatMap((a) => [`${a.clave}/`, ...disponibles(a).map((h) => `${a.clave}/${h.clave}/`)]),
+  'fenomenos/', ...V.lista.filter((f) => f.disponible).map((f) => `fenomenos/${f.clave}/`), 'aviso-legal.html', 'privacidad.html', 'cookies.html', 'contacto.html'];
 // una entrada por cada versión de idioma indexable (la española y las traducidas que existen), todas con las mismas alternativas hreflang
-// (cada una se lista a sí misma y a las demás, más x-default) y su <lastmod> (fecha real de fuente/lastmod.json; sin fecha, sin etiqueta)
-const fechas = Lastmod.guardado(), xml = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-archivos['sitemap.xml'] = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n${Lastmod.paginas().map((p) => {
-  const alt = Idiomas.SITEMAP(p.ruta, Catalogo.web);
-  return `  <url>\n    <loc>${xml(p.loc)}</loc>${fechas[p.clave] ? `\n    <lastmod>${fechas[p.clave]}</lastmod>` : ''}${alt ? '\n    ' + alt.split('\n').join('\n    ') : ''}\n  </url>`;
-}).join('\n')}\n</urlset>\n`;
+const urlsSitemap = enlaces.flatMap((e) => Idiomas.activos().filter((i) => i.indexar && Idiomas.existe(i.c, e)).map((i) => ({ e, loc: `${Catalogo.web}/${i.carpeta}${e}` })));
+archivos['sitemap.xml'] = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"${enlaces.some((e) => Idiomas.SITEMAP(e, Catalogo.web)) ? ' xmlns:xhtml="http://www.w3.org/1999/xhtml"' : ''}>\n${urlsSitemap.map(({ e, loc }) => `  <url><loc>${loc}</loc>${Idiomas.SITEMAP(e, Catalogo.web) ? '\n    ' + Idiomas.SITEMAP(e, Catalogo.web).split('\n').join('\n    ') : ''}</url>`).join('\n')}\n</urlset>\n`;
 archivos['robots.txt'] = `User-agent: *\nAllow: /\n\nSitemap: ${Catalogo.web}/sitemap.xml\n`;
 const canonica = (f) => `${Catalogo.web}/${f.replace(/index\.html$/, '')}`;
 for (const f of Object.keys(archivos)) if (f.endsWith('.html') && !archivos[f].includes('rel="canonical"'))

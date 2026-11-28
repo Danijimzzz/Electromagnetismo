@@ -13,7 +13,7 @@
    las páginas legales. La versión privada (artifact) no pasa por aquí.
    ===================================================================== */
 const Anuncios = (() => {
-  const cliente = 'ca-pub-6407501780492688', bloque = '4415753033', bloqueLateral = '9800921596';
+  const cliente = '', bloque = '', bloqueLateral = '';
   if (cliente && !/^ca-pub-\d{16}$/.test(cliente)) throw new Error(`anuncios.js: «${cliente}» no es un ID de editor (ca-pub- y 16 cifras)`);
   for (const b of [bloque, bloqueLateral]) if (b && !/^\d+$/.test(b)) throw new Error(`anuncios.js: «${b}» no es un ID de bloque (solo cifras)`);
   const activos = !!cliente;
